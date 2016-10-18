@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -92,45 +93,10 @@
 
     <dependencyManagement>
         <dependencies>
-            <!--dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>javax.ws.rs-api</artifactId>
-                <version>${rs-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.messaging</groupId>
-                <artifactId>org.wso2.carbon.messaging</artifactId>
-                <version>${org.wso2.carbon.messaging.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.msf4j</groupId>
-                <artifactId>msf4j-core</artifactId>
-                <version>${msf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.minidev.wso2</groupId>
-                <artifactId>json-smart</artifactId>
-                <version>${json.smart.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.orbit.org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>${org.snakeyaml.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>${osgi.core.api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.eclipse.osgi</groupId>
@@ -143,51 +109,18 @@
                 <version>${equinox.osgi.services.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.eclipse.equinox</groupId>
-                <artifactId>org.eclipse.equinox.ds</artifactId>
-                <version>${equinox.ds.version}</version>
+                <groupId>org.wso2.carbon.security.caas</groupId>
+                <artifactId>org.wso2.carbon.security.caas</artifactId>
+                <version>${carbon.security.caas.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.launcher</artifactId>
-                <version>${carbon.launcher.version}</version>
+                <groupId>org.wso2.carbon.identity.mgt</groupId>
+                <artifactId>org.wso2.carbon.identity.user.mgt</artifactId>
+                <version>${carbon.identity.mgt.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.kernel.feature</artifactId>
-                <version>${carbon.kernel.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.runtime.feature</artifactId>
-                <version>${carbon.kernel.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.core</artifactId>
-                <version>${carbon.core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-dbcp</groupId>
-                <artifactId>commons-dbcp</artifactId>
-                <version>${commons.dbcp.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.minidev</groupId>
-                <artifactId>asm</artifactId>
-                <version>${net.minidev.asm.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.caching</groupId>
-                <artifactId>org.wso2.carbon.caching</artifactId>
-                <version>${org.wso2.carbon.caching.version}</version>
-            </dependency-->
-
             <!-- Unit Tests -->
 
-            <!--dependency>
+            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-all</artifactId>
                 <version>${org.mockito.version}</version>
@@ -204,24 +137,9 @@
                 <artifactId>powermock-module-testng</artifactId>
                 <version>${org.powermock.version}</version>
                 <scope>test</scope>
-            </dependency-->
+            </dependency>
 
             <!-- OSGI Tests-->
-            <!--dependency>
-                <groupId>org.wso2.carbon.security.caas</groupId>
-                <artifactId>org.wso2.carbon.security.caas</artifactId>
-                <version>${carbon.security.caas.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.security.caas</groupId>
-                <artifactId>org.wso2.carbon.security.caas.boot</artifactId>
-                <version>${carbon.security.caas.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.security.caas.tests.artifacts.userstore</groupId>
-                <artifactId>org.wso2.carbon.security.caas.userstore.inmemory</artifactId>
-                <version>${carbon.security.caas.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>osgi-test-util</artifactId>
@@ -302,28 +220,20 @@
                 <version>${commons-io.version}</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.security.caas.tests</groupId>
-                <artifactId>org.wso2.carbon.security.caas.test.distribution</artifactId>
-                <version>${carbon.security.caas.version}</version>
-                <type>zip</type>
-                <scope>test</scope>
-            </dependency-->
         </dependencies>
     </dependencyManagement>
 
     <modules>
-        <!--module>components/org.wso2.carbon.security.caas.boot</module>
-        <module>components/org.wso2.carbon.security.caas</module>
+        <module>components/org.wso2.carbon.identity.user.mgt</module>
         <module>feature</module>
-        <module>samples/usercore-sample</module>
-        <module>tests</module-->
+        <!--<module>samples/usercore-sample</module>-->
+        <!--<module>tests</module>-->
     </modules>
 
     <properties>
         <carbon.identity.mgt.version>1.0.0-SNAPSHOT</carbon.identity.mgt.version>
 
-        <!--carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
+        <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.kernel.version>5.1.0</carbon.kernel.version>
         <carbon.launcher.version>5.1.0</carbon.launcher.version>
         <carbon.core.version>5.1.0</carbon.core.version>
@@ -331,10 +241,11 @@
         <msf4j.version>2.0.0</msf4j.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <org.wso2.carbon.messaging.version>1.0.3</org.wso2.carbon.messaging.version>
-        <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version-->
+        <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
+        <carbon.security.caas.version>1.0.0-SNAPSHOT</carbon.security.caas.version>
 
         <!-- Equinox dependency versions -->
-        <!--osgi.core.api.version>6.0.0</osgi.core.api.version>
+        <osgi.core.api.version>6.0.0</osgi.core.api.version>
         <equinox.osgi.version>3.10.2.v20150203-1939</equinox.osgi.version>
         <equinox.osgi.services.version>3.4.0.v20140312-2051</equinox.osgi.services.version>
         <equinox.ds.version>1.4.200.v20131126-2331</equinox.ds.version>
@@ -346,15 +257,15 @@
         <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
         <rs-api.version>2.0</rs-api.version>
         <gson.version>2.2.4</gson.version>
-        <net.minidev.asm.version>1.0.2</net.minidev.asm.version-->
+        <net.minidev.asm.version>1.0.2</net.minidev.asm.version>
 
         <!-- Unit Test -->
 
-        <!--org.mockito.version>1.9.5</org.mockito.version>
-        <org.powermock.version>1.5.6</org.powermock.version-->
+        <org.mockito.version>1.9.5</org.mockito.version>
+        <org.powermock.version>1.5.6</org.powermock.version>
 
         <!-- OSGI Test related -->
-        <!--testng.version>6.9.4</testng.version>
+        <testng.version>6.9.4</testng.version>
         <pax.logging.api.version>1.8.4</pax.logging.api.version>
         <pax.logging.log4j2.version>1.8.4</pax.logging.log4j2.version>
         <pax.exam.version>4.6.0</pax.exam.version>
@@ -386,7 +297,7 @@
         <ow2.jta.spec.version>1.0.12</ow2.jta.spec.version>
         <javax.inject.version>1</javax.inject.version>
         <jacoco.version>0.7.5.201505241946</jacoco.version>
-        <commons-io.version>2.4.0.wso2v1</commons-io.version-->
+        <commons-io.version>2.4.0.wso2v1</commons-io.version>
 
         <project.scm.id>my-scm-server</project.scm.id>
     </properties>
