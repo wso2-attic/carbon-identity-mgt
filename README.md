@@ -7,7 +7,7 @@
 
 
 ---
-Carbon Identity Management project is one stop shop for all identity needs.
+Carbon Identity Management project is one stop shop for all your identity needs.
 ## Features:
 * Read/Write Identity Store.
 * Read/Write Credential Store.
@@ -66,7 +66,7 @@ Use following Maven repository for released stable versions of Carbon Security.
 ````
 ## Building From Source
 
-Clone this repository first (`https://github.com/thanujalk/carbon-identity-mgt.git`) and use Maven install to build
+Clone this repository first (`https://github.com/wso2/carbon-identity-mgt.git`) and use Maven install to build
 `mvn clean install`.
 
 ## Contributing to Carbon Identity Management Project
