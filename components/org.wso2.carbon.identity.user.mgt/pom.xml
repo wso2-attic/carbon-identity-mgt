@@ -55,7 +55,7 @@
         <private.package>org.wso2.carbon.identity.user.mgt.internal</private.package>
         <export.package>
             !org.wso2.carbon.identity.user.mgt.internal,
-            org.wso2.carbon.identity.user.mgt.*
+            org.wso2.carbon.identity.user.mgt.*;version="${project.version}"
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",
