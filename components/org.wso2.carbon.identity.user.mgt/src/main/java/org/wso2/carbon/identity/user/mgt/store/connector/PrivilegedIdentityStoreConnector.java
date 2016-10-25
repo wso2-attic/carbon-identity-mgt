@@ -35,7 +35,7 @@ public interface PrivilegedIdentityStoreConnector extends IdentityStoreConnector
      * @param attributes Attributes of the user.
      * @throws IdentityStoreException Identity store exception.
      */
-    void addUser(List<Attribute> attributes) throws IdentityStoreException;
+    String addUser(List<Attribute> attributes) throws IdentityStoreException;
 
     /**
      * Adds new users.
@@ -43,7 +43,7 @@ public interface PrivilegedIdentityStoreConnector extends IdentityStoreConnector
      * @param attributes Attributes of the users.
      * @throws IdentityStoreException Identity store exception.
      */
-    void addUsers(List<List<Attribute>> attributes) throws IdentityStoreException;
+    List<String> addUsers(List<List<Attribute>> attributes) throws IdentityStoreException;
 
     /**
      * Update all attributes of a user.
