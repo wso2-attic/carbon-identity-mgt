@@ -18,7 +18,6 @@ package org.wso2.carbon.identity.mgt.service;
 
 import org.wso2.carbon.identity.mgt.store.PrivilegedCredentialStore;
 import org.wso2.carbon.identity.mgt.store.PrivilegedIdentityStore;
-import org.wso2.carbon.security.caas.user.core.service.RealmService;
 
 /**
  *

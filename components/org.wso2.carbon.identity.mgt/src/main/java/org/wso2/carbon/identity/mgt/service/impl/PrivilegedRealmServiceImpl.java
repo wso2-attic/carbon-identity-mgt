@@ -18,13 +18,13 @@
 
 package org.wso2.carbon.identity.mgt.service.impl;
 
+import org.wso2.carbon.identity.mgt.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.identity.mgt.service.PrivilegedRealmService;
+import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
+import org.wso2.carbon.identity.mgt.store.CredentialStore;
+import org.wso2.carbon.identity.mgt.store.IdentityStore;
 import org.wso2.carbon.identity.mgt.store.PrivilegedCredentialStore;
 import org.wso2.carbon.identity.mgt.store.PrivilegedIdentityStore;
-import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
-import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
-import org.wso2.carbon.security.caas.user.core.store.CredentialStore;
-import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
 
 /**
  * Extended Realm Service Implementation.

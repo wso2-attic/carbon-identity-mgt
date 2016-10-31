@@ -16,9 +16,9 @@
 
 package org.wso2.carbon.identity.mgt.store.impl;
 
+import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
+import org.wso2.carbon.identity.mgt.store.CredentialStoreImpl;
 import org.wso2.carbon.identity.mgt.store.PrivilegedCredentialStore;
-import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.store.CredentialStoreImpl;
 
 import javax.security.auth.callback.Callback;
 

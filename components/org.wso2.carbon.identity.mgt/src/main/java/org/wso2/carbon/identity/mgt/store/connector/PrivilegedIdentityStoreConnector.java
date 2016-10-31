@@ -16,9 +16,8 @@
 
 package org.wso2.carbon.identity.mgt.store.connector;
 
-import org.wso2.carbon.security.caas.user.core.bean.Attribute;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
-import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnector;
+import org.wso2.carbon.identity.mgt.bean.Attribute;
+import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 
 import java.util.List;
 

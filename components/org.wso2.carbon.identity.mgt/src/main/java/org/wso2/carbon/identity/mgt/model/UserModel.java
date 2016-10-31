@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.identity.mgt.model;
 
-import org.wso2.carbon.security.caas.user.core.claim.Claim;
+import org.wso2.carbon.identity.mgt.claim.Claim;
 
 import java.util.ArrayList;
 import java.util.List;

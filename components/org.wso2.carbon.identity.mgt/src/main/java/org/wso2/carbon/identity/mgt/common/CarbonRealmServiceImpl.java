@@ -1,0 +1,69 @@
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.wso2.carbon.identity.mgt.common;
+
+import org.wso2.carbon.identity.mgt.service.RealmService;
+import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
+import org.wso2.carbon.identity.mgt.store.CredentialStore;
+import org.wso2.carbon.identity.mgt.store.IdentityStore;
+
+/**
+ * Basic user realm service.
+ *
+ * @param <T1>
+ * @param <T2>
+ */
+public class CarbonRealmServiceImpl<T1 extends IdentityStore, T2 extends CredentialStore>
+        implements RealmService<T1, T2> {
+
+    /**
+     * Authorization store in the realm service.
+     */
+    private AuthorizationStore authorizationStore;
+
+    /**
+     * Credential store instance in the realm service.
+     */
+    private T2 credentialStore;
+
+    /**
+     * Credential store instance in the realm service.
+     */
+    private T1 identityStore;
+
+    public CarbonRealmServiceImpl(T1 identityStore, T2 credentialStore, AuthorizationStore authorizationStore) {
+
+        this.identityStore = identityStore;
+        this.credentialStore = credentialStore;
+        this.authorizationStore = authorizationStore;
+    }
+
+    @Override
+    public AuthorizationStore getAuthorizationStore() {
+        return authorizationStore;
+    }
+
+    @Override
+    public T1 getIdentityStore() {
+        return this.identityStore;
+    }
+
+    @Override
+    public T2 getCredentialStore() {
+        return this.credentialStore;
+    }
+}
