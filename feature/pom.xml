@@ -48,36 +48,36 @@
             </resource>
         </resources>
         <plugins>
-            <!--<plugin>-->
-                <!--<artifactId>maven-resources-plugin</artifactId>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>prefilter-resources</id>-->
-                        <!--<phase>generate-resources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>copy-resources</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<outputDirectory>src/main/resources</outputDirectory>-->
-                            <!--<resources>-->
-                                <!--<resource>-->
-                                    <!--<directory>resources</directory>-->
-                                    <!--<includes>-->
-                                        <!--<include>conf/carbon-jaas.config</include>-->
-                                        <!--<include>conf/permissions.yml</include>-->
-                                        <!--<include>conf/security.policy</include>-->
-                                        <!--<include>conf/store-config.yml</include>-->
-                                        <!--<include>conf/claim-store.yml</include>-->
-                                        <!--<include>conf/domain-config.yml</include>-->
-                                        <!--<include>p2.inf</include>-->
-                                        <!--<include>build.properties</include>-->
-                                    <!--</includes>-->
-                                <!--</resource>-->
-                            <!--</resources>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prefilter-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>src/main/resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>resources</directory>
+                                    <includes>
+                                        <include>conf/store-config.yml</include>
+                                        <include>conf/claim-store.yml</include>
+                                        <include>conf/domain-config.yml</include>
+                                        <include>conf/user-mapping.csv</include>
+                                        <include>conf/identity-store-connector.csv</include>
+                                        <include>conf/credential-store-connector.csv</include>
+                                        <include>p2.inf</include>
+                                        <include>build.properties</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.wso2.carbon.maven</groupId>
                 <artifactId>carbon-feature-plugin</artifactId>
@@ -103,7 +103,7 @@
                             </adviceFileContents>
                             <bundles>
                                 <bundle>
-                                    <symbolicName>org.wso2.carbon.identity.user.mgt</symbolicName>
+                                    <symbolicName>org.wso2.carbon.identity.mgt</symbolicName>
                                     <version>${carbon.identity.mgt.version}</version>
                                 </bundle>
                             </bundles>

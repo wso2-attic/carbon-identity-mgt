@@ -1,0 +1,57 @@
+###############################################################################
+#   Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+###############################################################################
+---
+# Configuration related to each store
+# This is optional unless you want to initialise a store with certain parameters
+authorizationStore:
+credentialStore:
+identityStore:
+
+# Is caching enabled for each store
+enableCache: true
+
+# Individual connectors for each store
+# These connectors can be added seperatly
+storeConnectors:
+
+ identityStoreConnectors:
+ -
+    connectorId: "FBIS1"
+    connectorType: "FileBasedIdentityStore"
+    domainName: "carbon"
+    uniqueAttributes:
+      - username
+      - email
+    otherAttributes:
+      - firstName
+      - lastName
+    properties:
+      storeFile: "./conf/security/identity-store-connector.csv"
+
+ credentialStoreConnectors:
+  -
+    connectorId: "FBCS1"
+    connectorType: "FileBasedCredentialStore"
+    domainName: "carbon"
+    properties:
+      storeFile: "./conf/security/credential-store-connector.csv"
+
+ authorizationStoreConnectors:
+  -
+    connectorId: "FBAS1"
+    connectorType: "FileBasedAuthorizationStore"
+    properties:
+      storeFile: "WSO2_CARBON_DB"
