@@ -16,11 +16,11 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.user.mgt.service.impl;
+package org.wso2.carbon.identity.mgt.service.impl;
 
-import org.wso2.carbon.identity.user.mgt.service.PrivilegedRealmService;
-import org.wso2.carbon.identity.user.mgt.store.PrivilegedCredentialStore;
-import org.wso2.carbon.identity.user.mgt.store.PrivilegedIdentityStore;
+import org.wso2.carbon.identity.mgt.service.PrivilegedRealmService;
+import org.wso2.carbon.identity.mgt.store.PrivilegedCredentialStore;
+import org.wso2.carbon.identity.mgt.store.PrivilegedIdentityStore;
 import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import org.wso2.carbon.security.caas.user.core.store.CredentialStore;

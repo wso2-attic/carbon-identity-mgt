@@ -16,11 +16,11 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.user.mgt.store.impl;
+package org.wso2.carbon.identity.mgt.store.impl;
 
-import org.wso2.carbon.identity.user.mgt.model.GroupModel;
-import org.wso2.carbon.identity.user.mgt.model.UserModel;
-import org.wso2.carbon.identity.user.mgt.store.PrivilegedIdentityStore;
+import org.wso2.carbon.identity.mgt.model.GroupModel;
+import org.wso2.carbon.identity.mgt.model.UserModel;
+import org.wso2.carbon.identity.mgt.store.PrivilegedIdentityStore;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;

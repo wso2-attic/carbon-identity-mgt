@@ -224,7 +224,7 @@
     </dependencyManagement>
 
     <modules>
-        <module>components/org.wso2.carbon.identity.user.mgt</module>
+        <module>components/org.wso2.carbon.identity.mgt</module>
         <module>feature</module>
         <!--<module>samples/usercore-sample</module>-->
         <!--<module>tests</module>-->

@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.user.mgt.store.impl;
+package org.wso2.carbon.identity.mgt.store.connector;
 
-import org.wso2.carbon.identity.user.mgt.store.PrivilegedCredentialStore;
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.store.CredentialStoreImpl;
+import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnector;
 
 import javax.security.auth.callback.Callback;
 
 /**
- * ExtendedCredentialStore implementation
+ * Extended Credential Store Connector which provides write capability.
+ *
+ * @since 1.0.0
  */
-public class PrivilegedCredentialStoreImpl extends CredentialStoreImpl implements PrivilegedCredentialStore {
-    @Override
-    public void updateCredential(Callback[] callbacks) throws CredentialStoreException {
+public interface PrivilegedCredentialStoreConnector extends CredentialStoreConnector {
 
-    }
+    void updateCredential(Callback[] callbacks) throws CredentialStoreException;
 
-    @Override
-    public void updateCredential(String username, Callback[] credentialCallbacks, String identityStoreId) throws
-            CredentialStoreException {
-
-    }
+    void updateCredential(String username, Callback[] credentialCallbacks) throws CredentialStoreException;
 }

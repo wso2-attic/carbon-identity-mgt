@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.user.mgt.store.connector;
+package org.wso2.carbon.identity.mgt.store.connector;
 
 import org.wso2.carbon.security.caas.user.core.bean.Attribute;
 import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;

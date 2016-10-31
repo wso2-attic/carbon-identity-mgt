@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.user.mgt.store;
+package org.wso2.carbon.identity.mgt.store;
 
 import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
 import org.wso2.carbon.security.caas.user.core.store.CredentialStore;

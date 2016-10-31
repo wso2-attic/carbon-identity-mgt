@@ -28,9 +28,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>org.wso2.carbon.identity.user.mgt</artifactId>
+    <artifactId>org.wso2.carbon.identity.mgt</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon Identity User Management - OSGi Bundle</name>
+    <name>WSO2 Carbon Identity Management - OSGi Bundle</name>
 
     <dependencies>
         <dependency>

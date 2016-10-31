@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.user.mgt.store;
+package org.wso2.carbon.identity.mgt.store;
 
-import org.wso2.carbon.identity.user.mgt.model.GroupModel;
-import org.wso2.carbon.identity.user.mgt.model.UserModel;
+import org.wso2.carbon.identity.mgt.model.GroupModel;
+import org.wso2.carbon.identity.mgt.model.UserModel;
 import org.wso2.carbon.security.caas.user.core.bean.Group;
 import org.wso2.carbon.security.caas.user.core.bean.User;
 import org.wso2.carbon.security.caas.user.core.claim.Claim;

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.user.mgt.model;
+package org.wso2.carbon.identity.mgt.model;
 
 import org.wso2.carbon.security.caas.user.core.claim.Claim;
 
