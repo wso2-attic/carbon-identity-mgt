@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.common;
+package org.wso2.carbon.identity.mgt.service.impl;
 
 import org.wso2.carbon.identity.mgt.service.RealmService;
 import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
@@ -27,7 +27,7 @@ import org.wso2.carbon.identity.mgt.store.IdentityStore;
  * @param <T1>
  * @param <T2>
  */
-public class CarbonRealmServiceImpl<T1 extends IdentityStore, T2 extends CredentialStore>
+public class RealmServiceImpl<T1 extends IdentityStore, T2 extends CredentialStore>
         implements RealmService<T1, T2> {
 
     /**
@@ -45,7 +45,7 @@ public class CarbonRealmServiceImpl<T1 extends IdentityStore, T2 extends Credent
      */
     private T1 identityStore;
 
-    public CarbonRealmServiceImpl(T1 identityStore, T2 credentialStore, AuthorizationStore authorizationStore) {
+    public RealmServiceImpl(T1 identityStore, T2 credentialStore, AuthorizationStore authorizationStore) {
 
         this.identityStore = identityStore;
         this.credentialStore = credentialStore;

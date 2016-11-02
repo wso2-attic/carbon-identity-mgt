@@ -14,20 +14,31 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.service;
-
-import org.wso2.carbon.identity.mgt.store.PrivilegedCredentialStore;
-import org.wso2.carbon.identity.mgt.store.PrivilegedIdentityStore;
+package org.wso2.carbon.identity.mgt.exception;
 
 /**
- *
- * Extended Realm Service for user management.
- *
- * @param <T1>
- * @param <T2>
+ * Identity Store Client Exception.
  */
-public interface PrivilegedRealmService<T1 extends PrivilegedIdentityStore, T2 extends
-        PrivilegedCredentialStore> extends RealmService<T1, T2> {
+public class IdentityStoreClientException extends IdentityStoreException {
 
+    public IdentityStoreClientException() {
+        super();
+    }
+
+    public IdentityStoreClientException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public IdentityStoreClientException(String message, boolean convertMessage) {
+        super(message);
+    }
+
+    public IdentityStoreClientException(String message) {
+        super(message);
+    }
+
+    public IdentityStoreClientException(Throwable cause) {
+        super(cause);
+    }
 
 }

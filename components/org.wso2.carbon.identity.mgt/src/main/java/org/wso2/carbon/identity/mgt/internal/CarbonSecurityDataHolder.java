@@ -19,9 +19,9 @@ package org.wso2.carbon.identity.mgt.internal;
 import org.osgi.framework.BundleContext;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimStore;
-import org.wso2.carbon.identity.mgt.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfig;
+import org.wso2.carbon.identity.mgt.service.impl.RealmServiceImpl;
 import org.wso2.carbon.identity.mgt.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory;
@@ -38,7 +38,7 @@ import java.util.Map;
 public class CarbonSecurityDataHolder {
 
     private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
-    private CarbonRealmServiceImpl carbonRealmService;
+    private RealmServiceImpl carbonRealmService;
     private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
     private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
     private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
@@ -62,11 +62,11 @@ public class CarbonSecurityDataHolder {
         return instance;
     }
 
-    void registerCarbonRealmService(CarbonRealmServiceImpl carbonRealmService) {
+    void registerCarbonRealmService(RealmServiceImpl carbonRealmService) {
         this.carbonRealmService = carbonRealmService;
     }
 
-    public CarbonRealmServiceImpl getCarbonRealmService() {
+    public RealmServiceImpl getCarbonRealmService() {
 
         if (carbonRealmService == null) {
             throw new IllegalStateException("Carbon Realm Service is null.");
