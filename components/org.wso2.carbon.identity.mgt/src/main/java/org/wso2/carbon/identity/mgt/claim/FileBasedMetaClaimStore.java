@@ -44,7 +44,7 @@ public class FileBasedMetaClaimStore implements MetaClaimStore {
      */
     public FileBasedMetaClaimStore() throws CarbonSecurityConfigException {
 
-        Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+        Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.CLAIM_STORE_FILE);
 
         MetaClaimStoreFile metaClaimStoreFile = FileUtil.readConfigFile(file, MetaClaimStoreFile.class);

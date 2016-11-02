@@ -18,6 +18,7 @@ package org.wso2.carbon.identity.mgt.store.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.identity.mgt.IdentityCallback;
 import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.constant.UserCoreConstants;
@@ -31,7 +32,6 @@ import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.identity.mgt.store.CredentialStore;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
-import org.wso2.carbon.security.caas.api.CarbonCallback;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -112,7 +112,7 @@ public class CredentialStoreImpl implements CredentialStore {
             System.arraycopy(callbacks, 0, newCallbacks, 0, callbacks.length);
 
             // User data will be a map.
-            CarbonCallback<Map> carbonCallback = new CarbonCallback<>(null);
+            IdentityCallback<Map> carbonCallback = new IdentityCallback<>(null);
             Map<String, String> userData = new HashMap<>();
             userData.put(UserCoreConstants.USER_ID, user.getUserId());
             carbonCallback.setContent(userData);

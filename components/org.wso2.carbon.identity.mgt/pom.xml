@@ -71,10 +71,6 @@
             <artifactId>org.wso2.carbon.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.security.caas</groupId>
-            <artifactId>org.wso2.carbon.security.caas</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon.caching</groupId>
             <artifactId>org.wso2.carbon.caching</artifactId>
         </dependency>
@@ -104,7 +100,6 @@
             javax.cache.*,
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
             net.minidev.asm.*;version="${asm.package.version.range}",
-            org.wso2.carbon.security.caas.boot.*,
             org.wso2.carbon.kernel.*,
             org.wso2.carbon.messaging.*,
             org.wso2.carbon.caching.*
