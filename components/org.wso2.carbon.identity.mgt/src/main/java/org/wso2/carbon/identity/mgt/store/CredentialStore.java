@@ -48,4 +48,23 @@ public interface CredentialStore {
      * @throws AuthenticationFailure Authentication Failure.
      */
     AuthenticationContext authenticate(Callback[] callbacks) throws AuthenticationFailure;
+
+    /**
+     * Updates the credential of user.
+     *
+     * @param callbacks Callbacks to get user credentials.
+     * @throws CredentialStoreException Credential store exception.
+     */
+    void updateCredential(Callback[] callbacks) throws CredentialStoreException;
+
+    /**
+     * Updates the credential of user.
+     *
+     * @param username            Username of the user.
+     * @param credentialCallbacks Callbacks to get user credentials.
+     * @param identityStoreId     Id of the identity store user resides.
+     * @throws CredentialStoreException Credential store exception.
+     */
+    void updateCredential(String username, Callback[] credentialCallbacks, String identityStoreId) throws
+            CredentialStoreException;
 }

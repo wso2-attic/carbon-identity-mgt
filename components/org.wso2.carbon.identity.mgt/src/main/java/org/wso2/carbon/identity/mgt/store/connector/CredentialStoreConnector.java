@@ -62,4 +62,22 @@ public interface CredentialStoreConnector {
      * @return CredentialStoreConnectorConfig.
      */
     CredentialStoreConnectorConfig getCredentialStoreConfig();
+
+
+    /**
+     * Update user credentials.
+     *
+     * @param callbacks  Array of callbacks.
+     * @throws CredentialStoreException Credential Store Exception.
+     */
+    void updateCredential(Callback[] callbacks) throws CredentialStoreException;
+
+    /**
+     * Update user credentials.
+     *
+     * @param username Username of the user.
+     * @param credentialCallbacks Array of callbacks which contains credentials.
+     * @throws CredentialStoreException Credential Store Exception.
+     */
+    void updateCredential(String username, Callback[] credentialCallbacks) throws CredentialStoreException;
 }
