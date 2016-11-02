@@ -112,10 +112,6 @@
                                     <id>org.wso2.carbon.caching.feature</id>
                                     <version>${org.wso2.carbon.caching.version}</version>
                                 </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.security.caas.feature</id>
-                                    <version>${carbon.security.caas.version}</version>
-                                </feature>
                             </importFeatures>
                         </configuration>
                     </execution>
