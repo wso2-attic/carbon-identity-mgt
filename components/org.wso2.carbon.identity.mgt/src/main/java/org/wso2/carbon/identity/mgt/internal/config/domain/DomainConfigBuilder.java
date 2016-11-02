@@ -24,7 +24,7 @@ public class DomainConfigBuilder {
      */
     private static DomainConfigFile buildDomainConfig() throws CarbonSecurityConfigException {
 
-        Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+        Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.DOMAIN_CONFIG_FILE);
 
         return FileUtil.readConfigFile(file, DomainConfigFile.class);

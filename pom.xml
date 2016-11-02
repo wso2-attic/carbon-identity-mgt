@@ -114,6 +114,11 @@
                 <version>${org.snakeyaml.version}</version>
             </dependency>
             <dependency>
+                <groupId>net.minidev.wso2</groupId>
+                <artifactId>json-smart</artifactId>
+                <version>${json.smart.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.core</artifactId>
                 <version>${carbon.core.version}</version>
@@ -130,7 +135,7 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.mgt</groupId>
-                <artifactId>org.wso2.carbon.identity.user.mgt</artifactId>
+                <artifactId>org.wso2.carbon.identity.mgt</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
             </dependency>
             <!-- Unit Tests -->
@@ -241,8 +246,7 @@
     <modules>
         <module>components/org.wso2.carbon.identity.mgt</module>
         <module>feature</module>
-        <!--<module>samples/usercore-sample</module>-->
-        <!--<module>tests</module>-->
+        <module>tests</module>
     </modules>
 
     <properties>

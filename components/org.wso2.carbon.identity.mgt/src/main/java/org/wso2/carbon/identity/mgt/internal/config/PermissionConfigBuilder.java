@@ -47,7 +47,7 @@ public class PermissionConfigBuilder {
     public static PermissionConfigFile buildPermissionConfig()
             throws PermissionConfigException {
 
-        Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+        Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.PERMISSION_CONFIG_FILE);
 
         if (Files.exists(file)) {

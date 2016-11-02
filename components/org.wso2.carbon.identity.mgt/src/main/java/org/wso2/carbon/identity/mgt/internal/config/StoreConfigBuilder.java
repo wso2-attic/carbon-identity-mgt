@@ -57,7 +57,7 @@ public class StoreConfigBuilder {
      */
     private static StoreConfigFile buildStoreConfig() throws CarbonSecurityConfigException {
 
-        Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "security",
+        Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.STORE_CONFIG_FILE);
 
         // store-config.yml is a mandatory configuration file.
@@ -157,7 +157,7 @@ public class StoreConfigBuilder {
             throws CarbonSecurityConfigException {
 
         List<IdentityStoreConnectorConfig> configEntries = new ArrayList<>();
-        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "security");
+        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
 
         if (Files.exists(path)) {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-identity-connector.yml")) {
@@ -185,7 +185,7 @@ public class StoreConfigBuilder {
             throws CarbonSecurityConfigException {
 
         List<CredentialStoreConnectorConfig> configEntries = new ArrayList<>();
-        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "security");
+        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
 
         if (Files.exists(path)) {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-credential-connector.yml")) {
@@ -214,7 +214,7 @@ public class StoreConfigBuilder {
             throws CarbonSecurityConfigException {
 
         List<AuthorizationStoreConnectorConfig> configEntries = new ArrayList<>();
-        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "security");
+        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
 
         if (Files.exists(path)) {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-authorization-connector.yml")) {

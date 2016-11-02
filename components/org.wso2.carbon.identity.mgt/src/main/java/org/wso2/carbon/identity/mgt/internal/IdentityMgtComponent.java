@@ -81,7 +81,7 @@ import java.util.Map;
         name = "org.wso2.carbon.identity.mgt.internal.IdentityMgtComponent",
         immediate = true,
         property = {
-                "componentName=wso2-caas"
+                "componentName=wso2-carbon-identity-mgt"
         }
 )
 public class IdentityMgtComponent implements RequiredCapabilityListener {
