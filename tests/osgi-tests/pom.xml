@@ -17,16 +17,16 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.wso2.carbon.security.caas.tests</groupId>
-        <artifactId>carbon-security-caas-tests</artifactId>
+        <groupId>org.wso2.carbon.identity.mgt.tests</groupId>
+        <artifactId>carbon-identity-mgt-tests</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>carbon-security-caas-osgi-tests</artifactId>
-    <name>WSO2 Carbon Security CAAS - OSGi Tests</name>
-    <description>OSGi Tests for Carbon Security CAAS Implementation</description>
+    <artifactId>carbon-identity-mgt-osgi-tests</artifactId>
+    <name>WSO2 Carbon Identity Management - OSGi Tests</name>
+    <description>OSGi Tests for Carbon Identity Management</description>
     <url>http://wso2.com</url>
 
     <build>
@@ -152,8 +152,8 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>org.wso2.carbon.security.caas.tests</groupId>
-                                            <artifactId>org.wso2.carbon.security.caas.test.distribution</artifactId>
+                                            <groupId>org.wso2.carbon.identity.mgt.tests</groupId>
+                                            <artifactId>org.wso2.carbon.identity.mgt.test.distribution</artifactId>
                                             <type>zip</type>
                                             <overWrite>true</overWrite>
                                             <outputDirectory>${project.build.directory}</outputDirectory>
@@ -268,10 +268,10 @@
                                             </executiondata>
                                             <structure name="Carbon Security OSGi Tests">
                                                 <classfiles>
-                                                    <fileset dir="../../components/org.wso2.carbon.security.caas/target/classes" />
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.mgt/target/classes" />
                                                 </classfiles>
                                                 <sourcefiles encoding="UTF-8">
-                                                    <fileset dir="../../components/org.wso2.carbon.security.caas/src" />
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.mgt/src" />
                                                 </sourcefiles>
                                             </structure>
                                             <html destdir="${project.build.directory}/site/jacoco" />

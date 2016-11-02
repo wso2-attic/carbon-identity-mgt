@@ -240,6 +240,13 @@
                 <version>${commons-io.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity.mgt.tests</groupId>
+                <artifactId>org.wso2.carbon.identity.mgt.test.distribution</artifactId>
+                <version>${carbon.identity.mgt.version}</version>
+                <type>zip</type>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
