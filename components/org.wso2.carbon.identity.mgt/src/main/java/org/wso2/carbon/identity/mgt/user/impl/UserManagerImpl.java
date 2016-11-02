@@ -20,13 +20,7 @@ import org.wso2.carbon.identity.mgt.exception.UserManagerException;
 import org.wso2.carbon.identity.mgt.user.ConnectedGroup;
 import org.wso2.carbon.identity.mgt.user.ConnectedUser;
 import org.wso2.carbon.identity.mgt.user.UserManager;
-import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 

@@ -392,8 +392,8 @@ public interface IdentityStore {
      * @param uniqueGroupIdsToRemove Group ids to remove.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd, List<String> uniqueGroupIdsToRemove) throws
-            IdentityStoreException;
+    void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd, List<String> uniqueGroupIdsToRemove)
+            throws IdentityStoreException;
 
     /**
      * Add new group to the default domain.
@@ -478,7 +478,7 @@ public interface IdentityStore {
      * @param uniqueUserIdsToRemove User unique id list to remove.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String> uniqueUserIdsToRemove) throws
-            IdentityStoreException;
+    void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String>
+            uniqueUserIdsToRemove) throws IdentityStoreException;
 
 }
