@@ -60,6 +60,17 @@ public class DomainManager {
         return Integer.compare(d1Priority, d2Priority);
     });
 
+    public Domain getPrimaryDomain() throws DomainException {
+
+        Domain domain = sortedDomains.first();
+
+        if (domain == null) {
+            throw new DomainException("No domains registered.");
+        }
+
+        return domain;
+    }
+
     /**
      * Get the domain from the name.
      *

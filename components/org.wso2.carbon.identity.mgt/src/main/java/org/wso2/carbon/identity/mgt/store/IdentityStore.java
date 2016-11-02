@@ -49,23 +49,23 @@ public interface IdentityStore {
     /**
      * Retrieve a user by global unique Id.
      *
-     * @param userId Global Unique Id
+     * @param uniqueUserId Global Unique Id
      * @return User object
      * @throws IdentityStoreException
      * @throws UserNotFoundException
      */
-    User getUser(String userId) throws IdentityStoreException, UserNotFoundException;
+    User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException;
 
     /**
      * Retrieve a user by global unique Id.
      *
-     * @param userId The globally unique user Id
+     * @param uniqueUserId The globally unique user Id
      * @param domain The domain the user is in
      * @return User
      * @throws IdentityStoreException
      * @throws UserNotFoundException
      */
-    User getUser(String userId, String domain) throws IdentityStoreException, UserNotFoundException;
+    User getUser(String uniqueUserId, String domain) throws IdentityStoreException, UserNotFoundException;
 
     /**
      * Retrieve a user by claim.
@@ -141,23 +141,23 @@ public interface IdentityStore {
     /**
      * Retrieve group from group Id.
      *
-     * @param groupId The Id of the group
+     * @param uniqueGroupId The Id of the group
      * @return Group
      * @throws IdentityStoreException
      * @throws GroupNotFoundException
      */
-    Group getGroup(String groupId) throws IdentityStoreException, GroupNotFoundException;
+    Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException;
 
     /**
      * Get group from group Id from a specific domain.
      *
-     * @param groupId The Id of the group
+     * @param uniqueGroupId The Id of the group
      * @param domain  The domain to retrieve group from
      * @return Group
      * @throws IdentityStoreException
      * @throws GroupNotFoundException
      */
-    Group getGroup(String groupId, String domain) throws IdentityStoreException, GroupNotFoundException;
+    Group getGroup(String uniqueGroupId, String domain) throws IdentityStoreException, GroupNotFoundException;
 
     /**
      * Get group that matches a claim.
@@ -233,61 +233,61 @@ public interface IdentityStore {
     /**
      * Get list of groups a user belongs to.
      *
-     * @param userId The Id of the user
+     * @param uniqueUserId The Id of the user
      * @return List of groups the user is in
      * @throws IdentityStoreException
      */
-    List<Group> getGroupsOfUser(String userId) throws IdentityStoreException;
+    List<Group> getGroupsOfUser(String uniqueUserId) throws IdentityStoreException;
 
     /**
      * Get list of users in a given group.
      *
-     * @param groupId The group to find users of
+     * @param uniqueGroupId The group to find users of
      * @return List of users contained in the group
      * @throws IdentityStoreException
      */
-    List<User> getUsersOfGroup(String groupId) throws IdentityStoreException;
+    List<User> getUsersOfGroup(String uniqueGroupId) throws IdentityStoreException;
 
     /**
      * Get list of groups a user belongs to in a specific domain.
      *
-     * @param userId The Id of the user
+     * @param uniqueUserId The Id of the user
      * @param domain The domain the users belongs to
      * @return List of groups the user is in
      * @throws IdentityStoreException
      */
-    List<Group> getGroupsOfUser(String userId, String domain) throws IdentityStoreException;
+    List<Group> getGroupsOfUser(String uniqueUserId, String domain) throws IdentityStoreException;
 
     /**
      * Get list of users in a given group for a specific domain.
      *
-     * @param groupId The group to find users of
+     * @param uniqueGroupId The group to find users of
      * @param domain  The domain the user belongs to
      * @return List of users contained in the group
      * @throws IdentityStoreException
      */
-    List<User> getUsersOfGroup(String groupId, String domain) throws IdentityStoreException;
+    List<User> getUsersOfGroup(String uniqueGroupId, String domain) throws IdentityStoreException;
 
     /**
      * Check if a user belongs to a given group.
      *
-     * @param userId  The user Id
-     * @param groupId The group Id
+     * @param uniqueUserId  The user Id
+     * @param uniqueGroupId The group Id
      * @return True if user belongs to the given group
      * @throws IdentityStoreException
      */
-    boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException;
+    boolean isUserInGroup(String uniqueUserId, String uniqueGroupId) throws IdentityStoreException;
 
     /**
      * Check if a user belongs to a given group in a specific domain.
      *
-     * @param userId  The user Id
-     * @param groupId The group Id
+     * @param uniqueUserId  The user Id
+     * @param uniqueGroupId The group Id
      * @param domain  The domain the user and the group belongs to
      * @return True if user belongs to the given group
      * @throws IdentityStoreException
      */
-    boolean isUserInGroup(String userId, String groupId, String domain) throws IdentityStoreException;
+    boolean isUserInGroup(String uniqueUserId, String uniqueGroupId, String domain) throws IdentityStoreException;
 
     /**
      * Get all claims of a user.
@@ -350,49 +350,49 @@ public interface IdentityStore {
     /**
      * Update user claims by user id.
      *
-     * @param userId     User uuid.
+     * @param uniqueUserId     User unique id.
      * @param userClaims User claims.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateUserClaims(String userId, List<Claim> userClaims) throws IdentityStoreException;
+    void updateUserClaims(String uniqueUserId, List<Claim> userClaims) throws IdentityStoreException;
 
     /**
      * Update selected user claims by user id.
      *
-     * @param userId             User uuid.
+     * @param uniqueUserId             User unique id.
      * @param userClaimsToAdd    user claims to update.
      * @param userClaimsToRemove user claims to remove.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateUserClaims(String userId, List<Claim> userClaimsToAdd, List<Claim> userClaimsToRemove) throws
+    void updateUserClaims(String uniqueUserId, List<Claim> userClaimsToAdd, List<Claim> userClaimsToRemove) throws
             IdentityStoreException;
 
     /**
      * Delete a user by user id.
      *
-     * @param userId User uuid.
+     * @param uniqueUserId User unique id.
      * @throws IdentityStoreException Identity store exception.
      */
-    void deleteUser(String userId) throws IdentityStoreException;
+    void deleteUser(String uniqueUserId) throws IdentityStoreException;
 
     /**
      * Update groups of a user by user id.
      *
-     * @param userId   User uuid.
-     * @param groupIds Group uuid list.
+     * @param uniqueUserId   User unique id.
+     * @param uniqueGroupIds Group unique id list.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateGroupsOfUser(String userId, List<String> groupIds) throws IdentityStoreException;
+    void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds) throws IdentityStoreException;
 
     /**
      * Update selected groups of a user by user id.
      *
-     * @param userId           User uuid.
-     * @param groupIdsToAdd    Group ids to add.
-     * @param groupIdsToRemove Group ids to remove.
+     * @param uniqueUserId           User unique id.
+     * @param uniqueGroupIdsToAdd    Group ids to add.
+     * @param uniqueGroupIdsToRemove Group ids to remove.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateGroupsOfUser(String userId, List<String> groupIdsToAdd, List<String> groupIdsToRemove) throws
+    void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd, List<String> uniqueGroupIdsToRemove) throws
             IdentityStoreException;
 
     /**
@@ -436,49 +436,49 @@ public interface IdentityStore {
     /**
      * Update group claims by group id.
      *
-     * @param groupId     Group uuid.
+     * @param uniqueGroupId     Group unique id.
      * @param groupClaims Group claims.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateGroupClaims(String groupId, List<Claim> groupClaims) throws IdentityStoreException;
+    void updateGroupClaims(String uniqueGroupId, List<Claim> groupClaims) throws IdentityStoreException;
 
     /**
      * Update selected group claims by group id.
      *
-     * @param groupId             Group uuid.
+     * @param uniqueGroupId             Group unique id.
      * @param groupClaimsToAdd    Group ids to add.
      * @param groupClaimsToRemove Group ids to remove.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateGroupClaims(String groupId, List<Claim> groupClaimsToAdd, List<Claim> groupClaimsToRemove) throws
+    void updateGroupClaims(String uniqueGroupId, List<Claim> groupClaimsToAdd, List<Claim> groupClaimsToRemove) throws
             IdentityStoreException;
 
     /**
      * Deleate a group by group id.
      *
-     * @param groupId Group uuid.
+     * @param uniqueGroupId Group unique id.
      * @throws IdentityStoreException Identity store exception.
      */
-    void deleteGroup(String groupId) throws IdentityStoreException;
+    void deleteGroup(String uniqueGroupId) throws IdentityStoreException;
 
     /**
      * Update users of a group by group id.
      *
-     * @param groupId Group uuid.
-     * @param userIds User uuid list.
+     * @param uniqueGroupId Group unique id.
+     * @param uniqueUserIds User unique id list.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateUsersOfGroup(String groupId, List<String> userIds) throws IdentityStoreException;
+    void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds) throws IdentityStoreException;
 
     /**
      * Update selected users of a group by group id.
      *
-     * @param groupId         Group uuid.
-     * @param userIdsToAdd    User uuid list to add.
-     * @param userIdsToRemove User uuid list to remove.
+     * @param uniqueGroupId         Group unique id.
+     * @param uniqueUserIdsToAdd    User unique id list to add.
+     * @param uniqueUserIdsToRemove User unique id list to remove.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateUsersOfGroup(String groupId, List<String> userIdsToAdd, List<String> userIdsToRemove) throws
+    void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String> uniqueUserIdsToRemove) throws
             IdentityStoreException;
 
 }

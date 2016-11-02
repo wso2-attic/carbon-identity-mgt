@@ -16,38 +16,29 @@
 
 package org.wso2.carbon.identity.mgt.util;
 
-import java.nio.charset.Charset;
-import java.security.SecureRandom;
-import java.util.Random;
 import java.util.UUID;
 
 /**
- * User core utils.
+ * Identity Management Util.
  */
-public class UserCoreUtil {
+public class IdentityUserMgtUtil {
 
-    /**
-     * Get a random id.
-     * @return Random <code>UUID</code>
-     */
-    public static String getRandomId() {
+    private IdentityUserMgtUtil() {
 
-        // Return a UUID without dashes.
-        return UUID.randomUUID().toString().replace("-", "");
     }
 
     /**
-     * Get a secure random salt in ASCII.
-     * @param size Size of the salt.
-     * @return Salt as a String.
+     * Generate UUID.
+     *
+     * @return UUID as a string.
      */
-    public static String getRandomSalt(int size) {
+    public static String generateUUID() {
 
-        Random random = new SecureRandom();
-
-        byte[] bytes = new byte[size];
-        random.nextBytes(bytes);
-
-        return new String(bytes, 0, bytes.length, Charset.forName("ASCII"));
+        String random = UUID.randomUUID().toString();
+        random = random.replace("/", "_");
+        random = random.replace("=", "a");
+        random = random.replace("+", "f");
+        return random;
     }
+
 }
