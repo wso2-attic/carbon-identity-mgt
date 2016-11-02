@@ -21,6 +21,7 @@ package org.wso2.carbon.identity.mgt.model;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,6 +32,9 @@ public class UserModel {
     private List<Claim> userClaims = new ArrayList<>();
 
     public List<Claim> getUserClaims() {
+        if (userClaims == null || userClaims.isEmpty()) {
+            return Collections.emptyList();
+        }
         return userClaims;
     }
 

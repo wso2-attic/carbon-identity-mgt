@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.store;
+package org.wso2.carbon.identity.mgt.store.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,7 @@ import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.identity.mgt.store.CredentialStore;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 import org.wso2.carbon.security.caas.api.CarbonCallback;
@@ -147,6 +148,17 @@ public class CredentialStoreImpl implements CredentialStore {
         }
 
         throw new AuthenticationFailure("Invalid user credentials.");
+    }
+
+    @Override
+    public void updateCredential(Callback[] callbacks) throws CredentialStoreException {
+
+    }
+
+    @Override
+    public void updateCredential(String username, Callback[] credentialCallbacks, String identityStoreId) throws
+            CredentialStoreException {
+
     }
 
 }

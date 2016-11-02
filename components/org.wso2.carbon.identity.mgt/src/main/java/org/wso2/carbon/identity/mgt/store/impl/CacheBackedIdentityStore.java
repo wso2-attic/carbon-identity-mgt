@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.store;
+package org.wso2.carbon.identity.mgt.store.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +31,9 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.identity.mgt.model.GroupModel;
+import org.wso2.carbon.identity.mgt.model.UserModel;
+import org.wso2.carbon.identity.mgt.store.IdentityStore;
 import org.wso2.carbon.identity.mgt.util.CacheHelper;
 
 import java.util.List;
@@ -350,5 +353,99 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public List<Claim> getClaims(User user, List<String> claimURIs) throws IdentityStoreException {
         return identityStore.getClaims(user, claimURIs);
+    }
+
+    @Override
+    public User addUser(UserModel user) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public User addUser(UserModel user, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<User> addUsers(List<UserModel> users) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<User> addUsers(List<UserModel> users, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public void updateUserClaims(String userId, List<Claim> userClaims) throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateUserClaims(String userId, List<Claim> userClaimsToAdd, List<Claim> userClaimsToRemove) throws
+            IdentityStoreException {
+
+    }
+
+    @Override
+    public void deleteUser(String userId) throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateGroupsOfUser(String userId, List<String> groupIds) throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateGroupsOfUser(String userId, List<String> groupIdsToAdd, List<String> groupIdsToRemove) throws
+            IdentityStoreException {
+
+    }
+
+    @Override
+    public Group addGroup(GroupModel groupModel) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public Group addGroup(GroupModel groupModel, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> addGroups(List<GroupModel> groups) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<Group> addGroups(List<GroupModel> groups, String domain) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public void updateGroupClaims(String groupId, List<Claim> groupClaims) throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateGroupClaims(String groupId, List<Claim> groupClaimsToAdd, List<Claim> groupClaimsToRemove)
+            throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void deleteGroup(String groupId) throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateUsersOfGroup(String groupId, List<String> userIds) throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateUsersOfGroup(String groupId, List<String> userIdsToAdd, List<String> userIdsToRemove) throws
+            IdentityStoreException {
+
     }
 }

@@ -32,7 +32,6 @@ import org.wso2.carbon.identity.mgt.claim.FileBasedMetaClaimStore;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimStore;
-import org.wso2.carbon.identity.mgt.common.CarbonRealmServiceImpl;
 import org.wso2.carbon.identity.mgt.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.StoreConfig;
@@ -50,19 +49,20 @@ import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfig;
 import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfigBuilder;
 import org.wso2.carbon.identity.mgt.internal.config.domain.DomainIdentityStoreConnectorConfigEntry;
 import org.wso2.carbon.identity.mgt.service.RealmService;
+import org.wso2.carbon.identity.mgt.service.impl.RealmServiceImpl;
 import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
-import org.wso2.carbon.identity.mgt.store.AuthorizationStoreImpl;
-import org.wso2.carbon.identity.mgt.store.CacheBackedAuthorizationStore;
-import org.wso2.carbon.identity.mgt.store.CacheBackedIdentityStore;
 import org.wso2.carbon.identity.mgt.store.CredentialStore;
-import org.wso2.carbon.identity.mgt.store.CredentialStoreImpl;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
-import org.wso2.carbon.identity.mgt.store.IdentityStoreImpl;
 import org.wso2.carbon.identity.mgt.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory;
+import org.wso2.carbon.identity.mgt.store.impl.AuthorizationStoreImpl;
+import org.wso2.carbon.identity.mgt.store.impl.CacheBackedAuthorizationStore;
+import org.wso2.carbon.identity.mgt.store.impl.CacheBackedIdentityStore;
+import org.wso2.carbon.identity.mgt.store.impl.CredentialStoreImpl;
+import org.wso2.carbon.identity.mgt.store.impl.IdentityStoreImpl;
 import org.wso2.carbon.identity.mgt.user.FileBasedUserManager;
 import org.wso2.carbon.identity.mgt.user.UserManager;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
@@ -219,8 +219,8 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             credentialStore = new CredentialStoreImpl();
 
             // Register the carbon realm service.
-            CarbonRealmServiceImpl<IdentityStore, CredentialStore> carbonRealmService
-                    = new CarbonRealmServiceImpl(identityStore, credentialStore, authorizationStore);
+            RealmServiceImpl<IdentityStore, CredentialStore> carbonRealmService
+                    = new RealmServiceImpl(identityStore, credentialStore, authorizationStore);
 
             carbonSecurityDataHolder.registerCarbonRealmService(carbonRealmService);
 

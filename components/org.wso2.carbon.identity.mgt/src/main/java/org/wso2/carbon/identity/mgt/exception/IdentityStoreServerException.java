@@ -14,20 +14,31 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.store.connector;
-
-import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
-
-import javax.security.auth.callback.Callback;
+package org.wso2.carbon.identity.mgt.exception;
 
 /**
- * Extended Credential Store Connector which provides write capability.
- *
- * @since 1.0.0
+ * Identity Store Server Exception.
  */
-public interface PrivilegedCredentialStoreConnector extends CredentialStoreConnector {
+public class IdentityStoreServerException extends IdentityStoreException {
 
-    void updateCredential(Callback[] callbacks) throws CredentialStoreException;
+    public IdentityStoreServerException() {
+        super();
+    }
 
-    void updateCredential(String username, Callback[] credentialCallbacks) throws CredentialStoreException;
+    public IdentityStoreServerException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public IdentityStoreServerException(String message, boolean convertMessage) {
+        super(message);
+    }
+
+    public IdentityStoreServerException(String message) {
+        super(message);
+    }
+
+    public IdentityStoreServerException(Throwable cause) {
+        super(cause);
+    }
+
 }

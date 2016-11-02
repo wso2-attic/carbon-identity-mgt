@@ -25,6 +25,7 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * User store.
@@ -210,4 +211,132 @@ public interface IdentityStoreConnector {
      * @return IdentityStoreConnectorConfig which consists of user store configurations
      */
     IdentityStoreConnectorConfig getIdentityStoreConfig();
+
+    /**
+     * Adds a new user.
+     *
+     * @param attributes Attributes of the user.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    String addUser(List<Attribute> attributes) throws IdentityStoreException;
+
+    /**
+     * Adds new users.
+     *
+     * @param attributes Attributes of the users.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    Map<String, String> addUsers(Map<String, List<Attribute>> attributes) throws IdentityStoreException;
+
+    /**
+     * Update all attributes of a user.
+     *
+     * @param userIdentifier User identifier.
+     * @param attributes Attribute values to update.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    String updateUserAttributes(String userIdentifier, List<Attribute> attributes) throws IdentityStoreException;
+
+    /**
+     * Update selected attributes of a user.
+     *
+     * @param userIdentifier User identifier.
+     * @param attributesToAdd Attribute values to add.
+     * @param attributesToRemove Attribute values to remove.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    String updateUserAttributes(String userIdentifier, List<Attribute> attributesToAdd,
+                                List<Attribute> attributesToRemove) throws IdentityStoreException;
+
+    /**
+     * Delete a user.
+     *
+     * @param userIdentifier User identifier.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    void deleteUser(String userIdentifier) throws IdentityStoreException;
+
+    /**
+     * Update group list of user.
+     *
+     * @param userIdentifier User identifier.
+     * @param groupIdentifiers Group identifiers.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    void updateGroupsOfUser(String userIdentifier, List<String> groupIdentifiers) throws IdentityStoreException;
+
+    /**
+     * Update selected group list of user.
+     *
+     * @param userIdentifier User identifier.
+     * @param groupIdentifiersToAdd Group identifier list to update.
+     * @param groupIdentifiersToRemove Group identifier list to remove.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    void updateGroupsOfUser(String userIdentifier, List<String> groupIdentifiersToAdd,
+                            List<String> groupIdentifiersToRemove) throws IdentityStoreException;
+
+    /**
+     * Adds a new group.
+     *
+     * @param attributes Attributes of the group.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    String addGroup(List<Attribute> attributes) throws IdentityStoreException;
+
+    /**
+     * Adds new groups.
+     *
+     * @param attributes Attributes of the groups.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    Map<String, String> addGroups(Map<String, List<Attribute>> attributes) throws IdentityStoreException;
+
+    /**
+     * Update all attributes of a group.
+     *
+     * @param groupIdentifier Group identifier.
+     * @param attributes Attribute values to update.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    String updateGroupAttributes(String groupIdentifier, List<Attribute> attributes) throws IdentityStoreException;
+
+    /**
+     * Update selected attributes of a group.
+     *
+     * @param groupIdentifier Group identifier.
+     * @param attributesToAdd Attribute values to update.
+     * @param attributesToRemove Attribute values to remove.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    String updateGroupAttributes(String groupIdentifier, List<Attribute> attributesToAdd,
+                                 List<Attribute> attributesToRemove) throws IdentityStoreException;
+
+    /**
+     * Delete a group.
+     *
+     * @param groupIdentifier Group identifier.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    void deleteGroup(String groupIdentifier) throws IdentityStoreException;
+
+    /**
+     * Update user list of a group.
+     *
+     * @param groupIdentifier Group identifier.
+     * @param userIdentifiers User identifier list.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    void updateUsersOfGroup(String groupIdentifier, List<String> userIdentifiers) throws IdentityStoreException;
+
+    /**
+     *  Update selected user list of a group.
+     *
+     * @param groupIdentifier Group identifier.
+     * @param userIdentifiersToAdd User identifier list to add.
+     * @param userIdentifiersToRemove User identifier list to remove.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    void updateUsersOfGroup(String groupIdentifier, List<String> userIdentifiersToAdd,
+                            List<String> userIdentifiersToRemove) throws IdentityStoreException;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.store;
+package org.wso2.carbon.identity.mgt.store.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +33,7 @@ import org.wso2.carbon.identity.mgt.exception.RoleNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.StoreException;
 import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.identity.mgt.service.RealmService;
+import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
 import org.wso2.carbon.identity.mgt.store.connector.AuthorizationStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
