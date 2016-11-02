@@ -48,12 +48,6 @@
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.security.caas</groupId>
-            <artifactId>org.wso2.carbon.security.caas.feature</artifactId>
-            <version>${carbon.security.caas.version}</version>
-            <type>zip</type>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon.caching</groupId>
             <artifactId>org.wso2.carbon.caching.feature</artifactId>
             <version>${org.wso2.carbon.caching.version}</version>
@@ -122,10 +116,6 @@
                                     <version>${carbon.kernel.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.security.caas.feature</id>
-                                    <version>${carbon.security.caas.version}</version>
-                                </feature>
-                                <feature>
                                     <id>org.wso2.carbon.caching.feature</id>
                                     <version>${org.wso2.carbon.caching.version}</version>
                                 </feature>
@@ -185,11 +175,6 @@
                                 <feature>
                                     <id>org.wso2.carbon.kernel.feature.group</id>
                                     <version>${carbon.kernel.version}</version>
-                                </feature>
-                                <!--carbon security feature-->
-                                <feature>
-                                    <id>org.wso2.carbon.security.caas.feature</id>
-                                    <version>${carbon.security.caas.version}</version>
                                 </feature>
                                 <!--carbon Identity Mgt feature-->
                                 <feature>

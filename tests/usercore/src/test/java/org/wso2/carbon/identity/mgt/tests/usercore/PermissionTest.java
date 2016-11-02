@@ -1,22 +1,22 @@
 /*
-*  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-*
-*  WSO2 Inc. licenses this file to you under the Apache License,
-*  Version 2.0 (the "License"); you may not use this file except
-*  in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
-package org.wso2.carbon.security.caas.tests.usercore;
+package org.wso2.carbon.identity.mgt.tests.usercore;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -30,44 +30,34 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
-import org.wso2.carbon.security.caas.internal.CarbonSecurityComponent;
-import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
-import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
-import org.wso2.carbon.security.caas.internal.config.domain.DomainConfig;
-import org.wso2.carbon.security.caas.internal.config.domain.DomainConfigBuilder;
-import org.wso2.carbon.security.caas.tests.usercore.constant.UserConstants;
-import org.wso2.carbon.security.caas.user.core.bean.User;
-import org.wso2.carbon.security.caas.user.core.claim.FileBasedMetaClaimStore;
-import org.wso2.carbon.security.caas.user.core.claim.MetaClaimStore;
-import org.wso2.carbon.security.caas.user.core.common.CarbonRealmServiceImpl;
-import org.wso2.carbon.security.caas.user.core.config.StoreConfig;
-import org.wso2.carbon.security.caas.user.core.context.AuthenticationContext;
-import org.wso2.carbon.security.caas.user.core.domain.DomainManager;
-import org.wso2.carbon.security.caas.user.core.exception.AuthenticationFailure;
-import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityConfigException;
-import org.wso2.carbon.security.caas.user.core.exception.CarbonSecurityDataHolderException;
-import org.wso2.carbon.security.caas.user.core.exception.CredentialStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.DomainConfigException;
-import org.wso2.carbon.security.caas.user.core.exception.IdentityStoreException;
-import org.wso2.carbon.security.caas.user.core.exception.UserNotFoundException;
-import org.wso2.carbon.security.caas.user.core.store.AuthorizationStoreImpl;
-import org.wso2.carbon.security.caas.user.core.store.CredentialStoreImpl;
-import org.wso2.carbon.security.caas.user.core.store.IdentityStore;
-import org.wso2.carbon.security.caas.user.core.store.IdentityStoreImpl;
-import org.wso2.carbon.security.caas.user.core.store.connector.AuthorizationStoreConnectorFactory;
-import org.wso2.carbon.security.caas.user.core.store.connector.CredentialStoreConnectorFactory;
-import org.wso2.carbon.security.caas.user.core.store.connector.IdentityStoreConnectorFactory;
-import org.wso2.carbon.security.caas.userstore.filebased.connector.FileBasedAuthorizationStoreConnectorFactory;
-import org.wso2.carbon.security.caas.userstore.filebased.connector.FileBasedCredentialStoreConnectorFactory;
-import org.wso2.carbon.security.caas.userstore.filebased.connector.FileBasedIdentityStoreConnectorFactory;
+import org.wso2.carbon.identity.mgt.bean.User;
+import org.wso2.carbon.identity.mgt.claim.FileBasedMetaClaimStore;
+import org.wso2.carbon.identity.mgt.claim.MetaClaimStore;
+import org.wso2.carbon.identity.mgt.config.StoreConfig;
+import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
+import org.wso2.carbon.identity.mgt.domain.DomainManager;
+import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
+import org.wso2.carbon.identity.mgt.exception.AuthorizationStoreException;
+import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
+import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
+import org.wso2.carbon.identity.mgt.exception.DomainConfigException;
+import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.identity.mgt.internal.IdentityMgtComponent;
+import org.wso2.carbon.identity.mgt.internal.config.StoreConfigBuilder;
+import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfig;
+import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfigBuilder;
+import org.wso2.carbon.identity.mgt.service.impl.RealmServiceImpl;
+import org.wso2.carbon.identity.mgt.store.IdentityStore;
+import org.wso2.carbon.identity.mgt.store.impl.AuthorizationStoreImpl;
+import org.wso2.carbon.identity.mgt.store.impl.CredentialStoreImpl;
+import org.wso2.carbon.identity.mgt.store.impl.IdentityStoreImpl;
+import org.wso2.carbon.identity.mgt.tests.usercore.constant.UserConstants;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
@@ -198,11 +188,11 @@ public class PermissionTest extends PowerMockTestCase {
         Mockito.when(CarbonSecurityDataHolder.getInstance().getDomainConfig())
                 .thenReturn(domainConfig);
 
-        Method method = CarbonSecurityComponent.class
+        Method method = IdentityMgtComponent.class
                 .getDeclaredMethod("createDomainManagerFromConfig", DomainConfig.class, StoreConfig.class);
         method.setAccessible(true);
 
-        CarbonSecurityComponent c = new CarbonSecurityComponent();
+        IdentityMgtComponent c = new IdentityMgtComponent();
 
         return (DomainManager) method.invoke(c, domainConfig, storeConfig);
     }
@@ -228,8 +218,8 @@ public class PermissionTest extends PowerMockTestCase {
         authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
 
         // Add carbon realm service to the carbon realm service implementation
-        CarbonRealmServiceImpl<IdentityStoreImpl, CredentialStoreImpl> realmService =
-                new CarbonRealmServiceImpl<>(identityStore, credentialStore, authorizationStore);
+        RealmServiceImpl<IdentityStoreImpl, CredentialStoreImpl> realmService =
+                new RealmServiceImpl<>(identityStore, credentialStore, authorizationStore);
         Mockito.when(CarbonSecurityDataHolder.getInstance().getCarbonRealmService())
                 .thenReturn(realmService);
     }
@@ -246,46 +236,48 @@ public class PermissionTest extends PowerMockTestCase {
 
         // Adding factories to realm service which is done by OSGI at runtime
         // Credential store
-        Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
-        storeConfig.getCredentialConnectorConfigMap().values().forEach(credentialStoreConnectorConfig -> {
 
-            // Inject store file path
-            String storeFile = credentialStoreConnectorConfig.getProperties().getProperty("storeFile");
-            credentialStoreConnectorConfig.getProperties().setProperty("storeFile",
-                    Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), storeFile).toString());
-
-            credentialStoreConnectorFactoryMap.put(credentialStoreConnectorConfig.getConnectorType(),
-                    new FileBasedCredentialStoreConnectorFactory());
-        });
-
-        Mockito.when(CarbonSecurityDataHolder.getInstance().getCredentialStoreConnectorFactoryMap())
-                .thenReturn(credentialStoreConnectorFactoryMap);
-
-        // Identity Server
-        Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
-        storeConfig.getIdentityConnectorConfigMap().values().forEach(identityStoreConnectorConfig -> {
-
-            // Inject store file path
-            String storeFile = identityStoreConnectorConfig.getProperties().getProperty("storeFile");
-            identityStoreConnectorConfig.getProperties().setProperty("storeFile",
-                    Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), storeFile).toString());
-
-            identityStoreConnectorFactoryMap.put(identityStoreConnectorConfig.getConnectorType(),
-                    new FileBasedIdentityStoreConnectorFactory());
-        });
-
-        Mockito.when(CarbonSecurityDataHolder.getInstance().getIdentityStoreConnectorFactoryMap())
-                .thenReturn(identityStoreConnectorFactoryMap);
-
-        // Authorization store
-        Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
-        storeConfig.getAuthorizationConnectorConfigMap().values().forEach(authorizationStoreConnectorConfig ->
-                authorizationStoreConnectorFactoryMap.put(authorizationStoreConnectorConfig.getConnectorType(),
-                        new FileBasedAuthorizationStoreConnectorFactory()));
-
-        Mockito.when(CarbonSecurityDataHolder.getInstance().getAuthorizationStoreConnectorFactoryMap())
-                .thenReturn(authorizationStoreConnectorFactoryMap);
-
+        //TODO need to add connector factory implementations for the tests
+//        Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
+//        storeConfig.getCredentialConnectorConfigMap().values().forEach(credentialStoreConnectorConfig -> {
+//
+//            // Inject store file path
+//            String storeFile = credentialStoreConnectorConfig.getProperties().getProperty("storeFile");
+//            credentialStoreConnectorConfig.getProperties().setProperty("storeFile",
+//                    Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), storeFile).toString());
+//
+//            credentialStoreConnectorFactoryMap.put(credentialStoreConnectorConfig.getConnectorType(),
+//                    new FileBasedCredentialStoreConnectorFactory());
+//        });
+//
+//        Mockito.when(CarbonSecurityDataHolder.getInstance().getCredentialStoreConnectorFactoryMap())
+//                .thenReturn(credentialStoreConnectorFactoryMap);
+//
+//        // Identity Server
+//        Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
+//        storeConfig.getIdentityConnectorConfigMap().values().forEach(identityStoreConnectorConfig -> {
+//
+//            // Inject store file path
+//            String storeFile = identityStoreConnectorConfig.getProperties().getProperty("storeFile");
+//            identityStoreConnectorConfig.getProperties().setProperty("storeFile",
+//                    Paths.get(CarbonSecurityConstants.getCarbonHomeDirectory().toString(), storeFile).toString());
+//
+//            identityStoreConnectorFactoryMap.put(identityStoreConnectorConfig.getConnectorType(),
+//                    new FileBasedIdentityStoreConnectorFactory());
+//        });
+//
+//        Mockito.when(CarbonSecurityDataHolder.getInstance().getIdentityStoreConnectorFactoryMap())
+//                .thenReturn(identityStoreConnectorFactoryMap);
+//
+//        // Authorization store
+//        Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
+//        storeConfig.getAuthorizationConnectorConfigMap().values().forEach(authorizationStoreConnectorConfig ->
+//                authorizationStoreConnectorFactoryMap.put(authorizationStoreConnectorConfig.getConnectorType(),
+//                        new FileBasedAuthorizationStoreConnectorFactory()));
+//
+//        Mockito.when(CarbonSecurityDataHolder.getInstance().getAuthorizationStoreConnectorFactoryMap())
+//                .thenReturn(authorizationStoreConnectorFactoryMap);
+//
         return storeConfig;
     }
 }

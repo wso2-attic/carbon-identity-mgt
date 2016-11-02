@@ -29,8 +29,8 @@ storeConnectors:
 
  identityStoreConnectors:
  -
-    connectorId: "FBIS1"
-    connectorType: "FileBasedIdentityStore"
+    connectorId: "JDBCIS1"
+    connectorType: "JDBCIdentityStore"
     domainName: "carbon"
     uniqueAttributes:
       - username
@@ -39,19 +39,25 @@ storeConnectors:
       - firstName
       - lastName
     properties:
-      storeFile: "./conf/security/identity-store-connector.csv"
+      dataSource: "WSO2_CARBON_DB"
+      hashAlgorithm: "SHA256"
+      databaseType: "MySQL"
+      connectorGroupId: "groupname"
+      connectorUserId: "username"
 
  credentialStoreConnectors:
   -
-    connectorId: "FBCS1"
-    connectorType: "FileBasedCredentialStore"
+    connectorId: "JDBCCS1"
+    connectorType: "JDBCCredentialStore"
     domainName: "carbon"
     properties:
-      storeFile: "./conf/security/credential-store-connector.csv"
+      dataSource: "WSO2_CARBON_DB"
+      databaseType: "MySQL"
 
  authorizationStoreConnectors:
   -
-    connectorId: "FBAS1"
-    connectorType: "FileBasedAuthorizationStore"
+    connectorId: "JDBCAS1"
+    connectorType: "JDBCAuthorizationStore"
     properties:
-      storeFile: "WSO2_CARBON_DB"
+      dataSource: "WSO2_CARBON_DB"
+      databaseType: "MySQL"
