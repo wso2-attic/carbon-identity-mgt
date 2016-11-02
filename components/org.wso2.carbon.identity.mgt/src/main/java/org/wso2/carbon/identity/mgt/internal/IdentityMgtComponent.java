@@ -63,7 +63,7 @@ import org.wso2.carbon.identity.mgt.store.impl.CacheBackedAuthorizationStore;
 import org.wso2.carbon.identity.mgt.store.impl.CacheBackedIdentityStore;
 import org.wso2.carbon.identity.mgt.store.impl.CredentialStoreImpl;
 import org.wso2.carbon.identity.mgt.store.impl.IdentityStoreImpl;
-import org.wso2.carbon.identity.mgt.user.FileBasedUserManager;
+import org.wso2.carbon.identity.mgt.user.impl.UserManagerImpl;
 import org.wso2.carbon.identity.mgt.user.UserManager;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 
@@ -193,7 +193,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
             carbonSecurityDataHolder.setMetaClaimStore(metaClaimStore);
 
-            UserManager userManager = new FileBasedUserManager();
+            UserManager userManager = new UserManagerImpl();
 
             carbonSecurityDataHolder.setUserManager(userManager);
 
@@ -239,7 +239,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
         } catch (DomainConfigException | MetaClaimStoreException e) {
             log.error("Error occurred in building the domain configuration", e);
         } catch (UserManagerException e) {
-            log.error("Error initializing FileBasedUserManager", e);
+            log.error("Error initializing UserManagerImpl", e);
         } catch (CarbonSecurityConfigException e) {
             log.error("Error loading store configurations", e);
         }
