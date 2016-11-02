@@ -939,8 +939,8 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public void updateGroupClaims(String uniqueGroupId, List<Claim> groupClaimsToUpdate, List<Claim> groupClaimsToRemove)
-            throws IdentityStoreException {
+    public void updateGroupClaims(String uniqueGroupId, List<Claim> groupClaimsToUpdate,
+                                  List<Claim> groupClaimsToRemove) throws IdentityStoreException {
 
         if (StringUtils.isNullOrEmpty(uniqueGroupId)) {
             throw new IdentityStoreClientException("Invalid group unique id.");
