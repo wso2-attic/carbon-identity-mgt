@@ -1246,6 +1246,8 @@ public class IdentityStoreImpl implements IdentityStore {
         return new Group.GroupBuilder()
                 .setGroupId(groupUniqueId)
                 .setDomain(domain)
+                .setIdentityStore(realmService.getIdentityStore())
+                .setAuthorizationStore(realmService.getAuthorizationStore())
                 .build();
     }
 
@@ -1297,6 +1299,8 @@ public class IdentityStoreImpl implements IdentityStore {
                 .map(entry -> new Group.GroupBuilder()
                         .setGroupId(entry.getKey())
                         .setDomain(domain)
+                        .setIdentityStore(realmService.getIdentityStore())
+                        .setAuthorizationStore(realmService.getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
