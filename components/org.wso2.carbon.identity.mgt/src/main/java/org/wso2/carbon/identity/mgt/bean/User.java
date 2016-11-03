@@ -204,7 +204,6 @@ public class User {
 
         private String userId;
         private Domain domain;
-
         private IdentityStore identityStore;
         private AuthorizationStore authorizationStore;
 
