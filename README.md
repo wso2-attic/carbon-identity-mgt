@@ -3,7 +3,7 @@
 
 |  Branch | Build Status |
 | :------------ |:-------------
-| master      | NONE |
+| master      | [![Build Status](https://wso2.org/jenkins/buildStatus/icon?job=carbon-identity-mgt)](https://wso2.org/jenkins/job/carbon-identity-mgt) |
 
 
 ---
