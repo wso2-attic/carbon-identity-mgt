@@ -49,15 +49,15 @@ public interface IdentityStoreConnector {
     String getIdentityStoreConnectorId();
 
     /**
-     * Get user builder from the user name.
+     * Get connector user id from unique attribute..
      *
      * @param attributeName  Name of the attribute.
      * @param attributeValue Value of the attribute.
-     * @return User.UserBuilder.
+     * @return Connector user id.
      * @throws UserNotFoundException  User not found exception.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    User.UserBuilder getUserBuilder(String attributeName, String attributeValue) throws UserNotFoundException,
+    String getConnectorUserId(String attributeName, String attributeValue) throws UserNotFoundException,
             IdentityStoreException;
 
     /**
@@ -133,6 +133,18 @@ public interface IdentityStoreConnector {
      * @throws IdentityStoreException Identity Store Exception.
      */
     int getGroupCount() throws IdentityStoreException;
+
+    /**
+     * Get connector group id from unique attribute..
+     *
+     * @param attributeName  Name of the attribute.
+     * @param attributeValue Value of the attribute.
+     * @return Connector group id.
+     * @throws GroupNotFoundException  Group not found exception.
+     * @throws IdentityStoreException Identity Store Exception.
+     */
+    String getConnectorGroupId(String attributeName, String attributeValue) throws GroupNotFoundException,
+            IdentityStoreException;
 
     /**
      * Get all group builders list according to the given filter pattern.

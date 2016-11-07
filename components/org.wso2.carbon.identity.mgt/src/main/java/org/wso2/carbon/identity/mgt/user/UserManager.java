@@ -39,6 +39,14 @@ public interface UserManager {
     String getUniqueUserId(String connectorUserId, String connectorId) throws UserManagerException;
 
     /**
+     * Check whether user exists or not.
+     *
+     * @param uniqueUserId Globally unique user Id.
+     * @return existence of group.
+     */
+    boolean isUserExists(String uniqueUserId) throws UserManagerException;
+
+    /**
      * Get connector specific user Id.
      *
      * @param uniqueUserId The globally unique user Id
@@ -152,6 +160,25 @@ public interface UserManager {
      */
     void deleteGroup(String uniqueGroupId) throws UserManagerException;
 
+
+    /**
+     * Check whether group exists or not.
+     *
+     * @param uniqueGroupId Globally unique group Id.
+     * @return existence of group.
+     */
+
+    /**
+     * Get global unique Id for a connector specific group Id.
+     *
+     * @param connectorGroupId The connector specific group Id.
+     * @param connectorId     The connector Id.
+     * @return Globally unique group Id.
+     * @throws UserManagerException User Manager Exception.
+     */
+    String getUniqueGroupId(String connectorGroupId, String connectorId) throws UserManagerException;
+
+    boolean isGroupExists(String uniqueGroupId) throws UserManagerException;
     /**
      * Update groups of user.
      *

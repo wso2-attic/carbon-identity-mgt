@@ -75,7 +75,7 @@ public interface IdentityStore {
      * @throws IdentityStoreException
      * @throws UserNotFoundException
      */
-    User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException;
+    List<User> getUser(Claim claim) throws IdentityStoreException, UserNotFoundException;
 
     /**
      * Retrieve a user by claim from a specific domain.
@@ -167,7 +167,7 @@ public interface IdentityStore {
      * @throws IdentityStoreException
      * @throws GroupNotFoundException
      */
-    Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException;
+    List<Group> getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException;
 
     /**
      * Get group that matches a claim from a specific domain.
@@ -289,6 +289,7 @@ public interface IdentityStore {
      */
     boolean isUserInGroup(String uniqueUserId, String uniqueGroupId, String domain) throws IdentityStoreException;
 
+    //TODO : these should go under User
     /**
      * Get all claims of a user.
      *

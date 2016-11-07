@@ -39,6 +39,11 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
+    public boolean isUserExists(String uniqueUserId) throws UserManagerException {
+        return false;
+    }
+
+    @Override
     public String getConnectorUserId(String uniqueUserId, String connectorId) throws UserManagerException {
         return null;
     }
@@ -104,13 +109,23 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
+    public String getUniqueGroupId(String connectorGroupId, String connectorId) throws UserManagerException {
+        return null;
+    }
+
+    @Override
+    public boolean isGroupExists(String uniqueGroupId) throws UserManagerException {
+        return false;
+    }
+
+    @Override
     public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds) throws UserManagerException {
 
     }
 
     @Override
-    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToUpdate,
-                                   List<String> uniqueGroupIdsToRemove) throws UserManagerException {
+    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToUpdate, List<String>
+            uniqueGroupIdsToRemove) throws UserManagerException {
 
     }
 
@@ -120,8 +135,8 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToUpdate,
-                                   List<String> uniqueUserIdsToRemove) throws UserManagerException {
+    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToUpdate, List<String>
+            uniqueUserIdsToRemove) throws UserManagerException {
 
     }
 }
