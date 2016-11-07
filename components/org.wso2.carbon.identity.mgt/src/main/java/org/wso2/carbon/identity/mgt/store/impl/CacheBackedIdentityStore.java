@@ -117,7 +117,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
+    public List<User> getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
         return identityStore.getUser(claim);
     }
 
@@ -210,7 +210,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
+    public List<Group> getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
         // TODO: Implement this.
         return null;
     }

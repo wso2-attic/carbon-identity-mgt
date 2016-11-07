@@ -201,8 +201,13 @@ public class DomainManager {
      * Domains are returned as a list ordered by their priority highest to lowest.
      *
      * @return A list of domains ordered by their priority
+     * @throws DomainException DomainException
      */
-    public SortedSet<Domain> getSortedDomains() {
+    public SortedSet<Domain> getSortedDomains() throws DomainException {
+
+        if (sortedDomains.isEmpty()) {
+            throw new DomainException("No domains registered.");
+        }
         return sortedDomains;
     }
 

@@ -18,10 +18,8 @@ package org.wso2.carbon.identity.mgt.store.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.identity.mgt.IdentityCallback;
 import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
-import org.wso2.carbon.identity.mgt.constant.UserCoreConstants;
 import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.domain.DomainManager;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
@@ -30,12 +28,10 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.identity.mgt.store.CredentialStore;
-import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.stream.Collectors;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
@@ -103,45 +99,45 @@ public class CredentialStoreImpl implements CredentialStore {
             claim.setValue(username);
 
             // Get the user using given callbacks. We need to find the user unique id.
-            User user = CarbonSecurityDataHolder.getInstance()
+            List<User> user = CarbonSecurityDataHolder.getInstance()
                     .getCarbonRealmService().getIdentityStore().getUser(claim);
 
             // Crete a new call back array from existing one and add new user data (user id and identity store id)
             // as a carbon callback to the new array.
-            Callback[] newCallbacks = new Callback[callbacks.length + 1];
-            System.arraycopy(callbacks, 0, newCallbacks, 0, callbacks.length);
-
-            // User data will be a map.
-            IdentityCallback<Map> carbonCallback = new IdentityCallback<>(null);
-            Map<String, String> userData = new HashMap<>();
-            userData.put(UserCoreConstants.USER_ID, user.getUserId());
-            carbonCallback.setContent(userData);
-
-            // New callback always will be the last element.
-            newCallbacks[newCallbacks.length - 1] = carbonCallback;
-
-            for (CredentialStoreConnector credentialStoreConnector :
-                    user.getDomain().getSortedCredentialStoreConnectors()) {
-
-                // We need to check whether this credential store can handle this kind of callbacks.
-                if (!credentialStoreConnector.canHandle(callbacks)) {
-                    continue;
-                }
-
-                try {
-                    // If the authentication failed, there will be an authentication failure exception.
-                    credentialStoreConnector.authenticate(callbacks);
-
-                    return new AuthenticationContext(user);
-                } catch (CredentialStoreException | AuthenticationFailure e) {
-
-                    if (log.isDebugEnabled()) {
-                        log.debug(String
-                                .format("Failed to authenticate user using credential store connector %s",
-                                        credentialStoreConnector.getCredentialStoreConnectorId()), e);
-                    }
-                }
-            }
+//            Callback[] newCallbacks = new Callback[callbacks.length + 1];
+//            System.arraycopy(callbacks, 0, newCallbacks, 0, callbacks.length);
+//
+//            // User data will be a map.
+//            IdentityCallback<Map> carbonCallback = new IdentityCallback<>(null);
+//            Map<String, String> userData = new HashMap<>();
+//            userData.put(UserCoreConstants.USER_ID, user.getUserId());
+//            carbonCallback.setContent(userData);
+//
+//            // New callback always will be the last element.
+//            newCallbacks[newCallbacks.length - 1] = carbonCallback;
+//
+//            for (CredentialStoreConnector credentialStoreConnector :
+//                    user.getDomain().getSortedCredentialStoreConnectors()) {
+//
+//                // We need to check whether this credential store can handle this kind of callbacks.
+//                if (!credentialStoreConnector.canHandle(callbacks)) {
+//                    continue;
+//                }
+//
+//                try {
+//                    // If the authentication failed, there will be an authentication failure exception.
+//                    credentialStoreConnector.authenticate(callbacks);
+//
+//                    return new AuthenticationContext(user);
+//                } catch (CredentialStoreException | AuthenticationFailure e) {
+//
+//                    if (log.isDebugEnabled()) {
+//                        log.debug(String
+//                                .format("Failed to authenticate user using credential store connector %s",
+//                                        credentialStoreConnector.getCredentialStoreConnectorId()), e);
+//                    }
+//                }
+//            }
 
         } catch (IdentityStoreException | UserNotFoundException e) {
             throw new AuthenticationFailure("Error occurred while retrieving user.", e);
