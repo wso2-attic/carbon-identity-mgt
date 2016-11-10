@@ -230,7 +230,7 @@ public interface IdentityStoreConnector {
      * @param attributes Attributes of the user.
      * @throws IdentityStoreException Identity store exception.
      */
-    String addUser(List<Attribute> attributes) throws IdentityStoreException;
+    Attribute addUser(List<Attribute> attributes) throws IdentityStoreException;
 
     /**
      * Adds new users.
