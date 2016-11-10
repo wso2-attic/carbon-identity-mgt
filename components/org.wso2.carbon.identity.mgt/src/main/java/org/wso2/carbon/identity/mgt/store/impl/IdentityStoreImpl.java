@@ -1303,8 +1303,8 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<ConnectedUser> connectedUsers = new ArrayList<>();
         for (Map.Entry<String, List<Attribute>> entry : connectorAttributeMap.entrySet()) {
-            String connectorUserId = domain.getIdentityStoreConnectorFromId(entry.getKey()).addUser(entry.getValue());
-            connectedUsers.add(new ConnectedUser(entry.getKey(), connectorUserId));
+            Attribute attribute = domain.getIdentityStoreConnectorFromId(entry.getKey()).addUser(entry.getValue());
+            connectedUsers.add(new ConnectedUser(entry.getKey(), attribute.getAttributeValue()));
             // TODO handle any failure
         }
 
