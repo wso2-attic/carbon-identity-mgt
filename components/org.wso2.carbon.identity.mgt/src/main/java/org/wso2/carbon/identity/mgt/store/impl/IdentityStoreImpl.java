@@ -23,12 +23,16 @@ import org.wso2.carbon.identity.mgt.bean.Domain;
 import org.wso2.carbon.identity.mgt.bean.Group;
 import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
+import org.wso2.carbon.identity.mgt.claim.ClaimManager;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
 import org.wso2.carbon.identity.mgt.domain.DomainManager;
+import org.wso2.carbon.identity.mgt.exception.ClaimManagerException;
+import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreClientException;
+import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreServerException;
 import org.wso2.carbon.identity.mgt.exception.UserManagerException;
@@ -37,7 +41,9 @@ import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.identity.mgt.model.GroupModel;
 import org.wso2.carbon.identity.mgt.model.UserModel;
 import org.wso2.carbon.identity.mgt.service.RealmService;
+import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
+import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.identity.mgt.user.ConnectedGroup;
 import org.wso2.carbon.identity.mgt.user.ConnectedUser;
@@ -54,6 +60,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
+import javax.security.auth.callback.Callback;
 
 import static org.wso2.carbon.kernel.utils.LambdaExceptionUtils.rethrowConsumer;
 
@@ -68,15 +75,24 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private DomainManager domainManager;
 
+    private AuthorizationStore authorizationStore;
+
     private RealmService realmService;
 
     private UserManager userManager;
+
+    private ClaimManager claimManager;
 
     @Override
     public void init(DomainManager domainManager) throws IdentityStoreException {
 
         this.domainManager = domainManager;
+        this.authorizationStore = CarbonSecurityDataHolder.getInstance().getCarbonRealmService()
+                .getAuthorizationStore();
+
+        // TODO remove
         this.realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
+        //TODO remove
         this.userManager = CarbonSecurityDataHolder.getInstance().getUserManager();
 
         if (log.isDebugEnabled()) {
@@ -529,7 +545,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setIdentityStore(realmService.getIdentityStore())
                 .setAuthorizationStore(realmService.getAuthorizationStore())
                 .build();
-     }
+    }
 
     @Override
     public List<User> listUsers(int offset, int length) throws IdentityStoreException {
@@ -881,7 +897,7 @@ public class IdentityStoreImpl implements IdentityStore {
     @Override
     public User addUser(UserModel userModel) throws IdentityStoreException {
 
-        if (userModel == null || userModel.getUserClaims() == null || userModel.getUserClaims().isEmpty()) {
+        if (userModel == null || userModel.getClaims().isEmpty()) {
             throw new IdentityStoreClientException("Invalid user or claim list is empty.");
         }
 
@@ -898,7 +914,7 @@ public class IdentityStoreImpl implements IdentityStore {
     @Override
     public User addUser(UserModel userModel, String domainName) throws IdentityStoreException {
 
-        if (userModel == null || userModel.getUserClaims() == null || userModel.getUserClaims().isEmpty()) {
+        if (userModel == null || userModel.getClaims() == null || userModel.getClaims().isEmpty()) {
             throw new IdentityStoreClientException("Invalid user or claim list is empty.");
         }
 
@@ -1291,36 +1307,78 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private User doAddUser(UserModel userModel, Domain domain) throws IdentityStoreException {
 
-        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
-        if (metaClaimMappings.isEmpty()) {
-            throw new IdentityStoreServerException("Invalid domain configuration found. No meta claim mappings.");
+        try {
+            userModel.setClaims(claimManager.convertToDefaultClaimDialect(userModel.getClaims()));
+        } catch (ClaimManagerException e) {
+            throw new IdentityStoreServerException("Failed to convert to the default claim dialect.", e);
         }
 
-        Map<String, List<Attribute>> connectorAttributeMap = getConnectorAttributesMap(userModel.getUserClaims(),
+        List<MetaClaimMapping> metaClaimMappings;
+        try {
+            metaClaimMappings = domain.getMetaClaimMappings();
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException("Failed to retrieve meta claim mappings.");
+        }
+
+        Map<String, List<Attribute>> connectorIdToAttributesMap = getConnectorIdToAttributesMap(userModel.getClaims(),
                 metaClaimMappings);
 
-        //TODO check user is present
-
         List<ConnectedUser> connectedUsers = new ArrayList<>();
-        for (Map.Entry<String, List<Attribute>> entry : connectorAttributeMap.entrySet()) {
-            String connectorUserId = domain.getIdentityStoreConnectorFromId(entry.getKey()).addUser(entry.getValue());
-            connectedUsers.add(new ConnectedUser(entry.getKey(), connectorUserId));
-            // TODO handle any failure
+        for (Map.Entry<String, List<Attribute>> entry : connectorIdToAttributesMap.entrySet()) {
+
+            String connectorUserId;
+            try {
+                connectorUserId = domain.getIdentityStoreConnectorFromId(entry.getKey()).addUser(entry.getValue());
+            } catch (IdentityStoreConnectorException e) {
+                // Recover from the inconsistent state in the connectors
+                if (connectorIdToAttributesMap.size() > 0) {
+                    removeAddedUsersInAFailure(domain, connectedUsers);
+                }
+                throw new IdentityStoreServerException("Identity store connector failed to add user attributes.", e);
+            }
+
+            connectedUsers.add(new ConnectedUser(entry.getKey(), connectorUserId, true));
+        }
+
+        if (!userModel.getCredentials().isEmpty()) {
+            Map<String, List<Callback>> connectorIdToCredentialsMap = getConnectorIdToCredentialsMap(userModel
+                    .getCredentials(), domain.getSortedCredentialStoreConnectors());
+
+            for (Map.Entry<String, List<Callback>> entry : connectorIdToCredentialsMap.entrySet()) {
+
+                String connectorUserId;
+                try {
+                    connectorUserId = domain.getCredentialStoreConnectorFromId(entry.getKey()).addCredential(
+                            entry.getValue().toArray(new Callback[entry.getValue().size()]));
+                } catch (CredentialStoreException e) {
+                    // Recover from the inconsistent state in the connectors
+                    if (connectorIdToAttributesMap.size() > 0) {
+                        removeAddedUsersInAFailure(domain, connectedUsers);
+                    }
+                    throw new IdentityStoreServerException("Credential store connector failed to add user attributes.",
+                            e);
+                }
+
+                connectedUsers.add(new ConnectedUser(entry.getKey(), connectorUserId, true));
+            }
         }
 
         String userUniqueId = IdentityUserMgtUtil.generateUUID();
         try {
-            userManager.addUser(userUniqueId, connectedUsers);
+            userManager.addUser(userUniqueId, domain.getDomainName(), connectedUsers);
         } catch (UserManagerException e) {
-            // TODO handle any failure
+            // Recover from the inconsistent state in the connectors
+            removeAddedUsersInAFailure(domain, connectedUsers);
+
             throw new IdentityStoreServerException("Error occurred while persisting user unique id.", e);
         }
 
         return new User.UserBuilder()
                 .setUserId(userUniqueId)
                 .setDomain(domain)
-                .setIdentityStore(realmService.getIdentityStore())
-                .setAuthorizationStore(realmService.getAuthorizationStore())
+                .setIdentityStore(this)
+                .setAuthorizationStore(CarbonSecurityDataHolder.getInstance().getCarbonRealmService()
+                        .getAuthorizationStore())
                 .build();
     }
 
@@ -1333,8 +1391,8 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Map<String, List<Attribute>>> connectorAttributesMaps = userModels.stream()
                 .filter(Objects::nonNull)
-                .filter(userModel -> userModel.getUserClaims() != null)
-                .map(userModel -> getConnectorAttributesMap(userModel.getUserClaims(), metaClaimMappings))
+                .filter(userModel -> userModel.getClaims() != null)
+                .map(userModel -> getConnectorAttributesMap(userModel.getClaims(), metaClaimMappings))
                 .collect(Collectors.toList());
 
         Map<String, Map<String, List<Attribute>>> connectorViseUserMap = getConnectorViseAttributesMap
@@ -1355,7 +1413,7 @@ public class IdentityStoreImpl implements IdentityStore {
                                 connectedUsers = new ArrayList<>();
                                 connectedUsersList.put(t.getKey(), connectedUsers);
                             }
-                            connectedUsers.add(new ConnectedUser(entry.getKey(), t.getValue()));
+                            connectedUsers.add(new ConnectedUser(entry.getKey(), t.getValue(), true));
                         });
             }
             // TODO handle any failure
@@ -1640,6 +1698,62 @@ public class IdentityStoreImpl implements IdentityStore {
         }
     }
 
+    private Map<String, List<Attribute>> getConnectorIdToAttributesMap(List<Claim> claims,
+                                                                       List<MetaClaimMapping> metaClaimMappings) {
+
+        Map<String, List<Attribute>> connectorIdToAttributesMap = new HashMap<>();
+
+        claims.stream()
+                .forEach(claim -> {
+                            Optional<MetaClaimMapping> optional = metaClaimMappings.stream()
+                                    .filter(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimURI()
+                                            .equals(claim.getClaimURI()))
+                                    .findFirst();
+
+                            if (optional.isPresent()) {
+                                MetaClaimMapping metaClaimMapping = optional.get();
+                                List<Attribute> attributes = connectorIdToAttributesMap.get(metaClaimMapping
+                                        .getIdentityStoreConnectorId());
+                                if (attributes == null) {
+                                    attributes = new ArrayList<>();
+                                    connectorIdToAttributesMap.put(metaClaimMapping.getIdentityStoreConnectorId(),
+                                            attributes);
+                                }
+                                attributes.add(new Attribute(metaClaimMapping.getAttributeName(), claim.getValue()));
+                            }
+                        }
+                );
+
+        return connectorIdToAttributesMap;
+    }
+
+    private Map<String, List<Callback>> getConnectorIdToCredentialsMap(
+            List<Callback> credentials, SortedSet<CredentialStoreConnector> credentialStoreConnectors) {
+
+        Map<String, List<Callback>> connectorIdToCredentialsMap = new HashMap<>();
+
+        credentials.stream()
+                .filter(Objects::nonNull)
+                .forEach(callback -> {
+                    Optional<CredentialStoreConnector> optional = credentialStoreConnectors.stream()
+                            .filter(connector -> connector.canHandle(new Callback[] {callback}))
+                            .findAny();
+
+                    if (optional.isPresent()) {
+                        CredentialStoreConnector connector = optional.get();
+                        List<Callback> callbacks = connectorIdToCredentialsMap.get(connector
+                                .getCredentialStoreConnectorId());
+                        if (callbacks == null) {
+                            callbacks = new ArrayList<>();
+                            connectorIdToCredentialsMap.put(connector.getCredentialStoreConnectorId(), callbacks);
+                        }
+                        callbacks.add(callback);
+                    }
+                });
+
+        return connectorIdToCredentialsMap;
+    }
+
     private Map<String, List<Attribute>> getConnectorAttributesMap(List<Claim> claims, Map<String,
             List<MetaClaimMapping>> metaClaimMappings) {
 
@@ -1702,6 +1816,21 @@ public class IdentityStoreImpl implements IdentityStore {
             claim.setValue(attribute.getAttributeValue());
             return claim;
         }).collect(Collectors.toList());
+    }
+
+    private void removeAddedUsersInAFailure(Domain domain, List<ConnectedUser> connectedUsers) {
+
+        for (ConnectedUser connectedUser : connectedUsers) {
+            try {
+                domain.getIdentityStoreConnectorFromId(connectedUser.getConnectorId())
+                        .removeAddedUsersInAFailure(Collections.singletonList(connectedUser
+                                .getConnectorUserId()));
+            } catch (IdentityStoreConnectorException e) {
+                log.error("Error occurred while removing invalid connector user ids. " + String.join(" , ",
+                        connectedUsers.stream().map(ConnectedUser::toString).collect(Collectors.toList())
+                ), e);
+            }
+        }
     }
 }
 

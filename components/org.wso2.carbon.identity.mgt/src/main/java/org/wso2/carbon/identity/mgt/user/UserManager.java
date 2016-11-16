@@ -60,10 +60,12 @@ public interface UserManager {
      * Add user.
      *
      * @param uniqueUserId   Globally unique user Id.
+     * @param domainName Domain name.
      * @param connectedUsers Connected user list from different connectors.
      * @throws UserManagerException User Manager Exception.
      */
-    void addUser(String uniqueUserId, List<ConnectedUser> connectedUsers) throws UserManagerException;
+    void addUser(String uniqueUserId, String domainName, List<ConnectedUser> connectedUsers) throws
+            UserManagerException;
 
     /**
      * Add users.

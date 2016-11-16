@@ -49,7 +49,8 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public void addUser(String uniqueUserId, List<ConnectedUser> connectedUsers) throws UserManagerException {
+    public void addUser(String uniqueUserId, String domainName, List<ConnectedUser> connectedUsers) throws
+            UserManagerException {
 
     }
 

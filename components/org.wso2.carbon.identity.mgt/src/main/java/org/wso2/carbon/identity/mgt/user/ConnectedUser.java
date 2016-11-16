@@ -25,14 +25,17 @@ public class ConnectedUser {
 
     private String connectorUserId;
 
+    private boolean identityStore;
+
     public ConnectedUser() {
 
     }
 
-    public ConnectedUser(String connectorId, String connectorUserId) {
+    public ConnectedUser(String connectorId, String connectorUserId, boolean identityStore) {
 
         this.connectorId = connectorId;
         this.connectorUserId = connectorUserId;
+        this.identityStore = identityStore;
     }
 
     public String getConnectorId() {
@@ -49,5 +52,18 @@ public class ConnectedUser {
 
     public void setConnectorUserId(String connectorUserId) {
         this.connectorUserId = connectorUserId;
+    }
+
+    public boolean isIdentityStore() {
+        return identityStore;
+    }
+
+    public void setIdentityStore(boolean identityStore) {
+        this.identityStore = identityStore;
+    }
+
+    @Override
+    public String toString() {
+        return "Connector Id - " + connectorId + " : Connector User Id - " + connectorUserId;
     }
 }

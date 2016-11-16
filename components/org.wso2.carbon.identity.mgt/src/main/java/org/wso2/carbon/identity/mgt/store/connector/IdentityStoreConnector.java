@@ -21,6 +21,7 @@ import org.wso2.carbon.identity.mgt.bean.Group;
 import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
+import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 
@@ -228,9 +229,9 @@ public interface IdentityStoreConnector {
      * Adds a new user.
      *
      * @param attributes Attributes of the user.
-     * @throws IdentityStoreException Identity store exception.
+     * @throws IdentityStoreConnectorException Identity store connector exception.
      */
-    String addUser(List<Attribute> attributes) throws IdentityStoreException;
+    String addUser(List<Attribute> attributes) throws IdentityStoreConnectorException;
 
     /**
      * Adds new users.
@@ -351,4 +352,11 @@ public interface IdentityStoreConnector {
      */
     void updateUsersOfGroup(String groupIdentifier, List<String> userIdentifiersToAdd,
                             List<String> userIdentifiersToRemove) throws IdentityStoreException;
+
+    /**
+     * Update selected user list of a group.
+     *
+     * @throws IdentityStoreConnectorException Identity store connector exception.
+     */
+    void removeAddedUsersInAFailure(List<String> connectorUserId) throws IdentityStoreConnectorException;
 }
