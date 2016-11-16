@@ -92,14 +92,6 @@ public interface CredentialStoreConnector {
     /**
      * Add user credentials.
      *
-     * @param callbacks  Array of callbacks.
-     * @throws CredentialStoreException Credential Store Exception.
-     */
-    void addCredential(Callback[] callbacks) throws CredentialStoreException;
-
-    /**
-     * Add user credentials.
-     *
      * @param username Username of the user.
      * @param credentialCallbacks Array of callbacks which contains credentials.
      * @throws CredentialStoreException Credential Store Exception.
