@@ -23,22 +23,38 @@ import org.wso2.carbon.identity.mgt.claim.Claim;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.security.auth.callback.Callback;
 
 /**
  * Model for User
  */
 public class UserModel {
 
-    private List<Claim> userClaims = new ArrayList<>();
+    private List<Claim> claims = new ArrayList<>();
 
-    public List<Claim> getUserClaims() {
-        if (userClaims == null || userClaims.isEmpty()) {
+    private List<Callback> credentials = new ArrayList<>();
+
+    public List<Claim> getClaims() {
+
+        if (claims == null) {
             return Collections.emptyList();
         }
-        return userClaims;
+        return claims;
     }
 
-    public void setUserClaims(List<Claim> userClaims) {
-        this.userClaims = userClaims;
+    public void setClaims(List<Claim> claims) {
+        this.claims = claims;
+    }
+
+    public List<Callback> getCredentials() {
+
+        if (claims == null) {
+            return Collections.emptyList();
+        }
+        return credentials;
+    }
+
+    public void setCredentials(List<Callback> credentials) {
+        this.credentials = credentials;
     }
 }

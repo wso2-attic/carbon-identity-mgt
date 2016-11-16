@@ -23,6 +23,7 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -218,6 +219,15 @@ public class Domain {
         return claimMappings;
     }
 
+    public List<MetaClaimMapping> getMetaClaimMappings() throws DomainException {
+
+        if (claimMappings.isEmpty()) {
+            throw new DomainException("Invalid domain configuration found. No meta claim mappings.");
+        }
+        //TODO
+        return Collections.emptyList();
+    }
+
     /**
      * Set claim mappings for an identity store id.
      *
@@ -234,6 +244,10 @@ public class Domain {
      * @return Sorted IdentityStoreConnectors set
      */
     public SortedSet<IdentityStoreConnector> getSortedIdentityStoreConnectors() {
+
+        if (sortedIdentityStoreConnectors == null) {
+            return Collections.emptySortedSet();
+        }
         return sortedIdentityStoreConnectors;
     }
 
@@ -243,6 +257,10 @@ public class Domain {
      * @return Sorted CredentialStoreConnectors set
      */
     public SortedSet<CredentialStoreConnector> getSortedCredentialStoreConnectors() {
+
+        if (sortedCredentialStoreConnectors == null) {
+            return Collections.emptySortedSet();
+        }
         return sortedCredentialStoreConnectors;
     }
 }

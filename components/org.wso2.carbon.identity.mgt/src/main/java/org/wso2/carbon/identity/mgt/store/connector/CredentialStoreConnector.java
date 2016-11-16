@@ -63,6 +63,14 @@ public interface CredentialStoreConnector {
      */
     CredentialStoreConnectorConfig getCredentialStoreConfig();
 
+    /**
+     * Add user credentials.
+     *
+     * @param callbacks  Array of callbacks.
+     * @throws CredentialStoreException Credential Store Exception.
+     */
+    String addCredential(Callback[] callbacks) throws CredentialStoreException;
+
 
     /**
      * Update user credentials.
