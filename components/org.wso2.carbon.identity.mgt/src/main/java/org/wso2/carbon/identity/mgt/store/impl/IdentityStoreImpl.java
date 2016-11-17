@@ -1384,19 +1384,31 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private List<User> doAddUsers(List<UserModel> userModels, Domain domain) throws IdentityStoreException {
 
-        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
-        if (metaClaimMappings.isEmpty()) {
-            throw new IdentityStoreServerException("Invalid domain configuration found. No meta claim mappings.");
+        for (UserModel userModel : userModels) {
+            try {
+                userModel.setClaims(claimManager.convertToDefaultClaimDialect(userModel.getClaims()));
+            } catch (ClaimManagerException e) {
+                throw new IdentityStoreServerException("Failed to convert to the default claim dialect.", e);
+            }
         }
 
-        List<Map<String, List<Attribute>>> connectorAttributesMaps = userModels.stream()
+//        Map<String, UserModel> userUniqueIdToUserModelMap = userModels.stream().collect(Collectors.toMap
+//                (userModel -> IdentityUserMgtUtil.generateUUID(), userModel -> userModel));
+
+        List<MetaClaimMapping> metaClaimMappings;
+        try {
+            metaClaimMappings = domain.getMetaClaimMappings();
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException("Failed to retrieve meta claim mappings.");
+        }
+
+        List<Map<String, List<Attribute>>> connectorIdToAttributesMaps = userModels.stream()
                 .filter(Objects::nonNull)
-                .filter(userModel -> userModel.getClaims() != null)
-                .map(userModel -> getConnectorAttributesMap(userModel.getClaims(), metaClaimMappings))
+                .map(userModel -> getConnectorIdToAttributesMap(userModel.getClaims(), metaClaimMappings))
                 .collect(Collectors.toList());
 
         Map<String, Map<String, List<Attribute>>> connectorViseUserMap = getConnectorViseAttributesMap
-                (connectorAttributesMaps);
+                (connectorIdToAttributesMaps);
 
         Map<String, List<ConnectedUser>> connectedUsersList = new HashMap<>();
 
@@ -1736,7 +1748,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .filter(Objects::nonNull)
                 .forEach(callback -> {
                     Optional<CredentialStoreConnector> optional = credentialStoreConnectors.stream()
-                            .filter(connector -> connector.canHandle(new Callback[] {callback}))
+                            .filter(connector -> connector.canHandle(new Callback[]{callback}))
                             .findAny();
 
                     if (optional.isPresent()) {
