@@ -253,11 +253,33 @@
                 <type>zip</type>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-jaxrs</artifactId>
+                <version>${io.swagger.jaxrs.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.ws.rs</groupId>
+                        <artifactId>jsr311-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${io.swagger.annotations.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.msf4j</groupId>
+                <artifactId>msf4j-all</artifactId>
+                <version>${msf4j.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <modules>
         <module>components/org.wso2.carbon.identity.mgt</module>
+        <!--<module>components/org.wso2.carbon.meta.claim.mgt</module>-->
         <module>feature</module>
         <module>tests</module>
     </modules>
@@ -332,6 +354,9 @@
         <commons-io.version>2.4.0.wso2v1</commons-io.version>
 
         <project.scm.id>my-scm-server</project.scm.id>
+
+        <io.swagger.annotations.version>1.5.10</io.swagger.annotations.version>
+        <io.swagger.jaxrs.version>1.5.10</io.swagger.jaxrs.version>
     </properties>
 
 </project>
