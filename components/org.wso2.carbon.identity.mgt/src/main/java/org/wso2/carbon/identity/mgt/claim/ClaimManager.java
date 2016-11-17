@@ -25,6 +25,12 @@ import java.util.List;
  */
 public class ClaimManager {
 
+    public Claim convertToDefaultClaimDialect(Claim claim) throws ClaimManagerException {
+        //Check dialect -> throw exception
+        //Check claim -> null -> throw exception
+        return null;
+    }
+
     public List<Claim> convertToDefaultClaimDialect(List<Claim> claims) throws ClaimManagerException {
         //Check dialect -> throw exception
         //Check claim -> null -> throw exception

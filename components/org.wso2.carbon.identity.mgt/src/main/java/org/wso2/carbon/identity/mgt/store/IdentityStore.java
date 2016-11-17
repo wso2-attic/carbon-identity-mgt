@@ -75,7 +75,7 @@ public interface IdentityStore {
      * @throws IdentityStoreException
      * @throws UserNotFoundException
      */
-    List<User> getUser(Claim claim) throws IdentityStoreException, UserNotFoundException;
+    User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException;
 
     /**
      * Retrieve a user by claim from a specific domain.

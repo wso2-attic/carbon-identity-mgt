@@ -154,8 +154,8 @@ public class Domain {
     /**
      * Get IdentityStoreConnector from identity store connector id.
      *
-     * @param identityStoreConnectorId String - IdentityStoreConnectorId
-     * @return IdentityStoreConnector
+     * @param identityStoreConnectorId identity store connector id.
+     * @return IdentityStoreConnector instance.
      */
     public IdentityStoreConnector getIdentityStoreConnectorFromId(String identityStoreConnectorId) {
 
@@ -217,6 +217,15 @@ public class Domain {
     public Map<String, List<MetaClaimMapping>> getClaimMappings() {
 
         return claimMappings;
+    }
+
+    public MetaClaimMapping getMetaClaimMapping(String claimURI) throws DomainException {
+
+        if (claimMappings.isEmpty()) {
+            throw new DomainException("Invalid domain configuration found. No meta claim mappings.");
+        }
+        //TODO
+        return null;
     }
 
     public List<MetaClaimMapping> getMetaClaimMappings() throws DomainException {

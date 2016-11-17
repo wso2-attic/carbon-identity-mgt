@@ -31,7 +31,6 @@ import org.wso2.carbon.identity.mgt.store.CredentialStore;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
@@ -99,7 +98,7 @@ public class CredentialStoreImpl implements CredentialStore {
             claim.setValue(username);
 
             // Get the user using given callbacks. We need to find the user unique id.
-            List<User> user = CarbonSecurityDataHolder.getInstance()
+            User user = CarbonSecurityDataHolder.getInstance()
                     .getCarbonRealmService().getIdentityStore().getUser(claim);
 
             // Crete a new call back array from existing one and add new user data (user id and identity store id)

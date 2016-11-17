@@ -117,7 +117,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<User> getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
+    public User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
         return identityStore.getUser(claim);
     }
 
