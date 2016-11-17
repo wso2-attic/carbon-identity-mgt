@@ -63,8 +63,8 @@ import org.wso2.carbon.identity.mgt.store.impl.CacheBackedAuthorizationStore;
 import org.wso2.carbon.identity.mgt.store.impl.CacheBackedIdentityStore;
 import org.wso2.carbon.identity.mgt.store.impl.CredentialStoreImpl;
 import org.wso2.carbon.identity.mgt.store.impl.IdentityStoreImpl;
-import org.wso2.carbon.identity.mgt.user.UserManager;
-import org.wso2.carbon.identity.mgt.user.impl.UserManagerImpl;
+import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
+import org.wso2.carbon.identity.mgt.user.impl.UniqueIdResolverImpl;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 
 import java.util.ArrayList;
@@ -193,9 +193,9 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
             carbonSecurityDataHolder.setMetaClaimStore(metaClaimStore);
 
-            UserManager userManager = new UserManagerImpl();
+            UniqueIdResolver uniqueIdResolver = new UniqueIdResolverImpl();
 
-            carbonSecurityDataHolder.setUserManager(userManager);
+            carbonSecurityDataHolder.setUniqueIdResolver(uniqueIdResolver);
 
             DomainConfig domainConfig = DomainConfigBuilder.getDomainConfig();
             carbonSecurityDataHolder.setDomainConfig(domainConfig);
