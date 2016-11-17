@@ -59,13 +59,11 @@ public interface UniqueIdResolver {
     /**
      * Add user.
      *
-     * @param uniqueUserId   Globally unique user Id.
+     * @param uniqueUser   Globally unique user.
      * @param domainName Domain name.
-     * @param userPartitions Connected user list from different connectors.
      * @throws UserManagerException User Manager Exception.
      */
-    void addUser(String uniqueUserId, String domainName, List<UserPartition> userPartitions) throws
-            UserManagerException;
+    void addUser(UniqueUser uniqueUser, String domainName) throws UserManagerException;
 
     /**
      * Add users.

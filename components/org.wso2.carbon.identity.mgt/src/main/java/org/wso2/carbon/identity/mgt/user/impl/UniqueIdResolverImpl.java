@@ -125,31 +125,31 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
     }
 
     @Override
-    public void addUser(String uniqueUserId, String domainName, List<UserPartition> userPartitions) throws
+    public void addUser(UniqueUser uniqueUser, String domainName) throws
             UserManagerException {
-        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String addUser = "INSERT INTO IDM_ENTITY " +
-                    "(USER_UUID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
-                    "VALUES (:user_uuid;, :connector_user_id;, :connector_id;, :domain;, :connector_type;)";
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
-                    unitOfWork.getConnection(), addUser);
-            for (UserPartition userPartition : userPartitions) {
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_USER_ID,
-                        userPartition.getConnectorUserId());
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_ID,
-                        userPartition.getConnectorId());
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.DOMAIN, domainName);
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_TYPE,
-                        userPartition.isIdentityStore() ? UserManagerConstants.IDENTITY_STORE_CONNECTOR :
-                                UserManagerConstants.CREDENTIAL_STORE_CONNECTOR);
-                namedPreparedStatement.getPreparedStatement().addBatch();
-            }
-
-            namedPreparedStatement.getPreparedStatement().executeBatch();
-        } catch (SQLException e) {
-            throw new UserManagerException("Error while adding user.", e);
-        }
+//        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+//            final String addUser = "INSERT INTO IDM_ENTITY " +
+//                    "(USER_UUID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
+//                    "VALUES (:user_uuid;, :connector_user_id;, :connector_id;, :domain;, :connector_type;)";
+//            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+//                    unitOfWork.getConnection(), addUser);
+//            for (UserPartition userPartition : userPartitions) {
+//                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+//                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_USER_ID,
+//                        userPartition.getConnectorUserId());
+//                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_ID,
+//                        userPartition.getConnectorId());
+//                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.DOMAIN, domainName);
+//                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_TYPE,
+//                        userPartition.isIdentityStore() ? UserManagerConstants.IDENTITY_STORE_CONNECTOR :
+//                                UserManagerConstants.CREDENTIAL_STORE_CONNECTOR);
+//                namedPreparedStatement.getPreparedStatement().addBatch();
+//            }
+//
+//            namedPreparedStatement.getPreparedStatement().executeBatch();
+//        } catch (SQLException e) {
+//            throw new UserManagerException("Error while adding user.", e);
+//        }
     }
 
     @Override
