@@ -47,6 +47,7 @@ import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.identity.mgt.user.ConnectedGroup;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
+import org.wso2.carbon.identity.mgt.user.UniqueUser;
 import org.wso2.carbon.identity.mgt.user.UserPartition;
 import org.wso2.carbon.identity.mgt.util.IdentityUserMgtUtil;
 import org.wso2.carbon.kernel.utils.StringUtils;
@@ -1367,7 +1368,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         String userUniqueId = IdentityUserMgtUtil.generateUUID();
         try {
-            uniqueIdResolver.addUser(userUniqueId, domain.getDomainName(), userPartitions);
+            uniqueIdResolver.addUser(new UniqueUser(userUniqueId, userPartitions), domain.getDomainName());
         } catch (UserManagerException e) {
             // Recover from the inconsistent state in the connectors
             removeAddedUsersInAFailure(domain, userPartitions);
