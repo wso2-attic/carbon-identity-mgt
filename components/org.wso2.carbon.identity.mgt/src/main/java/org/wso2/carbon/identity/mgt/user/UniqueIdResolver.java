@@ -43,6 +43,7 @@ public interface UniqueIdResolver {
      *
      * @param uniqueUserId Globally unique user Id.
      * @return existence of group.
+     * @throws UserManagerException User Manager Exception.
      */
     boolean isUserExists(String uniqueUserId) throws UserManagerException;
 
@@ -139,7 +140,7 @@ public interface UniqueIdResolver {
      * Add groups.
      *
      * @param connectedGroupsMap Globally unique group id against connected group list from different connectors map.
-     * @throws UserManagerException
+     * @throws UserManagerException User Manager Exception
      */
     void addGroups(Map<String, List<ConnectedGroup>> connectedGroupsMap) throws UserManagerException;
 

@@ -92,8 +92,9 @@ public class DomainManager {
     /**
      * Get the list of domains which belongs to a certain priority.
      *
-     * @param priority domain priority
-     * @return Map of domain name to Domain
+     * @param priority domain priority.
+     * @return Map of domain name to Domain.
+     * @throws DomainException domain exception.
      */
     public Map<String, Domain> getDomainsFromPriority(int priority) throws DomainException {
 
@@ -109,7 +110,8 @@ public class DomainManager {
     /**
      * Add a domain to the mapping
      *
-     * @param domain Domain object
+     * @param domain Domain object.
+     * @throws DomainException domain exception.
      */
     public void addDomain(Domain domain) throws DomainException {
 
@@ -161,7 +163,8 @@ public class DomainManager {
      * Add an credential store connector to the map of a domain.
      *
      * @param credentialStoreConnector Credential Store connector
-     * @param domainName               Name of the domain to add the connector
+     * @param domainName               Name of the domain to add the connector.
+     * @throws DomainException domain exception.
      */
     public void addCredentialStoreConnectorToDomain(
             CredentialStoreConnector credentialStoreConnector,

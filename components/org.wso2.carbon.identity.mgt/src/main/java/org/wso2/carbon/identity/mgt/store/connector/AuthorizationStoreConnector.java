@@ -49,6 +49,7 @@ public interface AuthorizationStoreConnector {
      * @param roleId Id of the Role
      * @return Role.RoleBuilder.
      * @throws AuthorizationStoreException Authorization Store Exception.
+     * @throws RoleNotFoundException when role is invalid
      */
     Role.RoleBuilder getRole(String roleId) throws RoleNotFoundException, AuthorizationStoreException;
 
@@ -78,6 +79,7 @@ public interface AuthorizationStoreConnector {
      * @param action   Action of the permission.
      * @return Permission.PermissionBuilder.
      * @throws AuthorizationStoreException Authorization Store Exception
+     * @throws PermissionNotFoundException when permission is not found
      */
     Permission.PermissionBuilder getPermission(Resource resource, Action action) throws PermissionNotFoundException,
             AuthorizationStoreException;
@@ -85,7 +87,8 @@ public interface AuthorizationStoreConnector {
     /**
      * Get the count of the permissions available in the authorization store.
      *
-     * @return Number of permissions.
+     * @return Number of permissions
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     int getPermissionCount() throws AuthorizationStoreException;
 
@@ -170,7 +173,7 @@ public interface AuthorizationStoreConnector {
      * @param resourceId        Id of the resource.
      * @param userId            User id of the owner.
      * @return New Resource.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     Resource.ResourceBuilder addResource(String resourceNamespace, String resourceId, String userId)
             throws AuthorizationStoreException;
@@ -181,7 +184,7 @@ public interface AuthorizationStoreConnector {
      * @param actionNamespace Namespace of the action.
      * @param actionName      Name of the action.
      * @return New action.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     Action addAction(String actionNamespace, String actionName) throws AuthorizationStoreException;
 
@@ -263,7 +266,7 @@ public interface AuthorizationStoreConnector {
      * Deletes the given resource.
      *
      * @param resource Resource to be deleted.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     void deleteResource(Resource resource) throws AuthorizationStoreException;
 
@@ -271,7 +274,7 @@ public interface AuthorizationStoreConnector {
      * Delete the given action.
      *
      * @param action Action to be deleted.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     void deleteAction(Action action) throws AuthorizationStoreException;
 

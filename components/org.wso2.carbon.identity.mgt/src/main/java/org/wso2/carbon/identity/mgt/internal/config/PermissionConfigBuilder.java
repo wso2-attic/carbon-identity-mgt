@@ -43,6 +43,7 @@ public class PermissionConfigBuilder {
      * Parses &amp; creates the object model for the PermissionConfigFile from the permissions.yml.
      *
      * @return PermissionConfigFile
+     * @throws PermissionConfigException Permission config exception.
      */
     public static PermissionConfigFile buildPermissionConfig()
             throws PermissionConfigException {

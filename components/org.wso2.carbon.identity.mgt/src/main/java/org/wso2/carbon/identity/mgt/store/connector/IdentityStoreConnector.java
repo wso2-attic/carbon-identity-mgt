@@ -123,6 +123,7 @@ public interface IdentityStoreConnector {
      * @param attributeValue Value of the attribute.
      * @return Group with the given group name.
      * @throws IdentityStoreException Identity Store Exception.
+     * @throws GroupNotFoundException when group is not found
      */
     Group.GroupBuilder getGroupBuilder(String attributeName, String attributeValue) throws GroupNotFoundException,
             IdentityStoreException;
@@ -164,10 +165,9 @@ public interface IdentityStoreConnector {
      *
      * @param groupId Id of the group.
      * @return Map of attributes.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException IdentityStore Exception
      */
-    List<Attribute> getGroupAttributeValues(String groupId)
-            throws IdentityStoreException;
+    List<Attribute> getGroupAttributeValues(String groupId) throws IdentityStoreException;
 
     /**
      * Get attribute values for the given names in the group.
@@ -175,7 +175,7 @@ public interface IdentityStoreConnector {
      * @param groupId        Id of the group.
      * @param attributeNames List of attribute names.
      * @return Map of attributes.
-     * @throws IdentityStoreException
+     * @throws IdentityStoreException IdentityStore Exception
      */
     List<Attribute> getGroupAttributeValues(String groupId, List<String> attributeNames)
             throws IdentityStoreException;
@@ -215,8 +215,7 @@ public interface IdentityStoreConnector {
      * @return True if the user store is read only, unless returns false
      * @throws IdentityStoreException Identity Store Exception.
      */
-    boolean isReadOnly()
-            throws IdentityStoreException;
+    boolean isReadOnly() throws IdentityStoreException;
 
     /**
      * Returns IdentityStoreConnectorConfig which consists of user store configurations.
@@ -229,6 +228,7 @@ public interface IdentityStoreConnector {
      * Adds a new user.
      *
      * @param attributes Attributes of the user.
+     * @return connector unique id of the user.
      * @throws IdentityStoreConnectorException Identity store connector exception.
      */
     String addUser(List<Attribute> attributes) throws IdentityStoreConnectorException;
@@ -237,6 +237,7 @@ public interface IdentityStoreConnector {
      * Adds new users.
      *
      * @param attributes Attributes of the users.
+     * @return Map of global unique id of the user and connector user id.
      * @throws IdentityStoreException Identity store exception.
      */
     Map<String, String> addUsers(Map<String, List<Attribute>> attributes) throws IdentityStoreException;
@@ -246,6 +247,7 @@ public interface IdentityStoreConnector {
      *
      * @param userIdentifier User identifier.
      * @param attributes Attribute values to update.
+     * @return connector unique id of user.
      * @throws IdentityStoreException Identity store exception.
      */
     String updateUserAttributes(String userIdentifier, List<Attribute> attributes) throws IdentityStoreException;
@@ -256,6 +258,7 @@ public interface IdentityStoreConnector {
      * @param userIdentifier User identifier.
      * @param attributesToAdd Attribute values to add.
      * @param attributesToRemove Attribute values to remove.
+     * @return connector unique id of user.
      * @throws IdentityStoreException Identity store exception.
      */
     String updateUserAttributes(String userIdentifier, List<Attribute> attributesToAdd,
@@ -293,6 +296,7 @@ public interface IdentityStoreConnector {
      * Adds a new group.
      *
      * @param attributes Attributes of the group.
+     * @return connector unique id of group.
      * @throws IdentityStoreException Identity store exception.
      */
     String addGroup(List<Attribute> attributes) throws IdentityStoreException;
@@ -301,6 +305,7 @@ public interface IdentityStoreConnector {
      * Adds new groups.
      *
      * @param attributes Attributes of the groups.
+     * @return Map with global unique id of the group with connector unique id.
      * @throws IdentityStoreException Identity store exception.
      */
     Map<String, String> addGroups(Map<String, List<Attribute>> attributes) throws IdentityStoreException;
@@ -310,6 +315,7 @@ public interface IdentityStoreConnector {
      *
      * @param groupIdentifier Group identifier.
      * @param attributes Attribute values to update.
+     * @return connector unique id of group.
      * @throws IdentityStoreException Identity store exception.
      */
     String updateGroupAttributes(String groupIdentifier, List<Attribute> attributes) throws IdentityStoreException;
@@ -320,6 +326,7 @@ public interface IdentityStoreConnector {
      * @param groupIdentifier Group identifier.
      * @param attributesToAdd Attribute values to update.
      * @param attributesToRemove Attribute values to remove.
+     * @return connector unique id of group.
      * @throws IdentityStoreException Identity store exception.
      */
     String updateGroupAttributes(String groupIdentifier, List<Attribute> attributesToAdd,
@@ -356,7 +363,8 @@ public interface IdentityStoreConnector {
     /**
      * Update selected user list of a group.
      *
+     * @param connectorUserIds list of users to remove from connector in a failure situation.
      * @throws IdentityStoreConnectorException Identity store connector exception.
      */
-    void removeAddedUsersInAFailure(List<String> connectorUserId) throws IdentityStoreConnectorException;
+    void removeAddedUsersInAFailure(List<String> connectorUserIds) throws IdentityStoreConnectorException;
 }

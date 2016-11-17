@@ -47,7 +47,7 @@ public class PermissionConfigFile {
     /**
      * Set a list of permission entries.
      *
-     * @param permissions List<PermissionEntry> permissions
+     * @param permissions List&lt;PermissionEntry&gt; permissions
      */
     public void setPermissions(List<PermissionEntry> permissions) {
 

@@ -67,6 +67,7 @@ public interface CredentialStoreConnector {
      * Add user credentials.
      *
      * @param callbacks  Array of callbacks.
+     * @return connector user id
      * @throws CredentialStoreException Credential Store Exception.
      */
     String addCredential(Callback[] callbacks) throws CredentialStoreException;
@@ -101,8 +102,8 @@ public interface CredentialStoreConnector {
     /**
      * Delete credential
      *
-     * @param username
-     * @throws CredentialStoreException
+     * @param username unique user id of the connector
+     * @throws CredentialStoreException CredentialStore Exception
      */
     void deleteCredential(String username) throws CredentialStoreException;
 }
