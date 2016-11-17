@@ -19,7 +19,7 @@ package org.wso2.carbon.identity.mgt.user;
 /**
  * Connector User.
  */
-public class ConnectedUser {
+public class UserPartition {
 
     private String connectorId;
 
@@ -27,11 +27,11 @@ public class ConnectedUser {
 
     private boolean identityStore;
 
-    public ConnectedUser() {
+    public UserPartition() {
 
     }
 
-    public ConnectedUser(String connectorId, String connectorUserId, boolean identityStore) {
+    public UserPartition(String connectorId, String connectorUserId, boolean identityStore) {
 
         this.connectorId = connectorId;
         this.connectorUserId = connectorUserId;

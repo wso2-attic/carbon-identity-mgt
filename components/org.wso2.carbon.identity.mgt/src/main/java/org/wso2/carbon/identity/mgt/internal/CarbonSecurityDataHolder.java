@@ -25,7 +25,7 @@ import org.wso2.carbon.identity.mgt.service.impl.RealmServiceImpl;
 import org.wso2.carbon.identity.mgt.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory;
-import org.wso2.carbon.identity.mgt.user.UserManager;
+import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class CarbonSecurityDataHolder {
 
     private MetaClaimStore metaClaimStore;
 
-    private UserManager userManager;
+    private UniqueIdResolver uniqueIdResolver;
 
     private CarbonSecurityDataHolder() {
     }
@@ -165,11 +165,11 @@ public class CarbonSecurityDataHolder {
         this.metaClaimStore = metaClaimStore;
     }
 
-    public UserManager getUserManager() {
-        return userManager;
+    public UniqueIdResolver getUniqueIdResolver() {
+        return uniqueIdResolver;
     }
 
-    public void setUserManager(UserManager userManager) {
-        this.userManager = userManager;
+    public void setUniqueIdResolver(UniqueIdResolver uniqueIdResolver) {
+        this.uniqueIdResolver = uniqueIdResolver;
     }
 }
