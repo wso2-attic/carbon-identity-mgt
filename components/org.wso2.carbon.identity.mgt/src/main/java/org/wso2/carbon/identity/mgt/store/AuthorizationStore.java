@@ -136,7 +136,7 @@ public interface AuthorizationStore {
      * @param offset        Offset to begin.
      * @param length        Length from the offset.
      * @return List of roles.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException when listing users incorrect parameters
      */
     List<Role> listRoles(String filterPattern, int offset, int length) throws AuthorizationStoreException;
 
@@ -148,7 +148,7 @@ public interface AuthorizationStore {
      * @param offset          Offset to begin.
      * @param length          Length from the offset.
      * @return List of permissions.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     List<Permission> listPermissions(String resourcePattern, String actionPattern, int offset, int length)
             throws AuthorizationStoreException;
@@ -158,7 +158,7 @@ public interface AuthorizationStore {
      *
      * @param resourcePattern Resource pattern.
      * @return List of resources.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     List<Resource> listResources(String resourcePattern) throws AuthorizationStoreException;
 
@@ -167,7 +167,7 @@ public interface AuthorizationStore {
      *
      * @param actionPattern Action pattern.
      * @return List of actions.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     List<Action> listActions(String actionPattern) throws AuthorizationStoreException;
 
@@ -220,7 +220,7 @@ public interface AuthorizationStore {
      * @param authorizationStoreId Id of the authorization store.
      * @param resource             Resource.
      * @return List of permissions.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Resource resource)
             throws AuthorizationStoreException;
@@ -232,7 +232,7 @@ public interface AuthorizationStore {
      * @param authorizationStoreId Id of the authorization store.
      * @param action               Action.
      * @return List of permissions.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     List<Permission> getPermissionsOfRole(String roleId, String authorizationStoreId, Action action)
             throws AuthorizationStoreException;
@@ -255,7 +255,7 @@ public interface AuthorizationStore {
      * @param domain   Domain this user originates from.
      * @param resource Resource to use for filter.
      * @return List of permissions.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     List<Permission> getPermissionsOfUser(String userId, Domain domain, Resource resource)
             throws AuthorizationStoreException;
@@ -267,7 +267,7 @@ public interface AuthorizationStore {
      * @param domain Domain this user originates from.
      * @param action Action to use for filter.
      * @return List of permissions.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     List<Permission> getPermissionsOfUser(String userId, Domain domain, Action action)
             throws AuthorizationStoreException;
@@ -310,7 +310,7 @@ public interface AuthorizationStore {
      * @param userId            Id of the owner.
      * @param domain            Domain this user originates from.
      * @return New Resource.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     Resource addResource(String resourceNamespace, String resourceId, String userId, Domain domain)
             throws AuthorizationStoreException;
@@ -323,7 +323,7 @@ public interface AuthorizationStore {
      * @param authorizationStoreId Id of the authorization store.
      * @param userId               Id of the owner.
      * @return New Resource.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     Resource addResource(String resourceNamespace, String resourceId, String authorizationStoreId, String userId)
             throws AuthorizationStoreException;
@@ -336,7 +336,7 @@ public interface AuthorizationStore {
      * @param actionNamespace Namespace of the action.
      * @param actionName      Name of the action.
      * @return New action.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     Action addAction(String actionNamespace, String actionName) throws AuthorizationStoreException;
 
@@ -347,7 +347,7 @@ public interface AuthorizationStore {
      * @param actionName           Name of the action.
      * @param authorizationStoreId Id of the authorization store.
      * @return New action.
-     * @throws AuthorizationStoreException
+     * @throws AuthorizationStoreException AuthorizationStore Exception
      */
     Action addAction(String actionNamespace, String actionName, String authorizationStoreId)
             throws AuthorizationStoreException;

@@ -15,7 +15,7 @@ public class DomainConfigFile {
     /**
      * Get Domain configuration entries.
      *
-     * @return List<DomainConfigEntry> - List of domain configuration entries
+     * @return List&lt;DomainConfigEntry&gt; - List of domain configuration entries
      */
     public List<DomainConfigEntry> getDomains() {
         return domains;
@@ -24,7 +24,7 @@ public class DomainConfigFile {
     /**
      * Set Domain configuration entries.
      *
-     * @param domains List<DomainConfigEntry> - List of domain configuration entries
+     * @param domains List&lt;DomainConfigEntry&gt; - List of domain configuration entries
      */
     public void setDomains(List<DomainConfigEntry> domains) {
         this.domains = domains;

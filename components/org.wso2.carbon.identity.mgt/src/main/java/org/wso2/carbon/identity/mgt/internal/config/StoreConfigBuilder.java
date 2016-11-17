@@ -68,7 +68,7 @@ public class StoreConfigBuilder {
      * Builder a config object based on the store-config.yml properties.
      *
      * @return StoreConfig
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonSecurityConfigException carbon security config exception.
      */
     public static StoreConfig getStoreConfig() throws CarbonSecurityConfigException {
 

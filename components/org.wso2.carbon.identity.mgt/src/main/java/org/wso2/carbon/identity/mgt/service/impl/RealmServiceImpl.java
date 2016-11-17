@@ -24,8 +24,8 @@ import org.wso2.carbon.identity.mgt.store.IdentityStore;
 /**
  * Basic user realm service.
  *
- * @param <T1>
- * @param <T2>
+ * @param <T1> IdentityStore
+ * @param <T2> CredentialStore
  */
 public class RealmServiceImpl<T1 extends IdentityStore, T2 extends CredentialStore>
         implements RealmService<T1, T2> {

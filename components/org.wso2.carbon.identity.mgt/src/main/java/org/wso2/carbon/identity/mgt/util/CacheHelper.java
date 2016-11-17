@@ -41,6 +41,7 @@ public class CacheHelper {
      * @param keyClass Type of the key class.
      * @param valueClass Type of the value class.
      * @param defaultExpiryTime Cache expire time in minutes.
+     * @param cacheConfigMap Cache config map.
      * @param cacheManager Cache manager to use to create the cache.
      * @param <K> Type of the Key.
      * @param <V> Type of the Value.
