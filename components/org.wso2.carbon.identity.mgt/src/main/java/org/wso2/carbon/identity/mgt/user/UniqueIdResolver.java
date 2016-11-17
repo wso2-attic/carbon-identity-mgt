@@ -26,7 +26,7 @@ import java.util.Map;
  *
  * The implementation of this interface is responsible for handling the globally unique user Id.
  */
-public interface UserManager {
+public interface UniqueIdResolver {
 
     /**
      * Get global unique Id for a connector specific user Id.
@@ -36,7 +36,7 @@ public interface UserManager {
      * @return Globally unique user Id.
      * @throws UserManagerException User Manager Exception.
      */
-    String getUniqueUserId(String connectorUserId, String connectorId) throws UserManagerException;
+    UniqueUser getUniqueUser(String connectorUserId, String connectorId) throws UserManagerException;
 
     /**
      * Check whether user exists or not.
@@ -61,10 +61,10 @@ public interface UserManager {
      *
      * @param uniqueUserId   Globally unique user Id.
      * @param domainName Domain name.
-     * @param connectedUsers Connected user list from different connectors.
+     * @param userPartitions Connected user list from different connectors.
      * @throws UserManagerException User Manager Exception.
      */
-    void addUser(String uniqueUserId, String domainName, List<ConnectedUser> connectedUsers) throws
+    void addUser(String uniqueUserId, String domainName, List<UserPartition> userPartitions) throws
             UserManagerException;
 
     /**
@@ -73,7 +73,7 @@ public interface UserManager {
      * @param connectedUsersMap Globally unique user id against connected user list from different connectors map.
      * @throws UserManagerException User Manager Exception.
      */
-    void addUsers(Map<String, List<ConnectedUser>> connectedUsersMap) throws UserManagerException;
+    void addUsers(Map<String, List<UserPartition>> connectedUsersMap) throws UserManagerException;
 
     /**
      * Update user.
