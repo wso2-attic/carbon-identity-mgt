@@ -29,6 +29,8 @@ import org.wso2.carbon.identity.mgt.util.UserManagerConstants;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -49,33 +51,51 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
 
     @Override
     public UniqueUser getUniqueUser(String connectorUserId, String connectorId) throws UserManagerException {
-//        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-//            final String selectUserUuid = "SELECT USER_UUID FROM IDM_ENTITY " +
-//                    "WHERE CONNECTOR_USER_ID = :connector_user_id; " +
-//                    "AND CONNECTOR_ID = :connector_id;";
-//
-//            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
-//                    unitOfWork.getConnection(),
-//                    selectUserUuid);
-//            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_USER_ID, connectorUserId);
-//            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_ID, connectorId);
-//            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
-//
-//                if (resultSet.next()) {
-//                    return resultSet.getString(UserManagerConstants.DatabaseColumnNames.USER_UUID);
-//                } else {
-//                    throw new UserManagerException("User not found.");
-//                }
-//            }
-//
-//        } catch (SQLException e) {
-//            throw new UserManagerException("Error while searching user.", e);
-//        }
-        return null;
+
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+            final String selectUserUuid = "SELECT USER_UUID, CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_USER_ID FROM " +
+                    "IDM_ENTITY WHERE USER_UUID = ( " +
+                    "SELECT USER_UUID FROM IDM_ENTITY " +
+                    "WHERE CONNECTOR_USER_ID = :connector_user_id; " +
+                    "AND CONNECTOR_ID = :connector_id;)";
+
+            String userUUID = null;
+            UniqueUser uniqueUser = new UniqueUser();
+            List<UserPartition> userPartitions = new ArrayList<>();
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    selectUserUuid);
+            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_USER_ID, connectorUserId);
+            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_ID, connectorId);
+            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
+
+                while (resultSet.next()) {
+                    UserPartition userPartition = new UserPartition();
+                    userUUID = resultSet.getString(UserManagerConstants.DatabaseColumnNames.USER_UUID);
+                    userPartition.setConnectorId(resultSet.getString(UserManagerConstants.DatabaseColumnNames
+                            .CONNECTOR_ID));
+                    userPartition.setConnectorUserId(resultSet.getString(UserManagerConstants.DatabaseColumnNames
+                            .CONNECTOR_USER_ID));
+                    userPartition.setIdentityStore(UserManagerConstants.IDENTITY_STORE_CONNECTOR.equals(resultSet
+                            .getString(UserManagerConstants.DatabaseColumnNames.CONNECTOR_TYPE)));
+                    userPartitions.add(userPartition);
+                }
+            }
+            if (userUUID == null) {
+                throw new UserManagerException("No user found.");
+            }
+            uniqueUser.setUniqueUserId(userUUID);
+            uniqueUser.setUserPartitions(userPartitions);
+            return uniqueUser;
+
+        } catch (SQLException e) {
+            throw new UserManagerException("Error while searching user.", e);
+        }
     }
 
     @Override
     public boolean isUserExists(String uniqueUserId) throws UserManagerException {
+
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUser = "SELECT ID FROM IDM_ENTITY " +
                     "WHERE USER_UUID = :user_uuid;";
@@ -100,6 +120,7 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
 
     @Override
     public String getConnectorUserId(String uniqueUserId, String connectorId) throws UserManagerException {
+
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUserUuid = "SELECT CONNECTOR_USER_ID FROM IDM_ENTITY " +
                     "WHERE USER_UUID = :user_uuid; " +
@@ -127,29 +148,31 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
     @Override
     public void addUser(UniqueUser uniqueUser, String domainName) throws
             UserManagerException {
-//        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-//            final String addUser = "INSERT INTO IDM_ENTITY " +
-//                    "(USER_UUID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
-//                    "VALUES (:user_uuid;, :connector_user_id;, :connector_id;, :domain;, :connector_type;)";
-//            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
-//                    unitOfWork.getConnection(), addUser);
-//            for (UserPartition userPartition : userPartitions) {
-//                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
-//                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_USER_ID,
-//                        userPartition.getConnectorUserId());
-//                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_ID,
-//                        userPartition.getConnectorId());
-//                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.DOMAIN, domainName);
-//                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_TYPE,
-//                        userPartition.isIdentityStore() ? UserManagerConstants.IDENTITY_STORE_CONNECTOR :
-//                                UserManagerConstants.CREDENTIAL_STORE_CONNECTOR);
-//                namedPreparedStatement.getPreparedStatement().addBatch();
-//            }
-//
-//            namedPreparedStatement.getPreparedStatement().executeBatch();
-//        } catch (SQLException e) {
-//            throw new UserManagerException("Error while adding user.", e);
-//        }
+
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+            final String addUser = "INSERT INTO IDM_ENTITY " +
+                    "(USER_UUID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
+                    "VALUES (:user_uuid;, :connector_user_id;, :connector_id;, :domain;, :connector_type;)";
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(), addUser);
+            for (UserPartition userPartition : uniqueUser.getUserPartitions()) {
+                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, uniqueUser
+                        .getUniqueUserId());
+                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_USER_ID,
+                        userPartition.getConnectorUserId());
+                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_ID,
+                        userPartition.getConnectorId());
+                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.DOMAIN, domainName);
+                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_TYPE,
+                        userPartition.isIdentityStore() ? UserManagerConstants.IDENTITY_STORE_CONNECTOR :
+                                UserManagerConstants.CREDENTIAL_STORE_CONNECTOR);
+                namedPreparedStatement.getPreparedStatement().addBatch();
+            }
+
+            namedPreparedStatement.getPreparedStatement().executeBatch();
+        } catch (SQLException e) {
+            throw new UserManagerException("Error while adding user.", e);
+        }
     }
 
     @Override
@@ -183,6 +206,7 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
 
     @Override
     public void deleteUser(String uniqueUserId) throws UserManagerException {
+
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String deleteUser = "DELETE FROM IDM_ENTITY " +
                     "WHERE USER_UUID = :user_uuid;";
@@ -198,16 +222,62 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
 
     @Override
     public Map<String, String> getConnectorUserIds(String userUniqueId) throws UserManagerException {
-        return null;
+
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+            final String selectUserUuid = "SELECT CONNECTOR_ID, CONNECTOR_USER_ID FROM " +
+                    "IDM_ENTITY WHERE USER_UUID = :user_uuid;";
+
+            Map<String, String> connectorUserIds = new HashMap<>();
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    selectUserUuid);
+            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, userUniqueId);
+            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
+
+                while (resultSet.next()) {
+                    String connectorId = resultSet.getString(
+                            UserManagerConstants.DatabaseColumnNames.CONNECTOR_ID);
+                    String connectorUserId = resultSet.getString(
+                            UserManagerConstants.DatabaseColumnNames.CONNECTOR_USER_ID);
+                    connectorUserIds.put(connectorId, connectorUserId);
+                }
+            }
+
+            return connectorUserIds;
+
+        } catch (SQLException e) {
+            throw new UserManagerException("Error while searching user.", e);
+        }
     }
 
     @Override
     public String getDomainNameFromUserUniqueId(String uniqueUserId) throws UserManagerException {
-        return null;
+
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+            //TODO Do we need to limit 1 result?
+            final String selectUserUuid = "SELECT DOMAIN FROM " +
+                    "IDM_ENTITY WHERE USER_UUID = :user_uuid;";
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    selectUserUuid);
+            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
+
+                if (resultSet.next()) {
+                    return resultSet.getString(UserManagerConstants.DatabaseColumnNames.DOMAIN);
+                } else {
+                    throw new UserManagerException("User not found with the given user id.");
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new UserManagerException("Error while searching user.", e);
+        }
     }
 
     @Override
-    public String getDomainNameFromGroupUniqueId(String uniqueUserId) throws UserManagerException {
+    public String getDomainNameFromGroupUniqueId(String uniqueGroupId) throws UserManagerException {
         return null;
     }
 

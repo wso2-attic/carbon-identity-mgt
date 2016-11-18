@@ -112,11 +112,11 @@ public interface UniqueIdResolver {
     /**
      * Get domain name from group unique id.
      *
-     * @param uniqueUserId Globally unique user Id.
+     * @param uniqueGroupId Globally unique user Id.
      * @return Domain name.
      * @throws UserManagerException User Manager Exception.
      */
-    String getDomainNameFromGroupUniqueId(String uniqueUserId) throws UserManagerException;
+    String getDomainNameFromGroupUniqueId(String uniqueGroupId) throws UserManagerException;
 
     /**
      * Get connector group ids.
