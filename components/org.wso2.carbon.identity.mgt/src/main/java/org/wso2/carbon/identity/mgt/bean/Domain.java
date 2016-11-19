@@ -201,7 +201,7 @@ public class Domain {
      * @param claimURI Claim
      * @return is claim belong to domain
      */
-    public boolean isClaimAvailable(String claimURI) {
+    public boolean isClaimSupported(String claimURI) {
 
         return claimMappings.values().stream()
                 .anyMatch(list -> list.stream().filter(metaClaimMapping ->

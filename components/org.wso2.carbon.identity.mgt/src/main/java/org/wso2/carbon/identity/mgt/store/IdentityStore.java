@@ -20,7 +20,9 @@ import org.wso2.carbon.identity.mgt.bean.Group;
 import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
+import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.domain.DomainManager;
+import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
@@ -28,6 +30,7 @@ import org.wso2.carbon.identity.mgt.model.GroupModel;
 import org.wso2.carbon.identity.mgt.model.UserModel;
 
 import java.util.List;
+import javax.security.auth.callback.Callback;
 
 /**
  * Represents a virtual identity store to abstract the underlying stores.
@@ -481,5 +484,17 @@ public interface IdentityStore {
      */
     void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String>
             uniqueUserIdsToRemove) throws IdentityStoreException;
+
+    /**
+     * Authenticate the user.
+     *
+     * @param claim Unique claim.
+     * @param credential Credential.
+     * @param domainName Domain name.
+     * @return Authentication context.
+     * @throws AuthenticationFailure Authentication failure.
+     */
+    AuthenticationContext authenticate(Claim claim, Callback credential, String domainName)
+            throws AuthenticationFailure;
 
 }

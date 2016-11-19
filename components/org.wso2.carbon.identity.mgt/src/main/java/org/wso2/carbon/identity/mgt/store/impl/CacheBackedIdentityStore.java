@@ -25,7 +25,9 @@ import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.config.CacheConfig;
 import org.wso2.carbon.identity.mgt.constant.CacheNames;
+import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.domain.DomainManager;
+import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
@@ -40,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
+import javax.security.auth.callback.Callback;
 
 /**
  * Virtual identity store with the caching.
@@ -447,5 +450,11 @@ public class CacheBackedIdentityStore implements IdentityStore {
     public void updateUsersOfGroup(String groupId, List<String> userIdsToAdd, List<String> userIdsToRemove) throws
             IdentityStoreException {
 
+    }
+
+    @Override
+    public AuthenticationContext authenticate(Claim claim, Callback credential, String domainName) throws
+            AuthenticationFailure {
+        return null;
     }
 }
