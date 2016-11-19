@@ -40,7 +40,7 @@ public class FileBasedMetaClaimStore implements MetaClaimStore {
     /**
      * Initialize meta claim store by eagerly loading meta claims from file.
      *
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonSecurityConfigException Carbon Security Config Exception
      */
     public FileBasedMetaClaimStore() throws CarbonSecurityConfigException {
 

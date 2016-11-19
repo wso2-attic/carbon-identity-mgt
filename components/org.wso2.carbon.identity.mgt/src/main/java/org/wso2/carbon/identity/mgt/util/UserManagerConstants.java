@@ -43,5 +43,8 @@ public class UserManagerConstants {
     public static final class DatabaseColumnNames {
         public static final String USER_UUID = "USER_UUID";
         public static final String CONNECTOR_USER_ID = "CONNECTOR_USER_ID";
+        public static final String CONNECTOR_ID = "CONNECTOR_ID";
+        public static final String CONNECTOR_TYPE = "CONNECTOR_TYPE";
+        public static final String DOMAIN = "DOMAIN";
     }
 }

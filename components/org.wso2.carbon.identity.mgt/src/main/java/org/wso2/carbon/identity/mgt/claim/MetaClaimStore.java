@@ -15,7 +15,7 @@ public interface MetaClaimStore {
      *
      * @param claimURI Claim URI of the required meta data
      * @return MetaClaim
-     * @throws MetaClaimStoreException
+     * @throws MetaClaimStoreException Meta ClaimStore Exception
      */
     public MetaClaim getMetaClaim(String claimURI) throws MetaClaimStoreException;
 

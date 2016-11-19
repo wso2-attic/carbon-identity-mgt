@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.identity.mgt</groupId>
         <artifactId>org.wso2.carbon.identity.mgt.parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -69,6 +69,7 @@
                                         <include>conf/user-mapping.csv</include>
                                         <include>conf/identity-store-connector.csv</include>
                                         <include>conf/credential-store-connector.csv</include>
+                                        <include>dbscripts/identity-mgt/h2.sql</include>
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
                                     </includes>

@@ -70,7 +70,7 @@ public class DomainConfigEntry {
     /**
      * Set a list of domain store configuration entries for identity connectors.
      *
-     * @param identityStoreConnectors List<DomainStoreConfigEntry>
+     * @param identityStoreConnectors List&lt;DomainStoreConfigEntry&gt;
      */
     public void setIdentityStoreConnectors(List<DomainStoreConfigEntry> identityStoreConnectors) {
         this.identityStoreConnectors = identityStoreConnectors;

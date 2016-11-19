@@ -127,7 +127,10 @@ public class Domain {
     /**
      * Add an identity store connector to the map.
      *
-     * @param identityStoreConnector Identity Store connector
+     * @param identityStoreConnectorConfig identity Store Connector Config.
+     * @param identityStoreConnector Identity Store connector.
+     *
+     * @throws DomainException domain exception.
      */
     public void addIdentityStoreConnector(IdentityStoreConnector identityStoreConnector,
                                           IdentityStoreConnectorConfig identityStoreConnectorConfig)
@@ -240,7 +243,7 @@ public class Domain {
     /**
      * Set claim mappings for an identity store id.
      *
-     * @param claimMappings Map<String, List<MetaClaimMapping>> claim mappings
+     * @param claimMappings Map&lt;String, List&lt;MetaClaimMapping&gt;&gt; claim mappings
      */
     public void setClaimMappings(Map<String, List<MetaClaimMapping>> claimMappings) {
 
