@@ -26,7 +26,7 @@ import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.store.CredentialStore;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 
@@ -98,7 +98,7 @@ public class CredentialStoreImpl implements CredentialStore {
             claim.setValue(username);
 
             // Get the user using given callbacks. We need to find the user unique id.
-            User user = CarbonSecurityDataHolder.getInstance()
+            User user = IdentityMgtDataHolder.getInstance()
                     .getCarbonRealmService().getIdentityStore().getUser(claim);
 
             // Crete a new call back array from existing one and add new user data (user id and identity store id)

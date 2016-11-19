@@ -93,7 +93,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     @Activate
     public void registerCarbonSecurityProvider(BundleContext bundleContext) {
 
-        CarbonSecurityDataHolder.getInstance().setBundleContext(bundleContext);
+        IdentityMgtDataHolder.getInstance().setBundleContext(bundleContext);
     }
 
     @Deactivate
@@ -119,7 +119,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory, Map<String, String> properties) {
 
         String connectorId = properties.get("connector-type");
-        CarbonSecurityDataHolder.getInstance()
+        IdentityMgtDataHolder.getInstance()
                 .registerAuthorizationStoreConnectorFactory(connectorId, authorizationStoreConnectorFactory);
     }
 
@@ -138,7 +138,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
                                                          Map<String, String> properties) {
 
         String connectorId = properties.get("connector-type");
-        CarbonSecurityDataHolder.getInstance()
+        IdentityMgtDataHolder.getInstance()
                 .registerIdentityStoreConnectorFactory(connectorId, identityStoreConnectorFactory);
     }
 
@@ -157,7 +157,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             CredentialStoreConnectorFactory credentialStoreConnectorFactory, Map<String, String> properties) {
 
         String connectorId = properties.get("connector-type");
-        CarbonSecurityDataHolder.getInstance()
+        IdentityMgtDataHolder.getInstance()
                 .registerCredentialStoreConnectorFactory(connectorId, credentialStoreConnectorFactory);
     }
 
@@ -173,32 +173,32 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             unbind = "unRegisterCachingService"
     )
     protected void registerCachingService(CarbonCachingService cachingService, Map<String, ?> properties) {
-        CarbonSecurityDataHolder.getInstance().registerCacheService(cachingService);
+        IdentityMgtDataHolder.getInstance().registerCacheService(cachingService);
     }
 
     protected void unRegisterCachingService(CarbonCachingService carbonCachingService) {
-        CarbonSecurityDataHolder.getInstance().registerCacheService(null);
+        IdentityMgtDataHolder.getInstance().registerCacheService(null);
     }
 
     @Override
     public void onAllRequiredCapabilitiesAvailable() {
 
-        CarbonSecurityDataHolder carbonSecurityDataHolder = CarbonSecurityDataHolder.getInstance();
-        BundleContext bundleContext = carbonSecurityDataHolder.getBundleContext();
+        IdentityMgtDataHolder identityMgtDataHolder = IdentityMgtDataHolder.getInstance();
+        BundleContext bundleContext = identityMgtDataHolder.getBundleContext();
 
         try {
             StoreConfig storeConfig = StoreConfigBuilder.getStoreConfig();
 
             MetaClaimStore metaClaimStore = new FileBasedMetaClaimStore();
 
-            carbonSecurityDataHolder.setMetaClaimStore(metaClaimStore);
+            identityMgtDataHolder.setMetaClaimStore(metaClaimStore);
 
             UniqueIdResolver uniqueIdResolver = new UniqueIdResolverImpl();
 
-            carbonSecurityDataHolder.setUniqueIdResolver(uniqueIdResolver);
+            identityMgtDataHolder.setUniqueIdResolver(uniqueIdResolver);
 
             DomainConfig domainConfig = DomainConfigBuilder.getDomainConfig();
-            carbonSecurityDataHolder.setDomainConfig(domainConfig);
+            identityMgtDataHolder.setDomainConfig(domainConfig);
 
             DomainManager domainManager = createDomainManagerFromConfig(domainConfig, storeConfig);
 
@@ -222,7 +222,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             RealmServiceImpl<IdentityStore, CredentialStore> carbonRealmService
                     = new RealmServiceImpl(identityStore, credentialStore, authorizationStore);
 
-            carbonSecurityDataHolder.registerCarbonRealmService(carbonRealmService);
+            identityMgtDataHolder.registerCarbonRealmService(carbonRealmService);
 
             credentialStore.init(domainManager);
             identityStore.init(domainManager);
@@ -258,7 +258,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             DomainException, DomainConfigException, MetaClaimStoreException {
 
         DomainManager domainManager = new DomainManager();
-        MetaClaimStore metaClaimStore = CarbonSecurityDataHolder.getInstance().getMetaClaimStore();
+        MetaClaimStore metaClaimStore = IdentityMgtDataHolder.getInstance().getMetaClaimStore();
 
         Map<String, Integer> domainNameToDomainPriorityMap = domainConfig.getDomainNameToDomainPriorityMap();
 
@@ -266,7 +266,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
                 storeConfig.getIdentityConnectorConfigMap();
 
         Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactories =
-                CarbonSecurityDataHolder.getInstance().getIdentityStoreConnectorFactoryMap();
+                IdentityMgtDataHolder.getInstance().getIdentityStoreConnectorFactoryMap();
 
         Map<String, Domain> domains = new HashMap<>();
 
@@ -347,7 +347,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             CredentialStoreConnectorConfig credentialStoreConnectorConfig =
                     credentialStoreConnectorConfigEntry.getValue();
 
-            CredentialStoreConnector credentialStoreConnector = CarbonSecurityDataHolder.getInstance()
+            CredentialStoreConnector credentialStoreConnector = IdentityMgtDataHolder.getInstance()
                     .getCredentialStoreConnectorFactoryMap()
                     .get(credentialStoreConnectorConfig.getConnectorType()).getInstance();
 

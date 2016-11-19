@@ -34,7 +34,7 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.PermissionNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.RoleNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.StoreException;
-import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
 import org.wso2.carbon.identity.mgt.util.CacheHelper;
 import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
@@ -67,7 +67,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
                              authorizationConnectorConfigs) throws AuthorizationStoreException {
 
         try {
-            cacheManager = CarbonSecurityDataHolder.getInstance().getCarbonCachingService().getCachingProvider()
+            cacheManager = IdentityMgtDataHolder.getInstance().getCarbonCachingService().getCachingProvider()
                     .getCacheManager();
         } catch (CarbonSecurityDataHolderException e) {
             throw new AuthorizationStoreException("Unable to obtain Carbon Caching Service", e);
@@ -108,7 +108,7 @@ public class CacheBackedAuthorizationStore implements AuthorizationStore {
         roles.addAll(getRolesOfUser(userId, domain));
 
         // Get roles associated through groups.
-        CarbonSecurityDataHolder.getInstance()
+        IdentityMgtDataHolder.getInstance()
                 .getCarbonRealmService().getIdentityStore().getGroupsOfUser(userId)
                 .stream()
                 .map(LambdaExceptionUtils.rethrowFunction(group -> roles.addAll(getRolesOfGroup(group.getGroupId(),

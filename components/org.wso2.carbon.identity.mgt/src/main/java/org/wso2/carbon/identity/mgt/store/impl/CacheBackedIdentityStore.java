@@ -32,7 +32,7 @@ import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.model.GroupModel;
 import org.wso2.carbon.identity.mgt.model.UserModel;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
@@ -68,7 +68,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
         CarbonCachingService carbonCachingService;
 
         try {
-            carbonCachingService = CarbonSecurityDataHolder.getInstance().getCarbonCachingService();
+            carbonCachingService = IdentityMgtDataHolder.getInstance().getCarbonCachingService();
         } catch (CarbonSecurityDataHolderException e) {
             throw new IdentityStoreException("Caching service is not available.", e);
         }

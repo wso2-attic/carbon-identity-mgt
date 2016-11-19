@@ -44,8 +44,8 @@ import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
 import org.wso2.carbon.identity.mgt.exception.DomainConfigException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
 import org.wso2.carbon.identity.mgt.internal.IdentityMgtComponent;
+import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfig;
 import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfigBuilder;
@@ -65,7 +65,7 @@ import javax.security.auth.callback.PasswordCallback;
 /**
  * Tests specific for permission model implementation.
  */
-@PrepareForTest(CarbonSecurityDataHolder.class)
+@PrepareForTest(IdentityMgtDataHolder.class)
 public class PermissionTest extends PowerMockTestCase {
 
     /**
@@ -77,7 +77,7 @@ public class PermissionTest extends PowerMockTestCase {
      * Carbon security data holder to hold references.
      */
     @Mock
-    private CarbonSecurityDataHolder carbonSecurityDataHolder;
+    private IdentityMgtDataHolder identityMgtDataHolder;
 
     /**
      * Initialise mocks at test start.
@@ -105,7 +105,7 @@ public class PermissionTest extends PowerMockTestCase {
      * @throws AuthorizationStoreException       AuthorizationStoreException on authorisation store initialisation
      * @throws AuthenticationFailure             AuthenticationFailure when the user authentication failes
      * @throws UserNotFoundException             UserNotFoundException when the identity store user is not found
-     * @throws CarbonSecurityDataHolderException When getting domain configuration from CarbonSecurityDataHolder
+     * @throws CarbonSecurityDataHolderException When getting domain configuration from IdentityMgtDataHolder
      * @throws DomainConfigException             When getting or creating domain configuration
      * @throws NoSuchMethodException             When the stated method is not found
      * @throws InvocationTargetException         When error occurred invoking the method
@@ -126,7 +126,7 @@ public class PermissionTest extends PowerMockTestCase {
 
         StoreConfig storeConfig = createStoreConfig();
         MetaClaimStore metaClaimStore = new FileBasedMetaClaimStore();
-        Mockito.when(CarbonSecurityDataHolder.getInstance().getMetaClaimStore())
+        Mockito.when(IdentityMgtDataHolder.getInstance().getMetaClaimStore())
                 .thenReturn(metaClaimStore);
 
         DomainManager domainManager = initialiseDomainManager(storeConfig);
@@ -136,7 +136,7 @@ public class PermissionTest extends PowerMockTestCase {
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUserId()).thenReturn(UserConstants.USER_NAME);
 
-        IdentityStore identityStore = CarbonSecurityDataHolder
+        IdentityStore identityStore = IdentityMgtDataHolder
                 .getInstance().getCarbonRealmService().getIdentityStore();
         Mockito.when(identityStore.getUser(Mockito.anyString())).thenReturn(user);
 
@@ -151,7 +151,7 @@ public class PermissionTest extends PowerMockTestCase {
         callbacks[1] = nameCallback;
 
         AuthenticationContext authenticationContext =
-                CarbonSecurityDataHolder.getInstance().getCarbonRealmService()
+                IdentityMgtDataHolder.getInstance().getCarbonRealmService()
                         .getCredentialStore().authenticate(callbacks);
 
         Assert.assertNotNull(authenticationContext);
@@ -164,8 +164,8 @@ public class PermissionTest extends PowerMockTestCase {
      */
     private void initCarbonSecurityDataHolder() {
 
-        PowerMockito.mockStatic(CarbonSecurityDataHolder.class);
-        Mockito.when(CarbonSecurityDataHolder.getInstance()).thenReturn(carbonSecurityDataHolder);
+        PowerMockito.mockStatic(IdentityMgtDataHolder.class);
+        Mockito.when(IdentityMgtDataHolder.getInstance()).thenReturn(identityMgtDataHolder);
     }
 
     /**
@@ -173,7 +173,7 @@ public class PermissionTest extends PowerMockTestCase {
      *
      * @param storeConfig Store configuration
      * @return DomainManager initialised domain manager
-     * @throws CarbonSecurityDataHolderException When getting domain configuration from CarbonSecurityDataHolder
+     * @throws CarbonSecurityDataHolderException When getting domain configuration from IdentityMgtDataHolder
      * @throws CarbonSecurityConfigException    on error in reading file
      * @throws NoSuchMethodException             When the stated method is not found
      * @throws InvocationTargetException         When error occurred invoking the method
@@ -185,7 +185,7 @@ public class PermissionTest extends PowerMockTestCase {
 
         DomainConfig domainConfig = DomainConfigBuilder.getDomainConfig();
 
-        Mockito.when(CarbonSecurityDataHolder.getInstance().getDomainConfig())
+        Mockito.when(IdentityMgtDataHolder.getInstance().getDomainConfig())
                 .thenReturn(domainConfig);
 
         Method method = IdentityMgtComponent.class
@@ -220,7 +220,7 @@ public class PermissionTest extends PowerMockTestCase {
         // Add carbon realm service to the carbon realm service implementation
         RealmServiceImpl<IdentityStoreImpl, CredentialStoreImpl> realmService =
                 new RealmServiceImpl<>(identityStore, credentialStore, authorizationStore);
-        Mockito.when(CarbonSecurityDataHolder.getInstance().getCarbonRealmService())
+        Mockito.when(IdentityMgtDataHolder.getInstance().getCarbonRealmService())
                 .thenReturn(realmService);
     }
 
@@ -250,7 +250,7 @@ public class PermissionTest extends PowerMockTestCase {
 //                    new FileBasedCredentialStoreConnectorFactory());
 //        });
 //
-//        Mockito.when(CarbonSecurityDataHolder.getInstance().getCredentialStoreConnectorFactoryMap())
+//        Mockito.when(IdentityMgtDataHolder.getInstance().getCredentialStoreConnectorFactoryMap())
 //                .thenReturn(credentialStoreConnectorFactoryMap);
 //
 //        // Identity Server
@@ -266,7 +266,7 @@ public class PermissionTest extends PowerMockTestCase {
 //                    new FileBasedIdentityStoreConnectorFactory());
 //        });
 //
-//        Mockito.when(CarbonSecurityDataHolder.getInstance().getIdentityStoreConnectorFactoryMap())
+//        Mockito.when(IdentityMgtDataHolder.getInstance().getIdentityStoreConnectorFactoryMap())
 //                .thenReturn(identityStoreConnectorFactoryMap);
 //
 //        // Authorization store
@@ -275,7 +275,7 @@ public class PermissionTest extends PowerMockTestCase {
 //                authorizationStoreConnectorFactoryMap.put(authorizationStoreConnectorConfig.getConnectorType(),
 //                        new FileBasedAuthorizationStoreConnectorFactory()));
 //
-//        Mockito.when(CarbonSecurityDataHolder.getInstance().getAuthorizationStoreConnectorFactoryMap())
+//        Mockito.when(IdentityMgtDataHolder.getInstance().getAuthorizationStoreConnectorFactoryMap())
 //                .thenReturn(authorizationStoreConnectorFactoryMap);
 //
         return storeConfig;

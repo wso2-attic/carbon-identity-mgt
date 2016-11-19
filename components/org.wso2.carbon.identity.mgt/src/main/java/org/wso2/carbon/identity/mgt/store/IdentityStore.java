@@ -500,7 +500,7 @@ public interface IdentityStore {
             IdentityStoreException;
 
     /**
-     * Deleate a group by group id.
+     * Delete a group by group id.
      *
      * @param uniqueGroupId Group unique id.
      * @throws IdentityStoreException Identity store exception.

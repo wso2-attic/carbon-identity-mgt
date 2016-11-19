@@ -35,9 +35,9 @@ import java.util.Map;
  *
  * @since 1.0.0
  */
-public class CarbonSecurityDataHolder {
+public class IdentityMgtDataHolder {
 
-    private static CarbonSecurityDataHolder instance = new CarbonSecurityDataHolder();
+    private static IdentityMgtDataHolder instance = new IdentityMgtDataHolder();
     private RealmServiceImpl carbonRealmService;
     private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
     private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
@@ -50,15 +50,15 @@ public class CarbonSecurityDataHolder {
 
     private UniqueIdResolver uniqueIdResolver;
 
-    private CarbonSecurityDataHolder() {
+    private IdentityMgtDataHolder() {
     }
 
     /**
      * Get the instance of this class.
      *
-     * @return CarbonSecurityDataHolder.
+     * @return IdentityMgtDataHolder.
      */
-    public static CarbonSecurityDataHolder getInstance() {
+    public static IdentityMgtDataHolder getInstance() {
         return instance;
     }
 

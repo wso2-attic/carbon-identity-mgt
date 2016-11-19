@@ -39,7 +39,7 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreServerException;
 import org.wso2.carbon.identity.mgt.exception.UserManagerException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.model.GroupModel;
 import org.wso2.carbon.identity.mgt.model.UserModel;
 import org.wso2.carbon.identity.mgt.service.RealmService;
@@ -90,13 +90,13 @@ public class IdentityStoreImpl implements IdentityStore {
     public void init(DomainManager domainManager) throws IdentityStoreException {
 
         this.domainManager = domainManager;
-        this.authorizationStore = CarbonSecurityDataHolder.getInstance().getCarbonRealmService()
+        this.authorizationStore = IdentityMgtDataHolder.getInstance().getCarbonRealmService()
                 .getAuthorizationStore();
 
         // TODO remove
-        this.realmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
+        this.realmService = IdentityMgtDataHolder.getInstance().getCarbonRealmService();
         //TODO remove
-        this.uniqueIdResolver = CarbonSecurityDataHolder.getInstance().getUniqueIdResolver();
+        this.uniqueIdResolver = IdentityMgtDataHolder.getInstance().getUniqueIdResolver();
 
         if (log.isDebugEnabled()) {
             log.debug("Identity store successfully initialized.");
@@ -1277,7 +1277,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         return new AuthenticationContext(new User.UserBuilder()
                                 .setUserId(uniqueUser.getUniqueUserId())
                                 .setIdentityStore(this)
-                                .setAuthorizationStore(CarbonSecurityDataHolder.getInstance().getCarbonRealmService()
+                                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
                                         .getAuthorizationStore())
                                 .setDomain(domain)
                                 .build());
@@ -1363,7 +1363,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setUserId(userUniqueId)
                 .setDomain(domain)
                 .setIdentityStore(this)
-                .setAuthorizationStore(CarbonSecurityDataHolder.getInstance().getCarbonRealmService()
+                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
                         .getAuthorizationStore())
                 .build();
     }
@@ -1737,7 +1737,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setUserId(uniqueUser.getUniqueUserId())
                 .setDomain(domain)
                 .setIdentityStore(this)
-                .setAuthorizationStore(CarbonSecurityDataHolder.getInstance().getCarbonRealmService()
+                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
                         .getAuthorizationStore())
                 .build();
     }
