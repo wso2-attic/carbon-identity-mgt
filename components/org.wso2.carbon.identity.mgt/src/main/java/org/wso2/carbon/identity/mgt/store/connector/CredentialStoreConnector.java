@@ -29,6 +29,7 @@ public interface CredentialStoreConnector {
 
     /**
      * Initialize the Credential store connector.
+     *
      * @param credentialStoreConnectorConfig Credential store configurations for this connector.
      * @throws CredentialStoreException Credential Store Exception.
      */
@@ -37,6 +38,7 @@ public interface CredentialStoreConnector {
 
     /**
      * Get the Id of this CredentialStoreConnector.
+     *
      * @return Id of the CredentialStoreConnector.
      */
     String getCredentialStoreConnectorId();
@@ -46,12 +48,13 @@ public interface CredentialStoreConnector {
      *
      * @param callbacks Callbacks to get the user attributes.
      * @throws CredentialStoreException Credential Store Exception.
-     * @throws AuthenticationFailure Authentication failure.
+     * @throws AuthenticationFailure    Authentication failure.
      */
     void authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
 
     /**
      * Checks whether this connector can handle the given callbacks.
+     *
      * @param callbacks Array of callbacks.
      * @return True if there are all of the callbacks required for this connector.
      */
@@ -59,6 +62,7 @@ public interface CredentialStoreConnector {
 
     /**
      * Get the Credential store config.
+     *
      * @return CredentialStoreConnectorConfig.
      */
     CredentialStoreConnectorConfig getCredentialStoreConfig();
@@ -66,7 +70,7 @@ public interface CredentialStoreConnector {
     /**
      * Add user credentials.
      *
-     * @param callbacks  Array of callbacks.
+     * @param callbacks Array of callbacks.
      * @return connector user id
      * @throws CredentialStoreException Credential Store Exception.
      */
@@ -76,7 +80,7 @@ public interface CredentialStoreConnector {
     /**
      * Update user credentials.
      *
-     * @param callbacks  Array of callbacks.
+     * @param callbacks Array of callbacks.
      * @throws CredentialStoreException Credential Store Exception.
      */
     void updateCredential(Callback[] callbacks) throws CredentialStoreException;
@@ -84,7 +88,7 @@ public interface CredentialStoreConnector {
     /**
      * Update user credentials.
      *
-     * @param username Username of the user.
+     * @param username            Username of the user.
      * @param credentialCallbacks Array of callbacks which contains credentials.
      * @throws CredentialStoreException Credential Store Exception.
      */
@@ -93,7 +97,7 @@ public interface CredentialStoreConnector {
     /**
      * Add user credentials.
      *
-     * @param username Username of the user.
+     * @param username            Username of the user.
      * @param credentialCallbacks Array of callbacks which contains credentials.
      * @throws CredentialStoreException Credential Store Exception.
      */

@@ -26,6 +26,7 @@ import org.wso2.carbon.identity.mgt.store.connector.AuthorizationStoreConnectorF
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
+import org.wso2.carbon.identity.mgt.user.UniqueIdResolverFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,12 +39,21 @@ import java.util.Map;
 public class IdentityMgtDataHolder {
 
     private static IdentityMgtDataHolder instance = new IdentityMgtDataHolder();
+
     private RealmServiceImpl carbonRealmService;
+
     private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
+
     private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
+
     private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
+
+    private Map<String, UniqueIdResolverFactory> uniqueIdResolverFactoryMap = new HashMap<>();
+
     private CarbonCachingService carbonCachingService;
+
     private DomainConfig domainConfig;
+
     private BundleContext bundleContext = null;
 
     private MetaClaimStore metaClaimStore;
@@ -107,6 +117,10 @@ public class IdentityMgtDataHolder {
         identityStoreConnectorFactoryMap.put(key, identityStoreConnectorFactory);
     }
 
+    public void registerUniqueIdResolverFactory(String key, UniqueIdResolverFactory uniqueIdResolverFactory) {
+        this.uniqueIdResolverFactoryMap.put(key, uniqueIdResolverFactory);
+    }
+
     public Map<String, AuthorizationStoreConnectorFactory> getAuthorizationStoreConnectorFactoryMap() {
         return authorizationStoreConnectorFactoryMap;
     }
@@ -117,6 +131,10 @@ public class IdentityMgtDataHolder {
 
     public Map<String, IdentityStoreConnectorFactory> getIdentityStoreConnectorFactoryMap() {
         return identityStoreConnectorFactoryMap;
+    }
+
+    public Map<String, UniqueIdResolverFactory> getUniqueIdResolverFactoryMap() {
+        return uniqueIdResolverFactoryMap;
     }
 
     void registerCacheService(CarbonCachingService carbonCachingService) {

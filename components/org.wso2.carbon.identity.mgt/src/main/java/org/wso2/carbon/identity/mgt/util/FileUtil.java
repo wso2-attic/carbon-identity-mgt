@@ -26,9 +26,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryIteratorException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Config file read utility.
@@ -81,5 +85,35 @@ public class FileUtil {
             throw new CarbonSecurityConfigException(String
                     .format("Configuration file %s is not available.", file.toString()));
         }
+    }
+
+    /**
+     * Read a yml file according to a class type.
+     *
+     * @param path          folder which contain the config files
+     * @param classType     Class type of the yml bean
+     * @param fileNameRegex file name regex
+     * @param <T>           Class T
+     * @return Config file bean
+     * @throws CarbonSecurityConfigException Error in reading configuration file
+     */
+    public static <T> List<T> readConfigFiles(Path path, Class<T> classType, String fileNameRegex)
+            throws CarbonSecurityConfigException {
+
+        List<T> configEntries = new ArrayList<>();
+        if (Files.exists(path)) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, fileNameRegex)) {
+                for (Path file : stream) {
+                    Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8);
+                    Yaml yaml = new Yaml();
+                    yaml.setBeanAccess(BeanAccess.FIELD);
+                    configEntries.add(yaml.loadAs(in, classType));
+                }
+            } catch (DirectoryIteratorException | IOException e) {
+                throw new CarbonSecurityConfigException(String.format("Failed to read identity connector files from " +
+                        "path: %s", path.toString()), e);
+            }
+        }
+        return configEntries;
     }
 }

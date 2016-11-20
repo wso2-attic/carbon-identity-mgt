@@ -13,6 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 ###############################################################################
+# All the claims will be added under wso2 claim dialect.
 claims:
  -
   claimURI: "http://wso2.org/claims/username"
@@ -20,6 +21,7 @@ claims:
   properties:
    displayName: "Username"
    description: "Username"
+   unique: "true"
    required: "true"
    supportedByDefault: "true"
  -
@@ -28,6 +30,7 @@ claims:
   properties:
    displayName: "First Name"
    description: "First Name"
+   unique: "false"
    required: "true"
    supportedByDefault: "true"
  -
@@ -36,7 +39,8 @@ claims:
   properties:
    displayName: "Last Name"
    description: "Last Name"
-   required: "true"
+   unique: "false"
+   required: "false"
    supportedByDefault: "true"
  -
   claimURI: "http://wso2.org/claims/email"
@@ -44,5 +48,6 @@ claims:
   properties:
    displayName: "Email Address"
    description: "Email Address"
-   required: "false"
+   unique: "true"
+   required: "true"
    supportedByDefault: "true"

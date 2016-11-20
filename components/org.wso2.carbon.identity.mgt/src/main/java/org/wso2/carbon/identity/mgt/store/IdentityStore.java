@@ -55,7 +55,7 @@ public interface IdentityStore {
      * @param uniqueUserId Global Unique Id
      * @return User object
      * @throws IdentityStoreException IdentityStore Exception
-     * @throws UserNotFoundException when trying to get user with incorrect unique user id
+     * @throws UserNotFoundException  when trying to get user with incorrect unique user id
      */
     User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException;
 
@@ -63,10 +63,10 @@ public interface IdentityStore {
      * Retrieve a user by global unique Id.
      *
      * @param uniqueUserId The globally unique user Id
-     * @param domain The domain the user is in
+     * @param domain       The domain the user is in
      * @return User
      * @throws IdentityStoreException IdentityStore Exception
-     * @throws UserNotFoundException when trying to get user with incorrect unique user id
+     * @throws UserNotFoundException  when trying to get user with incorrect unique user id
      */
     User getUser(String uniqueUserId, String domain) throws IdentityStoreException, UserNotFoundException;
 
@@ -76,7 +76,7 @@ public interface IdentityStore {
      * @param claim Populated claim
      * @return User object
      * @throws IdentityStoreException IdentityStore Exception
-     * @throws UserNotFoundException when trying to get user with incorrect unique user id
+     * @throws UserNotFoundException  when trying to get user with incorrect unique user id
      */
     User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException;
 
@@ -87,7 +87,7 @@ public interface IdentityStore {
      * @param domainName Domain name to retrieve user from
      * @return User object
      * @throws IdentityStoreException IdentityStore Exception
-     * @throws UserNotFoundException when trying to get user with incorrect unique user id
+     * @throws UserNotFoundException  when trying to get user with incorrect unique user id
      */
     User getUser(Claim claim, String domainName) throws IdentityStoreException, UserNotFoundException;
 
@@ -138,10 +138,10 @@ public interface IdentityStore {
     /**
      * List a set of users that matches a given claim in a specific domain.
      *
-     * @param metaClaim Metaclaim
+     * @param metaClaim     Metaclaim
      * @param filterPattern filter pattern to search user
-     * @param offset start index of the user
-     * @param length number of users to retrieve
+     * @param offset        start index of the user
+     * @param length        number of users to retrieve
      * @return List of users
      * @throws IdentityStoreException IdentityStore Exception
      */
@@ -151,11 +151,11 @@ public interface IdentityStore {
     /**
      * List a set of users that matches a given claim in a specified range in a specific domain.
      *
-     * @param metaClaim Metaclaim
+     * @param metaClaim     Metaclaim
      * @param filterPattern filter pattern to search user
-     * @param offset start index of the user
-     * @param length number of users to retrieve
-     * @param domain domain of the user
+     * @param offset        start index of the user
+     * @param length        number of users to retrieve
+     * @param domain        domain of the user
      * @return List of users
      * @throws IdentityStoreException IdentityStore Exception
      */
@@ -176,7 +176,7 @@ public interface IdentityStore {
      * Get group from group Id from a specific domain.
      *
      * @param uniqueGroupId The Id of the group
-     * @param domain  The domain to retrieve group from
+     * @param domain        The domain to retrieve group from
      * @return Group
      * @throws IdentityStoreException IdentityStore Exception
      * @throws GroupNotFoundException when group is not found
@@ -251,10 +251,10 @@ public interface IdentityStore {
     /**
      * List groups that matches a given claim in a given range.
      *
-     * @param metaClaim Metaclaim
+     * @param metaClaim     Metaclaim
      * @param filterPattern filter pattern to search
-     * @param offset start index of the group
-     * @param length number of users to retrieve
+     * @param offset        start index of the group
+     * @param length        number of users to retrieve
      * @return List of groups
      * @throws IdentityStoreException IdentityStore Exception
      */
@@ -264,11 +264,11 @@ public interface IdentityStore {
     /**
      * List groups that matches a given claim in a given range for a specific domain.
      *
-     * @param metaClaim Metaclaim
+     * @param metaClaim     Metaclaim
      * @param filterPattern filter pattern to search
-     * @param offset start index of the group
-     * @param length number of users to retrieve
-     * @param domain domain of group
+     * @param offset        start index of the group
+     * @param length        number of users to retrieve
+     * @param domain        domain of group
      * @return List of groups
      * @throws IdentityStoreException IdentityStore Exception
      */
@@ -297,7 +297,7 @@ public interface IdentityStore {
      * Get list of groups a user belongs to in a specific domain.
      *
      * @param uniqueUserId The Id of the user
-     * @param domain The domain the users belongs to
+     * @param domain       The domain the users belongs to
      * @return List of groups the user is in
      * @throws IdentityStoreException IdentityStore Exception
      */
@@ -307,7 +307,7 @@ public interface IdentityStore {
      * Get list of users in a given group for a specific domain.
      *
      * @param uniqueGroupId The group to find users of
-     * @param domain  The domain the user belongs to
+     * @param domain        The domain the user belongs to
      * @return List of users contained in the group
      * @throws IdentityStoreException IdentityStore Exception
      */
@@ -328,13 +328,14 @@ public interface IdentityStore {
      *
      * @param uniqueUserId  The user Id
      * @param uniqueGroupId The group Id
-     * @param domain  The domain the user and the group belongs to
+     * @param domain        The domain the user and the group belongs to
      * @return True if user belongs to the given group
      * @throws IdentityStoreException IdentityStore Exception
      */
     boolean isUserInGroup(String uniqueUserId, String uniqueGroupId, String domain) throws IdentityStoreException;
 
     //TODO : these should go under User
+
     /**
      * Get all claims of a user.
      *
@@ -396,8 +397,8 @@ public interface IdentityStore {
     /**
      * Update user claims by user id.
      *
-     * @param uniqueUserId     User unique id.
-     * @param userClaims User claims.
+     * @param uniqueUserId User unique id.
+     * @param userClaims   User claims.
      * @throws IdentityStoreException Identity store exception.
      */
     void updateUserClaims(String uniqueUserId, List<Claim> userClaims) throws IdentityStoreException;
@@ -405,7 +406,7 @@ public interface IdentityStore {
     /**
      * Update selected user claims by user id.
      *
-     * @param uniqueUserId             User unique id.
+     * @param uniqueUserId       User unique id.
      * @param userClaimsToAdd    user claims to update.
      * @param userClaimsToRemove user claims to remove.
      * @throws IdentityStoreException Identity store exception.
@@ -482,8 +483,8 @@ public interface IdentityStore {
     /**
      * Update group claims by group id.
      *
-     * @param uniqueGroupId     Group unique id.
-     * @param groupClaims Group claims.
+     * @param uniqueGroupId Group unique id.
+     * @param groupClaims   Group claims.
      * @throws IdentityStoreException Identity store exception.
      */
     void updateGroupClaims(String uniqueGroupId, List<Claim> groupClaims) throws IdentityStoreException;
@@ -491,7 +492,7 @@ public interface IdentityStore {
     /**
      * Update selected group claims by group id.
      *
-     * @param uniqueGroupId             Group unique id.
+     * @param uniqueGroupId       Group unique id.
      * @param groupClaimsToAdd    Group ids to add.
      * @param groupClaimsToRemove Group ids to remove.
      * @throws IdentityStoreException Identity store exception.
@@ -530,7 +531,7 @@ public interface IdentityStore {
     /**
      * Authenticate the user.
      *
-     * @param claim Unique claim.
+     * @param claim      Unique claim.
      * @param credential Credential.
      * @param domainName Domain name.
      * @return Authentication context.

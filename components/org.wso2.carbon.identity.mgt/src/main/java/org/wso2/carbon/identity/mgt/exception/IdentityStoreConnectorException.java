@@ -19,7 +19,7 @@ package org.wso2.carbon.identity.mgt.exception;
 /**
  * Identity Store Connector Exception.
  */
-public class IdentityStoreConnectorException extends Exception  {
+public class IdentityStoreConnectorException extends Exception {
 
     public IdentityStoreConnectorException() {
         super();

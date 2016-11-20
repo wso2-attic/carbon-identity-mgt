@@ -29,11 +29,11 @@ public class ConnectedAttributes {
 
     private List<Attribute> attributes;
 
-    public ConnectedAttributes () {
+    public ConnectedAttributes() {
 
     }
 
-    public ConnectedAttributes (String connectorId, List<Attribute> attributes) {
+    public ConnectedAttributes(String connectorId, List<Attribute> attributes) {
 
         this.connectorId = connectorId;
         this.attributes = attributes;

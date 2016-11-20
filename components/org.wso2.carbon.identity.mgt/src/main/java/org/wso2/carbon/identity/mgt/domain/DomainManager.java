@@ -18,8 +18,6 @@ package org.wso2.carbon.identity.mgt.domain;
 
 import org.wso2.carbon.identity.mgt.bean.Domain;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
-import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
-import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -133,70 +131,6 @@ public class DomainManager {
 
         sortedDomains.add(domain);
 
-    }
-
-    /**
-     * Get IdentityStoreConnector from identity store connector id.
-     *
-     * @param identityStoreConnectorId String - IdentityStoreConnectorId
-     * @param domainName               Name of the domain which the connector instance belongs
-     * @return IdentityStoreConnector
-     * @throws DomainException Domain exception
-     */
-    public IdentityStoreConnector getIdentityStoreConnector(
-            String identityStoreConnectorId, String domainName) throws DomainException {
-
-        Domain domain = getDomainFromDomainName(domainName);
-
-        IdentityStoreConnector identityStoreConnector = domain.getIdentityStoreConnectorFromId
-                (identityStoreConnectorId);
-
-        if (identityStoreConnector == null) {
-            throw new DomainException(String
-                    .format("IdentityStoreConnector %s was not found", identityStoreConnectorId));
-        }
-
-        return identityStoreConnector;
-    }
-
-    /**
-     * Add an credential store connector to the map of a domain.
-     *
-     * @param credentialStoreConnector Credential Store connector
-     * @param domainName               Name of the domain to add the connector.
-     * @throws DomainException domain exception.
-     */
-    public void addCredentialStoreConnectorToDomain(
-            CredentialStoreConnector credentialStoreConnector,
-            String domainName) throws DomainException {
-
-        Domain domain = getDomainFromDomainName(domainName);
-
-        domain.addCredentialStoreConnector(credentialStoreConnector);
-    }
-
-    /**
-     * Get CredentialStoreConnector from credential store connector id.
-     *
-     * @param credentialStoreConnectorId String - CredentialStoreConnectorId
-     * @param domainName                 Name of the domain which the connector instance belongs
-     * @return CredentialStoreConnector
-     * @throws DomainException DomainException
-     */
-    public CredentialStoreConnector getCredentialStoreConnector(
-            String credentialStoreConnectorId, String domainName) throws DomainException {
-
-        Domain domain = getDomainFromDomainName(domainName);
-
-        CredentialStoreConnector credentialStoreConnector = domain
-                .getCredentialStoreConnectorFromId(credentialStoreConnectorId);
-
-        if (credentialStoreConnector == null) {
-            throw new DomainException(String
-                    .format("credentialStoreConnector %s was not found", credentialStoreConnectorId));
-        }
-
-        return credentialStoreConnector;
     }
 
     /**

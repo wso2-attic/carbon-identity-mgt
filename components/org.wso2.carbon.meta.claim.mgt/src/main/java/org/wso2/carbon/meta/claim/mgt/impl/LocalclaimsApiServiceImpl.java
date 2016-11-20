@@ -11,24 +11,27 @@ import javax.ws.rs.core.Response;
 public class LocalclaimsApiServiceImpl extends LocalclaimsApiService {
     @Override
     public Response localclaimsDelete(String claim
- ) throws NotFoundException {
+    ) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
+
     @Override
     public Response localclaimsGet() throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
+
     @Override
     public Response localclaimsPatch(LocalClaimDTO localclaim
- ) throws NotFoundException {
+    ) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
+
     @Override
     public Response localclaimsPost(LocalClaimDTO localclaim
- ) throws NotFoundException {
+    ) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }

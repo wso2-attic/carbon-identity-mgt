@@ -37,7 +37,7 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreClientException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreServerException;
-import org.wso2.carbon.identity.mgt.exception.UserManagerException;
+import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.model.GroupModel;
@@ -127,7 +127,7 @@ public class IdentityStoreImpl implements IdentityStore {
             }
         }
 
-        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
+        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getConnectorIdToMetaClaimMappings();
         if (metaClaimMappings.isEmpty()) {
             throw new IdentityStoreServerException("Invalid domain configuration found. No meta claim mappings.");
         }
@@ -154,16 +154,17 @@ public class IdentityStoreImpl implements IdentityStore {
                     claim.getClaimURI(), claim.getDialectURI()));
         }
 
-        List<String> connectorUniqueAttributes = domain.getIdentityStoreConnectorFromId(connectorId)
-                .getIdentityStoreConfig().getUniqueAttributes();
-
-        if (connectorUniqueAttributes == null) {
-            throw new IdentityStoreServerException("Invalid connector configuration. No unique attributes.");
-        }
-
-        if (!connectorUniqueAttributes.contains(attributeName)) {
-            throw new IdentityStoreClientException("Provided claim is not unique.");
-        }
+        //TODO
+//        List<String> connectorUniqueAttributes = domain.getIdentityStoreConnectorFromId(connectorId)
+//                .getIdentityStoreConfig().getUniqueAttributes();
+//
+//        if (connectorUniqueAttributes == null) {
+//            throw new IdentityStoreServerException("Invalid connector configuration. No unique attributes.");
+//        }
+//
+//        if (!connectorUniqueAttributes.contains(attributeName)) {
+//            throw new IdentityStoreClientException("Provided claim is not unique.");
+//        }
 
         String connectorGroupId;
         try {
@@ -176,7 +177,7 @@ public class IdentityStoreImpl implements IdentityStore {
         String groupUniqueId;
         try {
             groupUniqueId = uniqueIdResolver.getUniqueGroupId(connectorGroupId, connectorId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException("Failed retrieve group unique id.");
         }
 
@@ -204,7 +205,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Map<Domain, MetaClaimMapping> selectedMetaClaimMappingMap = new HashMap<>();
         for (Domain domain : domains) {
-            Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
+            Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getConnectorIdToMetaClaimMappings();
             if (metaClaimMappings.isEmpty()) {
                 throw new IdentityStoreServerException("Invalid domain configuration found. No meta claim mappings.");
             }
@@ -231,12 +232,13 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<Domain, String> groupUniqueIds = new HashMap<>();
         for (Map.Entry<Domain, MetaClaimMapping> entry : selectedMetaClaimMappingMap.entrySet()) {
 
-            List<String> uniqueAttributes = entry.getKey().getIdentityStoreConnectorFromId(entry.getValue()
-                    .getIdentityStoreConnectorId()).getIdentityStoreConfig().getUniqueAttributes();
-            if (uniqueAttributes == null || uniqueAttributes.isEmpty() || !uniqueAttributes.contains(entry.getValue()
-                    .getAttributeName())) {
-                continue;
-            }
+            //TODO
+//            List<String> uniqueAttributes = entry.getKey().getIdentityStoreConnectorFromId(entry.getValue()
+//                    .getIdentityStoreConnectorId()).getIdentityStoreConfig().getUniqueAttributes();
+//            if (uniqueAttributes == null || uniqueAttributes.isEmpty() || !uniqueAttributes.contains(entry.getValue()
+//                    .getAttributeName())) {
+//                continue;
+//            }
 
             String connectorGroupId = entry.getKey().getIdentityStoreConnectorFromId(entry.getValue()
                     .getIdentityStoreConnectorId()).getConnectorGroupId(entry.getValue().getAttributeName(), claim
@@ -246,7 +248,7 @@ public class IdentityStoreImpl implements IdentityStore {
             try {
                 groupUniqueId = uniqueIdResolver.getUniqueUser(connectorGroupId, entry.getValue()
                         .getIdentityStoreConnectorId()).getUniqueUserId();
-            } catch (UserManagerException e) {
+            } catch (UniqueIdResolverException e) {
                 throw new IdentityStoreServerException("Failed retrieve group unique id.");
             }
             groupUniqueIds.put(entry.getKey(), groupUniqueId);
@@ -315,7 +317,7 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<String, String> connectorUserIdsMap;
         try {
             connectorUserIdsMap = uniqueIdResolver.getConnectorUserIds(uniqueUserId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException(String.format("Failed to retrieve connected user id map for the " +
                     "unique user id - %s.", uniqueUserId), e);
         }
@@ -364,7 +366,7 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<String, String> connectorUserIdsMap;
         try {
             connectorUserIdsMap = uniqueIdResolver.getConnectorUserIds(uniqueUserId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException(String.format("Failed to retrieve connected user id map for the " +
                     "unique user id - %s.", uniqueUserId), e);
         }
@@ -447,10 +449,10 @@ public class IdentityStoreImpl implements IdentityStore {
 //
 //        for (Domain domain : domainManager.getSortedDomains()) {
 //
-//            Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
+//            Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getConnectorIdToMetaClaimMappings();
 //
 //
-//            for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
+//            for (IdentityStoreConnector identityStoreConnector : domain.getIdentityStoreConnectors()) {
 //
 //                String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConfig().getConnectorId();
 //
@@ -487,7 +489,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //                                users.add(userBuilder.build());
 //
 //                                currentCount++;
-//                            } catch (UserManagerException e) {
+//                            } catch (UniqueIdResolverException e) {
 //                                // not throwing since looping through all connectors
 //                                throw new IdentityStoreException("Error retrieving unique user Id for user " +
 //                                        userBuilder.getUserId(), e);
@@ -536,7 +538,7 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<String, String> connectorGroupIdsMap;
         try {
             connectorGroupIdsMap = uniqueIdResolver.getConnectorGroupIds(uniqueGroupId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException(String.format("Failed to retrieve connected user id map for the " +
                     "unique gruop id - %s.", uniqueGroupId), e);
         }
@@ -585,7 +587,7 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<String, String> connectorGroupIdsMap;
         try {
             connectorGroupIdsMap = uniqueIdResolver.getConnectorGroupIds(uniqueGroupId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException(String.format("Failed to retrieve connected group id map for the " +
                     "unique group id - %s.", uniqueGroupId), e);
         }
@@ -617,7 +619,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
             Domain domain = user.getDomain();
 
-            for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
+            for (IdentityStoreConnector identityStoreConnector : domain.getIdentityStoreConnectors()) {
 
                 String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConfig().getConnectorId();
 
@@ -638,7 +640,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         groupList.add(group);
                     }
 
-                } catch (UserManagerException e) {
+                } catch (UniqueIdResolverException e) {
                     // not throwing since looping through all connectors
                     throw new IdentityStoreException("Error resolving globally unique Id", e);
                 }
@@ -672,7 +674,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //        try {
 //            User user = getUser(userId);
 //
-//            for (IdentityStoreConnector identityStoreConnector : user.getDomain().getSortedIdentityStoreConnectors
+//            for (IdentityStoreConnector identityStoreConnector : user.getDomain().getIdentityStoreConnectors
 // ()) {
 //
 //                String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConnectorId();
@@ -685,7 +687,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //                    if (identityStoreConnector.isUserInGroup(connectorUserId, groupId)) {
 //                        return true;
 //                    }
-//                } catch (UserManagerException e) {
+//                } catch (UniqueIdResolverException e) {
 //                    // not throwing since looping through all connectors
 //                    if (log.isDebugEnabled()) {
 //                        log.debug("User " + userId + " is not mapped to connector " + identityStoreConnectorId);
@@ -709,9 +711,9 @@ public class IdentityStoreImpl implements IdentityStore {
         List<Claim> claims = new ArrayList<>();
         Domain domain = user.getDomain();
 
-        Map<String, List<MetaClaimMapping>> claimMappings = domain.getClaimMappings();
+        Map<String, List<MetaClaimMapping>> claimMappings = domain.getConnectorIdToMetaClaimMappings();
 
-        for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
+        for (IdentityStoreConnector identityStoreConnector : domain.getIdentityStoreConnectors()) {
 
             String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConfig().getConnectorId();
             List<MetaClaimMapping> metaClaimMappings = claimMappings.get(identityStoreConnectorId);
@@ -727,7 +729,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 List<Attribute> attributeValues = identityStoreConnector.getUserAttributeValues(connectorUserId,
                         new ArrayList<>(attributeMapping.keySet()));
                 claims.addAll(buildClaims(attributeValues, attributeMapping));
-            } catch (IdentityStoreException | UserManagerException e) {
+            } catch (IdentityStoreException | UniqueIdResolverException e) {
                 throw new IdentityStoreException("Error retrieving claims for user : " + user.getUserId(), e);
             }
         }
@@ -740,9 +742,9 @@ public class IdentityStoreImpl implements IdentityStore {
         List<Claim> claims = new ArrayList<>();
         Domain domain = user.getDomain();
 
-        Map<String, List<MetaClaimMapping>> claimMappings = domain.getClaimMappings();
+        Map<String, List<MetaClaimMapping>> claimMappings = domain.getConnectorIdToMetaClaimMappings();
 
-        for (IdentityStoreConnector identityStoreConnector : domain.getSortedIdentityStoreConnectors()) {
+        for (IdentityStoreConnector identityStoreConnector : domain.getIdentityStoreConnectors()) {
 
             String identityStoreConnectorId = identityStoreConnector.getIdentityStoreConfig().getConnectorId();
 
@@ -760,7 +762,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 List<Attribute> attributeValues = identityStoreConnector.getUserAttributeValues(connectorUserId,
                         new ArrayList<>(attributeMapping.keySet()));
                 claims.addAll(buildClaims(attributeValues, attributeMapping));
-            } catch (IdentityStoreException | UserManagerException e) {
+            } catch (IdentityStoreException | UniqueIdResolverException e) {
                 throw new IdentityStoreException("Error retrieving claims for user : " + user.getUserId(), e);
             }
         }
@@ -861,7 +863,7 @@ public class IdentityStoreImpl implements IdentityStore {
         String domainName;
         try {
             domainName = uniqueIdResolver.getDomainNameFromUserUniqueId(uniqueUserId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreClientException("Invalid user UUID. Failed to retrieve domain name.");
         }
 
@@ -887,7 +889,7 @@ public class IdentityStoreImpl implements IdentityStore {
         String domainName;
         try {
             domainName = uniqueIdResolver.getDomainNameFromUserUniqueId(uniqueUserId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreClientException("Invalid user unique id. Failed to retrieve domain name.");
         }
 
@@ -917,7 +919,7 @@ public class IdentityStoreImpl implements IdentityStore {
         String domainName;
         try {
             domainName = uniqueIdResolver.getDomainNameFromUserUniqueId(uniqueUserId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreClientException("Invalid user unique id. Failed to retrieve domain name.");
         }
 
@@ -932,7 +934,7 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<String, String> connectorUserIds;
         try {
             connectorUserIds = uniqueIdResolver.getConnectorUserIds(uniqueUserId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException(String.format("Failed to retrieve connector id to user connector " +
                     "id map for unique user id - %s", uniqueUserId), e);
         }
@@ -944,7 +946,7 @@ public class IdentityStoreImpl implements IdentityStore {
         try {
             uniqueIdResolver.deleteUser(uniqueUserId);
             //TODO audit log
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException("Failed to delete user - " + uniqueUserId, e);
         }
     }
@@ -958,7 +960,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         try {
             uniqueIdResolver.updateGroupsOfUser(uniqueUserId, uniqueGroupIds);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException("Failed to update groups of user - " + uniqueUserId, e);
         }
     }
@@ -973,7 +975,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         try {
             uniqueIdResolver.updateGroupsOfUser(uniqueUserId, uniqueGroupIdsToAdd, uniqueGroupIdsToRemove);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException("Failed to update groups of user - " + uniqueUserId, e);
         }
     }
@@ -1066,7 +1068,7 @@ public class IdentityStoreImpl implements IdentityStore {
         String domainName;
         try {
             domainName = uniqueIdResolver.getDomainNameFromGroupUniqueId(uniqueGroupId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreClientException("Invalid group unique id. Failed to retrieve domain name.");
         }
 
@@ -1092,7 +1094,7 @@ public class IdentityStoreImpl implements IdentityStore {
         String domainName;
         try {
             domainName = uniqueIdResolver.getDomainNameFromGroupUniqueId(uniqueGroupId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreClientException("Invalid group unique id. Failed to retrieve domain name.");
         }
 
@@ -1122,7 +1124,7 @@ public class IdentityStoreImpl implements IdentityStore {
         String domainName;
         try {
             domainName = uniqueIdResolver.getDomainNameFromUserUniqueId(uniqueGroupId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreClientException("Invalid group unique id. Failed to retrieve domain name.");
         }
 
@@ -1137,7 +1139,7 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<String, String> connectorGroupIds;
         try {
             connectorGroupIds = uniqueIdResolver.getConnectorGroupIds(uniqueGroupId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException(String.format("Failed to retrieve connector id to group connector " +
                     "id map for unique group id - %s", uniqueGroupId), e);
         }
@@ -1148,7 +1150,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         try {
             uniqueIdResolver.deleteGroup(uniqueGroupId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException(String.format("Failed to delete group - %s", uniqueGroupId), e);
         }
     }
@@ -1163,7 +1165,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         try {
             uniqueIdResolver.updateGroupsOfUser(uniqueGroupId, uniqueUserIds);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException(String.format("Failed to update users of group - %s",
                     uniqueGroupId), e);
         }
@@ -1179,7 +1181,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         try {
             uniqueIdResolver.updateUsersOfGroup(uniqueGroupId, uniqueUserIdsToAdd, uniqueUserIdsToRemove);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException("Failed to update groups of user - " + uniqueGroupId, e);
         }
     }
@@ -1262,7 +1264,7 @@ public class IdentityStoreImpl implements IdentityStore {
         try {
             uniqueUser = uniqueIdResolver.getUniqueUser(connectorUserId, metaClaimMapping
                     .getIdentityStoreConnectorId());
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new AuthenticationFailure("Failed retrieve unique user info.", e);
         }
 
@@ -1328,7 +1330,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         if (!userModel.getCredentials().isEmpty()) {
             Map<String, List<Callback>> connectorIdToCredentialsMap = getConnectorIdToCredentialsMap(userModel
-                    .getCredentials(), domain.getSortedCredentialStoreConnectors());
+                    .getCredentials(), domain.getCredentialStoreConnectors());
 
             for (Map.Entry<String, List<Callback>> entry : connectorIdToCredentialsMap.entrySet()) {
 
@@ -1352,7 +1354,7 @@ public class IdentityStoreImpl implements IdentityStore {
         String userUniqueId = IdentityUserMgtUtil.generateUUID();
         try {
             uniqueIdResolver.addUser(new UniqueUser(userUniqueId, userPartitions), domain.getDomainName());
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             // Recover from the inconsistent state in the connectors
             removeAddedUsersInAFailure(domain, userPartitions);
 
@@ -1419,7 +1421,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         try {
             uniqueIdResolver.addUsers(connectedUsersList);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             // TODO handle any failure
             throw new IdentityStoreServerException("Error occurred while persisting user unique ids.", e);
         }
@@ -1440,7 +1442,7 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<String, String> connectorUserIds;
         try {
             connectorUserIds = uniqueIdResolver.getConnectorUserIds(userUniqueId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException(String.format("Failed to retrieve connector id to user connector " +
                     "id map for the user unique id - %s ", userUniqueId), e);
         }
@@ -1455,7 +1457,7 @@ public class IdentityStoreImpl implements IdentityStore {
                     }));
             //TODO: do we need to delete user unique id? credential store still may have references
         } else {
-            Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
+            Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getConnectorIdToMetaClaimMappings();
             if (metaClaimMappings.isEmpty()) {
                 throw new IdentityStoreServerException("Invalid domain configuration found. No meta claim mappings.");
             }
@@ -1473,7 +1475,7 @@ public class IdentityStoreImpl implements IdentityStore {
         if (!connectorUserIds.equals(updatedUniqueIds)) {
             try {
                 uniqueIdResolver.updateUser(userUniqueId, updatedUniqueIds);
-            } catch (UserManagerException e) {
+            } catch (UniqueIdResolverException e) {
                 throw new IdentityStoreServerException("Failed to update user connector ids.", e);
             }
         }
@@ -1485,12 +1487,12 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<String, String> connectorUserIds;
         try {
             connectorUserIds = uniqueIdResolver.getConnectorUserIds(userUniqueId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException(String.format("Failed to retrieve connector id to user connector " +
                     "id map for the user unique id - %s ", userUniqueId), e);
         }
 
-        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
+        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getConnectorIdToMetaClaimMappings();
         if (metaClaimMappings.isEmpty()) {
             throw new IdentityStoreServerException("Invalid identity store configuration found.");
         }
@@ -1514,7 +1516,7 @@ public class IdentityStoreImpl implements IdentityStore {
         if (!connectorUserIds.equals(updatedConnectorUserIds)) {
             try {
                 uniqueIdResolver.updateUser(userUniqueId, updatedConnectorUserIds);
-            } catch (UserManagerException e) {
+            } catch (UniqueIdResolverException e) {
                 throw new IdentityStoreServerException("Failed to update user connected ids.", e);
             }
         }
@@ -1522,7 +1524,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private Group doAddGroup(GroupModel groupModel, Domain domain) throws IdentityStoreException {
 
-        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
+        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getConnectorIdToMetaClaimMappings();
         if (metaClaimMappings.isEmpty()) {
             throw new IdentityStoreServerException("Invalid domain configuration found. No meta claim mappings.");
         }
@@ -1542,7 +1544,7 @@ public class IdentityStoreImpl implements IdentityStore {
         String groupUniqueId = IdentityUserMgtUtil.generateUUID();
         try {
             uniqueIdResolver.addGroup(groupUniqueId, connectedGroups);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             // TODO handle any failure
             throw new IdentityStoreServerException("Error occurred while persisting group unique group id.", e);
         }
@@ -1557,7 +1559,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private List<Group> doAddGroups(List<GroupModel> groupModels, Domain domain) throws IdentityStoreException {
 
-        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
+        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getConnectorIdToMetaClaimMappings();
         if (metaClaimMappings.isEmpty()) {
             throw new IdentityStoreServerException("Invalid domain configuration found. No meta claim mappings.");
         }
@@ -1594,7 +1596,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         try {
             uniqueIdResolver.addGroups(connectedGroupsMaps);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             // TODO handle any failure
             throw new IdentityStoreServerException("Error occurred while persisting group unique ids.", e);
         }
@@ -1615,7 +1617,7 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<String, String> connectorGroupIds;
         try {
             connectorGroupIds = uniqueIdResolver.getConnectorGroupIds(uniqueGroupId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException(String.format("Failed to retrieve connector id to group connector " +
                     "id map for unique group id - %s", uniqueGroupId), e);
         }
@@ -1631,7 +1633,7 @@ public class IdentityStoreImpl implements IdentityStore {
             //TODO: do we need to delete group unique id? credential store still may have references
         } else {
 
-            Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
+            Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getConnectorIdToMetaClaimMappings();
             if (metaClaimMappings.isEmpty()) {
                 throw new IdentityStoreServerException("Invalid domain configuration found. No meta claim mappings.");
             }
@@ -1649,7 +1651,7 @@ public class IdentityStoreImpl implements IdentityStore {
         if (!connectorGroupIds.equals(updatedUniqueIds)) {
             try {
                 uniqueIdResolver.updateGroup(uniqueGroupId, updatedUniqueIds);
-            } catch (UserManagerException e) {
+            } catch (UniqueIdResolverException e) {
                 throw new IdentityStoreServerException("Failed to update group connected ids.", e);
             }
         }
@@ -1661,12 +1663,12 @@ public class IdentityStoreImpl implements IdentityStore {
         Map<String, String> connectorGroupIds;
         try {
             connectorGroupIds = uniqueIdResolver.getConnectorGroupIds(uniqueGroupId);
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException("Failed to retrieve connector id to group connector id map for " +
                     "for unique group id - %s" + uniqueGroupId, e);
         }
 
-        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getClaimMappings();
+        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getConnectorIdToMetaClaimMappings();
         if (metaClaimMappings.isEmpty()) {
             throw new IdentityStoreServerException("Invalid domain configuration found. No meta claim mappings.");
         }
@@ -1690,7 +1692,7 @@ public class IdentityStoreImpl implements IdentityStore {
         if (!connectorGroupIds.equals(updatedUniqueIds)) {
             try {
                 uniqueIdResolver.updateGroup(uniqueGroupId, updatedUniqueIds);
-            } catch (UserManagerException e) {
+            } catch (UniqueIdResolverException e) {
                 throw new IdentityStoreServerException("Failed to update group connected ids.", e);
             }
         }
@@ -1727,7 +1729,7 @@ public class IdentityStoreImpl implements IdentityStore {
         try {
             uniqueUser = uniqueIdResolver.getUniqueUser(connectorUserId, metaClaimMapping
                     .getIdentityStoreConnectorId());
-        } catch (UserManagerException e) {
+        } catch (UniqueIdResolverException e) {
             throw new IdentityStoreServerException("Failed retrieve user unique id.", e);
         }
 
@@ -1772,7 +1774,7 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     private Map<String, List<Callback>> getConnectorIdToCredentialsMap(
-            List<Callback> credentials, SortedSet<CredentialStoreConnector> credentialStoreConnectors) {
+            List<Callback> credentials, List<CredentialStoreConnector> credentialStoreConnectors) {
 
         Map<String, List<Callback>> connectorIdToCredentialsMap = new HashMap<>();
 

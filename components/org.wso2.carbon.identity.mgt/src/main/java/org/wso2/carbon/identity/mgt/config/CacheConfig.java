@@ -22,11 +22,13 @@ package org.wso2.carbon.identity.mgt.config;
 public class CacheConfig {
 
     private int expireTime;
+
     private int maxCapacity;
 
     // Cache entries for a particular store should be enabled by default hence setting the value true by default so the
     // cache config will always be enable=true if a value is not provided for a cache entry in store-config file.
     private boolean enable = true;
+
     private boolean statisticsEnabled;
 
     public boolean isEnable() {

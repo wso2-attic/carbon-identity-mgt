@@ -39,6 +39,7 @@ public class IdentityMgtConstants {
     public static final String PERMISSION_CONFIG_FILE = "permissions.yml";
     public static final String CLAIM_STORE_FILE = "claim-store.yml";
     public static final String DOMAIN_CONFIG_FILE = "domain-config.yml";
+    public static final String CONNECTOR_CONFIG_FILE = "connector-config.yml";
 
     // Delimiters
     public static final String URL_SPLITTER = "/";

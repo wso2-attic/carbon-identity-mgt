@@ -49,7 +49,7 @@ public interface AuthorizationStoreConnector {
      * @param roleId Id of the Role
      * @return Role.RoleBuilder.
      * @throws AuthorizationStoreException Authorization Store Exception.
-     * @throws RoleNotFoundException when role is invalid
+     * @throws RoleNotFoundException       when role is invalid
      */
     Role.RoleBuilder getRole(String roleId) throws RoleNotFoundException, AuthorizationStoreException;
 
@@ -211,8 +211,8 @@ public interface AuthorizationStoreConnector {
     /**
      * Checks whether the users is in the role.
      *
-     * @param userId         Id of the user.
-     * @param roleName       Name of the role.
+     * @param userId   Id of the user.
+     * @param roleName Name of the role.
      * @return True if user is in the role.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
@@ -221,8 +221,8 @@ public interface AuthorizationStoreConnector {
     /**
      * Checks whether the group is in the role.
      *
-     * @param groupId         Id of the group.
-     * @param roleName        Name of the role.
+     * @param groupId  Id of the group.
+     * @param roleName Name of the role.
      * @return True if the group is in the role.
      * @throws AuthorizationStoreException Authorization Store Exception.
      */

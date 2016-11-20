@@ -15,7 +15,7 @@
 ###############################################################################
 domains:
   -
-    domainName: "A"
+    name: "A"
     priority: 1
     identityStoreConnectors:
     -

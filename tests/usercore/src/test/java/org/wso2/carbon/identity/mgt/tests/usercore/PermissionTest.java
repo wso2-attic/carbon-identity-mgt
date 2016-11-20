@@ -26,15 +26,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.wso2.carbon.identity.mgt.bean.User;
-import org.wso2.carbon.identity.mgt.claim.FileBasedMetaClaimStore;
-import org.wso2.carbon.identity.mgt.claim.MetaClaimStore;
 import org.wso2.carbon.identity.mgt.config.StoreConfig;
-import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.domain.DomainManager;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.AuthorizationStoreException;
@@ -44,23 +39,10 @@ import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
 import org.wso2.carbon.identity.mgt.exception.DomainConfigException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.internal.IdentityMgtComponent;
 import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.internal.config.StoreConfigBuilder;
-import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfig;
-import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfigBuilder;
-import org.wso2.carbon.identity.mgt.service.impl.RealmServiceImpl;
-import org.wso2.carbon.identity.mgt.store.IdentityStore;
-import org.wso2.carbon.identity.mgt.store.impl.AuthorizationStoreImpl;
-import org.wso2.carbon.identity.mgt.store.impl.CredentialStoreImpl;
-import org.wso2.carbon.identity.mgt.store.impl.IdentityStoreImpl;
-import org.wso2.carbon.identity.mgt.tests.usercore.constant.UserConstants;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
 
 /**
  * Tests specific for permission model implementation.
@@ -110,7 +92,7 @@ public class PermissionTest extends PowerMockTestCase {
      * @throws NoSuchMethodException             When the stated method is not found
      * @throws InvocationTargetException         When error occurred invoking the method
      * @throws IllegalAccessException            When the invoking method is not accessible
-     * @throws CarbonSecurityConfigException    on error in reading file
+     * @throws CarbonSecurityConfigException     on error in reading file
      */
     @Test(enabled = false) // Mocking a user gives null pointer when authenticating due to Domain not being available
     public void authenticateUser() throws AuthorizationStoreException, IdentityStoreException,
@@ -118,45 +100,45 @@ public class PermissionTest extends PowerMockTestCase {
             NoSuchMethodException, DomainConfigException, IllegalAccessException, CarbonSecurityDataHolderException,
             CarbonSecurityConfigException {
 
-        char[] password = new char[]{'a', 'd', 'm', 'i', 'n'};
-
-        logger.info(String
-                .format("Starting user authentication via %s:%s",
-                        UserConstants.USER_NAME, String.valueOf(password)));
-
-        StoreConfig storeConfig = createStoreConfig();
-        MetaClaimStore metaClaimStore = new FileBasedMetaClaimStore();
-        Mockito.when(IdentityMgtDataHolder.getInstance().getMetaClaimStore())
-                .thenReturn(metaClaimStore);
-
-        DomainManager domainManager = initialiseDomainManager(storeConfig);
-        initCarbonRealmService(domainManager, storeConfig);
-
-        // User builder initialisation
-        User user = Mockito.mock(User.class);
-        Mockito.when(user.getUserId()).thenReturn(UserConstants.USER_NAME);
-
-        IdentityStore identityStore = IdentityMgtDataHolder
-                .getInstance().getCarbonRealmService().getIdentityStore();
-        Mockito.when(identityStore.getUser(Mockito.anyString())).thenReturn(user);
-
-        Callback[] callbacks = new Callback[2];
-        PasswordCallback passwordCallback = new PasswordCallback("password", false);
-        NameCallback nameCallback = new NameCallback("username");
-
-        nameCallback.setName(UserConstants.USER_NAME);
-        passwordCallback.setPassword(password);
-
-        callbacks[0] = passwordCallback;
-        callbacks[1] = nameCallback;
-
-        AuthenticationContext authenticationContext =
-                IdentityMgtDataHolder.getInstance().getCarbonRealmService()
-                        .getCredentialStore().authenticate(callbacks);
-
-        Assert.assertNotNull(authenticationContext);
-
-        logger.info("User authentication test completed");
+//        char[] password = new char[]{'a', 'd', 'm', 'i', 'n'};
+//
+//        logger.info(String
+//                .format("Starting user authentication via %s:%s",
+//                        UserConstants.USER_NAME, String.valueOf(password)));
+//
+//        StoreConfig storeConfig = createStoreConfig();
+//        MetaClaimStore metaClaimStore = ClaimConfigBuilder.getInstance().getMetaClaims();
+//        Mockito.when(IdentityMgtDataHolder.getInstance().getMetaClaimStore())
+//                .thenReturn(metaClaimStore);
+//
+//        DomainManager domainManager = initialiseDomainManager(storeConfig);
+//        initCarbonRealmService(domainManager, storeConfig);
+//
+//        // User builder initialisation
+//        User user = Mockito.mock(User.class);
+//        Mockito.when(user.getUserId()).thenReturn(UserConstants.USER_NAME);
+//
+//        IdentityStore identityStore = IdentityMgtDataHolder
+//                .getInstance().getCarbonRealmService().getIdentityStore();
+//        Mockito.when(identityStore.getUser(Mockito.anyString())).thenReturn(user);
+//
+//        Callback[] callbacks = new Callback[2];
+//        PasswordCallback passwordCallback = new PasswordCallback("password", false);
+//        NameCallback nameCallback = new NameCallback("username");
+//
+//        nameCallback.setName(UserConstants.USER_NAME);
+//        passwordCallback.setPassword(password);
+//
+//        callbacks[0] = passwordCallback;
+//        callbacks[1] = nameCallback;
+//
+//        AuthenticationContext authenticationContext =
+//                IdentityMgtDataHolder.getInstance().getCarbonRealmService()
+//                        .getCredentialStore().authenticate(callbacks);
+//
+//        Assert.assertNotNull(authenticationContext);
+//
+//        logger.info("User authentication test completed");
     }
 
     /**
@@ -174,7 +156,7 @@ public class PermissionTest extends PowerMockTestCase {
      * @param storeConfig Store configuration
      * @return DomainManager initialised domain manager
      * @throws CarbonSecurityDataHolderException When getting domain configuration from IdentityMgtDataHolder
-     * @throws CarbonSecurityConfigException    on error in reading file
+     * @throws CarbonSecurityConfigException     on error in reading file
      * @throws NoSuchMethodException             When the stated method is not found
      * @throws InvocationTargetException         When error occurred invoking the method
      * @throws IllegalAccessException            When the invoking method is not accessible
@@ -183,18 +165,19 @@ public class PermissionTest extends PowerMockTestCase {
             throws CarbonSecurityDataHolderException, NoSuchMethodException,
             InvocationTargetException, IllegalAccessException, CarbonSecurityConfigException {
 
-        DomainConfig domainConfig = DomainConfigBuilder.getDomainConfig();
-
-        Mockito.when(IdentityMgtDataHolder.getInstance().getDomainConfig())
-                .thenReturn(domainConfig);
-
-        Method method = IdentityMgtComponent.class
-                .getDeclaredMethod("createDomainManagerFromConfig", DomainConfig.class, StoreConfig.class);
-        method.setAccessible(true);
-
-        IdentityMgtComponent c = new IdentityMgtComponent();
-
-        return (DomainManager) method.invoke(c, domainConfig, storeConfig);
+//        DomainConfig domainConfig = DomainConfigBuilder.getDomainConfig();
+//
+//        Mockito.when(IdentityMgtDataHolder.getInstance().getDomainConfig())
+//                .thenReturn(domainConfig);
+//
+//        Method method = IdentityMgtComponent.class
+//                .getDeclaredMethod("createDomainManagerFromConfig", DomainConfig.class, StoreConfig.class);
+//        method.setAccessible(true);
+//
+//        IdentityMgtComponent c = new IdentityMgtComponent();
+//
+//        return (DomainManager) method.invoke(c, domainConfig, storeConfig);
+        return null;
     }
 
     /**
@@ -209,19 +192,19 @@ public class PermissionTest extends PowerMockTestCase {
     private void initCarbonRealmService(DomainManager domainManager, StoreConfig storeConfig)
             throws CredentialStoreException, IdentityStoreException, AuthorizationStoreException {
 
-        AuthorizationStoreImpl authorizationStore = new AuthorizationStoreImpl();
-        CredentialStoreImpl credentialStore = new CredentialStoreImpl();
-        IdentityStoreImpl identityStore = Mockito.mock(IdentityStoreImpl.class);
-
-        credentialStore.init(domainManager);
-        identityStore.init(domainManager);
-        authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
-
-        // Add carbon realm service to the carbon realm service implementation
-        RealmServiceImpl<IdentityStoreImpl, CredentialStoreImpl> realmService =
-                new RealmServiceImpl<>(identityStore, credentialStore, authorizationStore);
-        Mockito.when(IdentityMgtDataHolder.getInstance().getCarbonRealmService())
-                .thenReturn(realmService);
+//        AuthorizationStoreImpl authorizationStore = new AuthorizationStoreImpl();
+//        CredentialStoreImpl credentialStore = new CredentialStoreImpl();
+//        IdentityStoreImpl identityStore = Mockito.mock(IdentityStoreImpl.class);
+//
+//        credentialStore.init(domainManager);
+//        identityStore.init(domainManager);
+//        authorizationStore.init(storeConfig.getAuthorizationConnectorConfigMap());
+//
+//        // Add carbon realm service to the carbon realm service implementation
+//        RealmServiceImpl<IdentityStoreImpl, CredentialStoreImpl> realmService =
+//                new RealmServiceImpl<>(identityStore, credentialStore, authorizationStore);
+//        Mockito.when(IdentityMgtDataHolder.getInstance().getCarbonRealmService())
+//                .thenReturn(realmService);
     }
 
     /**
@@ -232,7 +215,7 @@ public class PermissionTest extends PowerMockTestCase {
      */
     private StoreConfig createStoreConfig() throws CarbonSecurityConfigException {
 
-        StoreConfig storeConfig = StoreConfigBuilder.getStoreConfig();
+        StoreConfig storeConfig = StoreConfigBuilder.getInstance().getStoreConfig();
 
         // Adding factories to realm service which is done by OSGI at runtime
         // Credential store

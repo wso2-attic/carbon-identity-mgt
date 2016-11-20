@@ -23,6 +23,7 @@ public interface CredentialStoreConnectorFactory {
 
     /**
      * Get @see CredentialStoreConnector instance.
+     *
      * @return CredentialStoreConnector.
      */
     CredentialStoreConnector getInstance();

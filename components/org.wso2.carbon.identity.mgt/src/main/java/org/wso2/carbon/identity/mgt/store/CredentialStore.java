@@ -33,8 +33,8 @@ public interface CredentialStore {
     /**
      * Initialize credential store.
      *
-     * @param domainManager              DomainManager instance for which is shared by the identity store
-     *                                   and the credentials store.
+     * @param domainManager DomainManager instance for which is shared by the identity store
+     *                      and the credentials store.
      * @throws CredentialStoreException Credential Store Exception.
      */
     void init(DomainManager domainManager)

@@ -18,6 +18,7 @@ package org.wso2.carbon.identity.mgt.exception;
 
 /**
  * This class represents a Role not found exception.
+ *
  * @since 1.0.0
  */
 public class RoleNotFoundException extends Exception {

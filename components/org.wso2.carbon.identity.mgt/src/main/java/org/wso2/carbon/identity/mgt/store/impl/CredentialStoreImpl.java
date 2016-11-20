@@ -116,7 +116,7 @@ public class CredentialStoreImpl implements CredentialStore {
 //            newCallbacks[newCallbacks.length - 1] = carbonCallback;
 //
 //            for (CredentialStoreConnector credentialStoreConnector :
-//                    user.getDomain().getSortedCredentialStoreConnectors()) {
+//                    user.getDomain().getCredentialStoreConnectors()) {
 //
 //                // We need to check whether this credential store can handle this kind of callbacks.
 //                if (!credentialStoreConnector.canHandle(callbacks)) {

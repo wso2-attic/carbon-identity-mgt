@@ -16,27 +16,23 @@
 
 package org.wso2.carbon.identity.mgt.internal.config;
 
-import org.wso2.carbon.identity.mgt.config.AuthorizationStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.CacheConfig;
-import org.wso2.carbon.identity.mgt.config.CredentialStoreConnectorConfig;
-import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.StoreConfig;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.internal.config.store.CacheConfigEntry;
+import org.wso2.carbon.identity.mgt.internal.config.store.StoreConfigEntry;
+import org.wso2.carbon.identity.mgt.internal.config.store.StoreConfigFile;
 import org.wso2.carbon.identity.mgt.util.FileUtil;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
-import org.yaml.snakeyaml.Yaml;
+import org.wso2.carbon.kernel.utils.StringUtils;
 
-import java.io.IOException;
-import java.nio.file.DirectoryIteratorException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * Configuration builder for stores.
@@ -45,17 +41,63 @@ import java.util.stream.Collectors;
  */
 public class StoreConfigBuilder {
 
+    private static StoreConfigBuilder instance = new StoreConfigBuilder();
+
     private StoreConfigBuilder() {
 
     }
+
+    public static StoreConfigBuilder getInstance() {
+        return instance;
+    }
+
+    /**
+     * Builder a config object based on the store-config.yml properties.
+     *
+     * @return StoreConfig
+     * @throws CarbonSecurityConfigException carbon security config exception.
+     */
+    public StoreConfig getStoreConfig() throws CarbonSecurityConfigException {
+
+        StoreConfigFile storeConfigFile = buildStoreConfig();
+        StoreConfig storeConfig = new StoreConfig();
+
+        if (!storeConfigFile.isEnableCache()) {
+            storeConfig.setEnableCache(false);
+            return storeConfig;
+        }
+
+        if (storeConfigFile.getIdentityStore() != null) {
+
+            StoreConfigEntry storeConfigEntry = storeConfigFile.getIdentityStore();
+            if (storeConfig.isEnableCache()) {
+                storeConfig.setIdentityStoreCacheConfigMap(getCacheConfigs(storeConfigEntry.getCacheConfigs()));
+            } else {
+                storeConfig.setEnableIdentityStoreCache(false);
+            }
+        }
+
+        if (storeConfigFile.getCredentialStore() != null) {
+
+            StoreConfigEntry storeConfigEntry = storeConfigFile.getCredentialStore();
+            if (storeConfig.isEnableCache()) {
+                storeConfig.setCredentialStoreCacheConfigMap(getCacheConfigs(storeConfigEntry.getCacheConfigs()));
+            } else {
+                storeConfig.setEnableCredentialStoreCache(false);
+            }
+        }
+
+        return storeConfig;
+    }
+
 
     /**
      * Read store-config.yml file
      *
      * @return StoreConfig file from store-config.yml
-     * @throws CarbonSecurityConfigException on error in reading file
+     * @throws CarbonSecurityConfigException on error in reading file.
      */
-    private static StoreConfigFile buildStoreConfig() throws CarbonSecurityConfigException {
+    private StoreConfigFile buildStoreConfig() throws CarbonSecurityConfigException {
 
         Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.STORE_CONFIG_FILE);
@@ -65,86 +107,31 @@ public class StoreConfigBuilder {
     }
 
     /**
-     * Builder a config object based on the store-config.yml properties.
+     * Get cache configs for each connector.
      *
-     * @return StoreConfig
-     * @throws CarbonSecurityConfigException carbon security config exception.
+     * @param cacheConfigEntries Cache entry of the connector.
+     * @return Map of CacheConfigs mapped to cache config name.
      */
-    public static StoreConfig getStoreConfig() throws CarbonSecurityConfigException {
+    private static Map<String, CacheConfig> getCacheConfigs(List<CacheConfigEntry> cacheConfigEntries) {
 
-        StoreConfig storeConfig = new StoreConfig();
+        if (cacheConfigEntries.isEmpty()) {
+            return Collections.emptyMap();
+        }
 
-        StoreConfigFile storeConfigFile = buildStoreConfig();
+        Map<String, CacheConfig> cacheConfigMap = new HashMap<>();
 
-        // TODO: Store config - additional store parameters - re-walk caching implementation
-
-        // Check if the global cache is enabled.
-        boolean cacheEnabled = storeConfigFile.isEnableCache();
-        storeConfig.setEnableCache(cacheEnabled);
-
-        // Load cache entries for credential store if the global cache is enabled.
-        Map<String, CacheConfig> credentialStoreCacheConfigMap =
-                getCacheEntriesForCredentialStore(storeConfigFile, cacheEnabled);
-
-        storeConfig.setCredentialStoreCacheConfigMap(credentialStoreCacheConfigMap);
-
-        // Load cache entries for identity store if the global cache is enabled.
-        Map<String, CacheConfig> identityStoreCacheConfigMap =
-                getCacheEntriesForIdentityStore(storeConfigFile, cacheEnabled);
-        storeConfig.setIdentityStoreCacheConfigMap(identityStoreCacheConfigMap);
-
-        // Load cache entries for authorization store if the global cache is enabled.
-        Map<String, CacheConfig> authorizationStoreCacheConfigMap =
-                getCacheEntriesForAuthorizationStore(storeConfigFile, cacheEnabled);
-        storeConfig.setAuthorizationStoreCacheConfigMap(authorizationStoreCacheConfigMap);
-
-        // Load external connector config files
-        StoreConnectorsConfigEntry storeConnectors = storeConfigFile.getStoreConnectors();
-
-        List<IdentityStoreConnectorConfig> identityStoreConnectorConfigs =
-                storeConnectors.getIdentityStoreConnectors();
-
-        identityStoreConnectorConfigs.addAll(getExternalIdentityStoreConnectorConfig());
-
-        List<CredentialStoreConnectorConfig> credentialStoreConnectorConfigs =
-                storeConnectors.getCredentialStoreConnectors();
-
-        credentialStoreConnectorConfigs.addAll(getExternalCredentialStoreConnectorConfig());
-
-        List<AuthorizationStoreConnectorConfig> authorizationStoreConnectorConfigs =
-                storeConnectors.getAuthorizationStoreConnectors();
-
-        authorizationStoreConnectorConfigs.addAll(getExternalAuthorizationStoreConnectorConfig());
-
-
-        // Populate IdentityStoreConnectors
-        Map<String, IdentityStoreConnectorConfig> identityStoreConnectorConfigMap =
-                storeConfigFile.getStoreConnectors().getIdentityStoreConnectors().stream().collect(
-                Collectors.toMap(IdentityStoreConnectorConfig::getConnectorId,
-                        identityStoreConnectorConfig -> identityStoreConnectorConfig)
-        );
-
-        storeConfig.setIdentityConnectorConfigMap(identityStoreConnectorConfigMap);
-
-        // Populate CredentialStoreConnectors
-        Map<String, CredentialStoreConnectorConfig> credentialStoreConnectorConfigMap =
-                credentialStoreConnectorConfigs.stream().collect(
-                Collectors.toMap(CredentialStoreConnectorConfig::getConnectorId,
-                        credentialStoreConnectorConfig -> credentialStoreConnectorConfig)
-        );
-
-        storeConfig.setCredentialConnectorConfigMap(credentialStoreConnectorConfigMap);
-
-        // Populate AuthorizationStoreConnectors
-        Map<String, AuthorizationStoreConnectorConfig> authorizationStoreConnectorConfigMap =
-                authorizationStoreConnectorConfigs.stream().collect(
-                Collectors.toMap(AuthorizationStoreConnectorConfig::getConnectorId,
-                        authorizationStoreConnectorConfig -> authorizationStoreConnectorConfig)
-        );
-
-        storeConfig.setAuthorizationConnectorConfigMap(authorizationStoreConnectorConfigMap);
-
-        return storeConfig;
+        cacheConfigEntries.stream()
+                .filter(Objects::nonNull)
+                .filter(cacheConfigEntry -> !StringUtils.isNullOrEmpty(cacheConfigEntry.getName()))
+                .forEach(cacheConfigEntry -> {
+                    CacheConfig cacheConfig = new CacheConfig();
+                    cacheConfig.setEnable(cacheConfigEntry.isEnableCache());
+                    cacheConfig.setExpireTime(cacheConfigEntry.getExpireTime());
+                    cacheConfig.setMaxCapacity(cacheConfigEntry.getMaxCapacity());
+                    cacheConfig.setEnable(cacheConfigEntry.isStatisticsEnabled());
+                    cacheConfigMap.put(cacheConfigEntry.getName(), cacheConfig);
+                });
+        return cacheConfigMap;
     }
 
     /**
@@ -153,162 +140,55 @@ public class StoreConfigBuilder {
      * @return List of external IdentityStoreConnector config entries.
      * @throws CarbonSecurityConfigException
      */
-    private static List<IdentityStoreConnectorConfig> getExternalIdentityStoreConnectorConfig()
-            throws CarbonSecurityConfigException {
+//    private static List<IdentityStoreConnectorConfig> getExternalIdentityStoreConnectorConfig()
+//            throws CarbonSecurityConfigException {
+//
+//        List<IdentityStoreConnectorConfig> configEntries = new ArrayList<>();
+//        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
+//
+//        if (Files.exists(path)) {
+//            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-identity-connector.yml")) {
+//                for (Path filePath : stream) {
+//                    IdentityStoreConnectorConfig config = new Yaml().loadAs(Files.newInputStream(filePath),
+//                            IdentityStoreConnectorConfig.class);
+//
+//                    configEntries.add(config);
+//                }
+//            } catch (DirectoryIteratorException | IOException e) {
+//                throw new CarbonSecurityConfigException("Failed to read identity connector files from path: "
+//                        + path.toString(), e);
+//            }
+//        }
+//
+//        return configEntries;
+//    }
+//    /**
+//     * Read the CredentialStoreConnector config entries from external identity-connector.yml files.
+//     *
+//     * @return List of external CredentialStoreConnector Store config entries.
+//     * @throws CarbonSecurityConfigException
+//     */
+//    private static List<CredentialStoreConnectorConfig> getExternalCredentialStoreConnectorConfig()
+//            throws CarbonSecurityConfigException {
+//
+//        List<CredentialStoreConnectorConfig> configEntries = new ArrayList<>();
+//        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
+//
+//        if (Files.exists(path)) {
+//            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-credential-connector.yml")) {
+//                for (Path filePath : stream) {
+//                    CredentialStoreConnectorConfig config = new Yaml().loadAs(Files.newInputStream(filePath),
+//                            CredentialStoreConnectorConfig.class);
+//
+//                    configEntries.add(config);
+//                }
+//            } catch (DirectoryIteratorException | IOException e) {
+//                throw new CarbonSecurityConfigException("Failed to read credential store connector files from path: "
+//                        + path.toString(), e);
+//            }
+//        }
+//
+//        return configEntries;
+//    }
 
-        List<IdentityStoreConnectorConfig> configEntries = new ArrayList<>();
-        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
-
-        if (Files.exists(path)) {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-identity-connector.yml")) {
-                for (Path filePath : stream) {
-                    IdentityStoreConnectorConfig config = new Yaml().loadAs(Files.newInputStream(filePath),
-                            IdentityStoreConnectorConfig.class);
-
-                    configEntries.add(config);
-                }
-            } catch (DirectoryIteratorException | IOException e) {
-                throw new CarbonSecurityConfigException("Failed to read identity connector files from path: "
-                        + path.toString(), e);
-            }
-        }
-
-        return configEntries;
-    }
-    /**
-     * Read the CredentialStoreConnector config entries from external identity-connector.yml files.
-     *
-     * @return List of external CredentialStoreConnector Store config entries.
-     * @throws CarbonSecurityConfigException
-     */
-    private static List<CredentialStoreConnectorConfig> getExternalCredentialStoreConnectorConfig()
-            throws CarbonSecurityConfigException {
-
-        List<CredentialStoreConnectorConfig> configEntries = new ArrayList<>();
-        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
-
-        if (Files.exists(path)) {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-credential-connector.yml")) {
-                for (Path filePath : stream) {
-                    CredentialStoreConnectorConfig config = new Yaml().loadAs(Files.newInputStream(filePath),
-                            CredentialStoreConnectorConfig.class);
-
-                    configEntries.add(config);
-                }
-            } catch (DirectoryIteratorException | IOException e) {
-                throw new CarbonSecurityConfigException("Failed to read credential store connector files from path: "
-                        + path.toString(), e);
-            }
-        }
-
-        return configEntries;
-    }
-
-    /**
-     * Read the AuthorizationStoreConnector config entries from external identity-connector.yml files.
-     *
-     * @return List of Store external AuthorizationStoreConnector config entries.
-     * @throws CarbonSecurityConfigException
-     */
-    private static List<AuthorizationStoreConnectorConfig> getExternalAuthorizationStoreConnectorConfig()
-            throws CarbonSecurityConfigException {
-
-        List<AuthorizationStoreConnectorConfig> configEntries = new ArrayList<>();
-        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
-
-        if (Files.exists(path)) {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-authorization-connector.yml")) {
-                for (Path filePath : stream) {
-                    AuthorizationStoreConnectorConfig config = new Yaml().loadAs(Files.newInputStream(filePath),
-                            AuthorizationStoreConnectorConfig.class);
-
-                    configEntries.add(config);
-                }
-            } catch (DirectoryIteratorException | IOException e) {
-                throw new CarbonSecurityConfigException("Failed to read authorization store connector files from path: "
-                        + path.toString(), e);
-            }
-        }
-
-        return configEntries;
-    }
-
-    /**
-     * Get cache configs for each connector.
-     *
-     * @param cacheEntries   Cache entry of the connector.
-     * @param isCacheEnabled Is caching enabled in stores.
-     * @return Map of CacheConfigs mapped to cache config name.
-     */
-    private static Map<String, CacheConfig> getCacheConfigs(List<CacheEntry> cacheEntries,
-                                                            boolean isCacheEnabled) {
-
-        if (!isCacheEnabled || cacheEntries == null) {
-            return Collections.emptyMap();
-        }
-
-        return cacheEntries.stream()
-                .filter(cacheEntry -> !(cacheEntry.getName() == null || cacheEntry.getName().isEmpty()))
-                .map(cacheEntry -> {
-                    if (cacheEntry.getCacheConfig() == null) {
-                        cacheEntry.setCacheConfig(new CacheConfig());
-                    }
-                    return cacheEntry;
-                })
-                .collect(Collectors.toMap(CacheEntry::getName, CacheEntry::getCacheConfig));
-    }
-
-    /**
-     * Get cache entries for authorization store if the global cache is enabled.
-     *
-     * @param storeConfigFile Store config file data.
-     * @param isCacheEnabled  Is caching enabled in stores.
-     * @return map of authorization store id and cache config
-     */
-    private static Map<String, CacheConfig> getCacheEntriesForAuthorizationStore(StoreConfigFile storeConfigFile,
-                                                                                 boolean isCacheEnabled) {
-
-        StoreConfigEntry storeConfigEntry = storeConfigFile.getCredentialStore();
-        List<CacheEntry> authorizationStoreCacheEntries = storeConfigEntry != null
-                ? storeConfigEntry.getCaches()
-                : new ArrayList<>();
-
-        return getCacheConfigs(authorizationStoreCacheEntries, isCacheEnabled);
-    }
-
-    /**
-     * Get cache entries for identity store if the global cache is enabled.
-     *
-     * @param storeConfigFile Store config file data.
-     * @param isCacheEnabled  Is caching enabled in stores.
-     * @return map of identity store id and cache config
-     */
-    private static Map<String, CacheConfig> getCacheEntriesForIdentityStore(StoreConfigFile storeConfigFile,
-                                                                            boolean isCacheEnabled) {
-
-        StoreConfigEntry storeConfigEntry = storeConfigFile.getCredentialStore();
-        List<CacheEntry> identityStoreCacheEntries = storeConfigEntry != null
-                ? storeConfigEntry.getCaches()
-                : new ArrayList<>();
-
-        return getCacheConfigs(identityStoreCacheEntries, isCacheEnabled);
-    }
-
-    /**
-     * Get cache entries for credential store if the global cache is enabled.
-     *
-     * @param storeConfigFile Store config file data.
-     * @param isCacheEnabled  Is caching enabled in stores.
-     * @return map of credential store id and cache config
-     */
-    private static Map<String, CacheConfig> getCacheEntriesForCredentialStore(StoreConfigFile storeConfigFile,
-                                                                              boolean isCacheEnabled) {
-
-        StoreConfigEntry storeConfigEntry = storeConfigFile.getCredentialStore();
-        List<CacheEntry> credentialStoreCacheEntries = storeConfigEntry != null
-                ? storeConfigEntry.getCaches()
-                : new ArrayList<>();
-
-        return getCacheConfigs(credentialStoreCacheEntries, isCacheEnabled);
-    }
 }
