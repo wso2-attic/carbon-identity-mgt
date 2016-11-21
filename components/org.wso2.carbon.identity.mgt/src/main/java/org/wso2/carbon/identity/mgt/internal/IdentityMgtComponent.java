@@ -44,21 +44,18 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.MetaClaimStoreException;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
-import org.wso2.carbon.identity.mgt.internal.config.StoreConfigBuilder;
 import org.wso2.carbon.identity.mgt.internal.config.claim.ClaimConfigBuilder;
 import org.wso2.carbon.identity.mgt.internal.config.connector.ConnectorConfigBuilder;
 import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfigBuilder;
+import org.wso2.carbon.identity.mgt.internal.config.store.StoreConfigBuilder;
 import org.wso2.carbon.identity.mgt.service.RealmService;
 import org.wso2.carbon.identity.mgt.service.impl.RealmServiceImpl;
-import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
 import org.wso2.carbon.identity.mgt.store.CredentialStore;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
-import org.wso2.carbon.identity.mgt.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory;
-import org.wso2.carbon.identity.mgt.store.impl.AuthorizationStoreImpl;
 import org.wso2.carbon.identity.mgt.store.impl.CacheBackedCredentialStore;
 import org.wso2.carbon.identity.mgt.store.impl.CacheBackedIdentityStore;
 import org.wso2.carbon.identity.mgt.store.impl.CredentialStoreImpl;
@@ -67,6 +64,7 @@ import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolverFactory;
 import org.wso2.carbon.identity.mgt.user.impl.JDBCUniqueIdResolverFactory;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
+import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 import java.util.HashSet;
 import java.util.List;
@@ -153,23 +151,20 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     }
 
     @Reference(
-            name = "AuthorizationStoreConnectorFactory",
-            service = AuthorizationStoreConnectorFactory.class,
+            name = "AuthorizationStore",
+            service = AuthorizationStore.class,
             cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterAuthorizationStoreConnectorFactory"
+            unbind = "unregisterAuthorizationStore"
     )
-    protected void registerAuthorizationStoreConnectorFactory(
-            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory, Map<String, String> properties) {
+    protected void registerAuthorizationStore(AuthorizationStore authorizationStore, Map<String, String> properties) {
 
-        String connectorId = properties.get("connector-type");
-        IdentityMgtDataHolder.getInstance().registerAuthorizationStoreConnectorFactory(connectorId,
-                authorizationStoreConnectorFactory);
+        IdentityMgtDataHolder.getInstance().registerAuthorizationStore(authorizationStore);
     }
 
-    protected void unregisterAuthorizationStoreConnectorFactory(AuthorizationStoreConnectorFactory
-                                                                        uniqueIdResolverFactory) {
+    protected void unregisterAuthorizationStore(AuthorizationStore authorizationStore) {
 
+        IdentityMgtDataHolder.getInstance().registerAuthorizationStore(null);
     }
 
     @Reference(
@@ -236,23 +231,21 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             IdentityStore identityStore;
             CredentialStore credentialStore;
             //TODO
-            AuthorizationStore authorizationStore = new AuthorizationStoreImpl();
+            AuthorizationStore authorizationStore = IdentityMgtDataHolder.getInstance().getAuthorizationStore();
 
             if (storeConfig.isEnableCache() && storeConfig.isEnableIdentityStoreCache()) {
                 identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap());
-                identityStore.init(domainManager);
             } else {
                 identityStore = new IdentityStoreImpl();
-                identityStore.init(domainManager);
             }
+            identityStore.init(domainManager);
 
             if (storeConfig.isEnableCache() && storeConfig.isEnableCredentialStoreCache()) {
                 credentialStore = new CacheBackedCredentialStore(storeConfig.getCredentialStoreCacheConfigMap());
-                credentialStore.init(domainManager);
             } else {
                 credentialStore = new CredentialStoreImpl();
-                credentialStore.init(domainManager);
             }
+            credentialStore.init(domainManager);
 
 
             // Register the carbon realm service.
@@ -261,8 +254,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
             identityMgtDataHolder.registerCarbonRealmService(carbonRealmService);
 
-            realmServiceRegistration = bundleContext.registerService(RealmService.class.getName(),
-                    carbonRealmService, null);
+            realmServiceRegistration = bundleContext.registerService(RealmService.class, carbonRealmService, null);
             log.info("Realm service registered successfully.");
 
             log.info("Carbon-Security bundle activated successfully.");

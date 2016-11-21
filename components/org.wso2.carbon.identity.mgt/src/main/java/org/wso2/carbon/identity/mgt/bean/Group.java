@@ -16,11 +16,13 @@
 
 package org.wso2.carbon.identity.mgt.bean;
 
-import org.wso2.carbon.identity.mgt.exception.AuthorizationStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.StoreException;
-import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
+import org.wso2.carbon.security.caas.user.core.bean.Permission;
+import org.wso2.carbon.security.caas.user.core.bean.Role;
+import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 import java.util.List;
 
@@ -92,7 +94,8 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public List<Role> getRoles() throws AuthorizationStoreException {
-        return authorizationStore.getRolesOfGroup(groupId, domain);
+        //return authorizationStore.getRolesOfGroup(groupId, domain);
+        return null;
     }
 
     /**
@@ -103,7 +106,8 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException {
-        return authorizationStore.isGroupAuthorized(groupId, domain, permission);
+        //return authorizationStore.isGroupAuthorized(groupId, domain, permission);
+        return false;
     }
 
     /**
@@ -125,7 +129,8 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean hasRole(String roleName) throws AuthorizationStoreException {
-        return authorizationStore.isGroupInRole(groupId, domain, roleName);
+        //return authorizationStore.isGroupInRole(groupId, domain, roleName);
+        return false;
     }
 
     /**
@@ -135,7 +140,7 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updateRoles(List<Role> newRoleList) throws AuthorizationStoreException {
-        authorizationStore.updateRolesInGroup(groupId, domain, newRoleList);
+        //authorizationStore.updateRolesInGroup(groupId, domain, newRoleList);
     }
 
     /**
@@ -146,7 +151,7 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updateRoles(List<Role> assignList, List<Role> unAssignList) throws AuthorizationStoreException {
-        authorizationStore.updateRolesInGroup(groupId, domain, assignList, unAssignList);
+        //authorizationStore.updateRolesInGroup(groupId, domain, assignList, unAssignList);
     }
 
     /**

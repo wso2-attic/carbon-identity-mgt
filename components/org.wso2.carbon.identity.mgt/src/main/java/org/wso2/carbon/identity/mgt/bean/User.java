@@ -17,12 +17,16 @@
 package org.wso2.carbon.identity.mgt.bean;
 
 import org.wso2.carbon.identity.mgt.claim.Claim;
-import org.wso2.carbon.identity.mgt.exception.AuthorizationStoreException;
 import org.wso2.carbon.identity.mgt.exception.ClaimManagerException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.StoreException;
-import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
+import org.wso2.carbon.security.caas.user.core.bean.Action;
+import org.wso2.carbon.security.caas.user.core.bean.Permission;
+import org.wso2.carbon.security.caas.user.core.bean.Resource;
+import org.wso2.carbon.security.caas.user.core.bean.Role;
+import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 import java.util.List;
 
@@ -118,7 +122,8 @@ public class User {
      * @throws AuthorizationStoreException Authorization store exception,
      */
     public List<Role> getRoles() throws AuthorizationStoreException {
-        return authorizationStore.getRolesOfUser(userId, domain);
+        //return authorizationStore.getRolesOfUser(userId, domain);
+        return null;
     }
 
     /**
@@ -129,7 +134,8 @@ public class User {
      * @throws AuthorizationStoreException authorization store exception.
      */
     public List<Permission> getPermissions(Resource resource) throws AuthorizationStoreException {
-        return authorizationStore.getPermissionsOfUser(userId, domain, resource);
+        //return authorizationStore.getPermissionsOfUser(userId, domain, resource);
+        return null;
     }
 
     /**
@@ -140,7 +146,8 @@ public class User {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public List<Permission> getPermissions(Action action) throws AuthorizationStoreException {
-        return authorizationStore.getPermissionsOfUser(userId, domain, action);
+        //return authorizationStore.getPermissionsOfUser(userId, domain, action);
+        return null;
     }
 
     /**
@@ -152,7 +159,8 @@ public class User {
      * @throws IdentityStoreException      Identity store exception.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException, IdentityStoreException {
-        return authorizationStore.isUserAuthorized(userId, permission, domain);
+        //return authorizationStore.isUserAuthorized(userId, permission, domain);
+        return false;
     }
 
     /**
@@ -185,7 +193,7 @@ public class User {
      * @throws IdentityStoreException      Identity store exception.
      */
     public void updateRoles(List<Role> newRolesList) throws AuthorizationStoreException, IdentityStoreException {
-        authorizationStore.updateRolesInUser(userId, domain, newRolesList);
+        //authorizationStore.updateRolesInUser(userId, domain, newRolesList);
     }
 
     /**
@@ -196,7 +204,7 @@ public class User {
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
     public void updateRoles(List<Role> assignList, List<Role> unAssignList) throws AuthorizationStoreException {
-        authorizationStore.updateRolesInUser(userId, domain, assignList, unAssignList);
+        //authorizationStore.updateRolesInUser(userId, domain, assignList, unAssignList);
     }
 
     /**

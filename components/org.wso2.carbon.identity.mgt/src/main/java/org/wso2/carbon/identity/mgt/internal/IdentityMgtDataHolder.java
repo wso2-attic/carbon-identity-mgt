@@ -22,11 +22,11 @@ import org.wso2.carbon.identity.mgt.claim.MetaClaimStore;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfig;
 import org.wso2.carbon.identity.mgt.service.impl.RealmServiceImpl;
-import org.wso2.carbon.identity.mgt.store.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolverFactory;
+import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class IdentityMgtDataHolder {
 
     private RealmServiceImpl carbonRealmService;
 
-    private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
+    private AuthorizationStore authorizationStore;
 
     private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
 
@@ -85,14 +85,13 @@ public class IdentityMgtDataHolder {
     }
 
     /**
-     * Register authorization store connector factory.
+     * Register authorization store.
      *
-     * @param key                                Id of the factory.
-     * @param authorizationStoreConnectorFactory AuthorizationStoreConnectorFactory.
+     * @param authorizationStore authorization store.
      */
-    void registerAuthorizationStoreConnectorFactory(String key, AuthorizationStoreConnectorFactory
-            authorizationStoreConnectorFactory) {
-        authorizationStoreConnectorFactoryMap.put(key, authorizationStoreConnectorFactory);
+    void registerAuthorizationStore(AuthorizationStore authorizationStore) {
+
+        this.authorizationStore = authorizationStore;
     }
 
     /**
@@ -121,8 +120,10 @@ public class IdentityMgtDataHolder {
         this.uniqueIdResolverFactoryMap.put(key, uniqueIdResolverFactory);
     }
 
-    public Map<String, AuthorizationStoreConnectorFactory> getAuthorizationStoreConnectorFactoryMap() {
-        return authorizationStoreConnectorFactoryMap;
+    public AuthorizationStore getAuthorizationStore() {
+
+        //TODO throw exception if null
+        return authorizationStore;
     }
 
     public Map<String, CredentialStoreConnectorFactory> getCredentialStoreConnectorFactoryMap() {

@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.internal.config;
+package org.wso2.carbon.identity.mgt.internal.config.store;
 
 import org.wso2.carbon.identity.mgt.config.CacheConfig;
 import org.wso2.carbon.identity.mgt.config.StoreConfig;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
-import org.wso2.carbon.identity.mgt.internal.config.store.CacheConfigEntry;
-import org.wso2.carbon.identity.mgt.internal.config.store.StoreConfigEntry;
-import org.wso2.carbon.identity.mgt.internal.config.store.StoreConfigFile;
 import org.wso2.carbon.identity.mgt.util.FileUtil;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 import org.wso2.carbon.kernel.utils.StringUtils;

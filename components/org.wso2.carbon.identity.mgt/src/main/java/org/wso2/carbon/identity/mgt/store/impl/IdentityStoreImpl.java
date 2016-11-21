@@ -162,8 +162,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setGroupId(groupUniqueId)
                 .setDomain(domain)
                 .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
-                        .getAuthorizationStore())
+                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
     }
 
