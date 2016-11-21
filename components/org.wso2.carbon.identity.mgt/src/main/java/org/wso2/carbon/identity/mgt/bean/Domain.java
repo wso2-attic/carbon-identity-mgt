@@ -190,7 +190,7 @@ public class Domain {
 
     public List<MetaClaimMapping> getMetaClaimMappings() throws DomainException {
 
-        if (connectorIdToMetaClaimMappings.isEmpty()) {
+        if (metaClaimMappings.isEmpty()) {
             throw new DomainException("Invalid domain configuration found. No meta claim mappings.");
         }
 

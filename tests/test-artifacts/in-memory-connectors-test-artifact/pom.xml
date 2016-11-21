@@ -54,6 +54,13 @@
             org.wso2.carbon.identity.mgt.bean.*;version="${org.wso2.carbon.identity.mgt.version.range}",
         </import.package>
 
+        <carbon.component>
+            osgi.service;
+            objectClass="org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory",
+            osgi.service;
+            objectClass="org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory"
+        </carbon.component>
+
         <dsannotations>*</dsannotations>
 
         <!-- OSGi API version range-->
