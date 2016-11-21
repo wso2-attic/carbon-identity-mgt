@@ -34,9 +34,12 @@ import java.util.Map;
  */
 public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
+    private IdentityStoreConnectorConfig identityStoreConnectorConfig;
+
     @Override
     public void init(IdentityStoreConnectorConfig identityStoreConnectorConfig) throws IdentityStoreException {
 
+        this.identityStoreConnectorConfig = identityStoreConnectorConfig;
     }
 
     @Override
@@ -134,7 +137,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public IdentityStoreConnectorConfig getIdentityStoreConfig() {
-        return null;
+        return identityStoreConnectorConfig;
     }
 
     @Override

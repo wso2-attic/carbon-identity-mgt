@@ -258,6 +258,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.messaging</groupId>
+                <artifactId>org.wso2.carbon.messaging</artifactId>
+                <scope>test</scope>
+                <version>${org.wso2.carbon.messaging.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.identity.mgt.tests</groupId>
                 <artifactId>org.wso2.carbon.identity.mgt.test.distribution</artifactId>
                 <version>${carbon.identity.mgt.version}</version>

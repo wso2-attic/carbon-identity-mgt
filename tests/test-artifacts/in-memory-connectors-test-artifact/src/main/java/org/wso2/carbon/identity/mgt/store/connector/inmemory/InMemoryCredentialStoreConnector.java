@@ -28,9 +28,12 @@ import javax.security.auth.callback.Callback;
  */
 public class InMemoryCredentialStoreConnector implements CredentialStoreConnector {
 
+    private CredentialStoreConnectorConfig credentialStoreConnectorConfig;
+
     @Override
     public void init(CredentialStoreConnectorConfig credentialStoreConnectorConfig) throws CredentialStoreException {
 
+        this.credentialStoreConnectorConfig = credentialStoreConnectorConfig;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
 
     @Override
     public CredentialStoreConnectorConfig getCredentialStoreConfig() {
-        return null;
+        return credentialStoreConnectorConfig;
     }
 
     @Override
