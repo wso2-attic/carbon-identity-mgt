@@ -141,6 +141,11 @@
                 <version>${org.wso2.carbon.caching.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.security.caas</groupId>
+                <artifactId>org.wso2.carbon.security.caas</artifactId>
+                <version>${org.wso2.carbon.security.caas.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.identity.mgt</groupId>
                 <artifactId>org.wso2.carbon.identity.mgt</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
@@ -297,7 +302,7 @@
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <org.wso2.carbon.messaging.version>1.0.3</org.wso2.carbon.messaging.version>
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
-        <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
+        <org.wso2.carbon.security.caas.version>1.0.0-SNAPSHOT</org.wso2.carbon.security.caas.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>

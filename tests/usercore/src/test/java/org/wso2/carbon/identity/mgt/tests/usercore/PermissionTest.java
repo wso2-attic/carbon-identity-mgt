@@ -32,7 +32,6 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.identity.mgt.config.StoreConfig;
 import org.wso2.carbon.identity.mgt.domain.DomainManager;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
-import org.wso2.carbon.identity.mgt.exception.AuthorizationStoreException;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
@@ -40,7 +39,8 @@ import org.wso2.carbon.identity.mgt.exception.DomainConfigException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
-import org.wso2.carbon.identity.mgt.internal.config.StoreConfigBuilder;
+import org.wso2.carbon.identity.mgt.internal.config.store.StoreConfigBuilder;
+import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 
 import java.lang.reflect.InvocationTargetException;
 

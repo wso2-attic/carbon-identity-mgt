@@ -16,9 +16,9 @@
 
 package org.wso2.carbon.identity.mgt.service;
 
-import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
 import org.wso2.carbon.identity.mgt.store.CredentialStore;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
+import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 /**
  * User realm service.
