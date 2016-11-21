@@ -105,7 +105,10 @@
             net.minidev.asm.*;version="${asm.package.version.range}",
             org.wso2.carbon.kernel.*,
             org.wso2.carbon.messaging.*,
-            org.wso2.carbon.caching.*
+            org.wso2.carbon.caching.*,
+            org.wso2.carbon.security.caas.user.core.store.*,
+            org.wso2.carbon.security.caas.user.core.bean.*,
+            org.wso2.carbon.security.caas.user.core.exception.*
         </import.package>
 
         <carbon.component>
