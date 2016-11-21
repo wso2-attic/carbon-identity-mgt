@@ -18,6 +18,8 @@ package org.wso2.carbon.identity.mgt.internal;
 
 import org.osgi.framework.BundleContext;
 import org.wso2.carbon.caching.CarbonCachingService;
+import org.wso2.carbon.datasource.core.api.DataSourceService;
+import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimStore;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfig;
@@ -30,6 +32,7 @@ import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.sql.DataSource;
 
 /**
  * Carbon security data holder.
@@ -59,6 +62,8 @@ public class IdentityMgtDataHolder {
     private MetaClaimStore metaClaimStore;
 
     private UniqueIdResolver uniqueIdResolver;
+
+    private DataSourceService dataSourceService;
 
     private IdentityMgtDataHolder() {
     }
@@ -190,5 +195,17 @@ public class IdentityMgtDataHolder {
 
     public void setUniqueIdResolver(UniqueIdResolver uniqueIdResolver) {
         this.uniqueIdResolver = uniqueIdResolver;
+    }
+
+    public DataSource getDataSource(String dataSourceName) throws DataSourceException {
+
+        if (dataSourceService == null) {
+            throw new RuntimeException("Datasource service is null. Cannot retrieve data source");
+        }
+        return (DataSource) dataSourceService.getDataSource(dataSourceName);
+    }
+
+    public void setDataSourceService(DataSourceService dataSourceService) {
+        this.dataSourceService = dataSourceService;
     }
 }

@@ -251,7 +251,8 @@ public class User {
 
         public User build() {
 
-            if (userId == null || identityStore == null || authorizationStore == null || domain == null) {
+            //TODO add authorizationStore == null
+            if (userId == null || identityStore == null || domain == null) {
                 throw new StoreException("Required data missing for building user.");
             }
 

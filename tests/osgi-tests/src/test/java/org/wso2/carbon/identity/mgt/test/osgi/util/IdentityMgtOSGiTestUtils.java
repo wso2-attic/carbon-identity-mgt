@@ -93,6 +93,22 @@ public class IdentityMgtOSGiTestUtils {
                 .groupId("org.wso2.carbon.identity.mgt.tests")
                 .artifactId("in-memory-connectors-test-artifact")
                 .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.datasources")
+                .artifactId("org.wso2.carbon.datasource.core")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.jndi")
+                .artifactId("org.wso2.carbon.jndi")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("com.zaxxer")
+                .artifactId("HikariCP")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("com.h2database")
+                .artifactId("h2")
+                .versionAsInProject());
 
         CarbonSysPropConfiguration sysPropConfiguration = new CarbonSysPropConfiguration();
         sysPropConfiguration.setCarbonHome(getCarbonHome());

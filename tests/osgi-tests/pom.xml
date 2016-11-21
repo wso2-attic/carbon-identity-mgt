@@ -143,6 +143,26 @@
             <artifactId>commons-io</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.datasources</groupId>
+            <artifactId>org.wso2.carbon.datasource.core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.jndi</groupId>
+            <artifactId>org.wso2.carbon.jndi</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.191</version>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -196,28 +216,6 @@
                         <executions>
                             <execution>
                                 <!--copying carbon-jaas.config file to the unpacked distribution.-->
-                                <id>copy-resources-caas</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>
-                                        ${project.build.directory}/wso2carbon-kernel-${project.version}/conf/security
-                                    </outputDirectory>
-                                    <overwrite>true</overwrite>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/test/resources/carbon-home/conf/security</directory>
-                                            <includes>
-                                                <include>carbon-jaas.config</include>
-                                            </includes>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <!--copying carbon-jaas.config file to the unpacked distribution.-->
                                 <id>copy-resources-identity-mgt</id>
                                 <phase>generate-resources</phase>
                                 <goals>
@@ -225,18 +223,12 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>
-                                        ${project.build.directory}/wso2carbon-kernel-${project.version}/conf/identity
+                                        ${project.build.directory}/wso2carbon-kernel-${project.version}/conf
                                     </outputDirectory>
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
-                                            <directory>src/test/resources/carbon-home/conf/identity</directory>
-                                            <includes>
-                                                <include>claim-store.yml</include>
-                                                <include>connector-config.yml</include>
-                                                <include>domain-config.yml</include>
-                                                <include>store-config.yml</include>
-                                            </includes>
+                                            <directory>src/test/resources/carbon-home/conf</directory>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -345,6 +337,40 @@
                                 <goals>
                                     <goal>generate-depends-file</goal>
                                 </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>sql-maven-plugin</artifactId>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.h2database</groupId>
+                                <artifactId>h2</artifactId>
+                                <version>1.4.191</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <url>jdbc:h2:file:${basedir}/target/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;MV_STORE=FALSE</url>
+                            <username>wso2carbon</username>
+                            <password>wso2carbon</password>
+                            <driver>org.h2.Driver</driver>
+                        </configuration>
+                        <executions>
+                            <!--Create the database-->
+                            <execution>
+                                <id>create-database</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <autocommit>true</autocommit>
+                                    <srcFiles>
+                                        <srcFile>${basedir}/target/wso2carbon-kernel-${project.version}/dbscripts/identity-mgt/h2.sql</srcFile>
+                                    </srcFiles>
+                                    <onError>abort</onError>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
