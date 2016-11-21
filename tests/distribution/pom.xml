@@ -62,7 +62,7 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.security.caas</groupId>
-            <artifactId>org.wso2.carbon.security.caas</artifactId>
+            <artifactId>org.wso2.carbon.security.caas.feature</artifactId>
             <version>${org.wso2.carbon.security.caas.version}</version>
             <type>zip</type>
         </dependency>
@@ -131,7 +131,7 @@
                                     <version>${org.wso2.carbon.messaging.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.security.caas</id>
+                                    <id>org.wso2.carbon.security.caas.feature</id>
                                     <version>${org.wso2.carbon.security.caas.version}</version>
                                 </feature>
                                 <feature>
