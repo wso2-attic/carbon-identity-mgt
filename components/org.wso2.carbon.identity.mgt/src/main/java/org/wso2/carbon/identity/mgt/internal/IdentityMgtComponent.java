@@ -27,6 +27,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.caching.CarbonCachingService;
+import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.identity.mgt.bean.Domain;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.config.CredentialStoreConnectorConfig;
@@ -184,6 +185,35 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
     protected void unregisterUniqueIdResolverFactory(UniqueIdResolverFactory uniqueIdResolverFactory) {
 
+    }
+
+    @Reference(
+            name = "org.wso2.carbon.datasource.DataSourceService",
+            service = DataSourceService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterDataSourceService"
+    )
+    protected void registerDataSourceService(DataSourceService service, Map<String, String> properties) {
+
+        if (service == null) {
+            log.error("Data source service is null. Registering data source service is unsuccessful.");
+            return;
+        }
+
+        IdentityMgtDataHolder.getInstance().setDataSourceService(service);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Data source service registered successfully.");
+        }
+    }
+
+    protected void unregisterDataSourceService(DataSourceService service) {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Data source service unregistered.");
+        }
+        IdentityMgtDataHolder.getInstance().setDataSourceService(null);
     }
 
     @Reference(

@@ -27,12 +27,16 @@ import org.osgi.framework.BundleContext;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.wso2.carbon.identity.mgt.bean.User;
+import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.identity.mgt.model.UserModel;
 import org.wso2.carbon.identity.mgt.service.RealmService;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -69,18 +73,18 @@ public class IdentityStoreTest {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
-//        UserModel userModel = new UserModel();
-//        List<Claim> claims = Arrays.asList(
-//                new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "lucifer"),
-//                new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Lucifer"),
-//                new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Morningstar"),
-//                new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "lucifer@wso2.com"));
-//        userModel.setClaims(claims);
-//        User user = realmService.getIdentityStore().addUser(userModel);
-//
-//        Assert.assertNotNull(user, "Failed to receive the user.");
-//
-//        Assert.assertNotNull(user.getUserId(), "Invalid user unique id.");
+        UserModel userModel = new UserModel();
+        List<Claim> claims = Arrays.asList(
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "lucifer"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Lucifer"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Morningstar"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "lucifer@wso2.com"));
+        userModel.setClaims(claims);
+        User user = realmService.getIdentityStore().addUser(userModel);
+
+        Assert.assertNotNull(user, "Failed to receive the user.");
+
+        Assert.assertNotNull(user.getUserId(), "Invalid user unique id.");
     }
 
 }

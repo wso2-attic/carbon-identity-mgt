@@ -28,6 +28,7 @@ import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * InMemory Identity Store Connector.
@@ -142,7 +143,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public String addUser(List<Attribute> attributes) throws IdentityStoreConnectorException {
-        return null;
+        return UUID.randomUUID().toString();
     }
 
     @Override

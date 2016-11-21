@@ -21,10 +21,12 @@ package org.wso2.carbon.identity.mgt.util;
 /**
  * User Manager Constants
  */
-public class UserManagerConstants {
+public class UniqueIdResolverConstants {
 
     public static final String IDENTITY_STORE_CONNECTOR = "I";
     public static final String CREDENTIAL_STORE_CONNECTOR = "C";
+    public static final String DATA_SOURCE = "dataSource";
+
 
     /**
      * SQL Placeholders

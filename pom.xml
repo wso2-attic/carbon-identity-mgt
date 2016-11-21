@@ -150,6 +150,11 @@
                 <artifactId>org.wso2.carbon.identity.mgt</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.datasources</groupId>
+                <artifactId>org.wso2.carbon.datasource.core</artifactId>
+                <version>${carbon.datasources.version}</version>
+            </dependency>
             <!-- Unit Tests -->
 
             <dependency>
@@ -308,6 +313,7 @@
         <org.wso2.carbon.messaging.version>1.0.3</org.wso2.carbon.messaging.version>
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
         <org.wso2.carbon.security.caas.version>1.0.0-SNAPSHOT</org.wso2.carbon.security.caas.version>
+        <carbon.datasources.version>1.0.0</carbon.datasources.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>
