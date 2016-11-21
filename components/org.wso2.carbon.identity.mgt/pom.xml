@@ -114,7 +114,7 @@
         <carbon.component>
             startup.listener;
             componentName="wso2-carbon-identity-mgt";
-            requiredService="org.wso2.carbon.identity.mgt.store.connector.AuthorizationStoreConnectorFactory,
+            requiredService="
             org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory,
             org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory"
         </carbon.component>

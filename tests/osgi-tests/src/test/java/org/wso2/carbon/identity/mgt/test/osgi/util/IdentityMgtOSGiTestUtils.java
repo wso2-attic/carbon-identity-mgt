@@ -30,7 +30,7 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 /**
  * This class contains the utility methods for carbon-security-caas OSGI tests.
  */
-public class SecurityOSGiTestUtils {
+public class IdentityMgtOSGiTestUtils {
 
     /**
      * Returns the default list of PAX options needed for carbon-security-caas OSGI test.
@@ -50,20 +50,8 @@ public class SecurityOSGiTestUtils {
                 .artifactId("json-smart")
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.messaging")
-                .artifactId("org.wso2.carbon.messaging")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.caching")
-                .artifactId("org.wso2.carbon.caching")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
                 .groupId("commons-io.wso2")
                 .artifactId("commons-io")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon")
-                .artifactId("org.wso2.carbon.core")
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                 .groupId("net.minidev.wso2")
@@ -72,6 +60,38 @@ public class SecurityOSGiTestUtils {
         defaultOptionList.add(mavenBundle()
                 .groupId("net.minidev")
                 .artifactId("asm")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon")
+                .artifactId("org.wso2.carbon.core")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.messaging")
+                .artifactId("org.wso2.carbon.messaging")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.caching")
+                .artifactId("org.wso2.carbon.caching")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.security.caas")
+                .artifactId("org.wso2.carbon.security.caas.boot")
+                .versionAsInProject().noStart());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.security.caas")
+                .artifactId("org.wso2.carbon.security.caas")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.security.caas")
+                .artifactId("org.wso2.carbon.security.caas.userstore.filebased")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.identity.mgt")
+                .artifactId("org.wso2.carbon.identity.mgt")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.identity.mgt.tests")
+                .artifactId("in-memory-connectors-test-artifact")
                 .versionAsInProject());
 
         CarbonSysPropConfiguration sysPropConfiguration = new CarbonSysPropConfiguration();
