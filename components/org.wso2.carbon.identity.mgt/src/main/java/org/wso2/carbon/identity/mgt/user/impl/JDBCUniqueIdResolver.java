@@ -18,7 +18,8 @@ package org.wso2.carbon.identity.mgt.user.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.identity.mgt.exception.UserManagerException;
+import org.wso2.carbon.identity.mgt.config.UniqueIdResolverConfig;
+import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.user.ConnectedGroup;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.user.UniqueUser;
@@ -38,19 +39,24 @@ import javax.sql.DataSource;
 /**
  * UserManager implementation.
  */
-public class UniqueIdResolverImpl implements UniqueIdResolver {
+public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
-    private static Logger log = LoggerFactory.getLogger(UniqueIdResolverImpl.class);
+    private static Logger log = LoggerFactory.getLogger(JDBCUniqueIdResolver.class);
 
     //TODO initialize the datasource
     private DataSource dataSource;
 
-    public UniqueIdResolverImpl() throws UserManagerException {
+    public JDBCUniqueIdResolver() {
 
     }
 
     @Override
-    public UniqueUser getUniqueUser(String connectorUserId, String connectorId) throws UserManagerException {
+    public void init(UniqueIdResolverConfig uniqueIdResolverConfig) throws UniqueIdResolverException {
+
+    }
+
+    @Override
+    public UniqueUser getUniqueUser(String connectorUserId, String connectorId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUserUuid = "SELECT USER_UUID, CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_USER_ID FROM " +
@@ -82,19 +88,19 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
                 }
             }
             if (userUUID == null) {
-                throw new UserManagerException("No user found.");
+                throw new UniqueIdResolverException("No user found.");
             }
             uniqueUser.setUniqueUserId(userUUID);
             uniqueUser.setUserPartitions(userPartitions);
             return uniqueUser;
 
         } catch (SQLException e) {
-            throw new UserManagerException("Error while searching user.", e);
+            throw new UniqueIdResolverException("Error while searching user.", e);
         }
     }
 
     @Override
-    public boolean isUserExists(String uniqueUserId) throws UserManagerException {
+    public boolean isUserExists(String uniqueUserId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUser = "SELECT ID FROM IDM_ENTITY " +
@@ -114,12 +120,12 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
             }
 
         } catch (SQLException e) {
-            throw new UserManagerException("Error while searching user.", e);
+            throw new UniqueIdResolverException("Error while searching user.", e);
         }
     }
 
     @Override
-    public String getConnectorUserId(String uniqueUserId, String connectorId) throws UserManagerException {
+    public String getConnectorUserId(String uniqueUserId, String connectorId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUserUuid = "SELECT CONNECTOR_USER_ID FROM IDM_ENTITY " +
@@ -136,18 +142,18 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
                 if (resultSet.next()) {
                     return resultSet.getString(UserManagerConstants.DatabaseColumnNames.CONNECTOR_USER_ID);
                 } else {
-                    throw new UserManagerException("User not found.");
+                    throw new UniqueIdResolverException("User not found.");
                 }
             }
 
         } catch (SQLException e) {
-            throw new UserManagerException("Error while searching user.", e);
+            throw new UniqueIdResolverException("Error while searching user.", e);
         }
     }
 
     @Override
     public void addUser(UniqueUser uniqueUser, String domainName) throws
-            UserManagerException {
+            UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String addUser = "INSERT INTO IDM_ENTITY " +
@@ -171,17 +177,18 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
 
             namedPreparedStatement.getPreparedStatement().executeBatch();
         } catch (SQLException e) {
-            throw new UserManagerException("Error while adding user.", e);
+            throw new UniqueIdResolverException("Error while adding user.", e);
         }
     }
 
     @Override
-    public void addUsers(Map<String, List<UserPartition>> connectedUsersMap) throws UserManagerException {
+    public void addUsers(Map<String, List<UserPartition>> connectedUsersMap) throws UniqueIdResolverException {
 
     }
 
     @Override
-    public void updateUser(String uniqueUserId, Map<String, String> connectorUserIdMap) throws UserManagerException {
+    public void updateUser(String uniqueUserId, Map<String, String> connectorUserIdMap) throws
+            UniqueIdResolverException {
 
         //TODO need to check whether the entry is already there before updating. else need to add
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
@@ -200,12 +207,12 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
             }
             namedPreparedStatement.getPreparedStatement().executeBatch();
         } catch (SQLException e) {
-            throw new UserManagerException("Error while adding user.", e);
+            throw new UniqueIdResolverException("Error while adding user.", e);
         }
     }
 
     @Override
-    public void deleteUser(String uniqueUserId) throws UserManagerException {
+    public void deleteUser(String uniqueUserId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String deleteUser = "DELETE FROM IDM_ENTITY " +
@@ -216,12 +223,12 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
 
             namedPreparedStatement.getPreparedStatement().executeUpdate();
         } catch (SQLException e) {
-            throw new UserManagerException("Error while adding user.", e);
+            throw new UniqueIdResolverException("Error while adding user.", e);
         }
     }
 
     @Override
-    public Map<String, String> getConnectorUserIds(String userUniqueId) throws UserManagerException {
+    public Map<String, String> getConnectorUserIds(String userUniqueId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUserUuid = "SELECT CONNECTOR_ID, CONNECTOR_USER_ID FROM " +
@@ -246,12 +253,12 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
             return connectorUserIds;
 
         } catch (SQLException e) {
-            throw new UserManagerException("Error while searching user.", e);
+            throw new UniqueIdResolverException("Error while searching user.", e);
         }
     }
 
     @Override
-    public String getDomainNameFromUserUniqueId(String uniqueUserId) throws UserManagerException {
+    public String getDomainNameFromUserUniqueId(String uniqueUserId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             //TODO Do we need to limit 1 result?
@@ -267,74 +274,75 @@ public class UniqueIdResolverImpl implements UniqueIdResolver {
                 if (resultSet.next()) {
                     return resultSet.getString(UserManagerConstants.DatabaseColumnNames.DOMAIN);
                 } else {
-                    throw new UserManagerException("User not found with the given user id.");
+                    throw new UniqueIdResolverException("User not found with the given user id.");
                 }
             }
 
         } catch (SQLException e) {
-            throw new UserManagerException("Error while searching user.", e);
+            throw new UniqueIdResolverException("Error while searching user.", e);
         }
     }
 
     @Override
-    public String getDomainNameFromGroupUniqueId(String uniqueGroupId) throws UserManagerException {
+    public String getDomainNameFromGroupUniqueId(String uniqueGroupId) throws UniqueIdResolverException {
         return null;
     }
 
     @Override
-    public Map<String, String> getConnectorGroupIds(String uniqueGroupId) throws UserManagerException {
+    public Map<String, String> getConnectorGroupIds(String uniqueGroupId) throws UniqueIdResolverException {
         return null;
     }
 
     @Override
-    public void addGroup(String uniqueGroupId, List<ConnectedGroup> connectedGroups) throws UserManagerException {
+    public void addGroup(String uniqueGroupId, List<ConnectedGroup> connectedGroups) throws UniqueIdResolverException {
 
     }
 
     @Override
-    public void addGroups(Map<String, List<ConnectedGroup>> connectedGroupsMap) throws UserManagerException {
+    public void addGroups(Map<String, List<ConnectedGroup>> connectedGroupsMap) throws UniqueIdResolverException {
 
     }
 
     @Override
-    public void updateGroup(String uniqueGroupId, Map<String, String> connectorGroupIdMap) throws UserManagerException {
+    public void updateGroup(String uniqueGroupId, Map<String, String> connectorGroupIdMap) throws
+            UniqueIdResolverException {
 
     }
 
     @Override
-    public void deleteGroup(String uniqueGroupId) throws UserManagerException {
+    public void deleteGroup(String uniqueGroupId) throws UniqueIdResolverException {
 
     }
 
     @Override
-    public String getUniqueGroupId(String connectorGroupId, String connectorId) throws UserManagerException {
+    public String getUniqueGroupId(String connectorGroupId, String connectorId) throws UniqueIdResolverException {
         return null;
     }
 
     @Override
-    public boolean isGroupExists(String uniqueGroupId) throws UserManagerException {
+    public boolean isGroupExists(String uniqueGroupId) throws UniqueIdResolverException {
         return false;
     }
 
     @Override
-    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds) throws UserManagerException {
+    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds) throws UniqueIdResolverException {
 
     }
 
     @Override
     public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToUpdate, List<String>
-            uniqueGroupIdsToRemove) throws UserManagerException {
+            uniqueGroupIdsToRemove) throws UniqueIdResolverException {
 
     }
 
     @Override
-    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds) throws UserManagerException {
+    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds) throws UniqueIdResolverException {
 
     }
 
     @Override
     public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToUpdate, List<String>
-            uniqueUserIdsToRemove) throws UserManagerException {
+            uniqueUserIdsToRemove) throws UniqueIdResolverException {
 
     }
 }

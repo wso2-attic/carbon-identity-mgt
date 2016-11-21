@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.identity.mgt.claim;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -70,6 +71,10 @@ public class MetaClaim {
     }
 
     public Map<String, String> getProperties() {
+
+        if (properties == null) {
+            return Collections.emptyMap();
+        }
         return properties;
     }
 

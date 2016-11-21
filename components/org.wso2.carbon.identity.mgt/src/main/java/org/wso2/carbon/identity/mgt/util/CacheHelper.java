@@ -37,14 +37,15 @@ public class CacheHelper {
 
     /**
      * Create a new cache from the given cache manager.
-     * @param cacheName Name of the cache.
-     * @param keyClass Type of the key class.
-     * @param valueClass Type of the value class.
+     *
+     * @param cacheName         Name of the cache.
+     * @param keyClass          Type of the key class.
+     * @param valueClass        Type of the value class.
      * @param defaultExpiryTime Cache expire time in minutes.
-     * @param cacheConfigMap Cache config map.
-     * @param cacheManager Cache manager to use to create the cache.
-     * @param <K> Type of the Key.
-     * @param <V> Type of the Value.
+     * @param cacheConfigMap    Cache config map.
+     * @param cacheManager      Cache manager to use to create the cache.
+     * @param <K>               Type of the Key.
+     * @param <V>               Type of the Value.
      * @return Created cache.
      */
     public static <K, V> Cache<K, V> createCache(String cacheName, Class<K> keyClass, Class<V> valueClass,
@@ -71,8 +72,9 @@ public class CacheHelper {
 
     /**
      * Find whether the cache is disabled for the given cache name.
+     *
      * @param cacheConfigs Map of available cache configs.
-     * @param cacheName Name of the cache to be checked.
+     * @param cacheName    Name of the cache to be checked.
      * @return True if cache is disabled.
      */
     public static boolean isCacheDisabled(Map<String, CacheConfig> cacheConfigs, String cacheName) {
@@ -86,8 +88,9 @@ public class CacheHelper {
     /**
      * Get the expiry time if available for given cache. Default will be return if there is no expiry time presents at
      * the config.
-     * @param cacheConfigs Map of cache configs.
-     * @param cacheName Name of the cache.
+     *
+     * @param cacheConfigs      Map of cache configs.
+     * @param cacheName         Name of the cache.
      * @param defaultExpireTime Default expiry time.
      * @return Expiry time in the config or default value.
      */

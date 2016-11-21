@@ -49,6 +49,7 @@ public class Permission {
 
     /**
      * Get the unique id of this permission.
+     *
      * @return Permission id.
      */
     public String getPermissionId() {
@@ -57,6 +58,7 @@ public class Permission {
 
     /**
      * Get the authorization store id.
+     *
      * @return Authorization store id.
      */
     public String getAuthorizationStoreConnectorId() {
@@ -65,6 +67,7 @@ public class Permission {
 
     /**
      * Get the permission String (Resource ID + Action).
+     *
      * @return Permission string.
      */
     public String getPermissionString() {
@@ -73,6 +76,7 @@ public class Permission {
 
     /**
      * Get the resource id.
+     *
      * @return Resource id.
      */
     public Resource getResource() {
@@ -81,6 +85,7 @@ public class Permission {
 
     /**
      * Get the action.
+     *
      * @return Action.
      */
     public Action getAction() {

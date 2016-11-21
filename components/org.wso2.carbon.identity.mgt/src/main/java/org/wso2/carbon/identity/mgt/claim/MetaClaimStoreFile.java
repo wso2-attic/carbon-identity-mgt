@@ -3,7 +3,7 @@ package org.wso2.carbon.identity.mgt.claim;
 import java.util.List;
 
 /**
- * MetaClaimStore file object used for FileBasedMetaClaimStore initialization.
+ * MetaClaimStore file object used for ClaimConfigBuilder initialization.
  */
 public class MetaClaimStoreFile {
 

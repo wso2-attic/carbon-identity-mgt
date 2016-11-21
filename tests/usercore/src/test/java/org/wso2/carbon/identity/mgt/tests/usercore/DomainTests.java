@@ -30,7 +30,7 @@
 //import org.testng.annotations.BeforeMethod;
 //import org.testng.annotations.Test;
 //import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
-//import org.wso2.carbon.security.caas.internal.CarbonSecurityDataHolder;
+//import org.wso2.carbon.security.caas.internal.IdentityMgtDataHolder;
 //import org.wso2.carbon.security.caas.internal.config.StoreConfigBuilder;
 //import org.wso2.carbon.security.caas.user.core.bean.Domain;
 //import org.wso2.carbon.security.caas.user.core.bean.User;
@@ -52,11 +52,11 @@
 ///**
 // * Tests specific for the domain model implementation.
 // */
-//@PrepareForTest(CarbonSecurityDataHolder.class)
+//@PrepareForTest(IdentityMgtDataHolder.class)
 //public class DomainTests extends PowerMockTestCase {
 //
 //    @Mock
-//    private CarbonSecurityDataHolder carbonSecurityDataHolder;
+//    private IdentityMgtDataHolder carbonSecurityDataHolder;
 //
 //    /**
 //     * Carbon home directory name.
@@ -149,8 +149,8 @@
 //     */
 //    private void initCarbonSecurityDataHolder() {
 //
-//        PowerMockito.mockStatic(CarbonSecurityDataHolder.class);
-//        Mockito.when(CarbonSecurityDataHolder.getInstance()).thenReturn(carbonSecurityDataHolder);
+//        PowerMockito.mockStatic(IdentityMgtDataHolder.class);
+//        Mockito.when(IdentityMgtDataHolder.getInstance()).thenReturn(carbonSecurityDataHolder);
 //    }
 //
 //    /**

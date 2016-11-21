@@ -26,12 +26,11 @@ import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.store.CredentialStore;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
@@ -99,7 +98,7 @@ public class CredentialStoreImpl implements CredentialStore {
             claim.setValue(username);
 
             // Get the user using given callbacks. We need to find the user unique id.
-            List<User> user = CarbonSecurityDataHolder.getInstance()
+            User user = IdentityMgtDataHolder.getInstance()
                     .getCarbonRealmService().getIdentityStore().getUser(claim);
 
             // Crete a new call back array from existing one and add new user data (user id and identity store id)
@@ -117,7 +116,7 @@ public class CredentialStoreImpl implements CredentialStore {
 //            newCallbacks[newCallbacks.length - 1] = carbonCallback;
 //
 //            for (CredentialStoreConnector credentialStoreConnector :
-//                    user.getDomain().getSortedCredentialStoreConnectors()) {
+//                    user.getDomain().getCredentialStoreConnectors()) {
 //
 //                // We need to check whether this credential store can handle this kind of callbacks.
 //                if (!credentialStoreConnector.canHandle(callbacks)) {

@@ -83,7 +83,7 @@ public class User {
      *
      * @return List of User claims.
      * @throws IdentityStoreException Identity store exception.
-     * @throws ClaimManagerException claim manager exception.
+     * @throws ClaimManagerException  claim manager exception.
      */
     public List<Claim> getClaims() throws IdentityStoreException, ClaimManagerException {
         return identityStore.getClaims(this);
@@ -95,7 +95,7 @@ public class User {
      * @param claimURIs Claim URIs that needs to be retrieved.
      * @return List of User claims.
      * @throws IdentityStoreException Identity store exception.
-     * @throws ClaimManagerException claim manager exception.
+     * @throws ClaimManagerException  claim manager exception.
      */
     public List<Claim> getClaims(List<String> claimURIs) throws IdentityStoreException, ClaimManagerException {
         return identityStore.getClaims(this, claimURIs);

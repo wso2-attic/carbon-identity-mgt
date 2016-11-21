@@ -14,12 +14,13 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.wso2.carbon.identity.mgt</groupId>
         <artifactId>org.wso2.carbon.identity.mgt.parent</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -66,6 +67,7 @@
                                         <include>conf/store-config.yml</include>
                                         <include>conf/claim-store.yml</include>
                                         <include>conf/domain-config.yml</include>
+                                        <include>conf/connector-config.yml</include>
                                         <include>conf/user-mapping.csv</include>
                                         <include>conf/identity-store-connector.csv</include>
                                         <include>conf/credential-store-connector.csv</include>
@@ -127,9 +129,9 @@
                         <phase>install</phase>
                         <configuration>
                             <target>
-                                <delete dir="src/main/resources" />
-                                <delete dir="src/main" />
-                                <delete dir="src" />
+                                <delete dir="src/main/resources"/>
+                                <delete dir="src/main"/>
+                                <delete dir="src"/>
                             </target>
                         </configuration>
                         <goals>

@@ -1,5 +1,22 @@
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.wso2.carbon.identity.mgt.internal.config.domain;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -10,34 +27,41 @@ public class DomainConfigEntry {
     /**
      * Unique name of the domain.
      */
-    private String domainName;
+    private String name;
 
     /**
      * Priority level of the domain
      */
     private int priority;
 
+    private UniqueIdResolverConfigEntry uniqueIdResolver;
+
     /**
      * IdentityStoreConnector domain configuration list.
      */
-    private List<DomainStoreConfigEntry> identityStoreConnectors;
+    private List<DomainStoreConnectorEntry> identityStoreConnectors;
+
+    /**
+     * IdentityStoreConnector domain configuration list.
+     */
+    private List<DomainStoreConnectorEntry> credentialStoreConnectors;
 
     /**
      * Get the name of the domain.
      *
      * @return Name of the domain
      */
-    public String getDomainName() {
-        return domainName;
+    public String getName() {
+        return name;
     }
 
     /**
      * Set the name of the domain.
      *
-     * @param domainName Name of the domain
+     * @param name Name of the domain
      */
-    public void setDomainName(String domainName) {
-        this.domainName = domainName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -45,7 +69,7 @@ public class DomainConfigEntry {
      *
      * @return integer - domain priority level
      */
-    public int getDomainPriority() {
+    public int getPriority() {
         return priority;
     }
 
@@ -58,21 +82,45 @@ public class DomainConfigEntry {
         this.priority = priority;
     }
 
+    public UniqueIdResolverConfigEntry getUniqueIdResolver() {
+        return uniqueIdResolver;
+    }
+
+    public void setUniqueIdResolver(UniqueIdResolverConfigEntry uniqueIdResolver) {
+        this.uniqueIdResolver = uniqueIdResolver;
+    }
+
     /**
      * Get a list of domain store configuration entries for identity connectors.
      *
-     * @return DomainStoreConfigEntry
+     * @return DomainStoreConnectorEntry
      */
-    public List<DomainStoreConfigEntry> getIdentityStoreConnectors() {
+    public List<DomainStoreConnectorEntry> getIdentityStoreConnectors() {
+
+        if (identityStoreConnectors == null) {
+            return Collections.emptyList();
+        }
         return identityStoreConnectors;
     }
 
     /**
      * Set a list of domain store configuration entries for identity connectors.
      *
-     * @param identityStoreConnectors List&lt;DomainStoreConfigEntry&gt;
+     * @param identityStoreConnectors List&lt;DomainStoreConnectorEntry&gt;
      */
-    public void setIdentityStoreConnectors(List<DomainStoreConfigEntry> identityStoreConnectors) {
+    public void setIdentityStoreConnectors(List<DomainStoreConnectorEntry> identityStoreConnectors) {
         this.identityStoreConnectors = identityStoreConnectors;
+    }
+
+    public List<DomainStoreConnectorEntry> getCredentialStoreConnectors() {
+
+        if (credentialStoreConnectors == null) {
+            return Collections.emptyList();
+        }
+        return credentialStoreConnectors;
+    }
+
+    public void setCredentialStoreConnectors(List<DomainStoreConnectorEntry> credentialStoreConnectors) {
+        this.credentialStoreConnectors = credentialStoreConnectors;
     }
 }

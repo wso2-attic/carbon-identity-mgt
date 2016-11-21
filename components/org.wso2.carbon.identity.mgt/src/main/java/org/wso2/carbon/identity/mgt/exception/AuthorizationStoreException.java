@@ -18,6 +18,7 @@ package org.wso2.carbon.identity.mgt.exception;
 
 /**
  * Authorization store exception.
+ *
  * @since 1.0.0
  */
 public class AuthorizationStoreException extends Exception {

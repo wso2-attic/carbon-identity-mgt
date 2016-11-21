@@ -39,8 +39,7 @@ public interface IdentityStoreConnector {
      * @param identityStoreConnectorConfig IdentityStoreConnectorConfig for this connector.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    void init(IdentityStoreConnectorConfig identityStoreConnectorConfig)
-            throws IdentityStoreException;
+    void init(IdentityStoreConnectorConfig identityStoreConnectorConfig) throws IdentityStoreException;
 
     /**
      * Get identity store connector Id.
@@ -142,7 +141,7 @@ public interface IdentityStoreConnector {
      * @param attributeName  Name of the attribute.
      * @param attributeValue Value of the attribute.
      * @return Connector group id.
-     * @throws GroupNotFoundException  Group not found exception.
+     * @throws GroupNotFoundException Group not found exception.
      * @throws IdentityStoreException Identity Store Exception.
      */
     String getConnectorGroupId(String attributeName, String attributeValue) throws GroupNotFoundException,
@@ -246,7 +245,7 @@ public interface IdentityStoreConnector {
      * Update all attributes of a user.
      *
      * @param userIdentifier User identifier.
-     * @param attributes Attribute values to update.
+     * @param attributes     Attribute values to update.
      * @return connector unique id of user.
      * @throws IdentityStoreException Identity store exception.
      */
@@ -255,8 +254,8 @@ public interface IdentityStoreConnector {
     /**
      * Update selected attributes of a user.
      *
-     * @param userIdentifier User identifier.
-     * @param attributesToAdd Attribute values to add.
+     * @param userIdentifier     User identifier.
+     * @param attributesToAdd    Attribute values to add.
      * @param attributesToRemove Attribute values to remove.
      * @return connector unique id of user.
      * @throws IdentityStoreException Identity store exception.
@@ -275,7 +274,7 @@ public interface IdentityStoreConnector {
     /**
      * Update group list of user.
      *
-     * @param userIdentifier User identifier.
+     * @param userIdentifier   User identifier.
      * @param groupIdentifiers Group identifiers.
      * @throws IdentityStoreException Identity store exception.
      */
@@ -284,8 +283,8 @@ public interface IdentityStoreConnector {
     /**
      * Update selected group list of user.
      *
-     * @param userIdentifier User identifier.
-     * @param groupIdentifiersToAdd Group identifier list to update.
+     * @param userIdentifier           User identifier.
+     * @param groupIdentifiersToAdd    Group identifier list to update.
      * @param groupIdentifiersToRemove Group identifier list to remove.
      * @throws IdentityStoreException Identity store exception.
      */
@@ -314,7 +313,7 @@ public interface IdentityStoreConnector {
      * Update all attributes of a group.
      *
      * @param groupIdentifier Group identifier.
-     * @param attributes Attribute values to update.
+     * @param attributes      Attribute values to update.
      * @return connector unique id of group.
      * @throws IdentityStoreException Identity store exception.
      */
@@ -323,8 +322,8 @@ public interface IdentityStoreConnector {
     /**
      * Update selected attributes of a group.
      *
-     * @param groupIdentifier Group identifier.
-     * @param attributesToAdd Attribute values to update.
+     * @param groupIdentifier    Group identifier.
+     * @param attributesToAdd    Attribute values to update.
      * @param attributesToRemove Attribute values to remove.
      * @return connector unique id of group.
      * @throws IdentityStoreException Identity store exception.
@@ -350,10 +349,10 @@ public interface IdentityStoreConnector {
     void updateUsersOfGroup(String groupIdentifier, List<String> userIdentifiers) throws IdentityStoreException;
 
     /**
-     *  Update selected user list of a group.
+     * Update selected user list of a group.
      *
-     * @param groupIdentifier Group identifier.
-     * @param userIdentifiersToAdd User identifier list to add.
+     * @param groupIdentifier         Group identifier.
+     * @param userIdentifiersToAdd    User identifier list to add.
      * @param userIdentifiersToRemove User identifier list to remove.
      * @throws IdentityStoreException Identity store exception.
      */

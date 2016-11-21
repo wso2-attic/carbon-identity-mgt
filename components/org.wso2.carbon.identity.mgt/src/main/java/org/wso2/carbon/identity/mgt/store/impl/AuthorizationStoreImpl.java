@@ -31,7 +31,7 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.PermissionNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.RoleNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.StoreException;
-import org.wso2.carbon.identity.mgt.internal.CarbonSecurityDataHolder;
+import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.service.RealmService;
 import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
 import org.wso2.carbon.identity.mgt.store.connector.AuthorizationStoreConnector;
@@ -86,7 +86,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
     public void init(Map<String, AuthorizationStoreConnectorConfig>
                              authorizationConnectorConfigs) throws AuthorizationStoreException {
 
-        this.carbonRealmService = CarbonSecurityDataHolder.getInstance().getCarbonRealmService();
+        this.carbonRealmService = IdentityMgtDataHolder.getInstance().getCarbonRealmService();
 
         if (authorizationConnectorConfigs.isEmpty()) {
             throw new StoreException("At least one authorization store configuration must present.");
@@ -96,7 +96,7 @@ public class AuthorizationStoreImpl implements AuthorizationStore {
                 authorizationConnectorConfigs.entrySet()) {
 
             String connectorType = authorizationStoreConfig.getValue().getConnectorType();
-            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory = CarbonSecurityDataHolder
+            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory = IdentityMgtDataHolder
                     .getInstance().getAuthorizationStoreConnectorFactoryMap().get(connectorType);
 
             if (authorizationStoreConnectorFactory == null) {

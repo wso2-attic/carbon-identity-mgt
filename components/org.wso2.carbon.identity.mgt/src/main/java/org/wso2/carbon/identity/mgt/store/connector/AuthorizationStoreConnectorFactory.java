@@ -23,6 +23,7 @@ public interface AuthorizationStoreConnectorFactory {
 
     /**
      * Get @see AuthorizationStoreConnector instance.
+     *
      * @return AuthorizationStoreConnector.
      */
     AuthorizationStoreConnector getInstance();

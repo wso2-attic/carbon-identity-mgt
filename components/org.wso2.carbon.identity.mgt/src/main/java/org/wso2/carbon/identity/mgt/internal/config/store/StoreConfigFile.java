@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.internal.config;
+package org.wso2.carbon.identity.mgt.internal.config.store;
 
 /**
  * StoreConfigs Bean.
@@ -24,50 +24,33 @@ package org.wso2.carbon.identity.mgt.internal.config;
 public class StoreConfigFile {
 
     private boolean enableCache = true;
-    private StoreConfigEntry credentialStore;
-    private StoreConfigEntry identityStore;
-    private StoreConfigEntry authorizationStore;
 
-    private StoreConnectorsConfigEntry storeConnectors;
+    private StoreConfigEntry identityStore;
+
+    private StoreConfigEntry credentialStore;
 
     public boolean isEnableCache() {
         return enableCache;
-    }
-
-    public StoreConfigEntry getCredentialStore() {
-        return credentialStore;
-    }
-
-    public StoreConfigEntry getIdentityStore() {
-        return identityStore;
-    }
-
-    public StoreConfigEntry getAuthorizationStore() {
-        return authorizationStore;
     }
 
     public void setEnableCache(boolean enableCache) {
         this.enableCache = enableCache;
     }
 
-    public void setCredentialStore(StoreConfigEntry credentialStore) {
-        this.credentialStore = credentialStore;
+    public StoreConfigEntry getIdentityStore() {
+        return identityStore;
     }
 
     public void setIdentityStore(StoreConfigEntry identityStore) {
         this.identityStore = identityStore;
     }
 
-    public void setAuthorizationStore(StoreConfigEntry authorizationStore) {
-        this.authorizationStore = authorizationStore;
+    public StoreConfigEntry getCredentialStore() {
+        return credentialStore;
     }
 
-    public StoreConnectorsConfigEntry getStoreConnectors() {
-        return storeConnectors;
-    }
-
-    public void setStoreConnectors(StoreConnectorsConfigEntry storeConnectors) {
-        this.storeConnectors = storeConnectors;
+    public void setCredentialStore(StoreConfigEntry credentialStore) {
+        this.credentialStore = credentialStore;
     }
 }
 
