@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.mgt;
+package org.wso2.carbon.identity.mgt.callback;
 
 import java.io.Serializable;
 import javax.security.auth.callback.Callback;
