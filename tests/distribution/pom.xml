@@ -61,6 +61,12 @@
             <type>zip</type>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.security.caas</groupId>
+            <artifactId>org.wso2.carbon.security.caas</artifactId>
+            <version>${org.wso2.carbon.security.caas.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.identity.mgt</groupId>
             <artifactId>org.wso2.carbon.identity.mgt.feature</artifactId>
             <version>${carbon.identity.mgt.version}</version>
@@ -123,6 +129,10 @@
                                 <feature>
                                     <id>org.wso2.carbon.messaging.feature</id>
                                     <version>${org.wso2.carbon.messaging.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.security.caas</id>
+                                    <version>${org.wso2.carbon.security.caas.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.identity.mgt.feature</id>
