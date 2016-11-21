@@ -18,7 +18,7 @@
 identityStoreConnectors:
  -
   connectorId: "INMEM_ISC"
-  connectorType: "InmeoryIdentityStore"
+  connectorType: "InMemoryIdentityStore"
   properties:
     dataSource: "WSO2_CARBON_DB"
     hashAlgorithm: "SHA256"
@@ -27,7 +27,7 @@ identityStoreConnectors:
 credentialStoreConnectors:
  -
   connectorId: "INMEM_CSC"
-  connectorType: "InmeoryCredentialStore"
+  connectorType: "InMemoryCredentialStore"
   properties:
     dataSource: "WSO2_CARBON_DB"
     databaseType: "MySQL"

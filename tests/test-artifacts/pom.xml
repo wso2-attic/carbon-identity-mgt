@@ -17,24 +17,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.wso2.carbon.identity.mgt</groupId>
-        <artifactId>org.wso2.carbon.identity.mgt.parent</artifactId>
+        <groupId>org.wso2.carbon.identity.mgt.tests</groupId>
+        <artifactId>carbon-identity-mgt-tests</artifactId>
         <version>1.0.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.wso2.carbon.identity.mgt.tests</groupId>
-    <artifactId>carbon-identity-mgt-tests</artifactId>
+    <artifactId>carbon-identity-mgt-artifacts</artifactId>
     <packaging>pom</packaging>
-    <name>WSO2 Carbon Identity Management - Tests</name>
+    <name>WSO2 Carbon Identity Management - Sample Tests Artifacts</name>
     <url>http://wso2.com</url>
 
     <modules>
-        <module>test-artifacts</module>
-        <module>distribution</module>
-        <module>osgi-tests</module>
-        <module>usercore</module>
+        <module>in-memory-connectors-test-artifact</module>
     </modules>
 
 </project>
