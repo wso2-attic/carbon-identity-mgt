@@ -81,6 +81,10 @@
             <groupId>org.wso2.orbit.org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.datasources</groupId>
+            <artifactId>org.wso2.carbon.datasource.core</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -108,7 +112,8 @@
             org.wso2.carbon.caching.*,
             org.wso2.carbon.security.caas.user.core.store.*,
             org.wso2.carbon.security.caas.user.core.bean.*,
-            org.wso2.carbon.security.caas.user.core.exception.*
+            org.wso2.carbon.security.caas.user.core.exception.*,
+            org.wso2.carbon.datasource.core.*;version="${org.wso2.carbon.datasource.version.range}",
         </import.package>
 
         <carbon.component>
@@ -132,6 +137,7 @@
         <com.nimbusds.package.import.version.range>[2.26.1, 2.27)</com.nimbusds.package.import.version.range>
         <asm.package.version.range>[1.0.2, 2.0.0)</asm.package.version.range>
         <org.wso2.carbon.security.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.security.version.range>
+        <org.wso2.carbon.datasource.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.datasource.version.range>
 
         <!--Logging API version range-->
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>

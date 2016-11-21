@@ -18,15 +18,17 @@ package org.wso2.carbon.identity.mgt.user.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.identity.mgt.config.UniqueIdResolverConfig;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
+import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.user.ConnectedGroup;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.user.UniqueUser;
 import org.wso2.carbon.identity.mgt.user.UserPartition;
 import org.wso2.carbon.identity.mgt.util.NamedPreparedStatement;
+import org.wso2.carbon.identity.mgt.util.UniqueIdResolverConstants;
 import org.wso2.carbon.identity.mgt.util.UnitOfWork;
-import org.wso2.carbon.identity.mgt.util.UserManagerConstants;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,7 +45,6 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
     private static Logger log = LoggerFactory.getLogger(JDBCUniqueIdResolver.class);
 
-    //TODO initialize the datasource
     private DataSource dataSource;
 
     public JDBCUniqueIdResolver() {
@@ -53,6 +54,12 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     @Override
     public void init(UniqueIdResolverConfig uniqueIdResolverConfig) throws UniqueIdResolverException {
 
+        try {
+            dataSource = IdentityMgtDataHolder.getInstance()
+                    .getDataSource(uniqueIdResolverConfig.getProperties().get(UniqueIdResolverConstants.DATA_SOURCE));
+        } catch (DataSourceException e) {
+            throw new UniqueIdResolverException("Error occurred while initiating data source.", e);
+        }
     }
 
     @Override
@@ -71,19 +78,20 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectUserUuid);
-            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_USER_ID, connectorUserId);
-            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_ID, connectorId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_USER_ID,
+                    connectorUserId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID, connectorId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
                 while (resultSet.next()) {
                     UserPartition userPartition = new UserPartition();
-                    userUUID = resultSet.getString(UserManagerConstants.DatabaseColumnNames.USER_UUID);
-                    userPartition.setConnectorId(resultSet.getString(UserManagerConstants.DatabaseColumnNames
+                    userUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.USER_UUID);
+                    userPartition.setConnectorId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
                             .CONNECTOR_ID));
-                    userPartition.setConnectorUserId(resultSet.getString(UserManagerConstants.DatabaseColumnNames
+                    userPartition.setConnectorUserId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
                             .CONNECTOR_USER_ID));
-                    userPartition.setIdentityStore(UserManagerConstants.IDENTITY_STORE_CONNECTOR.equals(resultSet
-                            .getString(UserManagerConstants.DatabaseColumnNames.CONNECTOR_TYPE)));
+                    userPartition.setIdentityStore(UniqueIdResolverConstants.IDENTITY_STORE_CONNECTOR.equals(resultSet
+                            .getString(UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_TYPE)));
                     userPartitions.add(userPartition);
                 }
             }
@@ -109,7 +117,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectUser);
-            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
                 if (resultSet.next()) {
@@ -135,12 +143,12 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectUserUuid);
-            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
-            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_ID, connectorId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID, connectorId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
                 if (resultSet.next()) {
-                    return resultSet.getString(UserManagerConstants.DatabaseColumnNames.CONNECTOR_USER_ID);
+                    return resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_USER_ID);
                 } else {
                     throw new UniqueIdResolverException("User not found.");
                 }
@@ -162,16 +170,16 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), addUser);
             for (UserPartition userPartition : uniqueUser.getUserPartitions()) {
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, uniqueUser
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUser
                         .getUniqueUserId());
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_USER_ID,
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_USER_ID,
                         userPartition.getConnectorUserId());
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_ID,
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID,
                         userPartition.getConnectorId());
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.DOMAIN, domainName);
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_TYPE,
-                        userPartition.isIdentityStore() ? UserManagerConstants.IDENTITY_STORE_CONNECTOR :
-                                UserManagerConstants.CREDENTIAL_STORE_CONNECTOR);
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.DOMAIN, domainName);
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_TYPE,
+                        userPartition.isIdentityStore() ? UniqueIdResolverConstants.IDENTITY_STORE_CONNECTOR :
+                                UniqueIdResolverConstants.CREDENTIAL_STORE_CONNECTOR);
                 namedPreparedStatement.getPreparedStatement().addBatch();
             }
 
@@ -198,10 +206,10 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), updateUser);
             for (Map.Entry<String, String> entry : connectorUserIdMap.entrySet()) {
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_USER_ID,
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_USER_ID,
                         entry.getValue());
-                namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.CONNECTOR_ID,
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID,
                         entry.getKey());
                 namedPreparedStatement.getPreparedStatement().addBatch();
             }
@@ -219,7 +227,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                     "WHERE USER_UUID = :user_uuid;";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), deleteUser);
-            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
 
             namedPreparedStatement.getPreparedStatement().executeUpdate();
         } catch (SQLException e) {
@@ -238,14 +246,14 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectUserUuid);
-            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, userUniqueId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, userUniqueId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
                 while (resultSet.next()) {
                     String connectorId = resultSet.getString(
-                            UserManagerConstants.DatabaseColumnNames.CONNECTOR_ID);
+                            UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_ID);
                     String connectorUserId = resultSet.getString(
-                            UserManagerConstants.DatabaseColumnNames.CONNECTOR_USER_ID);
+                            UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_USER_ID);
                     connectorUserIds.put(connectorId, connectorUserId);
                 }
             }
@@ -268,11 +276,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectUserUuid);
-            namedPreparedStatement.setString(UserManagerConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
                 if (resultSet.next()) {
-                    return resultSet.getString(UserManagerConstants.DatabaseColumnNames.DOMAIN);
+                    return resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.DOMAIN);
                 } else {
                     throw new UniqueIdResolverException("User not found with the given user id.");
                 }
