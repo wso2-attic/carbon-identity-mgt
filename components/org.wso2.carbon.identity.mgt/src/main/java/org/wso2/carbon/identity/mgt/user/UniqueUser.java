@@ -28,7 +28,7 @@ public class UniqueUser {
 
     private String uniqueUserId;
 
-    List<UserPartition> userPartitions;
+    private List<UserPartition> userPartitions;
 
     public UniqueUser(String uniqueUserId, List<UserPartition> userPartitions) {
 

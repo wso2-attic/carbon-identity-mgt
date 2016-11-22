@@ -80,6 +80,317 @@ public class IdentityStoreImpl implements IdentityStore {
         }
     }
 
+    @Override
+    public User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
+
+        //TODO Claim wrapper will handle the validation
+//        if (claim == null || StringUtils.isNullOrEmpty(claim.getValue())) {
+//            throw new IdentityStoreClientException("Invalid claim.");
+//        }
+
+        Domain domain;
+        try {
+            domain = domainManager.getPrimaryDomain();
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
+        }
+
+        return doGetUser(claim, domain);
+    }
+
+    @Override
+    public User getUser(Claim claim, String domainName) throws IdentityStoreException, UserNotFoundException {
+
+        if (StringUtils.isNullOrEmpty(domainName)) {
+            return getUser(claim);
+        }
+
+        //TODO Claim wrapper will handle the validation
+//        if (claim == null || StringUtils.isNullOrEmpty(claim.getValue())) {
+//            throw new IdentityStoreClientException("Invalid claim.");
+//        }
+
+        Domain domain;
+        try {
+            domain = domainManager.getDomainFromDomainName(domainName);
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
+                    "- %s", domainName), e);
+        }
+
+        return doGetUser(claim, domain);
+    }
+
+    @Override
+    public User addUser(UserModel userModel) throws IdentityStoreException {
+
+        if (userModel == null || userModel.getClaims().isEmpty()) {
+            throw new IdentityStoreClientException("Invalid user or claim list is empty.");
+        }
+
+        Domain domain;
+        try {
+            domain = domainManager.getPrimaryDomain();
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
+        }
+
+        return doAddUser(userModel, domain);
+    }
+
+    @Override
+    public User addUser(UserModel userModel, String domainName) throws IdentityStoreException {
+
+        if (userModel == null || userModel.getClaims() == null || userModel.getClaims().isEmpty()) {
+            throw new IdentityStoreClientException("Invalid user or claim list is empty.");
+        }
+
+        if (StringUtils.isNullOrEmpty(domainName)) {
+            return addUser(userModel);
+        }
+
+        Domain domain;
+        try {
+            domain = domainManager.getDomainFromDomainName(domainName);
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
+                    "- %s", domainName), e);
+        }
+
+        return doAddUser(userModel, domain);
+    }
+
+    @Override
+    public AuthenticationContext authenticate(Claim claim, Callback credential, String domainName)
+            throws AuthenticationFailure {
+
+        if (claim == null || StringUtils.isNullOrEmpty(claim.getValue()) || credential == null) {
+            throw new AuthenticationFailure("Invalid credentials.");
+        }
+
+        //TODO claim wrapper will handle the dialect conversion
+//        try {
+//            claim = claimManager.convertToDefaultClaimDialect(claim);
+//        } catch (ClaimManagerException e) {
+//            log.error("Failed to convert to the default claim dialect.", e);
+//            throw new AuthenticationFailure("Provided claim is invalid.");
+//        }
+
+        if (!StringUtils.isNullOrEmpty(domainName)) {
+
+            Domain domain;
+            try {
+                domain = domainManager.getDomainFromDomainName(domainName);
+            } catch (DomainException e) {
+                log.error(String.format("Error while retrieving domain from the domain name - %s", domainName), e);
+                throw new AuthenticationFailure("Domain name is invalid.");
+            }
+            return doAuthenticate(claim, credential, domain);
+        }
+
+        SortedSet<Domain> domains;
+        try {
+            domains = domainManager.getSortedDomains();
+        } catch (DomainException e) {
+            log.error("Failed to retrieve the domains.", e);
+            throw new AuthenticationFailure("Server error occurred.");
+        }
+
+        AuthenticationContext context = null;
+        for (Domain domain : domains) {
+            if (domain.isClaimSupported(claim.getClaimURI())) {
+                try {
+                    context = doAuthenticate(claim, credential, domain);
+                    break;
+                } catch (AuthenticationFailure e) {
+
+                }
+            }
+        }
+
+        if (context == null) {
+            throw new AuthenticationFailure("Invalid credentials.");
+        }
+        return context;
+    }
+
+    private User doGetUser(Claim claim, Domain domain) throws IdentityStoreException {
+
+        //TODO claim wrapper will handle the dialect conversion
+//        try {
+//            claim = claimManager.convertToDefaultClaimDialect(claim);
+//        } catch (ClaimManagerException e) {
+//            throw new IdentityStoreServerException("Failed to convert to the default claim dialect.", e);
+//        }
+
+        MetaClaimMapping metaClaimMapping;
+        try {
+            metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimURI());
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
+        }
+
+        if (!metaClaimMapping.isUnique()) {
+            throw new IdentityStoreClientException("Provided claim is not unique.");
+        }
+
+        String connectorUserId;
+        try {
+            connectorUserId = domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId())
+                    .getConnectorUserId(metaClaimMapping.getAttributeName(), claim.getValue());
+        } catch (UserNotFoundException e) {
+            throw new IdentityStoreServerException("Invalid claim value. No user mapped to the provided claim.", e);
+        }
+
+        UniqueUser uniqueUser;
+        try {
+            uniqueUser = domain.getUniqueIdResolver().getUniqueUser(connectorUserId, metaClaimMapping
+                    .getIdentityStoreConnectorId());
+        } catch (UniqueIdResolverException e) {
+            throw new IdentityStoreServerException("Failed retrieve user unique id.", e);
+        }
+
+        //TODO - handle if uuid is null - connecting existing stores
+
+        return new User.UserBuilder()
+                .setUserId(uniqueUser.getUniqueUserId())
+                .setDomain(domain)
+                .setIdentityStore(this)
+                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+                .build();
+    }
+
+    private User doAddUser(UserModel userModel, Domain domain) throws IdentityStoreException {
+
+        //TODO claim wrapper will handle the dialect conversion
+//        try {
+//            userModel.setClaims(claimManager.convertToDefaultClaimDialect(userModel.getClaims()));
+//        } catch (ClaimManagerException e) {
+//            throw new IdentityStoreServerException("Failed to convert to the default claim dialect.", e);
+//        }
+
+        List<MetaClaimMapping> metaClaimMappings;
+        try {
+            metaClaimMappings = domain.getMetaClaimMappings();
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException("Failed to retrieve meta claim mappings.");
+        }
+
+        Map<String, List<Attribute>> connectorIdToAttributesMap = getConnectorIdToAttributesMap(userModel.getClaims(),
+                metaClaimMappings);
+
+        List<UserPartition> userPartitions = new ArrayList<>();
+        for (Map.Entry<String, List<Attribute>> entry : connectorIdToAttributesMap.entrySet()) {
+
+            String connectorUserId;
+            try {
+                connectorUserId = domain.getIdentityStoreConnectorFromId(entry.getKey()).addUser(entry.getValue());
+            } catch (IdentityStoreConnectorException e) {
+                // Recover from the inconsistent state in the connectors
+                if (connectorIdToAttributesMap.size() > 0) {
+                    removeAddedUsersInAFailure(domain, userPartitions);
+                }
+                throw new IdentityStoreServerException("Identity store connector failed to add user attributes.", e);
+            }
+
+            userPartitions.add(new UserPartition(entry.getKey(), connectorUserId, true));
+        }
+
+        if (!userModel.getCredentials().isEmpty()) {
+            Map<String, List<Callback>> connectorIdToCredentialsMap = getConnectorIdToCredentialsMap(userModel
+                    .getCredentials(), domain.getCredentialStoreConnectors());
+
+            for (Map.Entry<String, List<Callback>> entry : connectorIdToCredentialsMap.entrySet()) {
+
+                String connectorUserId;
+                try {
+                    connectorUserId = domain.getCredentialStoreConnectorFromId(entry.getKey()).addCredential(
+                            entry.getValue().toArray(new Callback[entry.getValue().size()]));
+                } catch (CredentialStoreException e) {
+                    // Recover from the inconsistent state in the connectors
+                    if (connectorIdToAttributesMap.size() > 0) {
+                        removeAddedUsersInAFailure(domain, userPartitions);
+                    }
+                    throw new IdentityStoreServerException("Credential store connector failed to add user attributes.",
+                            e);
+                }
+
+                userPartitions.add(new UserPartition(entry.getKey(), connectorUserId, false));
+            }
+        }
+
+        String userUniqueId = IdentityUserMgtUtil.generateUUID();
+        try {
+            domain.getUniqueIdResolver().addUser(new UniqueUser(userUniqueId, userPartitions), domain.getDomainName());
+        } catch (UniqueIdResolverException e) {
+            // Recover from the inconsistent state in the connectors
+            removeAddedUsersInAFailure(domain, userPartitions);
+
+            throw new IdentityStoreServerException("Error occurred while persisting user unique id.", e);
+        }
+
+        return new User.UserBuilder()
+                .setUserId(userUniqueId)
+                .setDomain(domain)
+                .setIdentityStore(this)
+                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+                .build();
+    }
+
+    private AuthenticationContext doAuthenticate(Claim claim, Callback credential, Domain domain)
+            throws AuthenticationFailure {
+
+        MetaClaimMapping metaClaimMapping;
+        try {
+            metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimURI());
+        } catch (DomainException e) {
+            throw new AuthenticationFailure("Failed to retrieve the meta claim mapping for the claim URI.", e);
+        }
+
+        if (!metaClaimMapping.isUnique()) {
+            throw new AuthenticationFailure("Provided claim is not unique.");
+        }
+
+        String connectorUserId;
+        try {
+            connectorUserId = domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId())
+                    .getConnectorUserId(metaClaimMapping.getAttributeName(), claim.getValue());
+        } catch (UserNotFoundException | IdentityStoreException e) {
+            throw new AuthenticationFailure("Invalid claim value. No user mapped to the provided claim.", e);
+        }
+
+        UniqueUser uniqueUser;
+        try {
+            uniqueUser = domain.getUniqueIdResolver().getUniqueUser(connectorUserId, metaClaimMapping
+                    .getIdentityStoreConnectorId());
+        } catch (UniqueIdResolverException e) {
+            throw new AuthenticationFailure("Failed retrieve unique user info.", e);
+        }
+
+        for (UserPartition userPartition : uniqueUser.getUserPartitions()) {
+            if (!userPartition.isIdentityStore()) {
+                CredentialStoreConnector connector = domain.getCredentialStoreConnectorFromId(userPartition
+                        .getConnectorId());
+                if (connector.canHandle(new Callback[]{credential})) {
+                    try {
+                        connector.authenticate(new Callback[]{credential});
+
+                        return new AuthenticationContext(new User.UserBuilder()
+                                .setUserId(uniqueUser.getUniqueUserId())
+                                .setIdentityStore(this)
+                                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
+                                        .getAuthorizationStore())
+                                .setDomain(domain)
+                                .build());
+                    } catch (CredentialStoreException e) {
+                        throw new AuthenticationFailure("Failed to authenticate from the provided credential.", e);
+                    }
+                }
+            }
+        }
+
+        throw new AuthenticationFailure("Failed to authenticate user.");
+    }
 
     @Override
     public Group getGroup(Claim claim, String domainName) throws IdentityStoreException, GroupNotFoundException {
@@ -366,44 +677,6 @@ public class IdentityStoreImpl implements IdentityStore {
         return null;
     }
 
-    @Override
-    public User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
-
-        if (claim == null || StringUtils.isNullOrEmpty(claim.getValue())) {
-            throw new IdentityStoreClientException("Invalid claim.");
-        }
-
-        Domain domain;
-        try {
-            domain = domainManager.getPrimaryDomain();
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
-        }
-
-        return doGetUser(claim, domain);
-    }
-
-    @Override
-    public User getUser(Claim claim, String domainName) throws IdentityStoreException, UserNotFoundException {
-
-        if (StringUtils.isNullOrEmpty(domainName)) {
-            return getUser(claim);
-        }
-
-        if (claim == null || StringUtils.isNullOrEmpty(claim.getValue())) {
-            throw new IdentityStoreClientException("Invalid claim.");
-        }
-
-        Domain domain;
-        try {
-            domain = domainManager.getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        return doGetUser(claim, domain);
-    }
 
     @Override
     public List<User> listUsers(int offset, int length) throws IdentityStoreException {
@@ -759,45 +1032,6 @@ public class IdentityStoreImpl implements IdentityStore {
 
 
     @Override
-    public User addUser(UserModel userModel) throws IdentityStoreException {
-
-        if (userModel == null || userModel.getClaims().isEmpty()) {
-            throw new IdentityStoreClientException("Invalid user or claim list is empty.");
-        }
-
-        Domain domain;
-        try {
-            domain = domainManager.getPrimaryDomain();
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
-        }
-
-        return doAddUser(userModel, domain);
-    }
-
-    @Override
-    public User addUser(UserModel userModel, String domainName) throws IdentityStoreException {
-
-        if (userModel == null || userModel.getClaims() == null || userModel.getClaims().isEmpty()) {
-            throw new IdentityStoreClientException("Invalid user or claim list is empty.");
-        }
-
-        if (StringUtils.isNullOrEmpty(domainName)) {
-            return addUser(userModel);
-        }
-
-        Domain domain;
-        try {
-            domain = domainManager.getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        return doAddUser(userModel, domain);
-    }
-
-    @Override
     public List<User> addUsers(List<UserModel> userModels) throws IdentityStoreException {
 
         if (userModels == null || userModels.isEmpty()) {
@@ -835,6 +1069,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         return doAddUsers(userModels, domain);
     }
+
 
     @Override
     public void updateUserClaims(String uniqueUserId, List<Claim> userClaims) throws IdentityStoreException {
@@ -1177,191 +1412,6 @@ public class IdentityStoreImpl implements IdentityStore {
 //        }
     }
 
-    @Override
-    public AuthenticationContext authenticate(Claim claim, Callback credential, String domainName)
-            throws AuthenticationFailure {
-
-        if (claim == null || StringUtils.isNullOrEmpty(claim.getValue()) || credential == null) {
-            throw new AuthenticationFailure("Invalid credentials.");
-        }
-
-        //TODO
-//        try {
-//            claim = claimManager.convertToDefaultClaimDialect(claim);
-//        } catch (ClaimManagerException e) {
-//            log.error("Failed to convert to the default claim dialect.", e);
-//            throw new AuthenticationFailure("Provided claim is invalid.");
-//        }
-
-        if (!StringUtils.isNullOrEmpty(domainName)) {
-
-            Domain domain;
-            try {
-                domain = domainManager.getDomainFromDomainName(domainName);
-            } catch (DomainException e) {
-                log.error(String.format("Error while retrieving domain from the domain name - %s", domainName), e);
-                throw new AuthenticationFailure("Domain name is invalid.");
-            }
-            return doAuthenticate(claim, credential, domain);
-        }
-
-        SortedSet<Domain> domains;
-        try {
-            domains = domainManager.getSortedDomains();
-        } catch (DomainException e) {
-            log.error("Failed to retrieve the domains.", e);
-            throw new AuthenticationFailure("Server error occurred.");
-        }
-
-        AuthenticationContext context = null;
-        for (Domain domain : domains) {
-            if (domain.isClaimSupported(claim.getClaimURI())) {
-                try {
-                    context = doAuthenticate(claim, credential, domain);
-                } catch (AuthenticationFailure e) {
-
-                }
-            }
-        }
-
-        if (context == null) {
-            throw new AuthenticationFailure("Invalid credentials.");
-        }
-        return context;
-    }
-
-    private AuthenticationContext doAuthenticate(Claim claim, Callback credential, Domain domain)
-            throws AuthenticationFailure {
-
-        MetaClaimMapping metaClaimMapping;
-        try {
-            metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimURI());
-        } catch (DomainException e) {
-            throw new AuthenticationFailure("Failed to retrieve the meta claim mapping for the claim URI.", e);
-        }
-
-        if (!metaClaimMapping.isUnique()) {
-            throw new AuthenticationFailure("Provided claim is not unique.");
-        }
-
-        String connectorUserId;
-        try {
-            connectorUserId = domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId())
-                    .getConnectorUserId(metaClaimMapping.getAttributeName(), claim.getValue());
-        } catch (UserNotFoundException | IdentityStoreException e) {
-            throw new AuthenticationFailure("Invalid claim value. No user mapped to the provided claim.", e);
-        }
-
-        UniqueUser uniqueUser;
-        try {
-            uniqueUser = domain.getUniqueIdResolver().getUniqueUser(connectorUserId, metaClaimMapping
-                    .getIdentityStoreConnectorId());
-        } catch (UniqueIdResolverException e) {
-            throw new AuthenticationFailure("Failed retrieve unique user info.", e);
-        }
-
-        for (UserPartition userPartition : uniqueUser.getUserPartitions()) {
-            if (!userPartition.isIdentityStore()) {
-                CredentialStoreConnector connector = domain.getCredentialStoreConnectorFromId(userPartition
-                        .getConnectorId());
-                if (connector.canHandle(new Callback[]{credential})) {
-                    try {
-                        connector.authenticate(new Callback[]{credential});
-
-                        return new AuthenticationContext(new User.UserBuilder()
-                                .setUserId(uniqueUser.getUniqueUserId())
-                                .setIdentityStore(this)
-                                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
-                                        .getAuthorizationStore())
-                                .setDomain(domain)
-                                .build());
-                    } catch (CredentialStoreException e) {
-                        throw new AuthenticationFailure("Failed to authenticate from the provided credential.", e);
-                    }
-                }
-            }
-        }
-
-        throw new AuthenticationFailure("Failed to authenticate user.");
-    }
-
-    private User doAddUser(UserModel userModel, Domain domain) throws IdentityStoreException {
-
-//        try {
-//            userModel.setClaims(claimManager.convertToDefaultClaimDialect(userModel.getClaims()));
-//        } catch (ClaimManagerException e) {
-//            throw new IdentityStoreServerException("Failed to convert to the default claim dialect.", e);
-//        }
-
-        List<MetaClaimMapping> metaClaimMappings;
-        try {
-            metaClaimMappings = domain.getMetaClaimMappings();
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException("Failed to retrieve meta claim mappings.");
-        }
-
-        Map<String, List<Attribute>> connectorIdToAttributesMap = getConnectorIdToAttributesMap(userModel.getClaims(),
-                metaClaimMappings);
-
-        List<UserPartition> userPartitions = new ArrayList<>();
-        for (Map.Entry<String, List<Attribute>> entry : connectorIdToAttributesMap.entrySet()) {
-
-            String connectorUserId;
-            try {
-                connectorUserId = domain.getIdentityStoreConnectorFromId(entry.getKey()).addUser(entry.getValue());
-            } catch (IdentityStoreConnectorException e) {
-                // Recover from the inconsistent state in the connectors
-                if (connectorIdToAttributesMap.size() > 0) {
-                    removeAddedUsersInAFailure(domain, userPartitions);
-                }
-                throw new IdentityStoreServerException("Identity store connector failed to add user attributes.", e);
-            }
-
-            userPartitions.add(new UserPartition(entry.getKey(), connectorUserId, true));
-        }
-
-        if (!userModel.getCredentials().isEmpty()) {
-            Map<String, List<Callback>> connectorIdToCredentialsMap = getConnectorIdToCredentialsMap(userModel
-                    .getCredentials(), domain.getCredentialStoreConnectors());
-
-            for (Map.Entry<String, List<Callback>> entry : connectorIdToCredentialsMap.entrySet()) {
-
-                String connectorUserId;
-                try {
-                    connectorUserId = domain.getCredentialStoreConnectorFromId(entry.getKey()).addCredential(
-                            entry.getValue().toArray(new Callback[entry.getValue().size()]));
-                } catch (CredentialStoreException e) {
-                    // Recover from the inconsistent state in the connectors
-                    if (connectorIdToAttributesMap.size() > 0) {
-                        removeAddedUsersInAFailure(domain, userPartitions);
-                    }
-                    throw new IdentityStoreServerException("Credential store connector failed to add user attributes.",
-                            e);
-                }
-
-                userPartitions.add(new UserPartition(entry.getKey(), connectorUserId, true));
-            }
-        }
-
-        String userUniqueId = IdentityUserMgtUtil.generateUUID();
-        try {
-            domain.getUniqueIdResolver().addUser(new UniqueUser(userUniqueId, userPartitions), domain.getDomainName());
-        } catch (UniqueIdResolverException e) {
-            // Recover from the inconsistent state in the connectors
-            removeAddedUsersInAFailure(domain, userPartitions);
-
-            throw new IdentityStoreServerException("Error occurred while persisting user unique id.", e);
-        }
-
-        return new User.UserBuilder()
-                .setUserId(userUniqueId)
-                .setDomain(domain)
-                .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
-                        .getAuthorizationStore())
-                .build();
-    }
-
     private List<User> doAddUsers(List<UserModel> userModels, Domain domain) throws IdentityStoreException {
 
 //        for (UserModel userModel : userModels) {
@@ -1698,51 +1748,6 @@ public class IdentityStoreImpl implements IdentityStore {
 //        }
 //    }
 
-    private User doGetUser(Claim claim, Domain domain) throws IdentityStoreException {
-
-//        try {
-//            claim = claimManager.convertToDefaultClaimDialect(claim);
-//        } catch (ClaimManagerException e) {
-//            throw new IdentityStoreServerException("Failed to convert to the default claim dialect.", e);
-//        }
-
-        MetaClaimMapping metaClaimMapping;
-        try {
-            metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimURI());
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
-        }
-
-        if (!metaClaimMapping.isUnique()) {
-            throw new IdentityStoreClientException("Provided claim is not unique.");
-        }
-
-        String connectorUserId;
-        try {
-            connectorUserId = domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId())
-                    .getConnectorUserId(metaClaimMapping.getAttributeName(), claim.getValue());
-        } catch (UserNotFoundException e) {
-            throw new IdentityStoreServerException("Invalid claim value. No user mapped to the provided claim.", e);
-        }
-
-        UniqueUser uniqueUser;
-        try {
-            uniqueUser = domain.getUniqueIdResolver().getUniqueUser(connectorUserId, metaClaimMapping
-                    .getIdentityStoreConnectorId());
-        } catch (UniqueIdResolverException e) {
-            throw new IdentityStoreServerException("Failed retrieve user unique id.", e);
-        }
-
-        //TODO - handle if uuid is null - connecting existing stores
-
-        return new User.UserBuilder()
-                .setUserId(uniqueUser.getUniqueUserId())
-                .setDomain(domain)
-                .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
-                        .getAuthorizationStore())
-                .build();
-    }
 
     private Map<String, List<Attribute>> getConnectorIdToAttributesMap(List<Claim> claims,
                                                                        List<MetaClaimMapping> metaClaimMappings) {
