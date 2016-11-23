@@ -22,9 +22,11 @@ import org.wso2.carbon.identity.mgt.bean.Attribute;
 import org.wso2.carbon.identity.mgt.bean.Domain;
 import org.wso2.carbon.identity.mgt.bean.Group;
 import org.wso2.carbon.identity.mgt.bean.User;
+import org.wso2.carbon.identity.mgt.callback.IdentityCallback;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
+import org.wso2.carbon.identity.mgt.constant.UserCoreConstants;
 import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.domain.DomainManager;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
@@ -371,9 +373,18 @@ public class IdentityStoreImpl implements IdentityStore {
             if (!userPartition.isIdentityStore()) {
                 CredentialStoreConnector connector = domain.getCredentialStoreConnectorFromId(userPartition
                         .getConnectorId());
-                if (connector.canHandle(new Callback[]{credential})) {
+                IdentityCallback<Map> carbonCallback = new IdentityCallback<>(null);
+
+                Callback[] callbacks = new Callback[2];
+                Map<String, String> userData = new HashMap<>();
+                userData.put(UserCoreConstants.USER_ID, userPartition.getConnectorUserId());
+                carbonCallback.setContent(userData);
+
+                callbacks[0] = credential;
+                callbacks[1] = carbonCallback;
+                if (connector.canHandle(callbacks)) {
                     try {
-                        connector.authenticate(new Callback[]{credential});
+                        connector.authenticate(callbacks);
 
                         return new AuthenticationContext(new User.UserBuilder()
                                 .setUserId(uniqueUser.getUniqueUserId())
@@ -1787,7 +1798,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .filter(Objects::nonNull)
                 .forEach(callback -> {
                     Optional<CredentialStoreConnector> optional = credentialStoreConnectors.stream()
-                            .filter(connector -> connector.canHandle(new Callback[]{callback}))
+                            .filter(connector -> connector.canStore(new Callback[]{callback}))
                             .findAny();
 
                     if (optional.isPresent()) {
