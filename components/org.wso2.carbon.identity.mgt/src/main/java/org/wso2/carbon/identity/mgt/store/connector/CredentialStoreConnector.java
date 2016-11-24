@@ -61,6 +61,14 @@ public interface CredentialStoreConnector {
     boolean canHandle(Callback[] callbacks);
 
     /**
+     * Checks whether this connector can store the given callbacks.
+     *
+     * @param callbacks Array of callbacks.
+     * @return True if there are all of the callbacks required for this connector.
+     */
+    boolean canStore(Callback[] callbacks);
+
+    /**
      * Get the Credential store config.
      *
      * @return CredentialStoreConnectorConfig.
