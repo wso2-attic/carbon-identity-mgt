@@ -20,9 +20,7 @@ import org.osgi.framework.BundleContext;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
-import org.wso2.carbon.identity.mgt.claim.MetaClaimStore;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
-import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfig;
 import org.wso2.carbon.identity.mgt.service.RealmService;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory;
@@ -56,11 +54,7 @@ public class IdentityMgtDataHolder {
 
     private CarbonCachingService carbonCachingService;
 
-    private DomainConfig domainConfig;
-
     private BundleContext bundleContext = null;
-
-    private MetaClaimStore metaClaimStore;
 
     private UniqueIdResolver uniqueIdResolver;
 
@@ -167,27 +161,6 @@ public class IdentityMgtDataHolder {
             throw new IllegalStateException("BundleContext is null.");
         }
         return bundleContext;
-    }
-
-    public DomainConfig getDomainConfig() throws CarbonSecurityDataHolderException {
-
-        if (domainConfig == null) {
-            throw new CarbonSecurityDataHolderException("Domain configuration is null.");
-        }
-
-        return domainConfig;
-    }
-
-    public void setDomainConfig(DomainConfig domainConfig) {
-        this.domainConfig = domainConfig;
-    }
-
-    public MetaClaimStore getMetaClaimStore() {
-        return metaClaimStore;
-    }
-
-    public void setMetaClaimStore(MetaClaimStore metaClaimStore) {
-        this.metaClaimStore = metaClaimStore;
     }
 
     public UniqueIdResolver getUniqueIdResolver() {
