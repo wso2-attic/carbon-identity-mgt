@@ -165,7 +165,7 @@ public class Domain {
 
         return connectorIdToMetaClaimMappings.values().stream()
                 .anyMatch(list -> list.stream().filter(metaClaimMapping ->
-                        claimURI.equals(metaClaimMapping.getMetaClaim().getClaimURI()))
+                        claimURI.equals(metaClaimMapping.getMetaClaim().getClaimUri()))
                         .findFirst().isPresent());
     }
 
@@ -207,7 +207,7 @@ public class Domain {
 
         this.metaClaimMappings = metaClaimMappings;
         this.claimUriToMetaClaimMappings = this.metaClaimMappings.stream()
-                .collect(Collectors.toMap(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimURI(),
+                .collect(Collectors.toMap(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimUri(),
                         metaClaimMapping -> metaClaimMapping));
     }
 

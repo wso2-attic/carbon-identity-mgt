@@ -28,13 +28,13 @@ public class Claim {
     /**
      * An URI to uniquely identify the dialect of a claim.
      */
-    private String dialectURI;
+    private String dialectUri;
 
     /**
      * An URI to uniquely identify a given claim. This is the one used by the
      * top layers applications are aware of.
      */
-    private String claimURI;
+    private String claimUri;
 
     /**
      * This is the value of the claim.
@@ -45,26 +45,26 @@ public class Claim {
 
     }
 
-    public Claim(String dialectURI, String claimURI, String value) {
-        this.dialectURI = dialectURI;
-        this.claimURI = claimURI;
+    public Claim(String dialectUri, String claimUri, String value) {
+        this.dialectUri = dialectUri;
+        this.claimUri = claimUri;
         this.value = value;
     }
 
-    public String getDialectURI() {
-        return dialectURI;
+    public String getDialectUri() {
+        return dialectUri;
     }
 
-    public void setDialectURI(String dialectURI) {
-        this.dialectURI = dialectURI;
+    public void setDialectUri(String dialectUri) {
+        this.dialectUri = dialectUri;
     }
 
-    public String getClaimURI() {
-        return claimURI;
+    public String getClaimUri() {
+        return claimUri;
     }
 
-    public void setClaimURI(String claimURI) {
-        this.claimURI = claimURI;
+    public void setClaimUri(String claimUri) {
+        this.claimUri = claimUri;
     }
 
     public String getValue() {

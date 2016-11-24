@@ -18,7 +18,10 @@ package org.wso2.carbon.identity.mgt.internal.config.domain;
 
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
+import org.wso2.carbon.identity.mgt.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.DomainConfig;
+import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
+import org.wso2.carbon.identity.mgt.config.StoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.UniqueIdResolverConfig;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
 import org.wso2.carbon.identity.mgt.util.FileUtil;
@@ -33,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static org.wso2.carbon.identity.mgt.util.IdentityMgtConstants.CLAIM_ROOT_DIALECT;
+import static org.wso2.carbon.identity.mgt.util.IdentityMgtConstants.UNIQUE_ID_RESOLVER_TYPE;
 
 /**
  * Builder for retrieving Domain configurations.
@@ -49,8 +55,8 @@ public class DomainConfigBuilder {
         return instance;
     }
 
-    public List<DomainConfig> getDomainConfigs(Map<String, MetaClaim> claimUriToMetaClaimMap) throws
-            CarbonSecurityConfigException {
+    public List<DomainConfig> getDomainConfigs(Map<String, StoreConnectorConfig> connectorIdToStoreConnectorConfigMap)
+            throws CarbonSecurityConfigException {
 
         DomainConfigFile domainConfigFile = buildDomainConfig();
 
@@ -61,6 +67,7 @@ public class DomainConfigBuilder {
         return domainConfigFile.getDomains().stream()
                 .filter(Objects::nonNull)
                 .filter(domainConfigEntry -> !StringUtils.isNullOrEmpty(domainConfigEntry.getName()))
+
                 .map(domainConfigEntry -> {
                     DomainConfig domainConfig = new DomainConfig();
                     domainConfig.setName(domainConfigEntry.getName());
@@ -69,7 +76,7 @@ public class DomainConfigBuilder {
                     UniqueIdResolverConfigEntry uniqueIdResolverConfigEntry = domainConfigEntry.getUniqueIdResolver();
                     if (uniqueIdResolverConfigEntry == null || StringUtils.isNullOrEmpty(uniqueIdResolverConfigEntry
                             .getType())) {
-                        domainConfig.setUniqueIdResolverConfig(new UniqueIdResolverConfig("JDBC-UUID-RESOLVER",
+                        domainConfig.setUniqueIdResolverConfig(new UniqueIdResolverConfig(UNIQUE_ID_RESOLVER_TYPE,
                                 Collections.emptyMap()));
                     } else {
                         domainConfig.setUniqueIdResolverConfig((new UniqueIdResolverConfig
@@ -78,34 +85,68 @@ public class DomainConfigBuilder {
 
                     if (!domainConfigEntry.getIdentityStoreConnectors().isEmpty()) {
 
-                        List<String> identityStoreConnectorIds = new ArrayList<>();
+                        List<IdentityStoreConnectorConfig> identityStoreConnectorConfigs = new ArrayList<>();
                         List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
 
                         domainConfigEntry.getIdentityStoreConnectors().stream()
                                 .filter(Objects::nonNull)
-                                .filter(domainStoreConnectorEntry -> !StringUtils
-                                        .isNullOrEmpty(domainStoreConnectorEntry.getConnectorId()))
+                                .filter(domainStoreConnectorEntry ->
+                                        !StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorId()))
+
                                 .forEach(domainStoreConnectorEntry -> {
+                                    if (StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorType())) {
 
-                                    identityStoreConnectorIds.add(domainStoreConnectorEntry.getConnectorId());
-                                    metaClaimMappings.addAll(getMetaClaimMappings(claimUriToMetaClaimMap,
-                                            domainStoreConnectorEntry.getConnectorId(), domainStoreConnectorEntry
-                                                    .getAttributeMappings()));
+                                        StoreConnectorConfig storeConnectorConfig =
+                                                connectorIdToStoreConnectorConfigMap.get(domainStoreConnectorEntry
+                                                        .getConnectorId());
+                                        if (storeConnectorConfig == null || !(storeConnectorConfig instanceof
+                                                IdentityStoreConnectorConfig)) {
+                                            return;
+                                        }
+                                        identityStoreConnectorConfigs.add((IdentityStoreConnectorConfig)
+                                                storeConnectorConfig);
+                                    } else {
 
+                                        identityStoreConnectorConfigs.add(new IdentityStoreConnectorConfig(
+                                                domainStoreConnectorEntry.getConnectorId(), domainStoreConnectorEntry
+                                                .getConnectorType(), domainStoreConnectorEntry.getProperties()));
+                                    }
+
+                                    metaClaimMappings.addAll(getMetaClaimMappings(domainStoreConnectorEntry
+                                            .getConnectorId(), domainStoreConnectorEntry.getAttributeMappings()));
                                 });
-                        domainConfig.setIdentityStoreConnectorIds(identityStoreConnectorIds);
+                        domainConfig.setIdentityStoreConnectorConfigs(identityStoreConnectorConfigs);
                         domainConfig.setMetaClaimMappings(metaClaimMappings);
                     }
 
                     if (!domainConfigEntry.getIdentityStoreConnectors().isEmpty()) {
-                        List<String> credentialStoreConnectorIds = domainConfigEntry.getCredentialStoreConnectors()
+
+                        List<CredentialStoreConnectorConfig> credentialStoreConnectorConfigs = new ArrayList<>();
+
+                        domainConfigEntry.getCredentialStoreConnectors()
                                 .stream()
                                 .filter(Objects::nonNull)
                                 .filter(domainStoreConnectorEntry -> !StringUtils
                                         .isNullOrEmpty(domainStoreConnectorEntry.getConnectorId()))
-                                .map(DomainStoreConnectorEntry::getConnectorId)
-                                .collect(Collectors.toList());
-                        domainConfig.setCredentialStoreConnectorIds(credentialStoreConnectorIds);
+
+                                .forEach(domainStoreConnectorEntry -> {
+                                    if (StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorType())) {
+                                        StoreConnectorConfig storeConnectorConfig =
+                                                connectorIdToStoreConnectorConfigMap.get(domainStoreConnectorEntry
+                                                        .getConnectorId());
+                                        if (storeConnectorConfig == null || !(storeConnectorConfig instanceof
+                                                CredentialStoreConnectorConfig)) {
+                                            return;
+                                        }
+                                        credentialStoreConnectorConfigs.add((CredentialStoreConnectorConfig)
+                                                storeConnectorConfig);
+                                    } else {
+                                        credentialStoreConnectorConfigs.add(new CredentialStoreConnectorConfig(
+                                                domainStoreConnectorEntry.getConnectorId(), domainStoreConnectorEntry
+                                                .getConnectorType(), domainStoreConnectorEntry.getProperties()));
+                                    }
+                                });
+                        domainConfig.setCredentialStoreConnectorConfigs(credentialStoreConnectorConfigs);
                     }
                     return domainConfig;
                 }).collect(Collectors.toList());
@@ -120,8 +161,8 @@ public class DomainConfigBuilder {
         return FileUtil.readConfigFile(file, DomainConfigFile.class);
     }
 
-    private List<MetaClaimMapping> getMetaClaimMappings(Map<String, MetaClaim> claimUriToMetaClaimMap, String
-            connectorId, List<DomainAttributeConfigEntry> attributeConfigEntries) {
+    private List<MetaClaimMapping> getMetaClaimMappings(String storeConnectorId, List<DomainAttributeConfigEntry>
+            attributeConfigEntries) {
 
         if (attributeConfigEntries.isEmpty()) {
             return Collections.emptyList();
@@ -130,12 +171,12 @@ public class DomainConfigBuilder {
         return attributeConfigEntries.stream()
                 .filter(Objects::nonNull)
                 .filter(domainAttributeConfigEntry -> !StringUtils.isNullOrEmpty(domainAttributeConfigEntry
-                        .getClaimURI()) && !StringUtils.isNullOrEmpty(domainAttributeConfigEntry.getAttribute()) &&
-                        claimUriToMetaClaimMap.get(domainAttributeConfigEntry.getClaimURI()) != null)
+                        .getClaimUri()) && !StringUtils.isNullOrEmpty(domainAttributeConfigEntry.getAttribute()))
+
                 .map(domainAttributeConfigEntry -> {
-                    MetaClaim metaClaim = claimUriToMetaClaimMap.get(domainAttributeConfigEntry.getClaimURI());
-                    return new MetaClaimMapping(metaClaim, connectorId, domainAttributeConfigEntry.getAttribute(),
-                            Boolean.valueOf(metaClaim.getProperties().get("unique")));
+                    MetaClaim metaClaim = new MetaClaim(CLAIM_ROOT_DIALECT, domainAttributeConfigEntry.getClaimUri(),
+                            domainAttributeConfigEntry.getProperties());
+                    return new MetaClaimMapping(metaClaim, storeConnectorId, domainAttributeConfigEntry.getAttribute());
                 }).collect(Collectors.toList());
 
     }

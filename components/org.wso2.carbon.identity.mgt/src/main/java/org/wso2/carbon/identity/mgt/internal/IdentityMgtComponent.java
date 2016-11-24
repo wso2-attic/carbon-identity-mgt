@@ -29,14 +29,12 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.identity.mgt.bean.Domain;
-import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.DomainConfig;
 import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.StoreConfig;
 import org.wso2.carbon.identity.mgt.config.StoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.UniqueIdResolverConfig;
-import org.wso2.carbon.identity.mgt.domain.DomainManager;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
 import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
 import org.wso2.carbon.identity.mgt.exception.DomainConfigException;
@@ -45,21 +43,17 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.MetaClaimStoreException;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
-import org.wso2.carbon.identity.mgt.internal.config.claim.ClaimConfigBuilder;
 import org.wso2.carbon.identity.mgt.internal.config.connector.ConnectorConfigBuilder;
 import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfigBuilder;
 import org.wso2.carbon.identity.mgt.internal.config.store.StoreConfigBuilder;
 import org.wso2.carbon.identity.mgt.service.RealmService;
 import org.wso2.carbon.identity.mgt.service.impl.RealmServiceImpl;
-import org.wso2.carbon.identity.mgt.store.CredentialStore;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory;
-import org.wso2.carbon.identity.mgt.store.impl.CacheBackedCredentialStore;
 import org.wso2.carbon.identity.mgt.store.impl.CacheBackedIdentityStore;
-import org.wso2.carbon.identity.mgt.store.impl.CredentialStoreImpl;
 import org.wso2.carbon.identity.mgt.store.impl.IdentityStoreImpl;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolverFactory;
@@ -67,10 +61,13 @@ import org.wso2.carbon.identity.mgt.user.impl.JDBCUniqueIdResolverFactory;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.wso2.carbon.identity.mgt.util.IdentityMgtConstants.UNIQUE_ID_RESOLVER_TYPE;
 
 /**
  * OSGi service component which handle identity management.
@@ -96,7 +93,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
         IdentityMgtDataHolder.getInstance().setBundleContext(bundleContext);
 
         // Register Default Unique Id Resolver
-        IdentityMgtDataHolder.getInstance().registerUniqueIdResolverFactory("JDBC-UUID-RESOLVER",
+        IdentityMgtDataHolder.getInstance().registerUniqueIdResolverFactory(UNIQUE_ID_RESOLVER_TYPE,
                 new JDBCUniqueIdResolverFactory());
     }
 
@@ -151,6 +148,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
                                                                      credentialStoreConnectorFactory) {
     }
 
+    //TODO make this MANDATORY
     @Reference(
             name = "AuthorizationStore",
             service = AuthorizationStore.class,
@@ -241,50 +239,36 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
         try {
 
-            // Load all store connector configs
+            // Load all external store connector configs
             Map<String, StoreConnectorConfig> connectorIdToStoreConnectorConfigMap = ConnectorConfigBuilder
                     .getInstance().getStoreConnectorConfigs();
 
-            // Load all meta claims
-            Map<String, MetaClaim> claimUriToMetaClaimMap = ClaimConfigBuilder.getInstance().getMetaClaims();
-
             // Load domain configurations
             List<DomainConfig> domainConfigs = DomainConfigBuilder.getInstance().getDomainConfigs
-                    (claimUriToMetaClaimMap);
+                    (connectorIdToStoreConnectorConfigMap);
 
-            // Build Domain manager
-            DomainManager domainManager = getDomainManager(domainConfigs, connectorIdToStoreConnectorConfigMap);
+            // Build Domains
+            List<Domain> domains = buildDomains(domainConfigs);
 
             // Get the store configurations
             StoreConfig storeConfig = StoreConfigBuilder.getInstance().getStoreConfig();
 
-            IdentityStore identityStore;
-            CredentialStore credentialStore;
             //TODO
             AuthorizationStore authorizationStore = IdentityMgtDataHolder.getInstance().getAuthorizationStore();
 
+            IdentityStore identityStore;
             if (storeConfig.isEnableCache() && storeConfig.isEnableIdentityStoreCache()) {
                 identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap());
             } else {
                 identityStore = new IdentityStoreImpl();
             }
-            identityStore.init(domainManager);
+            identityStore.init(domains);
 
-            if (storeConfig.isEnableCache() && storeConfig.isEnableCredentialStoreCache()) {
-                credentialStore = new CacheBackedCredentialStore(storeConfig.getCredentialStoreCacheConfigMap());
-            } else {
-                credentialStore = new CredentialStoreImpl();
-            }
-            credentialStore.init(domainManager);
+            // Register the realm service.
+            RealmService<IdentityStore> realmService = new RealmServiceImpl<>(identityStore, authorizationStore);
+            identityMgtDataHolder.registerRealmService(realmService);
 
-
-            // Register the carbon realm service.
-            RealmServiceImpl<IdentityStore, CredentialStore> carbonRealmService
-                    = new RealmServiceImpl(identityStore, credentialStore, authorizationStore);
-
-            identityMgtDataHolder.registerCarbonRealmService(carbonRealmService);
-
-            realmServiceRegistration = bundleContext.registerService(RealmService.class, carbonRealmService, null);
+            realmServiceRegistration = bundleContext.registerService(RealmService.class, realmService, null);
             log.info("Realm service registered successfully.");
 
             log.info("Carbon-Security bundle activated successfully.");
@@ -304,17 +288,15 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
         }
     }
 
-    private DomainManager getDomainManager(List<DomainConfig> domainConfigs,
-                                           Map<String, StoreConnectorConfig> connectorIdToStoreConnectorConfigMap)
+    private List<Domain> buildDomains(List<DomainConfig> domainConfigs)
             throws DomainException, DomainConfigException, MetaClaimStoreException, UniqueIdResolverException,
             IdentityStoreException, CredentialStoreException, IdentityStoreConnectorException {
-
-        DomainManager domainManager = new DomainManager();
 
         if (domainConfigs.isEmpty()) {
             throw new DomainConfigException("Invalid domain configuration found.");
         }
 
+        List<Domain> domains = new ArrayList<>();
         Set<String> identityStoreConnectorIds = new HashSet<>();
         Set<String> credentialStoreConnectorIds = new HashSet<>();
 
@@ -340,74 +322,64 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
             domain.setMetaClaimMappings(domainConfig.getMetaClaimMappings());
 
-            if (!domainConfig.getIdentityStoreConnectorIds().isEmpty()) {
-                for (String connectorId : domainConfig.getIdentityStoreConnectorIds()) {
-                    StoreConnectorConfig storeConnectorConfig = connectorIdToStoreConnectorConfigMap.get(connectorId);
-                    if (storeConnectorConfig == null) {
-                        throw new DomainConfigException(String.format("Connector configuration for the connector - %s" +
-                                " is not found.", connectorId));
-                    }
+            if (!domainConfig.getIdentityStoreConnectorConfigs().isEmpty()) {
+                for (IdentityStoreConnectorConfig connectorConfig : domainConfig.getIdentityStoreConnectorConfigs()) {
 
-                    if (identityStoreConnectorIds.contains(connectorId)) {
+                    if (identityStoreConnectorIds.contains(connectorConfig.getConnectorId())) {
                         throw new DomainConfigException(String.format("IdentityStoreConnector %s already exists in " +
-                                "the identity store connector map", connectorId));
+                                "the identity store connector map", connectorConfig));
                     }
-                    identityStoreConnectorIds.add(connectorId);
 
                     IdentityStoreConnectorFactory storeConnectorFactory = IdentityMgtDataHolder.getInstance()
-                            .getIdentityStoreConnectorFactoryMap().get(storeConnectorConfig.getConnectorType());
+                            .getIdentityStoreConnectorFactoryMap().get(connectorConfig.getConnectorType());
                     if (storeConnectorFactory == null) {
                         throw new IdentityStoreConnectorException(String.format("Failed to get a connector factory " +
-                                "of type - %s", storeConnectorConfig.getConnectorType()));
+                                "of type - %s", connectorConfig.getConnectorType()));
                     }
+
                     IdentityStoreConnector identityStoreConnector = storeConnectorFactory.getInstance();
                     if (identityStoreConnector == null) {
                         throw new IdentityStoreConnectorException(String.format("Failed to get a connector instance " +
-                                "of type - %s", storeConnectorConfig.getConnectorType()));
+                                "of type - %s", connectorConfig.getConnectorType()));
                     }
-                    if (storeConnectorConfig instanceof IdentityStoreConnectorConfig) {
-                        identityStoreConnector.init((IdentityStoreConnectorConfig) storeConnectorConfig);
-                    }
+
+                    identityStoreConnector.init(connectorConfig);
                     domain.addIdentityStoreConnector(identityStoreConnector);
+                    identityStoreConnectorIds.add(connectorConfig.getConnectorId());
                 }
             }
 
-            if (!domainConfig.getCredentialStoreConnectorIds().isEmpty()) {
-                for (String connectorId : domainConfig.getCredentialStoreConnectorIds()) {
-                    StoreConnectorConfig storeConnectorConfig = connectorIdToStoreConnectorConfigMap.get(connectorId);
-                    if (storeConnectorConfig == null) {
-                        throw new DomainConfigException(String.format("Connector configuration for the connector - %s" +
-                                " is not found.", connectorId));
-                    }
+            if (!domainConfig.getCredentialStoreConnectorConfigs().isEmpty()) {
+                for (CredentialStoreConnectorConfig connectorConfig :
+                        domainConfig.getCredentialStoreConnectorConfigs()) {
 
-                    if (credentialStoreConnectorIds.contains(connectorId)) {
+                    if (credentialStoreConnectorIds.contains(connectorConfig.getConnectorId())) {
                         throw new DomainConfigException(String.format("CredentialStoreConnector %s already exists in " +
-                                "the credential store connector map", connectorId));
+                                "the credential store connector map", connectorConfig.getConnectorId()));
                     }
-                    credentialStoreConnectorIds.add(connectorId);
 
                     CredentialStoreConnectorFactory storeConnectorFactory = IdentityMgtDataHolder.getInstance()
-                            .getCredentialStoreConnectorFactoryMap().get(storeConnectorConfig.getConnectorType());
+                            .getCredentialStoreConnectorFactoryMap().get(connectorConfig.getConnectorType());
                     if (storeConnectorFactory == null) {
                         throw new IdentityStoreConnectorException(String.format("Failed to get a connector factory " +
-                                "of type - %s", storeConnectorConfig.getConnectorType()));
+                                "of type - %s", connectorConfig.getConnectorType()));
                     }
                     CredentialStoreConnector credentialStoreConnector = storeConnectorFactory.getInstance();
                     if (credentialStoreConnector == null) {
                         throw new IdentityStoreConnectorException(String.format("Failed to get a connector instance " +
-                                "of type - %s", storeConnectorConfig.getConnectorType()));
+                                "of type - %s", connectorConfig.getConnectorType()));
                     }
-                    if (storeConnectorConfig instanceof CredentialStoreConnectorConfig) {
-                        credentialStoreConnector.init((CredentialStoreConnectorConfig) storeConnectorConfig);
-                    }
+
+                    credentialStoreConnector.init(connectorConfig);
                     domain.addCredentialStoreConnector(credentialStoreConnector);
+                    credentialStoreConnectorIds.add(connectorConfig.getConnectorId());
                 }
             }
 
-            domainManager.addDomain(domain);
+            domains.add(domain);
         }
 
-        return domainManager;
+        return domains;
     }
 }
 

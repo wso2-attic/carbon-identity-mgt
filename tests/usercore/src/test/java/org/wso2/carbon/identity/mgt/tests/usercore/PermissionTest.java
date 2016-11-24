@@ -119,7 +119,7 @@ public class PermissionTest extends PowerMockTestCase {
 //        Mockito.when(user.getUserId()).thenReturn(UserConstants.USER_NAME);
 //
 //        IdentityStore identityStore = IdentityMgtDataHolder
-//                .getInstance().getCarbonRealmService().getIdentityStore();
+//                .getInstance().getRealmService().getIdentityStore();
 //        Mockito.when(identityStore.getUser(Mockito.anyString())).thenReturn(user);
 //
 //        Callback[] callbacks = new Callback[2];
@@ -133,7 +133,7 @@ public class PermissionTest extends PowerMockTestCase {
 //        callbacks[1] = nameCallback;
 //
 //        AuthenticationContext authenticationContext =
-//                IdentityMgtDataHolder.getInstance().getCarbonRealmService()
+//                IdentityMgtDataHolder.getInstance().getRealmService()
 //                        .getCredentialStore().authenticate(callbacks);
 //
 //        Assert.assertNotNull(authenticationContext);
@@ -203,7 +203,7 @@ public class PermissionTest extends PowerMockTestCase {
 //        // Add carbon realm service to the carbon realm service implementation
 //        RealmServiceImpl<IdentityStoreImpl, CredentialStoreImpl> realmService =
 //                new RealmServiceImpl<>(identityStore, credentialStore, authorizationStore);
-//        Mockito.when(IdentityMgtDataHolder.getInstance().getCarbonRealmService())
+//        Mockito.when(IdentityMgtDataHolder.getInstance().getRealmService())
 //                .thenReturn(realmService);
     }
 

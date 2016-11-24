@@ -26,7 +26,6 @@ import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
 import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
-import org.wso2.carbon.identity.mgt.domain.DomainManager;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
@@ -56,6 +55,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.security.auth.callback.Callback;
 
@@ -68,12 +68,30 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private static final Logger log = LoggerFactory.getLogger(IdentityStoreImpl.class);
 
-    private DomainManager domainManager;
+    private Map<String, Domain> domainNameToDomainMap = new HashMap<>();
+
+    private SortedSet<Domain> sortedDomains = new TreeSet<>((d1, d2) -> {
+
+        int d1Priority = d1.getDomainPriority();
+        int d2Priority = d2.getDomainPriority();
+
+        // Allow having multiple domains with the same priority
+        if (d1Priority == d2Priority) {
+            d2Priority++;
+        }
+
+        return Integer.compare(d1Priority, d2Priority);
+    });
 
     @Override
-    public void init(DomainManager domainManager) throws IdentityStoreException {
+    public void init(List<Domain> domains) throws IdentityStoreException {
 
-        this.domainManager = domainManager;
+        if (domains.isEmpty()) {
+            log.warn("No domains registered.");
+        }
+
+        sortedDomains.addAll(domains);
+        domainNameToDomainMap = domains.stream().collect(Collectors.toMap(Domain::getDomainName, domain -> domain));
 
         if (log.isDebugEnabled()) {
             log.debug("Identity store successfully initialized.");
@@ -90,7 +108,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Domain domain;
         try {
-            domain = domainManager.getPrimaryDomain();
+            domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
         }
@@ -112,7 +130,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Domain domain;
         try {
-            domain = domainManager.getDomainFromDomainName(domainName);
+            domain = getDomainFromDomainName(domainName);
         } catch (DomainException e) {
             throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
                     "- %s", domainName), e);
@@ -130,7 +148,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Domain domain;
         try {
-            domain = domainManager.getPrimaryDomain();
+            domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
         }
@@ -151,7 +169,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Domain domain;
         try {
-            domain = domainManager.getDomainFromDomainName(domainName);
+            domain = getDomainFromDomainName(domainName);
         } catch (DomainException e) {
             throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
                     "- %s", domainName), e);
@@ -180,7 +198,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
             Domain domain;
             try {
-                domain = domainManager.getDomainFromDomainName(domainName);
+                domain = getDomainFromDomainName(domainName);
             } catch (DomainException e) {
                 log.error(String.format("Error while retrieving domain from the domain name - %s", domainName), e);
                 throw new AuthenticationFailure("Domain name is invalid.");
@@ -188,17 +206,11 @@ public class IdentityStoreImpl implements IdentityStore {
             return doAuthenticate(claim, credential, domain);
         }
 
-        SortedSet<Domain> domains;
-        try {
-            domains = domainManager.getSortedDomains();
-        } catch (DomainException e) {
-            log.error("Failed to retrieve the domains.", e);
-            throw new AuthenticationFailure("Server error occurred.");
-        }
+
 
         AuthenticationContext context = null;
-        for (Domain domain : domains) {
-            if (domain.isClaimSupported(claim.getClaimURI())) {
+        for (Domain domain : sortedDomains) {
+            if (domain.isClaimSupported(claim.getClaimUri())) {
                 try {
                     context = doAuthenticate(claim, credential, domain);
                     break;
@@ -225,14 +237,14 @@ public class IdentityStoreImpl implements IdentityStore {
 
         MetaClaimMapping metaClaimMapping;
         try {
-            metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimURI());
+            metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        if (!metaClaimMapping.isUnique()) {
-            throw new IdentityStoreClientException("Provided claim is not unique.");
-        }
+//        if (!metaClaimMapping.isUnique()) {
+//            throw new IdentityStoreClientException("Provided claim is not unique.");
+//        }
 
         String connectorUserId;
         try {
@@ -342,7 +354,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         MetaClaimMapping metaClaimMapping;
         try {
-            metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimURI());
+            metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
         } catch (DomainException e) {
             throw new AuthenticationFailure("Failed to retrieve the meta claim mapping for the claim URI.", e);
         }
@@ -378,7 +390,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         return new AuthenticationContext(new User.UserBuilder()
                                 .setUserId(uniqueUser.getUniqueUserId())
                                 .setIdentityStore(this)
-                                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
+                                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getRealmService()
                                         .getAuthorizationStore())
                                 .setDomain(domain)
                                 .build());
@@ -392,24 +404,46 @@ public class IdentityStoreImpl implements IdentityStore {
         throw new AuthenticationFailure("Failed to authenticate user.");
     }
 
+    private Domain getPrimaryDomain() throws DomainException {
+
+        Domain domain = sortedDomains.first();
+
+        if (domain == null) {
+            throw new DomainException("No domains registered.");
+        }
+
+        return domain;
+    }
+
+    public Domain getDomainFromDomainName(String domainName) throws DomainException {
+
+        Domain domain = domainNameToDomainMap.get(domainName);
+
+        if (domain == null) {
+            throw new DomainException(String.format("Domain %s was not found", domainName));
+        }
+
+        return domain;
+    }
+
     @Override
     public Group getGroup(Claim claim, String domainName) throws IdentityStoreException, GroupNotFoundException {
 
-        if (claim == null || StringUtils.isNullOrEmpty(claim.getDialectURI()) || StringUtils.isNullOrEmpty(claim
-                .getClaimURI()) || StringUtils.isNullOrEmpty(claim.getValue())) {
+        if (claim == null || StringUtils.isNullOrEmpty(claim.getDialectUri()) || StringUtils.isNullOrEmpty(claim
+                .getClaimUri()) || StringUtils.isNullOrEmpty(claim.getValue())) {
             throw new IdentityStoreClientException("Invalid claim.");
         }
 
         Domain domain;
         if (StringUtils.isNullOrEmpty(domainName)) {
             try {
-                domain = domainManager.getPrimaryDomain();
+                domain = getPrimaryDomain();
             } catch (DomainException e) {
                 throw new IdentityStoreServerException("Failed to retrieve the primary domain.");
             }
         } else {
             try {
-                domain = domainManager.getDomainFromDomainName(domainName);
+                domain = getDomainFromDomainName(domainName);
             } catch (DomainException e) {
                 throw new IdentityStoreServerException(String.format("Failed to retrieve the domain - %s", domainName));
             }
@@ -427,8 +461,8 @@ public class IdentityStoreImpl implements IdentityStore {
 
             if (entry.getValue() != null) {
                 for (MetaClaimMapping metaClaimMapping : entry.getValue()) {
-                    if (claim.getClaimURI().equals(metaClaimMapping.getMetaClaim().getClaimURI())
-                            && claim.getDialectURI().equals(metaClaimMapping.getMetaClaim().getDialectURI())) {
+                    if (claim.getClaimUri().equals(metaClaimMapping.getMetaClaim().getClaimUri())
+                            && claim.getDialectUri().equals(metaClaimMapping.getMetaClaim().getDialectUri())) {
                         connectorId = entry.getKey();
                         attributeName = metaClaimMapping.getAttributeName();
                         break outer;
@@ -439,7 +473,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         if (StringUtils.isNullOrEmpty(connectorId) || StringUtils.isNullOrEmpty(attributeName)) {
             throw new IdentityStoreClientException(String.format("Invalid claim. Claim URI - %s, Claim Dialect - %s",
-                    claim.getClaimURI(), claim.getDialectURI()));
+                    claim.getClaimUri(), claim.getDialectUri()));
         }
 
         //TODO
@@ -479,20 +513,13 @@ public class IdentityStoreImpl implements IdentityStore {
 
     public List<Group> getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
 
-        if (claim == null || StringUtils.isNullOrEmpty(claim.getDialectURI()) || StringUtils.isNullOrEmpty(claim
-                .getClaimURI()) || StringUtils.isNullOrEmpty(claim.getValue())) {
+        if (claim == null || StringUtils.isNullOrEmpty(claim.getDialectUri()) || StringUtils.isNullOrEmpty(claim
+                .getClaimUri()) || StringUtils.isNullOrEmpty(claim.getValue())) {
             throw new IdentityStoreClientException("Invalid claim.");
         }
 
-        SortedSet<Domain> domains;
-        try {
-            domains = domainManager.getSortedDomains();
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException("Failed to retrieve domains.", e);
-        }
-
         Map<Domain, MetaClaimMapping> selectedMetaClaimMappingMap = new HashMap<>();
-        for (Domain domain : domains) {
+        for (Domain domain : sortedDomains) {
             Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getConnectorIdToMetaClaimMappings();
             if (metaClaimMappings.isEmpty()) {
                 throw new IdentityStoreServerException("Invalid domain configuration found. No meta claim mappings.");
@@ -503,8 +530,8 @@ public class IdentityStoreImpl implements IdentityStore {
 
                 if (entry.getValue() != null) {
                     for (MetaClaimMapping metaClaimMapping : entry.getValue()) {
-                        if (claim.getClaimURI().equals(metaClaimMapping.getMetaClaim().getClaimURI())
-                                && claim.getDialectURI().equals(metaClaimMapping.getMetaClaim().getDialectURI())) {
+                        if (claim.getClaimUri().equals(metaClaimMapping.getMetaClaim().getClaimUri())
+                                && claim.getDialectUri().equals(metaClaimMapping.getMetaClaim().getDialectUri())) {
                             selectedMetaClaimMappingMap.put(domain, metaClaimMapping);
                             break outer;
                         }
@@ -551,7 +578,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setGroupId(entry.getValue())
                         .setDomain(entry.getKey())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
+                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getRealmService()
                                 .getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
@@ -647,7 +674,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //
 //        Domain domain;
 //        try {
-//            domain = domainManager.getDomainFromDomainName(domainName);
+//            domain = getDomainFromDomainName(domainName);
 //        } catch (DomainException e) {
 //            throw new IdentityStoreServerException("Failed to retrieve domain.", e);
 //        }
@@ -693,7 +720,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
 //        List<User> users = new ArrayList<>();
 //
-//        String claimURI = claim.getClaimURI();
+//        String claimURI = claim.getClaimUri();
 //        String claimValue = claim.getValue();
 //
 //        int currentOffset = 0;
@@ -716,7 +743,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //                        break;
 //                    }
 //
-//                    if (metaClaimMapping.getMetaClaim().getClaimURI().equals(claimURI)) {
+//                    if (metaClaimMapping.getMetaClaim().getClaimUri().equals(claimURI)) {
 //
 //                        List<User.UserBuilder> userBuilderList =
 //                                identityStoreConnector.getUserBuilderList(metaClaimMapping.getAttributeName(),
@@ -832,7 +859,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //
 //        Domain domain;
 //        try {
-//            domain = domainManager.getDomainFromDomainName(domainName);
+//            domain = getDomainFromDomainName(domainName);
 //        } catch (DomainException e) {
 //            throw new IdentityStoreServerException("Failed to retrieve domain.", e);
 //        }
@@ -1008,7 +1035,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //
 //            // Create <AttributeName, MetaClaim> map
 //            Map<String, MetaClaim> attributeMapping = metaClaimMappings.stream().
-//                    filter(metaClaimMapping -> claimURIs.contains(metaClaimMapping.getMetaClaim().getClaimURI()))
+//                    filter(metaClaimMapping -> claimURIs.contains(metaClaimMapping.getMetaClaim().getClaimUri()))
 //                    .collect(Collectors.toMap(MetaClaimMapping::getAttributeName, MetaClaimMapping::getMetaClaim));
 //
 //            try {
@@ -1040,7 +1067,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Domain domain;
         try {
-            domain = domainManager.getPrimaryDomain();
+            domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
         }
@@ -1061,7 +1088,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Domain domain;
         try {
-            domain = domainManager.getDomainFromDomainName(domainName);
+            domain = getDomainFromDomainName(domainName);
         } catch (DomainException e) {
             throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
                     "- %s", domainName), e);
@@ -1087,7 +1114,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //
 //        Domain domain;
 //        try {
-//            domain = domainManager.getDomainFromDomainName(domainName);
+//            domain = getDomainFromDomainName(domainName);
 //        } catch (DomainException e) {
 //            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain
 // name " +
@@ -1119,7 +1146,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //
 //        Domain domain;
 //        try {
-//            domain = domainManager.getDomainFromDomainName(domainName);
+//            domain = getDomainFromDomainName(domainName);
 //        } catch (DomainException e) {
 //            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain
 // name " +
@@ -1145,7 +1172,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //
 //        Domain domain;
 //        try {
-//            domain = domainManager.getDomainFromDomainName(domainName);
+//            domain = getDomainFromDomainName(domainName);
 //        } catch (DomainException e) {
 //            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain
 // name " +
@@ -1211,7 +1238,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Domain domain;
         try {
-            domain = domainManager.getPrimaryDomain();
+            domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving primary domain.", e);
         }
@@ -1232,7 +1259,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Domain domain;
         try {
-            domain = domainManager.getDomainFromDomainName(domainName);
+            domain = getDomainFromDomainName(domainName);
         } catch (DomainException e) {
             throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
                     "- %s", domainName), e);
@@ -1250,7 +1277,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Domain domain;
         try {
-            domain = domainManager.getPrimaryDomain();
+            domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving primary domain.", e);
         }
@@ -1271,7 +1298,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Domain domain;
         try {
-            domain = domainManager.getDomainFromDomainName(domainName);
+            domain = getDomainFromDomainName(domainName);
         } catch (DomainException e) {
             throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
                     "- %s", domainName), e);
@@ -1296,7 +1323,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //
 //        Domain domain;
 //        try {
-//            domain = domainManager.getDomainFromDomainName(domainName);
+//            domain = getDomainFromDomainName(domainName);
 //        } catch (DomainException e) {
 //            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain
 // name " +
@@ -1328,7 +1355,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //
 //        Domain domain;
 //        try {
-//            domain = domainManager.getDomainFromDomainName(domainName);
+//            domain = getDomainFromDomainName(domainName);
 //        } catch (DomainException e) {
 //            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain
 // name " +
@@ -1354,7 +1381,7 @@ public class IdentityStoreImpl implements IdentityStore {
 //
 //        Domain domain;
 //        try {
-//            domain = domainManager.getDomainFromDomainName(domainName);
+//            domain = getDomainFromDomainName(domainName);
 //        } catch (DomainException e) {
 //            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain
 // name " +
@@ -1473,7 +1500,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setUserId(entry.getKey())
                         .setDomain(domain)
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
+                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getRealmService()
                                 .getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
@@ -1599,7 +1626,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setGroupId(groupUniqueId)
                 .setDomain(domain)
                 .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
+                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getRealmService()
                         .getAuthorizationStore())
                 .build();
     }
@@ -1653,7 +1680,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setGroupId(entry.getKey())
                         .setDomain(domain)
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getCarbonRealmService()
+                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getRealmService()
                                 .getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
@@ -1757,8 +1784,8 @@ public class IdentityStoreImpl implements IdentityStore {
         claims.stream()
                 .forEach(claim -> {
                             Optional<MetaClaimMapping> optional = metaClaimMappings.stream()
-                                    .filter(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimURI()
-                                            .equals(claim.getClaimURI()))
+                                    .filter(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimUri()
+                                            .equals(claim.getClaimUri()))
                                     .findFirst();
 
                             if (optional.isPresent()) {
@@ -1816,9 +1843,9 @@ public class IdentityStoreImpl implements IdentityStore {
                             .filter(entry -> entry.getValue() != null)
                             .forEach(entry -> {
                                 Optional<MetaClaimMapping> optional = entry.getValue().stream()
-                                        .filter(metaClaimMapping -> claim.getClaimURI().equals(metaClaimMapping
-                                                .getMetaClaim().getClaimURI()) && claim.getDialectURI().equals
-                                                (metaClaimMapping.getMetaClaim().getDialectURI()))
+                                        .filter(metaClaimMapping -> claim.getClaimUri().equals(metaClaimMapping
+                                                .getMetaClaim().getClaimUri()) && claim.getDialectUri().equals
+                                                (metaClaimMapping.getMetaClaim().getDialectUri()))
                                         .findFirst();
                                 if (optional.isPresent()) {
                                     Attribute attribute = new Attribute();
@@ -1862,8 +1889,8 @@ public class IdentityStoreImpl implements IdentityStore {
 //        return attributes.stream().map(attribute -> {
 //            MetaClaim metaClaim = attributeMapping.get(attribute.getAttributeName());
 //            Claim claim = new Claim();
-//            claim.setClaimURI(metaClaim.getClaimURI());
-//            claim.setDialectURI(metaClaim.getDialectURI());
+//            claim.setClaimUri(metaClaim.getClaimUri());
+//            claim.setDialectUri(metaClaim.getDialectUri());
 //            claim.setValue(attribute.getAttributeValue());
 //            return claim;
 //        }).collect(Collectors.toList());

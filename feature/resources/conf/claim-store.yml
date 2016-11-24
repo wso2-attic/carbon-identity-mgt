@@ -16,8 +16,8 @@
 # All the claims will be added under wso2 claim dialect.
 claims:
  -
-  claimURI: "http://wso2.org/claims/username"
-  dialectURI: "http://wso2.org/claims"
+  claimUri: "http://wso2.org/claims/username"
+  dialectUri: "http://wso2.org/claims"
   properties:
    displayName: "Username"
    description: "Username"
@@ -25,8 +25,8 @@ claims:
    required: "true"
    supportedByDefault: "true"
  -
-  claimURI: "http://wso2.org/claims/firstName"
-  dialectURI: "http://wso2.org/claims"
+  claimUri: "http://wso2.org/claims/firstName"
+  dialectUri: "http://wso2.org/claims"
   properties:
    displayName: "First Name"
    description: "First Name"
@@ -34,8 +34,8 @@ claims:
    required: "true"
    supportedByDefault: "true"
  -
-  claimURI: "http://wso2.org/claims/lastName"
-  dialectURI: "http://wso2.org/claims"
+  claimUri: "http://wso2.org/claims/lastName"
+  dialectUri: "http://wso2.org/claims"
   properties:
    displayName: "Last Name"
    description: "Last Name"
@@ -43,8 +43,8 @@ claims:
    required: "false"
    supportedByDefault: "true"
  -
-  claimURI: "http://wso2.org/claims/email"
-  dialectURI: "http://wso2.org/claims"
+  claimUri: "http://wso2.org/claims/email"
+  dialectUri: "http://wso2.org/claims"
   properties:
    displayName: "Email Address"
    description: "Email Address"

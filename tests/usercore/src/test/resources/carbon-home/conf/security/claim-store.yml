@@ -15,32 +15,32 @@
 ###############################################################################
 claims:
  -
-  claimURI: "http://wso2.org/claims/username"
-  dialectURI: "http://wso2.org/claims"
+  claimUri: "http://wso2.org/claims/username"
+  dialectUri: "http://wso2.org/claims"
   properties:
    displayName: "Username"
    description: "Username"
    required: "true"
    supportedByDefault: "true"
  -
-  claimURI: "http://wso2.org/claims/firstName"
-  dialectURI: "http://wso2.org/claims"
+  claimUri: "http://wso2.org/claims/firstName"
+  dialectUri: "http://wso2.org/claims"
   properties:
    displayName: "First Name"
    description: "First Name"
    required: "true"
    supportedByDefault: "true"
  -
-  claimURI: "http://wso2.org/claims/lastName"
-  dialectURI: "http://wso2.org/claims"
+  claimUri: "http://wso2.org/claims/lastName"
+  dialectUri: "http://wso2.org/claims"
   properties:
    displayName: "Last Name"
    description: "Last Name"
    required: "true"
    supportedByDefault: "true"
  -
-  claimURI: "http://wso2.org/claims/email"
-  dialectURI: "http://wso2.org/claims"
+  claimUri: "http://wso2.org/claims/email"
+  dialectUri: "http://wso2.org/claims"
   properties:
    displayName: "Email Address"
    description: "Email Address"
