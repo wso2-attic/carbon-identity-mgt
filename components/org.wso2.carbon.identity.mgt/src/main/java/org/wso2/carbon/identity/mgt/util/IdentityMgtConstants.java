@@ -41,6 +41,10 @@ public class IdentityMgtConstants {
     public static final String DOMAIN_CONFIG_FILE = "domain-config.yml";
     public static final String CONNECTOR_CONFIG_FILE = "connector-config.yml";
 
+    public static final String UNIQUE_ID_RESOLVER_TYPE = "JDBCUniqueIdResolver";
+
+    public static final String CLAIM_ROOT_DIALECT = "http://wso2.org/claims";
+
     // Delimiters
     public static final String URL_SPLITTER = "/";
 

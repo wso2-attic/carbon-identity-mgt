@@ -16,14 +16,19 @@
 
 package org.wso2.carbon.identity.mgt.internal.config.domain;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Domain attribute mapping config entry.
  */
 public class DomainAttributeConfigEntry {
 
-    private String claimURI;
+    private String claimUri;
 
     private String attribute;
+
+    private Map<String, String> properties;
 
     public String getAttribute() {
         return attribute;
@@ -33,11 +38,23 @@ public class DomainAttributeConfigEntry {
         this.attribute = attribute;
     }
 
-    public String getClaimURI() {
-        return claimURI;
+    public String getClaimUri() {
+        return claimUri;
     }
 
-    public void setClaimURI(String claimURI) {
-        this.claimURI = claimURI;
+    public void setClaimUri(String claimUri) {
+        this.claimUri = claimUri;
+    }
+
+    public Map<String, String> getProperties() {
+
+        if (properties == null) {
+            return Collections.emptyMap();
+        }
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 }

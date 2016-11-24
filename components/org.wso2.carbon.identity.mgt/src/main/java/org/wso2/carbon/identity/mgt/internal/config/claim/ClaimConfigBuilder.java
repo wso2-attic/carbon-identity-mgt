@@ -53,11 +53,11 @@ public class ClaimConfigBuilder {
 
         return claimStoreFile.getClaims().stream()
                 .filter(Objects::nonNull)
-                .filter(claimStoreEntry -> !StringUtils.isNullOrEmpty(claimStoreEntry.getClaimURI())
-                        && !StringUtils.isNullOrEmpty(claimStoreEntry.getDialectURI()))
-                .map(claimStoreEntry -> new MetaClaim(claimStoreEntry.getDialectURI(), claimStoreEntry.getClaimURI(),
+                .filter(claimStoreEntry -> !StringUtils.isNullOrEmpty(claimStoreEntry.getClaimUri())
+                        && !StringUtils.isNullOrEmpty(claimStoreEntry.getDialectUri()))
+                .map(claimStoreEntry -> new MetaClaim(claimStoreEntry.getDialectUri(), claimStoreEntry.getClaimUri(),
                         claimStoreEntry.getProperties()))
-                .collect(Collectors.toMap(MetaClaim::getClaimURI, metaClaim -> metaClaim));
+                .collect(Collectors.toMap(MetaClaim::getClaimUri, metaClaim -> metaClaim));
     }
 
     private ClaimStoreFile buildClaimConfig() throws CarbonSecurityConfigException {

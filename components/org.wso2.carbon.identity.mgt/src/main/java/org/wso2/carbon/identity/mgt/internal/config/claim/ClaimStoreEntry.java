@@ -23,26 +23,26 @@ import java.util.Map;
  */
 public class ClaimStoreEntry {
 
-    private String claimURI;
+    private String claimUri;
 
-    private String dialectURI;
+    private String dialectUri;
 
     private Map<String, String> properties;
 
-    public String getClaimURI() {
-        return claimURI;
+    public String getClaimUri() {
+        return claimUri;
     }
 
-    public void setClaimURI(String claimURI) {
-        this.claimURI = claimURI;
+    public void setClaimUri(String claimUri) {
+        this.claimUri = claimUri;
     }
 
-    public String getDialectURI() {
-        return dialectURI;
+    public String getDialectUri() {
+        return dialectUri;
     }
 
-    public void setDialectURI(String dialectURI) {
-        this.dialectURI = dialectURI;
+    public void setDialectUri(String dialectUri) {
+        this.dialectUri = dialectUri;
     }
 
     public Map<String, String> getProperties() {

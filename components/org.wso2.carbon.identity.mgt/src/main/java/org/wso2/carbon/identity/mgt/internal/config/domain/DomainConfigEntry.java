@@ -34,6 +34,8 @@ public class DomainConfigEntry {
      */
     private int priority;
 
+    private boolean active = true;
+
     private UniqueIdResolverConfigEntry uniqueIdResolver;
 
     /**
@@ -80,6 +82,14 @@ public class DomainConfigEntry {
      */
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public UniqueIdResolverConfigEntry getUniqueIdResolver() {
