@@ -163,7 +163,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     public void addUser(UniqueUser uniqueUser, String domainName) throws
             UniqueIdResolverException {
 
-        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
             final String addUser = "INSERT INTO IDM_ENTITY " +
                     "(USER_UUID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
                     "VALUES (:user_uuid;, :connector_user_id;, :connector_id;, :domain;, :connector_type;)";
@@ -184,6 +184,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             }
 
             namedPreparedStatement.getPreparedStatement().executeBatch();
+            unitOfWork.endTransaction();
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while adding user.", e);
         }
@@ -199,7 +200,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             UniqueIdResolverException {
 
         //TODO need to check whether the entry is already there before updating. else need to add
-        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
             final String updateUser = "UPDATE IDM_ENTITY " +
                     "SET CONNECTOR_USER_ID = :connector_user_id;" +
                     "WHERE USER_UUID = :user_uuid; AND CONNECTOR_ID = :connector_id;";
@@ -214,6 +215,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                 namedPreparedStatement.getPreparedStatement().addBatch();
             }
             namedPreparedStatement.getPreparedStatement().executeBatch();
+            unitOfWork.endTransaction();
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while adding user.", e);
         }
@@ -222,7 +224,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     @Override
     public void deleteUser(String uniqueUserId) throws UniqueIdResolverException {
 
-        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
             final String deleteUser = "DELETE FROM IDM_ENTITY " +
                     "WHERE USER_UUID = :user_uuid;";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
@@ -230,6 +232,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
 
             namedPreparedStatement.getPreparedStatement().executeUpdate();
+            unitOfWork.endTransaction();
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while adding user.", e);
         }
