@@ -65,9 +65,7 @@
                                     <directory>resources</directory>
                                     <includes>
                                         <include>conf/store-config.yml</include>
-                                        <include>conf/claim-store.yml</include>
                                         <include>conf/domain-config.yml</include>
-                                        <include>conf/connector-config.yml</include>
                                         <include>conf/user-mapping.csv</include>
                                         <include>conf/identity-store-connector.csv</include>
                                         <include>conf/credential-store-connector.csv</include>
