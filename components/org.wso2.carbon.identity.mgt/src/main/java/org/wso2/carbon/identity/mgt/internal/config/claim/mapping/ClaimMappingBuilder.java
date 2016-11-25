@@ -83,6 +83,7 @@ public class ClaimMappingBuilder {
 
     }
 
+    //ToDO improve with JAVA 8
     private Map<String, String> getMappings(String appName) throws CarbonSecurityConfigException {
         ClaimMappingFile claimMappingFile = buildClaimConfig();
         ClaimMappingEntry claimMappings = claimMappingFile.getApplicationClaimMapping(appName);
@@ -93,6 +94,8 @@ public class ClaimMappingBuilder {
 
         claimMappings.getMappings().entrySet().stream().filter(Objects::nonNull).forEach(
                 stringStringEntry -> appendDialect(claimMappings.getDialectURI(), stringStringEntry.getValue()));
+//        .map(stringStringEntry -> appendDialect(claimMappings.getDialectURI(), stringStringEntry.getKey()))
+//                .collect(Collectors.toMap( appendDialect(claimMappings.getDialectURI(), Map.Entry::getKey), Map.Entry::getValue );
 
         return claimMappings.getMappings();
     }
