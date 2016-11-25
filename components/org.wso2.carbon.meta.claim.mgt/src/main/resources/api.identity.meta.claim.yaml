@@ -421,7 +421,7 @@
   #-----------------------------------------------------
     ClaimDialect:
       type: object
-      properties:
+      mappings:
         claim-dialect-uri:
           type: string
   #-----------------------------------------------------
@@ -429,7 +429,7 @@
   #-----------------------------------------------------
     AttributeMapping:
       type: object
-      properties:
+      mappings:
         user-store.domain:
           type: string
         attribute-name:
@@ -440,12 +440,12 @@
   #-----------------------------------------------------
     LocalClaim:
       type: object
-      properties:
+      mappings:
         mapped-attributes:
           type: array
           items:
             $ref: '#/definitions/AttributeMapping'
-        claim-properties:
+        claim-mappings:
           type: object
           items:
             $ref: '#/definitions/ClaimProperties'
@@ -456,7 +456,7 @@
   #-----------------------------------------------------
     ExternalClaim:
       type: object
-      properties:
+      mappings:
         claim-dialect-uri:
           type: string
         claim-uri:
@@ -471,7 +471,7 @@
   #-----------------------------------------------------
     PairOfClaims:
       type: object
-      properties:
+      mappings:
         old-claim:
           $ref: '#/definitions/PairOfClaims'
         new-claim:
@@ -483,21 +483,21 @@
     # ClaimProperties:
     #   required:
     #     - default
-    #   properties:
+    #   mappings:
     #     default:
     #       type: string
     #   additionalProperties:
     #     type: string
 
     KeyValue:
-      properties:
+      mappings:
         firstname:
           type: string
         lastname:
           type: string
     ClaimProperties:
       description: a (key, MapItem) map. `default`is an example key
-      properties:
+      mappings:
         default:
           $ref: '#/definitions/KeyValue'
       additionalProperties:
@@ -507,7 +507,7 @@
   #-----------------------------------------------------
     Error:
       type: object
-      properties:
+      mappings:
         code:
           type: string
         message:
