@@ -52,6 +52,11 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
     }
 
     @Override
+    public boolean canStore(Callback[] callbacks) {
+        return false;
+    }
+
+    @Override
     public CredentialStoreConnectorConfig getCredentialStoreConfig() {
         return credentialStoreConnectorConfig;
     }

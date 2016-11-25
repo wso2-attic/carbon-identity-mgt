@@ -18,6 +18,7 @@ package org.wso2.carbon.identity.mgt.internal.config.domain;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Store connector config entry for domain config.
@@ -26,9 +27,10 @@ public class DomainStoreConnectorEntry {
 
     private String connectorId;
 
-    /**
-     * Domain IdentityStoreConnector attribute mapping configuration list.
-     */
+    private String connectorType;
+
+    private Map<String, String> properties;
+
     private List<DomainAttributeConfigEntry> attributeMappings;
 
     public String getConnectorId() {
@@ -37,6 +39,26 @@ public class DomainStoreConnectorEntry {
 
     public void setConnectorId(String connectorId) {
         this.connectorId = connectorId;
+    }
+
+    public String getConnectorType() {
+        return connectorType;
+    }
+
+    public void setConnectorType(String connectorType) {
+        this.connectorType = connectorType;
+    }
+
+    public Map<String, String> getProperties() {
+
+        if (properties == null) {
+            return Collections.emptyMap();
+        }
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 
     public List<DomainAttributeConfigEntry> getAttributeMappings() {
@@ -48,7 +70,6 @@ public class DomainStoreConnectorEntry {
     }
 
     public void setAttributeMappings(List<DomainAttributeConfigEntry> attributeMappings) {
-
         this.attributeMappings = attributeMappings;
     }
 }

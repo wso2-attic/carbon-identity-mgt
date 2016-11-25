@@ -16,12 +16,12 @@
 
 package org.wso2.carbon.identity.mgt.store;
 
+import org.wso2.carbon.identity.mgt.bean.Domain;
 import org.wso2.carbon.identity.mgt.bean.Group;
 import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
-import org.wso2.carbon.identity.mgt.domain.DomainManager;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
@@ -41,13 +41,12 @@ import javax.security.auth.callback.Callback;
 public interface IdentityStore {
 
     /**
-     * Initialize IdentityStore with {@link DomainManager} instance.
+     * Initialize IdentityStore with {@link Domain} list.
      *
-     * @param domainManager Active {@link DomainManager} intance
+     * @param domains domains
      * @throws IdentityStoreException IdentityStore Exception
      */
-    void init(DomainManager domainManager)
-            throws IdentityStoreException;
+    void init(List<Domain> domains) throws IdentityStoreException;
 
     /**
      * Retrieve a user by global unique Id.

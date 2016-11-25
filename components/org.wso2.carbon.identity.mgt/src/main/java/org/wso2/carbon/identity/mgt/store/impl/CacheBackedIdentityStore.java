@@ -19,6 +19,7 @@ package org.wso2.carbon.identity.mgt.store.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.caching.CarbonCachingService;
+import org.wso2.carbon.identity.mgt.bean.Domain;
 import org.wso2.carbon.identity.mgt.bean.Group;
 import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
@@ -26,7 +27,6 @@ import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.config.CacheConfig;
 import org.wso2.carbon.identity.mgt.constant.CacheNames;
 import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
-import org.wso2.carbon.identity.mgt.domain.DomainManager;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
@@ -62,8 +62,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void init(DomainManager domainManager)
-            throws IdentityStoreException {
+    public void init(List<Domain> domains) throws IdentityStoreException {
 
         CarbonCachingService carbonCachingService;
 
@@ -73,7 +72,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
             throw new IdentityStoreException("Caching service is not available.", e);
         }
         cacheManager = carbonCachingService.getCachingProvider().getCacheManager();
-        identityStore.init(domainManager);
+        identityStore.init(domains);
 
         // Initialize all caches.
         CacheHelper.createCache(CacheNames.USER_USERNAME, String.class, User.class, CacheHelper.MEDIUM_EXPIRE_TIME,

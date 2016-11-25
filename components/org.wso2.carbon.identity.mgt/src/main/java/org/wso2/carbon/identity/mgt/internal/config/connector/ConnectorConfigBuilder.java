@@ -49,21 +49,7 @@ public class ConnectorConfigBuilder {
 
     public Map<String, StoreConnectorConfig> getStoreConnectorConfigs() throws CarbonSecurityConfigException {
 
-        ConnectorConfigFile connectorConfigFile = buildConnectorConfig();
-
         List<StoreConnectorConfig> storeConnectorConfigs = new ArrayList<>();
-
-        if (!connectorConfigFile.getIdentityStoreConnectors().isEmpty()) {
-
-            storeConnectorConfigs.addAll(getStoreConnectorConfig(connectorConfigFile.getIdentityStoreConnectors(),
-                    IdentityStoreConnectorConfig.class));
-        }
-
-        if (!connectorConfigFile.getCredentialStoreConnectors().isEmpty()) {
-
-            storeConnectorConfigs.addAll(getStoreConnectorConfig(connectorConfigFile.getCredentialStoreConnectors(),
-                    CredentialStoreConnectorConfig.class));
-        }
 
         List<ConnectorConfigEntry> externalIdentityStoreConnectors = buildExternalIdentityStoreConnectorConfig();
         if (!externalIdentityStoreConnectors.isEmpty()) {
@@ -81,15 +67,6 @@ public class ConnectorConfigBuilder {
 
         return storeConnectorConfigs.stream().collect(Collectors.toMap(StoreConnectorConfig::getConnectorId,
                 storeConnectorConfig -> storeConnectorConfig));
-    }
-
-    private ConnectorConfigFile buildConnectorConfig() throws CarbonSecurityConfigException {
-
-        Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
-                IdentityMgtConstants.CONNECTOR_CONFIG_FILE);
-
-        // claim-store.yml is a mandatory configuration file.
-        return FileUtil.readConfigFile(file, ConnectorConfigFile.class);
     }
 
     /**

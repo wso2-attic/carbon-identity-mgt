@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.identity.mgt.service;
 
-import org.wso2.carbon.identity.mgt.store.CredentialStore;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
@@ -24,9 +23,8 @@ import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
  * User realm service.
  *
  * @param <T1>
- * @param <T2>
  */
-public interface RealmService<T1 extends IdentityStore, T2 extends CredentialStore> {
+public interface RealmService<T1 extends IdentityStore> {
 
     /**
      * Get the Virtual authorization store.
@@ -41,11 +39,4 @@ public interface RealmService<T1 extends IdentityStore, T2 extends CredentialSto
      * @return Identity Store
      */
     T1 getIdentityStore();
-
-    /**
-     * Get the credential store instance.
-     *
-     * @return Credential Store
-     */
-    T2 getCredentialStore();
 }

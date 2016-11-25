@@ -26,8 +26,10 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -36,6 +38,8 @@ import java.util.UUID;
 public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     private IdentityStoreConnectorConfig identityStoreConnectorConfig;
+
+    private Map<String, List<Attribute>> userStoreMap = new HashMap<>();
 
     @Override
     public void init(IdentityStoreConnectorConfig identityStoreConnectorConfig) throws IdentityStoreException {
@@ -51,7 +55,26 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public String getConnectorUserId(String attributeName, String attributeValue) throws UserNotFoundException,
             IdentityStoreException {
-        return null;
+
+        if (userStoreMap.size() == 0) {
+            return null;
+        }
+
+        Optional<Map.Entry<String, List<Attribute>>> mapEntry = userStoreMap.entrySet().stream()
+                .filter(entry -> {
+                    if (entry.getValue() != null) {
+                        Optional<Attribute> optional = entry.getValue().stream()
+                                .filter(attribute -> attribute.getAttributeName().equals(attributeName) && attribute
+                                        .getAttributeValue().equals(attributeValue))
+                                .findAny();
+                        return optional.isPresent();
+                    }
+                    return false;
+                }).findAny();
+        if (mapEntry.isPresent()) {
+            return mapEntry.get().getKey();
+        }
+        throw new UserNotFoundException("User not found.");
     }
 
     @Override
@@ -143,7 +166,10 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public String addUser(List<Attribute> attributes) throws IdentityStoreConnectorException {
-        return UUID.randomUUID().toString();
+
+        String userId = UUID.randomUUID().toString();
+        userStoreMap.put(userId, attributes);
+        return userId;
     }
 
     @Override

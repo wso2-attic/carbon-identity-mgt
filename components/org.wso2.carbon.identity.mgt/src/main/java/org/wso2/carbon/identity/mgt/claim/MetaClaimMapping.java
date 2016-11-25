@@ -35,12 +35,10 @@ public class MetaClaimMapping {
      */
     private boolean unique = false;
 
-    public MetaClaimMapping(MetaClaim metaClaim, String identityStoreConnectorId, String attributeName,
-                            boolean unique) {
+    public MetaClaimMapping(MetaClaim metaClaim, String identityStoreConnectorId, String attributeName) {
         this.metaClaim = metaClaim;
         this.identityStoreConnectorId = identityStoreConnectorId;
         this.attributeName = attributeName;
-        this.unique = unique;
     }
 
     public MetaClaim getMetaClaim() {
@@ -67,10 +65,12 @@ public class MetaClaimMapping {
         this.attributeName = attributeName;
     }
 
+    @Deprecated
     public boolean isUnique() {
         return unique;
     }
 
+    @Deprecated
     public void setUnique(boolean unique) {
         this.unique = unique;
     }

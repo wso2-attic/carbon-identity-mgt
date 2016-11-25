@@ -386,12 +386,12 @@
         description: |
            Remove an existing external claim.
         parameters:
-          - name: dialectURI
+          - name: dialectUri
             in: query
             description:  claim dialect URI of the claim URI, that is to be removed.
             required: true
             type: string
-          - name: claimURI
+          - name: claimUri
             in: query
             description:  claim URI that is to be removed.
             required: true

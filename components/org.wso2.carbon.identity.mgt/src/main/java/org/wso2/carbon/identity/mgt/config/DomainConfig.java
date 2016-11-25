@@ -32,9 +32,9 @@ public class DomainConfig {
 
     private UniqueIdResolverConfig uniqueIdResolverConfig;
 
-    private List<String> identityStoreConnectorIds;
+    private List<IdentityStoreConnectorConfig> identityStoreConnectorConfigs;
 
-    private List<String> credentialStoreConnectorIds;
+    private List<CredentialStoreConnectorConfig> credentialStoreConnectorConfigs;
 
     private List<MetaClaimMapping> metaClaimMappings;
 
@@ -62,28 +62,29 @@ public class DomainConfig {
         this.uniqueIdResolverConfig = uniqueIdResolverConfig;
     }
 
-    public List<String> getIdentityStoreConnectorIds() {
+    public List<IdentityStoreConnectorConfig> getIdentityStoreConnectorConfigs() {
 
-        if (identityStoreConnectorIds == null) {
+        if (identityStoreConnectorConfigs == null) {
             return Collections.emptyList();
         }
-        return identityStoreConnectorIds;
+        return identityStoreConnectorConfigs;
     }
 
-    public void setIdentityStoreConnectorIds(List<String> identityStoreConnectorIds) {
-        this.identityStoreConnectorIds = identityStoreConnectorIds;
+    public void setIdentityStoreConnectorConfigs(List<IdentityStoreConnectorConfig> identityStoreConnectorConfigs) {
+        this.identityStoreConnectorConfigs = identityStoreConnectorConfigs;
     }
 
-    public List<String> getCredentialStoreConnectorIds() {
+    public List<CredentialStoreConnectorConfig> getCredentialStoreConnectorConfigs() {
 
-        if (credentialStoreConnectorIds == null) {
+        if (credentialStoreConnectorConfigs == null) {
             return Collections.emptyList();
         }
-        return credentialStoreConnectorIds;
+        return credentialStoreConnectorConfigs;
     }
 
-    public void setCredentialStoreConnectorIds(List<String> credentialStoreConnectorIds) {
-        this.credentialStoreConnectorIds = credentialStoreConnectorIds;
+    public void setCredentialStoreConnectorConfigs(List<CredentialStoreConnectorConfig>
+                                                           credentialStoreConnectorConfigs) {
+        this.credentialStoreConnectorConfigs = credentialStoreConnectorConfigs;
     }
 
     public List<MetaClaimMapping> getMetaClaimMappings() {
