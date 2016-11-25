@@ -37,11 +37,11 @@ public class ClaimMappingEntry {
         this.name = name;
     }
 
-    public String getDialectURI() {
+    public String getMappingDialectURI() {
         return dialectURI;
     }
 
-    public void setDialectURI(String dialectURI) {
+    public void setMappingDialectURI(String dialectURI) {
         this.dialectURI = dialectURI;
     }
 

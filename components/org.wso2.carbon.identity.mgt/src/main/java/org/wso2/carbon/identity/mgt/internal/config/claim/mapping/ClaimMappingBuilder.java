@@ -23,7 +23,7 @@ import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Claim Mapping Builder.
@@ -51,6 +51,7 @@ public class ClaimMappingBuilder {
 
     /**
      * Provides the claim mappings of a given application
+     *
      * @param applicationName : Name to identify the application
      * @return Map<application claim : root claim URI>
      * @throws CarbonSecurityConfigException
@@ -63,6 +64,7 @@ public class ClaimMappingBuilder {
 
     /**
      * Provides the claim mappings of a given idp
+     *
      * @param idpName : Name to identify the idp
      * @return Map<idp claim : root claim URI>
      * @throws CarbonSecurityConfigException
@@ -74,6 +76,7 @@ public class ClaimMappingBuilder {
 
     /**
      * Provides the claim mappings of a given standard
+     *
      * @param standardName : Name to identify the standard
      * @return Map<standard claim : root claim URI>
      * @throws CarbonSecurityConfigException
@@ -83,7 +86,6 @@ public class ClaimMappingBuilder {
 
     }
 
-    //ToDO improve with JAVA 8
     private Map<String, String> getMappings(String appName) throws CarbonSecurityConfigException {
         ClaimMappingFile claimMappingFile = buildClaimConfig();
         ClaimMappingEntry claimMappings = claimMappingFile.getApplicationClaimMapping(appName);
@@ -92,12 +94,11 @@ public class ClaimMappingBuilder {
             throw new CarbonSecurityConfigException("Invalid claim configuration found.");
         }
 
-        claimMappings.getMappings().entrySet().stream().filter(Objects::nonNull).forEach(
-                stringStringEntry -> appendDialect(claimMappings.getDialectURI(), stringStringEntry.getValue()));
-//        .map(stringStringEntry -> appendDialect(claimMappings.getDialectURI(), stringStringEntry.getKey()))
-//                .collect(Collectors.toMap( appendDialect(claimMappings.getDialectURI(), Map.Entry::getKey), Map.Entry::getValue );
+        claimMappings.getMappings();
 
-        return claimMappings.getMappings();
+        return claimMappings.getMappings().entrySet().stream().collect(Collectors
+                .toMap(p -> appendDialect(claimMappings.getMappingDialectURI(), p.getKey()), Map.Entry::getValue));
+
     }
 
     private String appendDialect(String dialect, String claim) {
