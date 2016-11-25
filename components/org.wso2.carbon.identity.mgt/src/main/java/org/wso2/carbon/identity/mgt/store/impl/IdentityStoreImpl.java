@@ -89,7 +89,7 @@ public class IdentityStoreImpl implements IdentityStore {
     public void init(List<Domain> domains) throws IdentityStoreException {
 
         if (domains.isEmpty()) {
-            log.warn("No domains registered.");
+            throw new IdentityStoreException("No domains registered.");
         }
 
         sortedDomains.addAll(domains);
