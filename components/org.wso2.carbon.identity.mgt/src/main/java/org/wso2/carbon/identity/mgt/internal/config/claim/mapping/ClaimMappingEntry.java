@@ -23,18 +23,18 @@ import java.util.Map;
  */
 public class ClaimMappingEntry {
 
-    private String claimURI;
+    private String name;
 
     private String dialectURI;
 
-    private Map<String, String> properties;
+    private Map<String, String> mappings;
 
-    public String getClaimURI() {
-        return claimURI;
+    public String getName() {
+        return name;
     }
 
-    public void setClaimURI(String claimURI) {
-        this.claimURI = claimURI;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDialectURI() {
@@ -45,11 +45,11 @@ public class ClaimMappingEntry {
         this.dialectURI = dialectURI;
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
+    public Map<String, String> getMappings() {
+        return mappings;
     }
 
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
+    public void setMappings(Map<String, String> mappings) {
+        this.mappings = mappings;
     }
 }

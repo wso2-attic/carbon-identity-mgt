@@ -16,18 +16,14 @@
 
 package org.wso2.carbon.identity.mgt.internal.config.claim.mapping;
 
-import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
 import org.wso2.carbon.identity.mgt.util.FileUtil;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
-import org.wso2.carbon.kernel.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Claim Mapping Builder.
@@ -35,9 +31,6 @@ import java.util.stream.Collectors;
 public class ClaimMappingBuilder {
 
     private static ClaimMappingBuilder instance = new ClaimMappingBuilder();
-
-    //Map <(SP|IDP|Standard), (ApplicationName|ID), (external claim --> local claim)>
-    private Map<String, Map<String, Map<String,String>>> allClaimMappings = new HashMap<>();
 
     private ClaimMappingBuilder() {
 
@@ -47,30 +40,69 @@ public class ClaimMappingBuilder {
         return instance;
     }
 
-    public Map<String, MetaClaim> getMetaClaims() throws CarbonSecurityConfigException {
-
-        ClaimMappingFile claimStoreFile = buildClaimConfig();
-
-        if (claimStoreFile.getClaims().isEmpty()) {
-            throw new CarbonSecurityConfigException("Invalid claim configuration found.");
-        }
-
-        return claimStoreFile.getClaims().stream()
-                .filter(Objects::nonNull)
-                .filter(claimStoreEntry -> !StringUtils.isNullOrEmpty(claimStoreEntry.getClaimURI())
-                        && !StringUtils.isNullOrEmpty(claimStoreEntry.getDialectURI()))
-                .map(claimStoreEntry -> new MetaClaim(claimStoreEntry.getDialectURI(), claimStoreEntry.getClaimURI(),
-                        claimStoreEntry.getProperties()))
-                .collect(Collectors.toMap(MetaClaim::getClaimURI, metaClaim -> metaClaim));
-    }
-
     private ClaimMappingFile buildClaimConfig() throws CarbonSecurityConfigException {
 
         Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.CLAIM_MAPPING_FILE);
 
-        // claim-store.yml is a mandatory configuration file.
+        // claim-mapping.yml is a not a mandatory configuration file.
         return FileUtil.readConfigFile(file, ClaimMappingFile.class);
+    }
+
+    /**
+     * Provides the claim mappings of a given application
+     * @param applicationName : Name to identify the application
+     * @return Map<application claim : root claim URI>
+     * @throws CarbonSecurityConfigException
+     */
+    public Map<String, String> getApplicationClaimMappings(String applicationName)
+            throws CarbonSecurityConfigException {
+        return getMappings(applicationName);
+
+    }
+
+    /**
+     * Provides the claim mappings of a given idp
+     * @param idpName : Name to identify the idp
+     * @return Map<idp claim : root claim URI>
+     * @throws CarbonSecurityConfigException
+     */
+    public Map<String, String> getIdpClaimMappings(String idpName) throws CarbonSecurityConfigException {
+        return getMappings(idpName);
+
+    }
+
+    /**
+     * Provides the claim mappings of a given standard
+     * @param standardName : Name to identify the standard
+     * @return Map<standard claim : root claim URI>
+     * @throws CarbonSecurityConfigException
+     */
+    public Map<String, String> getStandardClaimMappings(String standardName) throws CarbonSecurityConfigException {
+        return getMappings(standardName);
+
+    }
+
+    private Map<String, String> getMappings(String appName) throws CarbonSecurityConfigException {
+        ClaimMappingFile claimMappingFile = buildClaimConfig();
+        ClaimMappingEntry claimMappings = claimMappingFile.getApplicationClaimMapping(appName);
+
+        if (claimMappings == null) {
+            throw new CarbonSecurityConfigException("Invalid claim configuration found.");
+        }
+
+        claimMappings.getMappings().entrySet().stream().filter(Objects::nonNull).forEach(
+                stringStringEntry -> appendDialect(claimMappings.getDialectURI(), stringStringEntry.getValue()));
+
+        return claimMappings.getMappings();
+    }
+
+    private String appendDialect(String dialect, String claim) {
+        //In case claim dialect in not followed by '/', add it.
+        if (!dialect.endsWith("/")) {
+            dialect = dialect + "/";
+        }
+        return dialect + claim;
     }
 
 }

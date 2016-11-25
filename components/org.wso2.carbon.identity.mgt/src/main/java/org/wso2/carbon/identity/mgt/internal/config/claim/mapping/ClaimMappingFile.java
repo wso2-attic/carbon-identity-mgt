@@ -16,25 +16,51 @@
 
 package org.wso2.carbon.identity.mgt.internal.config.claim.mapping;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Claim Mapping File.
  */
 public class ClaimMappingFile {
 
-    private List<ClaimMappingEntry> claims;
+    //Map<travelocity, Entry>
+    private Map<String, ClaimMappingEntry> applicationMappings;
+    private Map<String, ClaimMappingEntry> idpMappings;
+    private Map<String, ClaimMappingEntry> standardMappings;
 
-    public List<ClaimMappingEntry> getClaims() {
+    public ClaimMappingEntry getApplicationClaimMapping(String name) {
 
-        if (claims == null) {
-            return Collections.emptyList();
+        if (applicationMappings == null) {
+            return null;
         }
-        return claims;
+        return applicationMappings.get(name);
     }
 
-    public void setClaims(List<ClaimMappingEntry> claims) {
-        this.claims = claims;
+    public void setApplicationClaimMappings(Map<String, ClaimMappingEntry> claims) {
+        this.applicationMappings = claims;
+    }
+
+    public ClaimMappingEntry getIdpMappings(String name) {
+
+        if (idpMappings == null) {
+            return null;
+        }
+        return idpMappings.get(name);
+    }
+
+    public void setIdpMappings(Map<String, ClaimMappingEntry> claims) {
+        this.idpMappings = claims;
+    }
+
+    public ClaimMappingEntry getStandardMappings(String name) {
+
+        if (standardMappings == null) {
+            return null;
+        }
+        return standardMappings.get(name);
+    }
+
+    public void setStandardMappings(Map<String, ClaimMappingEntry> claims) {
+        this.standardMappings = claims;
     }
 }
