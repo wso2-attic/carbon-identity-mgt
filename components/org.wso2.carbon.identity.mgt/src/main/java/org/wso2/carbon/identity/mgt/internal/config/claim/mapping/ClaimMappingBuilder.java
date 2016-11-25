@@ -53,7 +53,7 @@ public class ClaimMappingBuilder {
      * Provides the claim mappings of a given application
      *
      * @param applicationName : Name to identify the application
-     * @return Map<application claim : root claim URI>
+     * @return Map(application claim : root claim URI)
      * @throws CarbonSecurityConfigException
      */
     public Map<String, String> getApplicationClaimMappings(String applicationName)
@@ -66,7 +66,7 @@ public class ClaimMappingBuilder {
      * Provides the claim mappings of a given idp
      *
      * @param idpName : Name to identify the idp
-     * @return Map<idp claim : root claim URI>
+     * @return Map(idp claim : root claim URI)
      * @throws CarbonSecurityConfigException
      */
     public Map<String, String> getIdpClaimMappings(String idpName) throws CarbonSecurityConfigException {
@@ -78,7 +78,7 @@ public class ClaimMappingBuilder {
      * Provides the claim mappings of a given standard
      *
      * @param standardName : Name to identify the standard
-     * @return Map<standard claim : root claim URI>
+     * @return Map(standard claim : root claim URI)
      * @throws CarbonSecurityConfigException
      */
     public Map<String, String> getStandardClaimMappings(String standardName) throws CarbonSecurityConfigException {
@@ -93,8 +93,6 @@ public class ClaimMappingBuilder {
         if (claimMappings == null) {
             throw new CarbonSecurityConfigException("Invalid claim configuration found.");
         }
-
-        claimMappings.getMappings();
 
         return claimMappings.getMappings().entrySet().stream().collect(Collectors
                 .toMap(p -> appendDialect(claimMappings.getMappingDialectURI(), p.getKey()), Map.Entry::getValue));

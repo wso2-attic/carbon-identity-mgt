@@ -40,7 +40,4 @@ public class ClaimMappingTest extends PowerMockTestCase {
         MockitoAnnotations.initMocks(this);
     }
 
-
-
-
 }
