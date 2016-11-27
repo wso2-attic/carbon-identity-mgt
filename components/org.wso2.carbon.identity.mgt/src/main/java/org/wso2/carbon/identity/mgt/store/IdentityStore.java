@@ -420,10 +420,12 @@ public interface IdentityStore {
      * Update user claims by user id.
      *
      * @param uniqueUserId User unique id.
-     * @param userClaims   User claims.
+     * @param claims   User claims.
+     * @param domainName domain name.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateUserClaims(String uniqueUserId, List<Claim> userClaims) throws IdentityStoreException;
+    void updateUserClaims(String uniqueUserId, List<Claim> claims, String domainName) throws
+            IdentityStoreException, UserNotFoundException;
 
     /**
      * Update selected user claims by user id.
