@@ -18,8 +18,10 @@ package org.wso2.carbon.identity.mgt.bean;
 
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.exception.ClaimManagerException;
+import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.StoreException;
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
 import org.wso2.carbon.security.caas.user.core.bean.Action;
 import org.wso2.carbon.security.caas.user.core.bean.Permission;
@@ -37,14 +39,14 @@ import java.util.List;
 public class User {
 
     /**
-     * The globally unique userId of the user.
+     * The globally unique uniqueUserId of the user.
      */
-    private String userId;
+    private String uniqueUserId;
 
     /**
-     * The domain this user belongs to.
+     * The domain name this user belongs to.
      */
-    private Domain domain;
+    private String domainName;
 
     /**
      * The IdentityStore this user originates from.
@@ -56,10 +58,11 @@ public class User {
      */
     private AuthorizationStore authorizationStore;
 
-    private User(String userId, Domain domain, IdentityStore identityStore, AuthorizationStore authorizationStore) {
+    private User(String uniqueUserId, String domainName, IdentityStore identityStore, AuthorizationStore
+            authorizationStore) {
 
-        this.userId = userId;
-        this.domain = domain;
+        this.uniqueUserId = uniqueUserId;
+        this.domainName = domainName;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
     }
@@ -69,17 +72,17 @@ public class User {
      *
      * @return User name.
      */
-    public String getUserId() {
-        return userId;
+    public String getUniqueUserId() {
+        return uniqueUserId;
     }
 
     /**
-     * Get the user's domain.
+     * Get the user's domain name.
      *
-     * @return Domain of the user.
+     * @return domain name of the user.
      */
-    public Domain getDomain() {
-        return this.domain;
+    public String getDomainName() {
+        return this.domainName;
     }
 
     /**
@@ -87,10 +90,9 @@ public class User {
      *
      * @return List of User claims.
      * @throws IdentityStoreException Identity store exception.
-     * @throws ClaimManagerException  claim manager exception.
      */
-    public List<Claim> getClaims() throws IdentityStoreException, ClaimManagerException {
-        return identityStore.getClaims(this);
+    public List<Claim> getClaims() throws IdentityStoreException, UserNotFoundException {
+        return identityStore.getClaims(this.uniqueUserId, this.domainName);
     }
 
     /**
@@ -111,8 +113,8 @@ public class User {
      * @return List of Groups assigned to this user.
      * @throws IdentityStoreException Identity store exception.
      */
-    public List<Group> getGroups() throws IdentityStoreException {
-        return identityStore.getGroupsOfUser(userId, domain.getDomainName());
+    public List<Group> getGroups() throws IdentityStoreException, GroupNotFoundException, UserNotFoundException {
+        return identityStore.getGroupsOfUser(uniqueUserId, domainName);
     }
 
     /**
@@ -122,7 +124,7 @@ public class User {
      * @throws AuthorizationStoreException Authorization store exception,
      */
     public List<Role> getRoles() throws AuthorizationStoreException {
-        //return authorizationStore.getRolesOfUser(userId, domain);
+        //return authorizationStore.getRolesOfUser(uniqueUserId, domainName);
         return null;
     }
 
@@ -134,7 +136,7 @@ public class User {
      * @throws AuthorizationStoreException authorization store exception.
      */
     public List<Permission> getPermissions(Resource resource) throws AuthorizationStoreException {
-        //return authorizationStore.getPermissionsOfUser(userId, domain, resource);
+        //return authorizationStore.getPermissionsOfUser(uniqueUserId, domainName, resource);
         return null;
     }
 
@@ -146,7 +148,7 @@ public class User {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public List<Permission> getPermissions(Action action) throws AuthorizationStoreException {
-        //return authorizationStore.getPermissionsOfUser(userId, domain, action);
+        //return authorizationStore.getPermissionsOfUser(uniqueUserId, domainName, action);
         return null;
     }
 
@@ -159,7 +161,7 @@ public class User {
      * @throws IdentityStoreException      Identity store exception.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException, IdentityStoreException {
-        //return authorizationStore.isUserAuthorized(userId, permission, domain);
+        //return authorizationStore.isUserAuthorized(uniqueUserId, permission, domainName);
         return false;
     }
 
@@ -171,7 +173,7 @@ public class User {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isInRole(String roleName) throws AuthorizationStoreException {
-        return authorizationStore.isUserInRole(userId, roleName);
+        return authorizationStore.isUserInRole(uniqueUserId, roleName);
     }
 
     /**
@@ -181,8 +183,8 @@ public class User {
      * @return True if this User is in the group.
      * @throws IdentityStoreException Identity store exception.
      */
-    public boolean isInGroup(String groupName) throws IdentityStoreException {
-        return identityStore.isUserInGroup(userId, groupName);
+    public boolean isInGroup(String groupName) throws IdentityStoreException, UserNotFoundException {
+        return identityStore.isUserInGroup(uniqueUserId, groupName);
     }
 
     /**
@@ -193,7 +195,7 @@ public class User {
      * @throws IdentityStoreException      Identity store exception.
      */
     public void updateRoles(List<Role> newRolesList) throws AuthorizationStoreException, IdentityStoreException {
-        //authorizationStore.updateRolesInUser(userId, domain, newRolesList);
+        //authorizationStore.updateRolesInUser(uniqueUserId, domainName, newRolesList);
     }
 
     /**
@@ -204,7 +206,7 @@ public class User {
      * @throws AuthorizationStoreException Authorization Store Exception.
      */
     public void updateRoles(List<Role> assignList, List<Role> unAssignList) throws AuthorizationStoreException {
-        //authorizationStore.updateRolesInUser(userId, domain, assignList, unAssignList);
+        //authorizationStore.updateRolesInUser(uniqueUserId, domainName, assignList, unAssignList);
     }
 
     /**
@@ -213,7 +215,7 @@ public class User {
     public static class UserBuilder {
 
         private String userId;
-        private Domain domain;
+        private String domainName;
         private IdentityStore identityStore;
         private AuthorizationStore authorizationStore;
 
@@ -234,8 +236,8 @@ public class User {
             return this;
         }
 
-        public UserBuilder setDomain(Domain domain) {
-            this.domain = domain;
+        public UserBuilder setDomainName(String domainName) {
+            this.domainName = domainName;
             return this;
         }
 
@@ -252,11 +254,11 @@ public class User {
         public User build() {
 
             //TODO add authorizationStore == null
-            if (userId == null || identityStore == null || domain == null) {
+            if (userId == null || identityStore == null || domainName == null) {
                 throw new StoreException("Required data missing for building user.");
             }
 
-            return new User(userId, domain, identityStore, authorizationStore);
+            return new User(userId, domainName, identityStore, authorizationStore);
         }
     }
 }

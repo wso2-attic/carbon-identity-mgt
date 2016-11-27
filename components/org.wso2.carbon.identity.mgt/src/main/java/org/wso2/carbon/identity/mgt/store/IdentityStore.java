@@ -62,12 +62,12 @@ public interface IdentityStore {
      * Retrieve a user by global unique Id.
      *
      * @param uniqueUserId The globally unique user Id
-     * @param domain       The domain the user is in
+     * @param domainName   The domain the user is in
      * @return User
      * @throws IdentityStoreException IdentityStore Exception
      * @throws UserNotFoundException  when trying to get user with incorrect unique user id
      */
-    User getUser(String uniqueUserId, String domain) throws IdentityStoreException, UserNotFoundException;
+    User getUser(String uniqueUserId, String domainName) throws IdentityStoreException, UserNotFoundException;
 
     /**
      * Retrieve a user by claim.
@@ -125,19 +125,19 @@ public interface IdentityStore {
     /**
      * List a set of users that matches a given claim in a specified range.
      *
-     * @param claim  Populated claim
-     * @param offset Start position
-     * @param length Number of Users to retrieve
-     * @param domain The domain to retrieve users from
+     * @param claim      Populated claim
+     * @param offset     Start position
+     * @param length     Number of Users to retrieve
+     * @param domainName The domain to retrieve users from
      * @return List of users
      * @throws IdentityStoreException IdentityStore Exception
      */
-    List<User> listUsers(Claim claim, int offset, int length, String domain) throws IdentityStoreException;
+    List<User> listUsers(Claim claim, int offset, int length, String domainName) throws IdentityStoreException;
 
     /**
      * List a set of users that matches a given claim in a specific domain.
      *
-     * @param metaClaim     Metaclaim
+     * @param metaClaim     Meta claim
      * @param filterPattern filter pattern to search user
      * @param offset        start index of the user
      * @param length        number of users to retrieve
@@ -150,15 +150,15 @@ public interface IdentityStore {
     /**
      * List a set of users that matches a given claim in a specified range in a specific domain.
      *
-     * @param metaClaim     Metaclaim
+     * @param metaClaim     Meta claim
      * @param filterPattern filter pattern to search user
      * @param offset        start index of the user
      * @param length        number of users to retrieve
-     * @param domain        domain of the user
+     * @param domainName    domain of the user
      * @return List of users
      * @throws IdentityStoreException IdentityStore Exception
      */
-    List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain)
+    List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, String domainName)
             throws IdentityStoreException;
 
     /**
@@ -175,12 +175,12 @@ public interface IdentityStore {
      * Get group from group Id from a specific domain.
      *
      * @param uniqueGroupId The Id of the group
-     * @param domain        The domain to retrieve group from
+     * @param domainName    The domain to retrieve group from
      * @return Group
      * @throws IdentityStoreException IdentityStore Exception
      * @throws GroupNotFoundException when group is not found
      */
-    Group getGroup(String uniqueGroupId, String domain) throws IdentityStoreException, GroupNotFoundException;
+    Group getGroup(String uniqueGroupId, String domainName) throws IdentityStoreException, GroupNotFoundException;
 
     /**
      * Get group that matches a claim.
@@ -190,18 +190,18 @@ public interface IdentityStore {
      * @throws IdentityStoreException IdentityStore Exception
      * @throws GroupNotFoundException when group is not found
      */
-    List<Group> getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException;
+    Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException;
 
     /**
      * Get group that matches a claim from a specific domain.
      *
-     * @param claim  Populated claim
-     * @param domain The domain to retrieve groups from
+     * @param claim      Populated claim
+     * @param domainName The domain to retrieve groups from
      * @return Group
      * @throws IdentityStoreException IdentityStore Exception
      * @throws GroupNotFoundException when group is not found
      */
-    Group getGroup(Claim claim, String domain) throws IdentityStoreException, GroupNotFoundException;
+    Group getGroup(Claim claim, String domainName) throws IdentityStoreException, GroupNotFoundException;
 
     /**
      * List groups from a given range.
@@ -216,13 +216,13 @@ public interface IdentityStore {
     /**
      * List groups from a given range for a given domain.
      *
-     * @param offset Start position
-     * @param length Number of groups to retrieve
-     * @param domain The domain to retrieve groups from
+     * @param offset     Start position
+     * @param length     Number of groups to retrieve
+     * @param domainName The domain to retrieve groups from
      * @return List of groups within given range in the given domain
      * @throws IdentityStoreException IdentityStore Exception
      */
-    List<Group> listGroups(int offset, int length, String domain) throws IdentityStoreException;
+    List<Group> listGroups(int offset, int length, String domainName) throws IdentityStoreException;
 
     /**
      * List groups that matches a given claim in a given range.
@@ -238,14 +238,14 @@ public interface IdentityStore {
     /**
      * List groups that matches a given claim in a given range for a specific domain.
      *
-     * @param claim  Populated claim
-     * @param offset Start position
-     * @param length Number of groups to retrieve
-     * @param domain The domain to retrieve groups from
+     * @param claim      Populated claim
+     * @param offset     Start position
+     * @param length     Number of groups to retrieve
+     * @param domainName The domain to retrieve groups from
      * @return List of groups that matches the given claim in the given range in the given domain
      * @throws IdentityStoreException IdentityStore Exception
      */
-    List<Group> listGroups(Claim claim, int offset, int length, String domain) throws IdentityStoreException;
+    List<Group> listGroups(Claim claim, int offset, int length, String domainName) throws IdentityStoreException;
 
     /**
      * List groups that matches a given claim in a given range.
@@ -267,11 +267,11 @@ public interface IdentityStore {
      * @param filterPattern filter pattern to search
      * @param offset        start index of the group
      * @param length        number of users to retrieve
-     * @param domain        domain of group
+     * @param domainName    domain of group
      * @return List of groups
      * @throws IdentityStoreException IdentityStore Exception
      */
-    List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain)
+    List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length, String domainName)
             throws IdentityStoreException;
 
     /**
@@ -280,8 +280,20 @@ public interface IdentityStore {
      * @param uniqueUserId The Id of the user
      * @return List of groups the user is in
      * @throws IdentityStoreException IdentityStore Exception
+     * @throws UserNotFoundException  User Not Found Exception
      */
-    List<Group> getGroupsOfUser(String uniqueUserId) throws IdentityStoreException;
+    List<Group> getGroupsOfUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException;
+
+    /**
+     * Get list of groups a user belongs to in a specific domain.
+     *
+     * @param uniqueUserId The Id of the user
+     * @param domainName   The domain the users belongs to
+     * @return List of groups the user is in
+     * @throws IdentityStoreException IdentityStore Exception
+     */
+    List<Group> getGroupsOfUser(String uniqueUserId, String domainName) throws IdentityStoreException,
+            UserNotFoundException;
 
     /**
      * Get list of users in a given group.
@@ -290,27 +302,18 @@ public interface IdentityStore {
      * @return List of users contained in the group
      * @throws IdentityStoreException IdentityStore Exception
      */
-    List<User> getUsersOfGroup(String uniqueGroupId) throws IdentityStoreException;
-
-    /**
-     * Get list of groups a user belongs to in a specific domain.
-     *
-     * @param uniqueUserId The Id of the user
-     * @param domain       The domain the users belongs to
-     * @return List of groups the user is in
-     * @throws IdentityStoreException IdentityStore Exception
-     */
-    List<Group> getGroupsOfUser(String uniqueUserId, String domain) throws IdentityStoreException;
+    List<User> getUsersOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException;
 
     /**
      * Get list of users in a given group for a specific domain.
      *
      * @param uniqueGroupId The group to find users of
-     * @param domain        The domain the user belongs to
+     * @param domainName    The domain the user belongs to
      * @return List of users contained in the group
      * @throws IdentityStoreException IdentityStore Exception
      */
-    List<User> getUsersOfGroup(String uniqueGroupId, String domain) throws IdentityStoreException;
+    List<User> getUsersOfGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
+            GroupNotFoundException;
 
     /**
      * Check if a user belongs to a given group.
@@ -320,29 +323,37 @@ public interface IdentityStore {
      * @return True if user belongs to the given group
      * @throws IdentityStoreException IdentityStore Exception
      */
-    boolean isUserInGroup(String uniqueUserId, String uniqueGroupId) throws IdentityStoreException;
+    boolean isUserInGroup(String uniqueUserId, String uniqueGroupId) throws IdentityStoreException,
+            UserNotFoundException;
 
     /**
      * Check if a user belongs to a given group in a specific domain.
      *
      * @param uniqueUserId  The user Id
      * @param uniqueGroupId The group Id
-     * @param domain        The domain the user and the group belongs to
+     * @param domainName    The domain the user and the group belongs to
      * @return True if user belongs to the given group
      * @throws IdentityStoreException IdentityStore Exception
      */
-    boolean isUserInGroup(String uniqueUserId, String uniqueGroupId, String domain) throws IdentityStoreException;
-
-    //TODO : these should go under User
+    boolean isUserInGroup(String uniqueUserId, String uniqueGroupId, String domainName) throws
+            IdentityStoreException, UserNotFoundException;
 
     /**
      * Get all claims of a user.
      *
-     * @param user The user to retrieve claims for
-     * @return List of claims
-     * @throws IdentityStoreException IdentityStoreE xception
+     * @param uniqueUserId The user Id.
+     * @throws IdentityStoreException Identity Store Exception
      */
-    List<Claim> getClaims(User user) throws IdentityStoreException;
+    List<Claim> getClaims(String uniqueUserId) throws IdentityStoreException, UserNotFoundException;
+
+    /**
+     * Get all claims of a user.
+     *
+     * @param uniqueUserId The user Id.
+     * @return domainName domainName.
+     * @throws IdentityStoreException Identity Store Exception
+     */
+    List<Claim> getClaims(String uniqueUserId, String domainName) throws IdentityStoreException, UserNotFoundException;
 
     /**
      * Get all claims of a user for given URIs.
@@ -367,12 +378,12 @@ public interface IdentityStore {
     /**
      * Add new user to a specific domain.
      *
-     * @param user   User model.
-     * @param domain User domain.
+     * @param user       User model.
+     * @param domainName User domain.
      * @return Created user.
      * @throws IdentityStoreException Identity store exception.
      */
-    User addUser(UserModel user, String domain) throws IdentityStoreException;
+    User addUser(UserModel user, String domainName) throws IdentityStoreException;
 
     /**
      * Add new users to the default domain.
@@ -386,12 +397,12 @@ public interface IdentityStore {
     /**
      * Add new users to a specific domain.
      *
-     * @param users  User models.
-     * @param domain User domain.
+     * @param users      User models.
+     * @param domainName User domain.
      * @return Created users.
      * @throws IdentityStoreException Identity store exception.
      */
-    List<User> addUsers(List<UserModel> users, String domain) throws IdentityStoreException;
+    List<User> addUsers(List<UserModel> users, String domainName) throws IdentityStoreException;
 
     /**
      * Update user claims by user id.
@@ -454,11 +465,11 @@ public interface IdentityStore {
      * Add new group to the specific domain.
      *
      * @param groupModel Group model.
-     * @param domain     Group damian.
+     * @param domainName Group damian.
      * @return Created group.
      * @throws IdentityStoreException Identity store exception.
      */
-    Group addGroup(GroupModel groupModel, String domain) throws IdentityStoreException;
+    Group addGroup(GroupModel groupModel, String domainName) throws IdentityStoreException;
 
     /**
      * Add new groups to the default domain.
@@ -472,12 +483,12 @@ public interface IdentityStore {
     /**
      * Add new groups to the specific domain.
      *
-     * @param groups Group models.
-     * @param domain Group domain.
+     * @param groups     Group models.
+     * @param domainName Group domain.
      * @return Created groups.
      * @throws IdentityStoreException Identity store exception.
      */
-    List<Group> addGroups(List<GroupModel> groups, String domain) throws IdentityStoreException;
+    List<Group> addGroups(List<GroupModel> groups, String domainName) throws IdentityStoreException;
 
     /**
      * Update group claims by group id.

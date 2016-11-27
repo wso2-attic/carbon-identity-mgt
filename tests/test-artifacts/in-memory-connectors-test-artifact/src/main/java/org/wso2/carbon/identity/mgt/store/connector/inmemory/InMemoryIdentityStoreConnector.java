@@ -78,6 +78,18 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
+    public List<String> listConnectorUserIds(String attributeName, String attributeValue, int offset, int length)
+            throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<String> listConnectorUserIdsByPattern(String attributeName, String filterPattern, int offset, int
+            length) throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
     public int getUserCount() throws IdentityStoreException {
         return 0;
     }
@@ -119,6 +131,18 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public String getConnectorGroupId(String attributeName, String attributeValue) throws GroupNotFoundException,
             IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<String> listConnectorGroupIds(String attributeName, String attributeValue, int offset, int length)
+            throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public List<String> listConnectorGroupIdsByPattern(String attributeName, String filterPattern, int offset, int
+            length) throws IdentityStoreException {
         return null;
     }
 

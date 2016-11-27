@@ -46,6 +46,8 @@ public class IdentityMgtConstants {
 
     public static final String CLAIM_ROOT_DIALECT = "http://wso2.org/claims";
 
+    public static final String USERNAME_CLAIM = "http://wso2.org/claims/username";
+
     // Delimiters
     public static final String URL_SPLITTER = "/";
 

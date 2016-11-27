@@ -212,7 +212,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<Group> getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
+    public Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
         // TODO: Implement this.
         return null;
     }
@@ -279,29 +279,31 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public List<Group> getGroupsOfUser(String userName) throws IdentityStoreException {
 
-        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
-            return identityStore.getGroupsOfUser(userName);
-        }
-
-        Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
-                List.class);
-
-        List<Group> groups = cache.get(userName);
-
-        if (groups == null) {
-            groups = identityStore.getGroupsOfUser(userName);
-            cache.put(userName, groups);
-            if (log.isDebugEnabled()) {
-                log.debug("Groups cached for user id: {} and identity store id: {}.", userName);
-            }
-        }
-
-        return groups;
+//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
+//            return identityStore.getGroupsOfUser(userName);
+//        }
+//
+//        Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
+//                List.class);
+//
+//        List<Group> groups = cache.get(userName);
+//
+//        if (groups == null) {
+//            groups = identityStore.getGroupsOfUser(userName);
+//            cache.put(userName, groups);
+//            if (log.isDebugEnabled()) {
+//                log.debug("Groups cached for user id: {} and identity store id: {}.", userName);
+//            }
+//        }
+//
+//        return groups;
+        return null;
     }
 
     @Override
     public List<User> getUsersOfGroup(String groupID) throws IdentityStoreException {
-        return identityStore.getUsersOfGroup(groupID);
+//        return identityStore.getUsersOfGroup(groupID);
+        return null;
     }
 
     @Override
@@ -316,30 +318,31 @@ public class CacheBackedIdentityStore implements IdentityStore {
 
     @Override
     public boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException {
-
-        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
-            return identityStore.isUserInGroup(userId, groupId);
-        }
-
-        Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
-                List.class);
-
-        boolean isUserInGroup = false;
-        List<Group> groups = cache.get(userId);
-
-        if (groups == null) {
-            isUserInGroup = identityStore.isUserInGroup(userId, groupId);
-        } else {
-            // If there are groups for this user id and identity store id in the cache,
-            // do the validation logic here.
-            for (Group group : groups) {
-                if (group.getGroupId().equals(groupId)) {
-                    isUserInGroup = true;
-                    break;
-                }
-            }
-        }
-        return isUserInGroup;
+//
+//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
+//            return identityStore.isUserInGroup(userId, groupId);
+//        }
+//
+//        Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
+//                List.class);
+//
+//        boolean isUserInGroup = false;
+//        List<Group> groups = cache.get(userId);
+//
+//        if (groups == null) {
+//            isUserInGroup = identityStore.isUserInGroup(userId, groupId);
+//        } else {
+//            // If there are groups for this user id and identity store id in the cache,
+//            // do the validation logic here.
+//            for (Group group : groups) {
+//                if (group.getUniqueGroupId().equals(groupId)) {
+//                    isUserInGroup = true;
+//                    break;
+//                }
+//            }
+//        }
+//        return isUserInGroup;
+        return false;
     }
 
     @Override
@@ -348,8 +351,14 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<Claim> getClaims(User user) throws IdentityStoreException {
-        return identityStore.getClaims(user);
+    public List<Claim> getClaims(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
+        return null;
+    }
+
+    @Override
+    public List<Claim> getClaims(String uniqueUserId, String domainName) throws IdentityStoreException,
+            UserNotFoundException {
+        return null;
     }
 
     @Override

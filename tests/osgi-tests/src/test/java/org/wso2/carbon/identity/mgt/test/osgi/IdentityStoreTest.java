@@ -37,6 +37,7 @@ import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
@@ -50,6 +51,8 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 @Listeners(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class IdentityStoreTest {
+
+    private static List<User> users = new ArrayList<>();
 
     @Inject
     private BundleContext bundleContext;
@@ -84,12 +87,56 @@ public class IdentityStoreTest {
         User user = realmService.getIdentityStore().addUser(userModel);
 
         Assert.assertNotNull(user, "Failed to receive the user.");
+        Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
 
-        Assert.assertNotNull(user.getUserId(), "Invalid user unique id.");
+        users.add(user);
     }
 
     @Test
-    public void testGetUser() throws IdentityStoreException, UserNotFoundException {
+    public void testAddUserByDomain() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        UserModel userModel = new UserModel();
+        List<Claim> claims = Arrays.asList(
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "chloe"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "chloe"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Decker"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "chloe@wso2.com"));
+        userModel.setClaims(claims);
+        User user = realmService.getIdentityStore().addUser(userModel, "PRIMARY");
+
+        Assert.assertNotNull(user, "Failed to receive the user.");
+        Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
+
+        users.add(user);
+    }
+
+    @Test(dependsOnMethods = {"testAddUser"})
+    public void testGetUserByUniqueUserId() throws IdentityStoreException, UserNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        User user = realmService.getIdentityStore().getUser(users.get(0).getUniqueUserId());
+
+        Assert.assertNotNull(user, "Failed to receive the user.");
+    }
+
+    @Test(dependsOnMethods = {"testAddUser"})
+    public void testGetUserByUniqueUserIdAndDomain() throws IdentityStoreException, UserNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        User user = realmService.getIdentityStore().getUser(users.get(0).getUniqueUserId(), "PRIMARY");
+
+        Assert.assertNotNull(user, "Failed to receive the user.");
+    }
+
+    @Test(dependsOnMethods = {"testAddUser"})
+    public void testGetUserByClaim() throws IdentityStoreException, UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
@@ -99,6 +146,20 @@ public class IdentityStoreTest {
 
         Assert.assertNotNull(user, "Failed to receive the user.");
 
-        Assert.assertNotNull(user.getUserId(), "Invalid user unique id.");
+        Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
+    }
+
+    @Test(dependsOnMethods = {"testAddUser"})
+    public void testGetUserByClaimAndDomain() throws IdentityStoreException, UserNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        User user = realmService.getIdentityStore().getUser(new Claim("http://wso2.org/claims", "http://wso2" +
+                ".org/claims/username", "lucifer"), "PRIMARY");
+
+        Assert.assertNotNull(user, "Failed to receive the user.");
+
+        Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
     }
 }
