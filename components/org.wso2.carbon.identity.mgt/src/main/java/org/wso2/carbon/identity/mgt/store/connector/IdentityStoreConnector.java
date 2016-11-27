@@ -61,6 +61,32 @@ public interface IdentityStoreConnector {
             IdentityStoreException;
 
     /**
+     * List connector user ids from a attribute for a given range.
+     *
+     * @param attributeName  Name of the attribute.
+     * @param attributeValue Value of the attribute.
+     * @param offset         Start position.
+     * @param length         Number of users to retrieve.
+     * @return List of connector user ids.
+     * @throws IdentityStoreException Identity Store Exception.
+     */
+    List<String> listConnectorUserIds(String attributeName, String attributeValue, int offset, int length) throws
+            IdentityStoreException;
+
+    /**
+     * List connector user ids from a attribute pattern for a given range.
+     *
+     * @param attributeName Name of the attribute.
+     * @param filterPattern Pattern of the attribute.
+     * @param offset        Start position.
+     * @param length        Number of users to retrieve.
+     * @return List of connector user ids.
+     * @throws IdentityStoreException Identity Store Exception.
+     */
+    List<String> listConnectorUserIdsByPattern(String attributeName, String filterPattern, int offset, int length)
+            throws IdentityStoreException;
+
+    /**
      * Get the count of the users available in the identity store.
      *
      * @return Number of users.
@@ -101,8 +127,7 @@ public interface IdentityStoreConnector {
      * @return Attribute map of the user with given ID
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Attribute> getUserAttributeValues(String userID)
-            throws IdentityStoreException;
+    List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreException;
 
     /**
      * Get user attributes for given attribute names.
@@ -112,8 +137,7 @@ public interface IdentityStoreConnector {
      * @return Map of user attributes.
      * @throws IdentityStoreException Identity Store Exception.
      */
-    List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames)
-            throws IdentityStoreException;
+    List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames) throws IdentityStoreException;
 
     /**
      * Retrieve group builder from the given attribute and the value.
@@ -146,6 +170,32 @@ public interface IdentityStoreConnector {
      */
     String getConnectorGroupId(String attributeName, String attributeValue) throws GroupNotFoundException,
             IdentityStoreException;
+
+    /**
+     * List connector group ids from a attribute for a given range.
+     *
+     * @param attributeName  Name of the attribute.
+     * @param attributeValue Value of the attribute.
+     * @param offset         Start position.
+     * @param length         Number of groups to retrieve.
+     * @return List of connector group ids.
+     * @throws IdentityStoreException Identity Store Exception.
+     */
+    List<String> listConnectorGroupIds(String attributeName, String attributeValue, int offset, int length) throws
+            IdentityStoreException;
+
+    /**
+     * List connector group ids from a attribute pattern for a given range.
+     *
+     * @param attributeName Name of the attribute.
+     * @param filterPattern Pattern of the attribute.
+     * @param offset        Start position.
+     * @param length        Number of groups to retrieve.
+     * @return List of connector group ids.
+     * @throws IdentityStoreException Identity Store Exception.
+     */
+    List<String> listConnectorGroupIdsByPattern(String attributeName, String filterPattern, int offset, int length)
+            throws IdentityStoreException;
 
     /**
      * Get all group builders list according to the given filter pattern.
