@@ -250,7 +250,7 @@ public interface IdentityStore {
     /**
      * List groups that matches a given claim in a given range.
      *
-     * @param metaClaim     Metaclaim
+     * @param metaClaim     Meta claim
      * @param filterPattern filter pattern to search
      * @param offset        start index of the group
      * @param length        number of users to retrieve
@@ -263,7 +263,7 @@ public interface IdentityStore {
     /**
      * List groups that matches a given claim in a given range for a specific domain.
      *
-     * @param metaClaim     Metaclaim
+     * @param metaClaim     Meta claim
      * @param filterPattern filter pattern to search
      * @param offset        start index of the group
      * @param length        number of users to retrieve
@@ -358,13 +358,25 @@ public interface IdentityStore {
     /**
      * Get all claims of a user for given URIs.
      *
-     * @param user      The user to retrieve claims for
-     * @param claimURIs List of claimURIs to retrieve claims for
+     * @param uniqueUserId The user to retrieve claims for
+     * @param metaClaims    List of meta claims to retrieve claims for
      * @return List of claims
      * @throws IdentityStoreException IdentityStore Exception
      */
-    List<Claim> getClaims(User user, List<String> claimURIs) throws IdentityStoreException;
+    List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims) throws IdentityStoreException,
+            UserNotFoundException;
 
+    /**
+     * Get all claims of a user for given URIs.
+     *
+     * @param uniqueUserId The user to retrieve claims for
+     * @param metaClaims    List of meta claims to retrieve claims for
+     * @param domainName   Domain name
+     * @return List of claims
+     * @throws IdentityStoreException IdentityStore Exception
+     */
+    List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims, String domainName) throws
+            IdentityStoreException, UserNotFoundException;
 
     /**
      * Add new user to the default domain.

@@ -362,8 +362,15 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<Claim> getClaims(User user, List<String> claimURIs) throws IdentityStoreException {
-        return identityStore.getClaims(user, claimURIs);
+    public List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims) throws IdentityStoreException,
+            UserNotFoundException {
+        return null;
+    }
+
+    @Override
+    public List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims, String domainName) throws
+            IdentityStoreException, UserNotFoundException {
+        return null;
     }
 
     @Override

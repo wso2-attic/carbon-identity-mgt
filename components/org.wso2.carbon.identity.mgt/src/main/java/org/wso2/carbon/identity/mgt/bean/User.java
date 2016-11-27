@@ -17,7 +17,7 @@
 package org.wso2.carbon.identity.mgt.bean;
 
 import org.wso2.carbon.identity.mgt.claim.Claim;
-import org.wso2.carbon.identity.mgt.exception.ClaimManagerException;
+import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.StoreException;
@@ -98,13 +98,12 @@ public class User {
     /**
      * Get claims of this user for given URIs.
      *
-     * @param claimURIs Claim URIs that needs to be retrieved.
+     * @param metaClaims Claim URIs that needs to be retrieved.
      * @return List of User claims.
      * @throws IdentityStoreException Identity store exception.
-     * @throws ClaimManagerException  claim manager exception.
      */
-    public List<Claim> getClaims(List<String> claimURIs) throws IdentityStoreException, ClaimManagerException {
-        return identityStore.getClaims(this, claimURIs);
+    public List<Claim> getClaims(List<MetaClaim> metaClaims) throws IdentityStoreException, UserNotFoundException {
+        return identityStore.getClaims(uniqueUserId, metaClaims, domainName);
     }
 
     /**
