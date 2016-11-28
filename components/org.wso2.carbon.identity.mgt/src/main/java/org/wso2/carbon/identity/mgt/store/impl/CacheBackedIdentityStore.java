@@ -40,6 +40,7 @@ import org.wso2.carbon.identity.mgt.util.CacheHelper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
 import javax.security.auth.callback.Callback;
@@ -394,14 +395,26 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public void updateUserClaims(String uniqueUserId, List<Claim> claims) throws IdentityStoreException,
+            UserNotFoundException {
+
+    }
+
+    @Override
     public void updateUserClaims(String uniqueUserId, List<Claim> claims, String domainName) throws
             IdentityStoreException, UserNotFoundException {
 
     }
 
     @Override
-    public void updateUserClaims(String userId, List<Claim> userClaimsToAdd, List<Claim> userClaimsToRemove) throws
+    public void updateUserClaims(String userId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
             IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove, String
+            domainName) throws IdentityStoreException, UserNotFoundException {
 
     }
 
@@ -411,13 +424,31 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public void deleteUser(String uniqueUserId, String domainName) throws IdentityStoreException,
+            UserNotFoundException {
+
+    }
+
+    @Override
     public void updateGroupsOfUser(String userId, List<String> groupIds) throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds, String domainName) throws
+            IdentityStoreException {
 
     }
 
     @Override
     public void updateGroupsOfUser(String userId, List<String> groupIdsToAdd, List<String> groupIdsToRemove) throws
             IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd, List<String>
+            uniqueGroupIdsToRemove, String domainName) throws IdentityStoreException {
 
     }
 
@@ -442,13 +473,25 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void updateGroupClaims(String groupId, List<Claim> groupClaims) throws IdentityStoreException {
+    public void updateGroupClaims(String groupId, List<Claim> claims) throws IdentityStoreException {
 
     }
 
     @Override
-    public void updateGroupClaims(String groupId, List<Claim> groupClaimsToAdd, List<Claim> groupClaimsToRemove)
+    public void updateGroupClaims(String uniqueGroupId, List<Claim> claims, String domainName) throws
+            IdentityStoreException, GroupNotFoundException {
+
+    }
+
+    @Override
+    public void updateGroupClaims(String groupId, List<Claim> claimsToAdd, List<Claim> claimsToRemove)
             throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateGroupClaims(String uniqueGroupId, List<Claim> claimsToAdd, List<Claim> claimsToRemove, String
+            domainName) throws IdentityStoreException, GroupNotFoundException {
 
     }
 
@@ -458,7 +501,19 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public void deleteGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
+            GroupNotFoundException {
+
+    }
+
+    @Override
     public void updateUsersOfGroup(String groupId, List<String> userIds) throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds, String domainName) throws
+            IdentityStoreException {
 
     }
 
@@ -469,8 +524,24 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String>
+            uniqueUserIdsToRemove, String domainName) throws IdentityStoreException {
+
+    }
+
+    @Override
     public AuthenticationContext authenticate(Claim claim, Callback credential, String domainName) throws
             AuthenticationFailure {
+        return null;
+    }
+
+    @Override
+    public String getPrimaryDomainName() throws IdentityStoreException {
+        return null;
+    }
+
+    @Override
+    public Set<String> getDomainNames() throws IdentityStoreException {
         return null;
     }
 }

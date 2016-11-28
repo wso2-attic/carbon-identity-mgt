@@ -18,7 +18,7 @@ package org.wso2.carbon.identity.mgt.store.connector.inmemory;
 
 import org.wso2.carbon.identity.mgt.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
-import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
+import org.wso2.carbon.identity.mgt.exception.CredentialStoreConnectorException;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 
 import javax.security.auth.callback.Callback;
@@ -31,7 +31,8 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
     private CredentialStoreConnectorConfig credentialStoreConnectorConfig;
 
     @Override
-    public void init(CredentialStoreConnectorConfig credentialStoreConnectorConfig) throws CredentialStoreException {
+    public void init(CredentialStoreConnectorConfig credentialStoreConnectorConfig) throws
+            CredentialStoreConnectorException {
 
         this.credentialStoreConnectorConfig = credentialStoreConnectorConfig;
     }
@@ -42,7 +43,7 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
     }
 
     @Override
-    public void authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure {
+    public void authenticate(Callback[] callbacks) throws CredentialStoreConnectorException, AuthenticationFailure {
 
     }
 
@@ -62,27 +63,29 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
     }
 
     @Override
-    public String addCredential(Callback[] callbacks) throws CredentialStoreException {
+    public String addCredential(Callback[] callbacks) throws CredentialStoreConnectorException {
         return null;
     }
 
     @Override
-    public void updateCredential(Callback[] callbacks) throws CredentialStoreException {
+    public void updateCredential(Callback[] callbacks) throws CredentialStoreConnectorException {
 
     }
 
     @Override
-    public void updateCredential(String username, Callback[] credentialCallbacks) throws CredentialStoreException {
+    public void updateCredential(String username, Callback[] credentialCallbacks) throws
+            CredentialStoreConnectorException {
 
     }
 
     @Override
-    public void addCredential(String username, Callback[] credentialCallbacks) throws CredentialStoreException {
+    public void addCredential(String username, Callback[] credentialCallbacks) throws
+            CredentialStoreConnectorException {
 
     }
 
     @Override
-    public void deleteCredential(String username) throws CredentialStoreException {
+    public void deleteCredential(String username) throws CredentialStoreConnectorException {
 
     }
 }

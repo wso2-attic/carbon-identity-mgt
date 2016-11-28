@@ -17,7 +17,9 @@
 package org.wso2.carbon.identity.mgt.user;
 
 import org.wso2.carbon.identity.mgt.config.UniqueIdResolverConfig;
+import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +41,7 @@ public interface UniqueIdResolver {
      * @return Unique user.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    UniqueUser getUniqueUser(String uniqueUserId) throws UniqueIdResolverException;
+    UniqueUser getUniqueUser(String uniqueUserId) throws UniqueIdResolverException, UserNotFoundException;
 
     /**
      * Get global unique Id for a connector specific user Id.
@@ -80,6 +82,15 @@ public interface UniqueIdResolver {
      * @throws UniqueIdResolverException Unique Id Resolver Exception
      */
     List<UniqueUser> listUsers(int offset, int length) throws UniqueIdResolverException;
+
+    /**
+     * Get unique group for a unique group Id.
+     *
+     * @param uniqueGroupId Globally unique group Id.
+     * @return Unique group.
+     * @throws UniqueIdResolverException Unique Id Resolver Exception.
+     */
+    UniqueGroup getUniqueGroup(String uniqueGroupId) throws UniqueIdResolverException, GroupNotFoundException;
 
     /**
      * Get global unique Id for a connector specific group Id.
@@ -161,10 +172,11 @@ public interface UniqueIdResolver {
     /**
      * Add users.
      *
-     * @param connectedUsersMap Globally unique user id against connected user list from different connectors map.
+     * @param uniqueUsers Globally unique users.
+     * @param domainName Domain name.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void addUsers(Map<String, List<UserPartition>> connectedUsersMap) throws UniqueIdResolverException;
+    void addUsers(List<UniqueUser> uniqueUsers, String domainName) throws UniqueIdResolverException;
 
     /**
      * Update user.
@@ -222,19 +234,20 @@ public interface UniqueIdResolver {
     /**
      * Add group.
      *
-     * @param uniqueGroupId   Globally unique group Id.
-     * @param connectedGroups Connected group list from different connectors.
+     * @param uniqueGroup Globally unique group.
+     * @param domainName Domain name.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void addGroup(String uniqueGroupId, List<ConnectedGroup> connectedGroups) throws UniqueIdResolverException;
+    void addGroup(UniqueGroup uniqueGroup, String domainName) throws UniqueIdResolverException;
 
     /**
      * Add groups.
      *
-     * @param connectedGroupsMap Globally unique group id against connected group list from different connectors map.
+     * @param uniqueGroups Globally unique groups.
+     * @param domainName Domain name.
      * @throws UniqueIdResolverException Unique Id Resolver Exception
      */
-    void addGroups(Map<String, List<ConnectedGroup>> connectedGroupsMap) throws UniqueIdResolverException;
+    void addGroups(List<UniqueGroup> uniqueGroups, String domainName) throws UniqueIdResolverException;
 
     /**
      * Update group.
