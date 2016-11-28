@@ -196,42 +196,6 @@ public interface UniqueIdResolver {
     void deleteUser(String uniqueUserId) throws UniqueIdResolverException;
 
     /**
-     * Get connector user ids.
-     *
-     * @param userUniqueId Globally unique user Id.
-     * @return connector user id against connector id map.
-     * @throws UniqueIdResolverException Unique Id Resolver Exception.
-     */
-    Map<String, String> getConnectorUserIds(String userUniqueId) throws UniqueIdResolverException;
-
-    /**
-     * Get domain name from user unique id.
-     *
-     * @param uniqueUserId Globally unique user Id.
-     * @return Domain name.
-     * @throws UniqueIdResolverException Unique Id Resolver Exception.
-     */
-    String getDomainNameFromUserUniqueId(String uniqueUserId) throws UniqueIdResolverException;
-
-    /**
-     * Get domain name from group unique id.
-     *
-     * @param uniqueGroupId Globally unique user Id.
-     * @return Domain name.
-     * @throws UniqueIdResolverException Unique Id Resolver Exception.
-     */
-    String getDomainNameFromGroupUniqueId(String uniqueGroupId) throws UniqueIdResolverException;
-
-    /**
-     * Get connector group ids.
-     *
-     * @param uniqueGroupId Globally unique group Id.
-     * @return connector group id against connector id map.
-     * @throws UniqueIdResolverException Unique Id Resolver Exception.
-     */
-    Map<String, String> getConnectorGroupIds(String uniqueGroupId) throws UniqueIdResolverException;
-
-    /**
      * Add group.
      *
      * @param uniqueGroup Globally unique group.
@@ -265,26 +229,6 @@ public interface UniqueIdResolver {
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
     void deleteGroup(String uniqueGroupId) throws UniqueIdResolverException;
-
-
-    /**
-     * Check whether group exists or not.
-     *
-     * @param uniqueGroupId Globally unique group Id.
-     * @return existence of group.
-     */
-
-    /**
-     * Get global unique Id for a connector specific group Id.
-     *
-     * @param connectorGroupId The connector specific group Id.
-     * @param connectorId      The connector Id.
-     * @return Globally unique group Id.
-     * @throws UniqueIdResolverException Unique Id Resolver Exception.
-     */
-    String getUniqueGroupId(String connectorGroupId, String connectorId) throws UniqueIdResolverException;
-
-
 
     /**
      * Update groups of user.
