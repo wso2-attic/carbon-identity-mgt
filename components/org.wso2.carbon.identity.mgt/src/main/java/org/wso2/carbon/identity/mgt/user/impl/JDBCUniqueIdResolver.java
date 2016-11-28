@@ -22,7 +22,6 @@ import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.identity.mgt.config.UniqueIdResolverConfig;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
-import org.wso2.carbon.identity.mgt.user.ConnectedGroup;
 import org.wso2.carbon.identity.mgt.user.UniqueGroup;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.user.UniqueUser;
@@ -44,7 +43,7 @@ import javax.sql.DataSource;
  */
 public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
-    private static Logger log = LoggerFactory.getLogger(JDBCUniqueIdResolver.class);
+    private static final Logger log = LoggerFactory.getLogger(JDBCUniqueIdResolver.class);
 
     private DataSource dataSource;
 
@@ -153,6 +152,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
+    public UniqueGroup getUniqueGroup(String uniqueGroupId) throws UniqueIdResolverException {
+        return null;
+    }
+
+    @Override
     public UniqueGroup getUniqueGroupFromConnectorGroupId(String connectorGroupId, String connectorId) throws
             UniqueIdResolverException {
         return null;
@@ -217,9 +221,14 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void addUsers(Map<String, List<UserPartition>> connectedUsersMap) throws UniqueIdResolverException {
+    public void addUsers(List<UniqueUser> uniqueUsers, String domainName) throws UniqueIdResolverException {
 
     }
+//
+//    @Override
+//    public void addUsers(Map<String, List<UserPartition>> connectedUsersMap) throws UniqueIdResolverException {
+//
+//    }
 
     @Override
     public void updateUser(String uniqueUserId, Map<String, String> connectorUserIdMap) throws
@@ -331,12 +340,12 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void addGroup(String uniqueGroupId, List<ConnectedGroup> connectedGroups) throws UniqueIdResolverException {
+    public void addGroup(UniqueGroup uniqueGroup, String domainName) throws UniqueIdResolverException {
 
     }
 
     @Override
-    public void addGroups(Map<String, List<ConnectedGroup>> connectedGroupsMap) throws UniqueIdResolverException {
+    public void addGroups(List<UniqueGroup> uniqueGroups, String domainName) throws UniqueIdResolverException {
 
     }
 

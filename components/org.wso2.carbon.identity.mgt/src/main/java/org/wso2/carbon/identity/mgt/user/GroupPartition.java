@@ -25,17 +25,14 @@ public class GroupPartition {
 
     private String connectorGroupId;
 
-    private boolean identityStore;
-
     public GroupPartition() {
 
     }
 
-    public GroupPartition(String connectorId, String connectorGroupId, boolean identityStore) {
+    public GroupPartition(String connectorId, String connectorGroupId) {
 
         this.connectorId = connectorId;
         this.connectorGroupId = connectorGroupId;
-        this.identityStore = identityStore;
     }
 
     public String getConnectorId() {
@@ -52,14 +49,6 @@ public class GroupPartition {
 
     public void setConnectorGroupId(String connectorGroupId) {
         this.connectorGroupId = connectorGroupId;
-    }
-
-    public boolean isIdentityStore() {
-        return identityStore;
-    }
-
-    public void setIdentityStore(boolean identityStore) {
-        this.identityStore = identityStore;
     }
 
     @Override

@@ -230,7 +230,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public String addGroup(List<Attribute> attributes) throws IdentityStoreException {
+    public String addGroup(List<Attribute> attributes) throws IdentityStoreConnectorException {
         return null;
     }
 
@@ -252,7 +252,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public void deleteGroup(String groupIdentifier) throws IdentityStoreException {
+    public void deleteGroup(String groupIdentifier) throws IdentityStoreConnectorException {
 
     }
 
@@ -269,6 +269,11 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public void removeAddedUsersInAFailure(List<String> connectorUserIds) throws IdentityStoreConnectorException {
+
+    }
+
+    @Override
+    public void removeAddedGroupsInAFailure(List<String> connectorGroupIds) throws IdentityStoreConnectorException {
 
     }
 }

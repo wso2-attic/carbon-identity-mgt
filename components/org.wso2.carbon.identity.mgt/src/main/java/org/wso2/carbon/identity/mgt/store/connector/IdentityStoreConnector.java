@@ -346,9 +346,9 @@ public interface IdentityStoreConnector {
      *
      * @param attributes Attributes of the group.
      * @return connector unique id of group.
-     * @throws IdentityStoreException Identity store exception.
+     * @throws IdentityStoreConnectorException Identity store connector exception.
      */
-    String addGroup(List<Attribute> attributes) throws IdentityStoreException;
+    String addGroup(List<Attribute> attributes) throws IdentityStoreConnectorException;
 
     /**
      * Adds new groups.
@@ -385,9 +385,9 @@ public interface IdentityStoreConnector {
      * Delete a group.
      *
      * @param groupIdentifier Group identifier.
-     * @throws IdentityStoreException Identity store exception.
+     * @throws IdentityStoreConnectorException Identity store exception.
      */
-    void deleteGroup(String groupIdentifier) throws IdentityStoreException;
+    void deleteGroup(String groupIdentifier) throws IdentityStoreConnectorException;
 
     /**
      * Update user list of a group.
@@ -410,10 +410,18 @@ public interface IdentityStoreConnector {
                             List<String> userIdentifiersToRemove) throws IdentityStoreException;
 
     /**
-     * Update selected user list of a group.
+     * Remove added users in a failure
      *
      * @param connectorUserIds list of users to remove from connector in a failure situation.
      * @throws IdentityStoreConnectorException Identity store connector exception.
      */
     void removeAddedUsersInAFailure(List<String> connectorUserIds) throws IdentityStoreConnectorException;
+
+    /**
+     * Remove added groups in a failure
+     *
+     * @param connectorGroupIds list of groups to remove from connector in a failure situation.
+     * @throws IdentityStoreConnectorException Identity store connector exception.
+     */
+    void removeAddedGroupsInAFailure(List<String> connectorGroupIds) throws IdentityStoreConnectorException;
 }
