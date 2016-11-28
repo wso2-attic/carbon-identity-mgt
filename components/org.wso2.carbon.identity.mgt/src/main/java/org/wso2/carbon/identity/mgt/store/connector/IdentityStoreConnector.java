@@ -17,8 +17,6 @@
 package org.wso2.carbon.identity.mgt.store.connector;
 
 import org.wso2.carbon.identity.mgt.bean.Attribute;
-import org.wso2.carbon.identity.mgt.bean.Group;
-import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
@@ -94,32 +92,6 @@ public interface IdentityStoreConnector {
     int getUserCount() throws IdentityStoreConnectorException;
 
     /**
-     * Get user builders list in User Store for the given filter pattern.
-     *
-     * @param attributeName Name of the attribute that should use for the filter pattern.
-     * @param filterPattern Filter pattern to be used.
-     * @param offset        Offset to get the Users.
-     * @param length        Number of users from the offset.
-     * @return List of Identities which matches the given claim attribute with given filter or empty list if there are
-     * no identities to match.
-     * @throws IdentityStoreConnectorException Identity Store Connector Exception.
-     */
-    List<User.UserBuilder> getUserBuilderList(String attributeName, String filterPattern, int offset, int length)
-            throws IdentityStoreConnectorException;
-
-    /**
-     * Get all the user builders from the identity store.
-     *
-     * @param attributeName Name of the attribute that should use for the filter pattern.
-     * @param filterPattern Filter pattern to be used.
-     * @return List of Identities which matches the given claim attribute with given filter or empty list if there are
-     * no identities to match.
-     * @throws IdentityStoreConnectorException Identity Store Connector Exception.
-     */
-    List<User.UserBuilder> getAllUserBuilderList(String attributeName, String filterPattern)
-            throws IdentityStoreConnectorException;
-
-    /**
      * Retrieve attributes of the user with the given ID.
      *
      * @param userID ID of the user whose claims are requested
@@ -137,18 +109,6 @@ public interface IdentityStoreConnector {
      * @throws IdentityStoreConnectorException Identity Store Connector Exception.
      */
     List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames) throws
-            IdentityStoreConnectorException;
-
-    /**
-     * Retrieve group builder from the given attribute and the value.
-     *
-     * @param attributeName  Name of the attribute.
-     * @param attributeValue Value of the attribute.
-     * @return Group with the given group name.
-     * @throws IdentityStoreConnectorException Identity Store Connector Exception.
-     * @throws GroupNotFoundException when group is not found
-     */
-    Group.GroupBuilder getGroupBuilder(String attributeName, String attributeValue) throws GroupNotFoundException,
             IdentityStoreConnectorException;
 
     /**
@@ -198,18 +158,6 @@ public interface IdentityStoreConnector {
             throws IdentityStoreConnectorException;
 
     /**
-     * Get all group builders list according to the given filter pattern.
-     *
-     * @param filterPattern Filter pattern for to list groups.
-     * @param offset        Offset for the group list.
-     * @param length        Length from the offset.
-     * @return List of groups that matches the filter pattern.
-     * @throws IdentityStoreConnectorException Identity Store Connector Exception.
-     */
-    List<Group.GroupBuilder> getGroupBuilderList(String filterPattern, int offset, int length)
-            throws IdentityStoreConnectorException;
-
-    /**
      * Get all of the attributes that belongs to this group.
      *
      * @param groupId Id of the group.
@@ -230,24 +178,6 @@ public interface IdentityStoreConnector {
             throws IdentityStoreConnectorException;
 
     /**
-     * Retrieve group builders of a given User with unique ID.
-     *
-     * @param userID Id of the User.
-     * @return List of Groups which this user is assigned to
-     * @throws IdentityStoreConnectorException Identity Store Connector Exception.
-     */
-    List<Group.GroupBuilder> getGroupBuildersOfUser(String userID) throws IdentityStoreConnectorException;
-
-    /**
-     * Retrieve list of user builders that belongs to a group.
-     *
-     * @param groupID Unique ID of the group
-     * @return Set of IdentityObjects resides in Group
-     * @throws IdentityStoreConnectorException Identity Store Connector Exception.
-     */
-    List<User.UserBuilder> getUserBuildersOfGroup(String groupID) throws IdentityStoreConnectorException;
-
-    /**
      * Checks whether the user is in the group.
      *
      * @param userId  Id of the user.
@@ -255,8 +185,7 @@ public interface IdentityStoreConnector {
      * @return true if user is in the group.
      * @throws IdentityStoreConnectorException Identity Store Connector Exception.
      */
-    boolean isUserInGroup(String userId, String groupId)
-            throws IdentityStoreConnectorException;
+    boolean isUserInGroup(String userId, String groupId) throws IdentityStoreConnectorException;
 
     /**
      * To check whether a user store is read only.

@@ -2729,7 +2729,7 @@ public class IdentityStoreImpl implements IdentityStore {
         }
 
         try {
-            domain.getUniqueIdResolver().deleteUser(uniqueGroupId);
+            domain.getUniqueIdResolver().deleteGroup(uniqueGroupId);
         } catch (UniqueIdResolverException e) {
             throw new IdentityStoreException(String.format("Failed to delete unique user id - %s.", uniqueGroupId));
         }

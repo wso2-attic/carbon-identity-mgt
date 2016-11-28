@@ -17,8 +17,6 @@
 package org.wso2.carbon.identity.mgt.store.connector.inmemory;
 
 import org.wso2.carbon.identity.mgt.bean.Attribute;
-import org.wso2.carbon.identity.mgt.bean.Group;
-import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
@@ -94,18 +92,6 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public List<User.UserBuilder> getUserBuilderList(String attributeName, String filterPattern, int offset, int
-            length) throws IdentityStoreConnectorException {
-        return null;
-    }
-
-    @Override
-    public List<User.UserBuilder> getAllUserBuilderList(String attributeName, String filterPattern) throws
-            IdentityStoreConnectorException {
-        return null;
-    }
-
-    @Override
     public List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreConnectorException {
         return null;
     }
@@ -113,12 +99,6 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames) throws
             IdentityStoreConnectorException {
-        return null;
-    }
-
-    @Override
-    public Group.GroupBuilder getGroupBuilder(String attributeName, String attributeValue) throws
-            GroupNotFoundException, IdentityStoreConnectorException {
         return null;
     }
 
@@ -146,12 +126,6 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public List<Group.GroupBuilder> getGroupBuilderList(String filterPattern, int offset, int length) throws
-            IdentityStoreConnectorException {
-        return null;
-    }
-
-    @Override
     public List<Attribute> getGroupAttributeValues(String groupId) throws IdentityStoreConnectorException {
         return null;
     }
@@ -159,16 +133,6 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public List<Attribute> getGroupAttributeValues(String groupId, List<String> attributeNames) throws
             IdentityStoreConnectorException {
-        return null;
-    }
-
-    @Override
-    public List<Group.GroupBuilder> getGroupBuildersOfUser(String userID) throws IdentityStoreConnectorException {
-        return null;
-    }
-
-    @Override
-    public List<User.UserBuilder> getUserBuildersOfGroup(String groupID) throws IdentityStoreConnectorException {
         return null;
     }
 
