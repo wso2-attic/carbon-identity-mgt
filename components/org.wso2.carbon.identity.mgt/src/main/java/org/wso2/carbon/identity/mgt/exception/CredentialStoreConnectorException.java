@@ -17,17 +17,17 @@
 package org.wso2.carbon.identity.mgt.exception;
 
 /**
- * Credential store exception.
+ * Credential store connector exception.
  *
  * @since 1.0.0
  */
-public class CredentialStoreException extends Exception {
+public class CredentialStoreConnectorException extends Exception {
 
-    public CredentialStoreException(String message) {
+    public CredentialStoreConnectorException(String message) {
         super(message);
     }
 
-    public CredentialStoreException(String message, Throwable cause) {
+    public CredentialStoreConnectorException(String message, Throwable cause) {
         super(message, cause);
     }
 }

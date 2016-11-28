@@ -36,7 +36,7 @@ import org.wso2.carbon.identity.mgt.config.StoreConfig;
 import org.wso2.carbon.identity.mgt.config.StoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.UniqueIdResolverConfig;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
-import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
+import org.wso2.carbon.identity.mgt.exception.CredentialStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.DomainConfigException;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
@@ -273,7 +273,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
             log.info("Carbon-Security bundle activated successfully.");
 
-        } catch (CredentialStoreException | IdentityStoreException e) {
+        } catch (CredentialStoreConnectorException | IdentityStoreException e) {
             log.error("Error occurred in initialising store", e);
         } catch (DomainException e) {
             log.error("Error occurred in creating the domain manager from the domain config", e);
@@ -290,7 +290,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
     private List<Domain> buildDomains(List<DomainConfig> domainConfigs)
             throws DomainException, DomainConfigException, MetaClaimStoreException, UniqueIdResolverException,
-            IdentityStoreException, CredentialStoreException, IdentityStoreConnectorException {
+            IdentityStoreException, CredentialStoreConnectorException, IdentityStoreConnectorException {
 
         if (domainConfigs.isEmpty()) {
             throw new DomainConfigException("Invalid domain configuration found.");

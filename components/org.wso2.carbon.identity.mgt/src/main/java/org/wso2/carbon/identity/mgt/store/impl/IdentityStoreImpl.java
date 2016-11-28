@@ -29,7 +29,7 @@ import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
 import org.wso2.carbon.identity.mgt.constant.UserCoreConstants;
 import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
-import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
+import org.wso2.carbon.identity.mgt.exception.CredentialStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreClientException;
@@ -1535,8 +1535,13 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        String connectorUserId = domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId())
-                .getConnectorUserId(metaClaimMapping.getAttributeName(), claim.getValue());
+        String connectorUserId = null;
+        try {
+            connectorUserId = domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId())
+                    .getConnectorUserId(metaClaimMapping.getAttributeName(), claim.getValue());
+        } catch (IdentityStoreConnectorException e) {
+            throw new IdentityStoreServerException("Failed to get connector user id", e);
+        }
 
         if (isNullOrEmpty(connectorUserId)) {
             throw new UserNotFoundException("Invalid claim value.");
@@ -1594,9 +1599,14 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        List<String> connectorUserIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
-                .getIdentityStoreConnectorId()).listConnectorUserIds(metaClaimMapping.getAttributeName(), claim
-                .getValue(), offset, length);
+        List<String> connectorUserIds = null;
+        try {
+            connectorUserIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
+                    .getIdentityStoreConnectorId()).listConnectorUserIds(metaClaimMapping.getAttributeName(), claim
+                    .getValue(), offset, length);
+        } catch (IdentityStoreConnectorException e) {
+            throw new IdentityStoreServerException("Failed to list connector user ids", e);
+        }
 
         if (connectorUserIds == null || connectorUserIds.isEmpty()) {
             return Collections.emptyList();
@@ -1634,9 +1644,14 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        List<String> connectorUserIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
-                .getIdentityStoreConnectorId()).listConnectorUserIdsByPattern(metaClaimMapping.getAttributeName(),
-                filterPattern, offset, length);
+        List<String> connectorUserIds = null;
+        try {
+            connectorUserIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
+                    .getIdentityStoreConnectorId()).listConnectorUserIdsByPattern(metaClaimMapping.getAttributeName(),
+                    filterPattern, offset, length);
+        } catch (IdentityStoreConnectorException e) {
+            throw new IdentityStoreServerException("Failed to list connector user ids by pattern", e);
+        }
 
         if (connectorUserIds == null || connectorUserIds.isEmpty()) {
             return Collections.emptyList();
@@ -1696,8 +1711,13 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        String connectorGroupId = domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId())
-                .getConnectorGroupId(metaClaimMapping.getAttributeName(), claim.getValue());
+        String connectorGroupId = null;
+        try {
+            connectorGroupId = domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId())
+                    .getConnectorGroupId(metaClaimMapping.getAttributeName(), claim.getValue());
+        } catch (IdentityStoreConnectorException e) {
+            throw new IdentityStoreServerException("Failed to get connector group id", e);
+        }
 
         if (isNullOrEmpty(connectorGroupId)) {
             throw new GroupNotFoundException("Invalid claim value.");
@@ -1756,9 +1776,14 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        List<String> connectorGroupIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
-                .getIdentityStoreConnectorId()).listConnectorGroupIds(metaClaimMapping.getAttributeName(), claim
-                .getValue(), offset, length);
+        List<String> connectorGroupIds = null;
+        try {
+            connectorGroupIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
+                    .getIdentityStoreConnectorId()).listConnectorGroupIds(metaClaimMapping.getAttributeName(), claim
+                    .getValue(), offset, length);
+        } catch (IdentityStoreConnectorException e) {
+            throw new IdentityStoreServerException("Failed to list connector group ids", e);
+        }
 
         if (connectorGroupIds == null || connectorGroupIds.isEmpty()) {
             return Collections.emptyList();
@@ -1796,9 +1821,14 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        List<String> connectorGroupIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
-                .getIdentityStoreConnectorId()).listConnectorGroupIdsByPattern(metaClaimMapping.getAttributeName(),
-                filterPattern, offset, length);
+        List<String> connectorGroupIds = null;
+        try {
+            connectorGroupIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
+                    .getIdentityStoreConnectorId()).listConnectorGroupIdsByPattern(metaClaimMapping.getAttributeName(),
+                    filterPattern, offset, length);
+        } catch (IdentityStoreConnectorException e) {
+            throw new IdentityStoreServerException("Failed to list connector group ids by pattern", e);
+        }
 
         if (connectorGroupIds == null || connectorGroupIds.isEmpty()) {
             return Collections.emptyList();
@@ -1952,9 +1982,13 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Map<String, List<Attribute>> connectorIdToAttributesMap = new HashMap<>();
         for (UserPartition userPartition : userPartitions) {
-            connectorIdToAttributesMap.put(userPartition.getConnectorId(),
-                    domain.getIdentityStoreConnectorFromId(userPartition.getConnectorId()).getUserAttributeValues
-                            (userPartition.getConnectorUserId()));
+            try {
+                connectorIdToAttributesMap.put(userPartition.getConnectorId(),
+                        domain.getIdentityStoreConnectorFromId(userPartition.getConnectorId()).getUserAttributeValues
+                                (userPartition.getConnectorUserId()));
+            } catch (IdentityStoreConnectorException e) {
+                throw new IdentityStoreServerException("Failed to get user attribute values", e);
+            }
         }
 
         List<MetaClaimMapping> metaClaimMappings;
@@ -2009,9 +2043,13 @@ public class IdentityStoreImpl implements IdentityStore {
         for (UserPartition userPartition : userPartitions) {
             List<String> attributeNames = connectorIdToAttributeNameMap.get(userPartition.getConnectorId());
             if (attributeNames != null) {
-                connectorIdToAttributesMap.put(userPartition.getConnectorId(),
-                        domain.getIdentityStoreConnectorFromId(userPartition.getConnectorId())
-                                .getUserAttributeValues(userPartition.getConnectorUserId(), attributeNames));
+                try {
+                    connectorIdToAttributesMap.put(userPartition.getConnectorId(),
+                            domain.getIdentityStoreConnectorFromId(userPartition.getConnectorId())
+                                    .getUserAttributeValues(userPartition.getConnectorUserId(), attributeNames));
+                } catch (IdentityStoreConnectorException e) {
+                    throw new IdentityStoreServerException("Failed to get user attribute values.", e);
+                }
             }
         }
 
@@ -2061,7 +2099,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 try {
                     connectorUserId = domain.getCredentialStoreConnectorFromId(entry.getKey()).addCredential(
                             entry.getValue().toArray(new Callback[entry.getValue().size()]));
-                } catch (CredentialStoreException e) {
+                } catch (CredentialStoreConnectorException e) {
                     // Recover from the inconsistent state in the connectors
                     if (userPartitions.size() > 0) {
                         removeAddedUsersInAFailure(domain, userPartitions);
@@ -2124,8 +2162,13 @@ public class IdentityStoreImpl implements IdentityStore {
 
         for (Map.Entry<String, Map<String, List<Attribute>>> entry : connectorViseUserMap.entrySet()) {
 
-            Map<String, String> uniqueIds = domain.getIdentityStoreConnectorFromId(entry.getKey())
-                    .addUsers(entry.getValue());
+            Map<String, String> uniqueIds = null;
+            try {
+                uniqueIds = domain.getIdentityStoreConnectorFromId(entry.getKey())
+                        .addUsers(entry.getValue());
+            } catch (IdentityStoreConnectorException e) {
+                throw new IdentityStoreServerException("Failed to add users.", e);
+            }
 
             if (uniqueIds != null) {
                 uniqueIds.entrySet().stream()
@@ -2186,8 +2229,13 @@ public class IdentityStoreImpl implements IdentityStore {
 
         if ((claims == null || claims.isEmpty()) && !existingConnectorIdToConnectorUserIdMap.isEmpty()) {
             for (Map.Entry<String, String> entry : existingConnectorIdToConnectorUserIdMap.entrySet()) {
-                String updatedConnectorUserId = domain.getIdentityStoreConnectorFromId(entry.getKey())
-                        .updateUserAttributes(entry.getValue(), new ArrayList<>());
+                String updatedConnectorUserId = null;
+                try {
+                    updatedConnectorUserId = domain.getIdentityStoreConnectorFromId(entry.getKey())
+                            .updateUserAttributes(entry.getValue(), new ArrayList<>());
+                } catch (IdentityStoreConnectorException e) {
+                    throw new IdentityStoreServerException("Failed to update connector user id", e);
+                }
                 updatedUniqueIds.put(entry.getKey(), updatedConnectorUserId);
             }
         } else {
@@ -2218,8 +2266,12 @@ public class IdentityStoreImpl implements IdentityStore {
                                 "attributes.", e);
                     }
                 } else {
-                    updatedConnectorUserId = domain.getIdentityStoreConnectorFromId(entry.getKey())
-                            .updateUserAttributes(entry.getValue(), connectorIdToAttributesMap.get(entry.getKey()));
+                    try {
+                        updatedConnectorUserId = domain.getIdentityStoreConnectorFromId(entry.getKey())
+                                .updateUserAttributes(entry.getValue(), connectorIdToAttributesMap.get(entry.getKey()));
+                    } catch (IdentityStoreConnectorException e) {
+                        throw new IdentityStoreServerException("Failed to update user attributes.", e);
+                    }
                 }
                 updatedUniqueIds.put(entry.getKey(), updatedConnectorUserId);
             }
@@ -2298,11 +2350,15 @@ public class IdentityStoreImpl implements IdentityStore {
                     updatedUniqueIds.put(connectorId, updatedConnectorUserId);
                 }
             } else {
-                updatedConnectorUserId = domain.getIdentityStoreConnectorFromId(connectorId)
-                        .updateUserAttributes(
-                                existingConnectorIdToConnectorUserIdMap.get(connectorId),
-                                connectorAttributeMapToUpdate.get(connectorId),
-                                connectorAttributeMapToRemove.get(connectorId));
+                try {
+                    updatedConnectorUserId = domain.getIdentityStoreConnectorFromId(connectorId)
+                            .updateUserAttributes(
+                                    existingConnectorIdToConnectorUserIdMap.get(connectorId),
+                                    connectorAttributeMapToUpdate.get(connectorId),
+                                    connectorAttributeMapToRemove.get(connectorId));
+                } catch (IdentityStoreConnectorException e) {
+                    throw new IdentityStoreServerException("Failed to update user attributes", e);
+                }
                 updatedUniqueIds.put(connectorId, updatedConnectorUserId);
             }
 
@@ -2336,13 +2392,17 @@ public class IdentityStoreImpl implements IdentityStore {
         if (!userPartitions.isEmpty()) {
             for (UserPartition userPartition : userPartitions) {
                 if (userPartition.isIdentityStore()) {
-                    domain.getIdentityStoreConnectorFromId(userPartition.getConnectorId())
-                            .deleteUser(userPartition.getConnectorUserId());
+                    try {
+                        domain.getIdentityStoreConnectorFromId(userPartition.getConnectorId())
+                                .deleteUser(userPartition.getConnectorUserId());
+                    } catch (IdentityStoreConnectorException e) {
+                        throw new IdentityStoreServerException("Failed to delete user", e);
+                    }
                 } else {
                     try {
                         domain.getCredentialStoreConnectorFromId(userPartition.getConnectorId())
                                 .deleteCredential(userPartition.getConnectorUserId());
-                    } catch (CredentialStoreException e) {
+                    } catch (CredentialStoreConnectorException e) {
                         throw new IdentityStoreServerException(String.format("Failed to delete credential entry in " +
                                 "connector - %s with id - %s", userPartition.getConnectorId(), userPartition
                                 .getConnectorUserId()));
@@ -2428,8 +2488,13 @@ public class IdentityStoreImpl implements IdentityStore {
 
         for (Map.Entry<String, Map<String, List<Attribute>>> entry : connectorViseGroupMap.entrySet()) {
 
-            Map<String, String> uniqueIds = domain.getIdentityStoreConnectorFromId(entry.getKey()).
-                    addGroups(entry.getValue());
+            Map<String, String> uniqueIds = null;
+            try {
+                uniqueIds = domain.getIdentityStoreConnectorFromId(entry.getKey()).
+                        addGroups(entry.getValue());
+            } catch (IdentityStoreConnectorException e) {
+                throw new IdentityStoreServerException("Failed to add groups", e);
+            }
 
             if (uniqueIds != null) {
                 uniqueIds.entrySet().stream()
@@ -2489,8 +2554,13 @@ public class IdentityStoreImpl implements IdentityStore {
 
         if ((claims == null || claims.isEmpty()) && !existingConnectorIdToConnectorGroupIdMap.isEmpty()) {
             for (Map.Entry<String, String> entry : existingConnectorIdToConnectorGroupIdMap.entrySet()) {
-                String updatedConnectorGroupId = domain.getIdentityStoreConnectorFromId(entry.getKey())
-                        .updateGroupAttributes(entry.getValue(), new ArrayList<>());
+                String updatedConnectorGroupId = null;
+                try {
+                    updatedConnectorGroupId = domain.getIdentityStoreConnectorFromId(entry.getKey())
+                            .updateGroupAttributes(entry.getValue(), new ArrayList<>());
+                } catch (IdentityStoreConnectorException e) {
+                    throw new IdentityStoreServerException("Failed to update group attributes.", e);
+                }
                 updatedUniqueIds.put(entry.getKey(), updatedConnectorGroupId);
             }
         } else {
@@ -2521,8 +2591,13 @@ public class IdentityStoreImpl implements IdentityStore {
                                 "attributes.", e);
                     }
                 } else {
-                    updatedConnectorGroupId = domain.getIdentityStoreConnectorFromId(entry.getKey())
-                            .updateGroupAttributes(entry.getValue(), connectorIdToAttributesMap.get(entry.getKey()));
+                    try {
+                        updatedConnectorGroupId = domain.getIdentityStoreConnectorFromId(entry.getKey())
+                                .updateGroupAttributes(entry.getValue(),
+                                        connectorIdToAttributesMap.get(entry.getKey()));
+                    } catch (IdentityStoreConnectorException e) {
+                        throw new IdentityStoreServerException("Failed to update group attributes.", e);
+                    }
                 }
                 updatedUniqueIds.put(entry.getKey(), updatedConnectorGroupId);
             }
@@ -2599,11 +2674,15 @@ public class IdentityStoreImpl implements IdentityStore {
                     updatedUniqueIds.put(connectorId, updatedConnectorGroupId);
                 }
             } else {
-                updatedConnectorGroupId = domain.getIdentityStoreConnectorFromId(connectorId)
-                        .updateGroupAttributes(
-                                existingConnectorIdToConnectorGroupIdMap.get(connectorId),
-                                connectorAttributeMapToUpdate.get(connectorId),
-                                connectorAttributeMapToRemove.get(connectorId));
+                try {
+                    updatedConnectorGroupId = domain.getIdentityStoreConnectorFromId(connectorId)
+                            .updateGroupAttributes(
+                                    existingConnectorIdToConnectorGroupIdMap.get(connectorId),
+                                    connectorAttributeMapToUpdate.get(connectorId),
+                                    connectorAttributeMapToRemove.get(connectorId));
+                } catch (IdentityStoreConnectorException e) {
+                    throw new IdentityStoreServerException("Failed to update group attributes.", e);
+                }
                 updatedUniqueIds.put(connectorId, updatedConnectorGroupId);
             }
 
@@ -2674,7 +2753,7 @@ public class IdentityStoreImpl implements IdentityStore {
         try {
             connectorUserId = domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId())
                     .getConnectorUserId(metaClaimMapping.getAttributeName(), claim.getValue());
-        } catch (UserNotFoundException | IdentityStoreException e) {
+        } catch (UserNotFoundException | IdentityStoreConnectorException e) {
             throw new AuthenticationFailure("Invalid claim value. No user mapped to the provided claim.", e);
         }
 
@@ -2710,7 +2789,7 @@ public class IdentityStoreImpl implements IdentityStore {
                                         .getAuthorizationStore())
                                 .setDomainName(domain.getDomainName())
                                 .build());
-                    } catch (CredentialStoreException e) {
+                    } catch (CredentialStoreConnectorException e) {
                         throw new AuthenticationFailure("Failed to authenticate from the provided credential.", e);
                     }
                 }

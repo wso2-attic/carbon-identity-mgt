@@ -17,7 +17,9 @@
 package org.wso2.carbon.identity.mgt.user;
 
 import org.wso2.carbon.identity.mgt.config.UniqueIdResolverConfig;
+import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +41,7 @@ public interface UniqueIdResolver {
      * @return Unique user.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    UniqueUser getUniqueUser(String uniqueUserId) throws UniqueIdResolverException;
+    UniqueUser getUniqueUser(String uniqueUserId) throws UniqueIdResolverException, UserNotFoundException;
 
     /**
      * Get global unique Id for a connector specific user Id.
@@ -88,7 +90,7 @@ public interface UniqueIdResolver {
      * @return Unique group.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    UniqueGroup getUniqueGroup(String uniqueGroupId) throws UniqueIdResolverException;
+    UniqueGroup getUniqueGroup(String uniqueGroupId) throws UniqueIdResolverException, GroupNotFoundException;
 
     /**
      * Get global unique Id for a connector specific group Id.
