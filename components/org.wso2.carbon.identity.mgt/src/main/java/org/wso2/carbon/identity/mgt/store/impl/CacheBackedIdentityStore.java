@@ -394,14 +394,26 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public void updateUserClaims(String uniqueUserId, List<Claim> claims) throws IdentityStoreException,
+            UserNotFoundException {
+
+    }
+
+    @Override
     public void updateUserClaims(String uniqueUserId, List<Claim> claims, String domainName) throws
             IdentityStoreException, UserNotFoundException {
 
     }
 
     @Override
-    public void updateUserClaims(String userId, List<Claim> userClaimsToAdd, List<Claim> userClaimsToRemove) throws
+    public void updateUserClaims(String userId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
             IdentityStoreException {
+
+    }
+
+    @Override
+    public void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove, String
+            domainName) throws IdentityStoreException, UserNotFoundException {
 
     }
 

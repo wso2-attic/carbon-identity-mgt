@@ -421,6 +421,15 @@ public interface IdentityStore {
      *
      * @param uniqueUserId User unique id.
      * @param claims   User claims.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    void updateUserClaims(String uniqueUserId, List<Claim> claims) throws IdentityStoreException, UserNotFoundException;
+
+    /**
+     * Update user claims by user id.
+     *
+     * @param uniqueUserId User unique id.
+     * @param claims   User claims.
      * @param domainName domain name.
      * @throws IdentityStoreException Identity store exception.
      */
@@ -431,12 +440,25 @@ public interface IdentityStore {
      * Update selected user claims by user id.
      *
      * @param uniqueUserId       User unique id.
-     * @param userClaimsToAdd    user claims to update.
-     * @param userClaimsToRemove user claims to remove.
+     * @param claimsToAdd    user claims to update.
+     * @param claimsToRemove user claims to remove.
      * @throws IdentityStoreException Identity store exception.
      */
-    void updateUserClaims(String uniqueUserId, List<Claim> userClaimsToAdd, List<Claim> userClaimsToRemove) throws
-            IdentityStoreException;
+    void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
+            IdentityStoreException, UserNotFoundException;
+
+
+    /**
+     * Update selected user claims by user id.
+     *
+     * @param uniqueUserId       User unique id.
+     * @param claimsToAdd    user claims to update.
+     * @param claimsToRemove user claims to remove.
+     * @param domainName domain name.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove, String
+            domainName) throws IdentityStoreException, UserNotFoundException;
 
     /**
      * Delete a user by user id.
