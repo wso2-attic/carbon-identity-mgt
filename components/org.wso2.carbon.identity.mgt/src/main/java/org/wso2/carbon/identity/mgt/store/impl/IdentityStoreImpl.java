@@ -43,7 +43,6 @@ import org.wso2.carbon.identity.mgt.model.GroupModel;
 import org.wso2.carbon.identity.mgt.model.UserModel;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
-import org.wso2.carbon.identity.mgt.user.ConnectedGroup;
 import org.wso2.carbon.identity.mgt.user.GroupPartition;
 import org.wso2.carbon.identity.mgt.user.UniqueGroup;
 import org.wso2.carbon.identity.mgt.user.UniqueUser;
@@ -1535,7 +1534,7 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        String connectorUserId = null;
+        String connectorUserId;
         try {
             connectorUserId = domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId())
                     .getConnectorUserId(metaClaimMapping.getAttributeName(), claim.getValue());
@@ -1599,7 +1598,7 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        List<String> connectorUserIds = null;
+        List<String> connectorUserIds;
         try {
             connectorUserIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
                     .getIdentityStoreConnectorId()).listConnectorUserIds(metaClaimMapping.getAttributeName(), claim
@@ -1644,7 +1643,7 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        List<String> connectorUserIds = null;
+        List<String> connectorUserIds;
         try {
             connectorUserIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
                     .getIdentityStoreConnectorId()).listConnectorUserIdsByPattern(metaClaimMapping.getAttributeName(),
@@ -1711,7 +1710,7 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        String connectorGroupId = null;
+        String connectorGroupId;
         try {
             connectorGroupId = domain.getIdentityStoreConnectorFromId(metaClaimMapping.getIdentityStoreConnectorId())
                     .getConnectorGroupId(metaClaimMapping.getAttributeName(), claim.getValue());
@@ -1776,7 +1775,7 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        List<String> connectorGroupIds = null;
+        List<String> connectorGroupIds;
         try {
             connectorGroupIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
                     .getIdentityStoreConnectorId()).listConnectorGroupIds(metaClaimMapping.getAttributeName(), claim
@@ -1821,7 +1820,7 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve the meta claim mapping for the claim URI.");
         }
 
-        List<String> connectorGroupIds = null;
+        List<String> connectorGroupIds;
         try {
             connectorGroupIds = domain.getIdentityStoreConnectorFromId(metaClaimMapping
                     .getIdentityStoreConnectorId()).listConnectorGroupIdsByPattern(metaClaimMapping.getAttributeName(),
@@ -2092,7 +2091,6 @@ public class IdentityStoreImpl implements IdentityStore {
         if (!userModel.getCredentials().isEmpty()) {
             Map<String, List<Callback>> connectorIdToCredentialsMap = getConnectorIdToCredentialsMap(userModel
                     .getCredentials(), domain.getCredentialStoreConnectors());
-
             for (Map.Entry<String, List<Callback>> entry : connectorIdToCredentialsMap.entrySet()) {
 
                 String connectorUserId;
@@ -2104,8 +2102,8 @@ public class IdentityStoreImpl implements IdentityStore {
                     if (userPartitions.size() > 0) {
                         removeAddedUsersInAFailure(domain, userPartitions);
                     }
-                    throw new IdentityStoreServerException("Credential store connector failed to add user attributes.",
-                            e);
+                    throw new IdentityStoreServerException("Credential store connector failed to add user attributes" +
+                            ".", e);
                 }
 
                 userPartitions.add(new UserPartition(entry.getKey(), connectorUserId, false));
@@ -2132,17 +2130,6 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private List<User> doAddUsers(List<UserModel> userModels, Domain domain) throws IdentityStoreException {
 
-//        for (UserModel userModel : userModels) {
-//            try {
-//                userModel.setClaims(claimManager.convertToDefaultClaimDialect(userModel.getClaims()));
-//            } catch (ClaimManagerException e) {
-//                throw new IdentityStoreServerException("Failed to convert to the default claim dialect.", e);
-//            }
-//        }
-
-//        Map<String, UserModel> userUniqueIdToUserModelMap = userModels.stream().collect(Collectors.toMap
-//                (userModel -> IdentityUserMgtUtil.generateUUID(), userModel -> userModel));
-
         List<MetaClaimMapping> metaClaimMappings;
         try {
             metaClaimMappings = domain.getMetaClaimMappings();
@@ -2150,54 +2137,142 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Failed to retrieve meta claim mappings.");
         }
 
-        List<Map<String, List<Attribute>>> connectorIdToAttributesMaps = userModels.stream()
+        Map<String, UserModel> uniqueUserIdToUserModelMap = userModels.stream()
                 .filter(Objects::nonNull)
-                .map(userModel -> getConnectorIdToAttributesMap(userModel.getClaims(), metaClaimMappings))
-                .collect(Collectors.toList());
+                .filter(userModel -> !userModel.getClaims().isEmpty() || !userModel.getCredentials().isEmpty())
+                .collect(Collectors.toMap(userModel -> IdentityUserMgtUtil.generateUUID(), userModel -> userModel));
 
-        Map<String, Map<String, List<Attribute>>> connectorViseUserMap = getConnectorViseAttributesMap
-                (connectorIdToAttributesMaps);
+        Map<String, Map<String, List<Attribute>>> connectorIdToUniqueUserIdToAttributesMap = new HashMap<>();
+        Map<String, Map<String, List<Callback>>> connectorIdToUniqueUserIdToCredentialMap = new HashMap<>();
 
-        Map<String, List<UserPartition>> connectedUsersList = new HashMap<>();
+        uniqueUserIdToUserModelMap.entrySet().stream()
+                .filter(Objects::nonNull)
+                .forEach(userModelEntry -> {
 
-        for (Map.Entry<String, Map<String, List<Attribute>>> entry : connectorViseUserMap.entrySet()) {
+                    Map<String, List<Attribute>> connectorIdToAttributesMap = getConnectorIdToAttributesMap
+                            (userModelEntry.getValue().getClaims(), metaClaimMappings);
 
-            Map<String, String> uniqueIds = null;
-            try {
-                uniqueIds = domain.getIdentityStoreConnectorFromId(entry.getKey())
-                        .addUsers(entry.getValue());
-            } catch (IdentityStoreConnectorException e) {
-                throw new IdentityStoreServerException("Failed to add users.", e);
+                    if (!connectorIdToAttributesMap.isEmpty()) {
+                        connectorIdToAttributesMap.entrySet().stream()
+                                .forEach(attributeEntry -> {
+                                            Map<String, List<Attribute>> uniqueUserIdToAttributesMap =
+                                                    connectorIdToUniqueUserIdToAttributesMap.get(attributeEntry
+                                                            .getKey());
+                                            if (uniqueUserIdToAttributesMap == null) {
+                                                uniqueUserIdToAttributesMap = new HashMap<>();
+                                                connectorIdToUniqueUserIdToAttributesMap.put(attributeEntry.getKey(),
+                                                        uniqueUserIdToAttributesMap);
+                                            }
+                                            uniqueUserIdToAttributesMap.put(userModelEntry.getKey(), attributeEntry
+                                                    .getValue());
+                                        }
+                                );
+                    }
+
+                    Map<String, List<Callback>> connectorIdToCredentialsMap = getConnectorIdToCredentialsMap
+                            (userModelEntry.getValue().getCredentials(), domain.getCredentialStoreConnectors());
+
+                    if (!connectorIdToCredentialsMap.isEmpty()) {
+                        connectorIdToCredentialsMap.entrySet().stream()
+                                .forEach(credentialEntry -> {
+                                            Map<String, List<Callback>> uniqueUserIdToCredentialMap =
+                                                    connectorIdToUniqueUserIdToCredentialMap.get(credentialEntry
+                                                            .getKey());
+                                            if (uniqueUserIdToCredentialMap == null) {
+                                                uniqueUserIdToCredentialMap = new HashMap<>();
+                                                connectorIdToUniqueUserIdToCredentialMap.put(credentialEntry.getKey(),
+                                                        uniqueUserIdToCredentialMap);
+                                            }
+                                            uniqueUserIdToCredentialMap.put(userModelEntry.getKey(), credentialEntry
+                                                    .getValue());
+                                        }
+                                );
+                    }
+                });
+
+        Map<String, List<UserPartition>> uniqueUserIdToUserPartitionsMap = new HashMap<>();
+        if (!connectorIdToUniqueUserIdToAttributesMap.isEmpty()) {
+            for (Map.Entry<String, Map<String, List<Attribute>>> entry : connectorIdToUniqueUserIdToAttributesMap
+                    .entrySet()) {
+
+                Map<String, String> uniqueUserIds;
+                try {
+                    uniqueUserIds = domain.getIdentityStoreConnectorFromId(entry.getKey()).addUsers(entry.getValue());
+                } catch (IdentityStoreConnectorException e) {
+                    if (!uniqueUserIdToUserPartitionsMap.isEmpty()) {
+                        uniqueUserIdToUserPartitionsMap.entrySet().stream()
+                                .forEach(partitionEntry -> removeAddedUsersInAFailure(domain,
+                                        partitionEntry.getValue()));
+                    }
+                    throw new IdentityStoreServerException("Failed to add users.", e);
+                }
+                if (uniqueUserIds != null) {
+                    uniqueUserIds.entrySet().stream()
+                            .forEach(uniqueUserId -> {
+                                List<UserPartition> userPartitions = uniqueUserIdToUserPartitionsMap.get(uniqueUserId
+                                        .getKey());
+                                if (userPartitions == null) {
+                                    userPartitions = new ArrayList<>();
+                                    uniqueUserIdToUserPartitionsMap.put(uniqueUserId.getKey(), userPartitions);
+                                }
+                                userPartitions.add(new UserPartition(entry.getKey(), uniqueUserId.getValue(), true));
+                            });
+                }
             }
-
-            if (uniqueIds != null) {
-                uniqueIds.entrySet().stream()
-                        .forEach(t -> {
-                            List<UserPartition> userPartitions = connectedUsersList.get(t.getKey());
-                            if (userPartitions == null) {
-                                userPartitions = new ArrayList<>();
-                                connectedUsersList.put(t.getKey(), userPartitions);
-                            }
-                            userPartitions.add(new UserPartition(entry.getKey(), t.getValue(), true));
-                        });
-            }
-            // TODO handle any failure
         }
 
-//        try {
-//            domain.getUniqueIdResolver().addUsers(connectedUsersList);
-//        } catch (UniqueIdResolverException e) {
-//            // TODO handle any failure
-//            throw new IdentityStoreServerException("Error occurred while persisting user unique ids.", e);
-//        }
+        if (!connectorIdToUniqueUserIdToCredentialMap.isEmpty()) {
+            for (Map.Entry<String, Map<String, List<Callback>>> entry : connectorIdToUniqueUserIdToCredentialMap
+                    .entrySet()) {
 
-        return connectedUsersList.entrySet().stream()
-                .map(entry -> new User.UserBuilder()
-                        .setUserId(entry.getKey())
+                Map<String, String> uniqueUserIds;
+                try {
+                    uniqueUserIds = domain.getCredentialStoreConnectorFromId(entry.getKey()).addCredentials(entry
+                            .getValue());
+                } catch (CredentialStoreConnectorException e) {
+                    if (!uniqueUserIdToUserPartitionsMap.isEmpty()) {
+                        uniqueUserIdToUserPartitionsMap.entrySet().stream()
+                                .forEach(partitionEntry -> removeAddedUsersInAFailure(domain,
+                                        partitionEntry.getValue()));
+                    }
+                    throw new IdentityStoreServerException("Failed to add users.", e);
+                }
+
+                if (uniqueUserIds != null) {
+                    uniqueUserIds.entrySet().stream()
+                            .forEach(uniqueUserId -> {
+                                List<UserPartition> userPartitions = uniqueUserIdToUserPartitionsMap.get(uniqueUserId
+                                        .getKey());
+                                if (userPartitions == null) {
+                                    userPartitions = new ArrayList<>();
+                                    uniqueUserIdToUserPartitionsMap.put(uniqueUserId.getKey(), userPartitions);
+                                }
+                                userPartitions.add(new UserPartition(entry.getKey(), uniqueUserId.getValue(), false));
+                            });
+                }
+            }
+        }
+
+        List<UniqueUser> uniqueUsers = uniqueUserIdToUserPartitionsMap.entrySet().stream()
+                .map(entry -> new UniqueUser(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+
+        try {
+            domain.getUniqueIdResolver().addUsers(uniqueUsers, domain.getDomainName());
+        } catch (UniqueIdResolverException e) {
+            if (!uniqueUserIdToUserPartitionsMap.isEmpty()) {
+                uniqueUserIdToUserPartitionsMap.entrySet().stream()
+                        .forEach(partitionEntry -> removeAddedUsersInAFailure(domain, partitionEntry.getValue()));
+            }
+            throw new IdentityStoreServerException("Error occurred while persisting user unique ids.", e);
+        }
+
+        return uniqueUsers.stream()
+                .map(uniqueUser -> new User.UserBuilder()
+                        .setUserId(uniqueUser.getUniqueUserId())
                         .setDomainName(domain.getDomainName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getRealmService()
-                                .getAuthorizationStore())
+                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -2229,7 +2304,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         if ((claims == null || claims.isEmpty()) && !existingConnectorIdToConnectorUserIdMap.isEmpty()) {
             for (Map.Entry<String, String> entry : existingConnectorIdToConnectorUserIdMap.entrySet()) {
-                String updatedConnectorUserId = null;
+                String updatedConnectorUserId;
                 try {
                     updatedConnectorUserId = domain.getIdentityStoreConnectorFromId(entry.getKey())
                             .updateUserAttributes(entry.getValue(), new ArrayList<>());
@@ -2470,60 +2545,96 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private List<Group> doAddGroups(List<GroupModel> groupModels, Domain domain) throws IdentityStoreException {
 
-        Map<String, List<MetaClaimMapping>> metaClaimMappings = domain.getConnectorIdToMetaClaimMappings();
-        if (metaClaimMappings.isEmpty()) {
-            throw new IdentityStoreServerException("Invalid domain configuration found. No meta claim mappings.");
+        List<MetaClaimMapping> metaClaimMappings;
+        try {
+            metaClaimMappings = domain.getMetaClaimMappings();
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException("Failed to retrieve meta claim mappings.");
         }
 
-        List<Map<String, List<Attribute>>> connectorAttributesMaps = groupModels.stream()
+        Map<String, GroupModel> uniqueGroupIdToGroupModelMap = groupModels.stream()
                 .filter(Objects::nonNull)
-                .filter(userModel -> userModel.getClaims() != null)
-                .map(groupModel -> getConnectorAttributesMap(groupModel.getClaims(), metaClaimMappings))
+                .filter(groupModel -> !groupModel.getClaims().isEmpty())
+                .collect(Collectors.toMap(groupModel -> IdentityUserMgtUtil.generateUUID(), groupModel -> groupModel));
+
+        Map<String, Map<String, List<Attribute>>> connectorIdToUniqueGroupIdToAttributesMap = new HashMap<>();
+
+        uniqueGroupIdToGroupModelMap.entrySet().stream()
+                .filter(Objects::nonNull)
+                .forEach(groupModelEntry -> {
+
+                    Map<String, List<Attribute>> connectorIdToAttributesMap = getConnectorIdToAttributesMap
+                            (groupModelEntry.getValue().getClaims(), metaClaimMappings);
+
+                    if (!connectorIdToAttributesMap.isEmpty()) {
+                        connectorIdToAttributesMap.entrySet().stream()
+                                .forEach(attributeEntry -> {
+                                            Map<String, List<Attribute>> uniqueGroupIdToAttributesMap =
+                                                    connectorIdToUniqueGroupIdToAttributesMap.get(attributeEntry
+                                                            .getKey());
+                                            if (uniqueGroupIdToAttributesMap == null) {
+                                                uniqueGroupIdToAttributesMap = new HashMap<>();
+                                                connectorIdToUniqueGroupIdToAttributesMap.put(attributeEntry.getKey(),
+                                                        uniqueGroupIdToAttributesMap);
+                                            }
+                                            uniqueGroupIdToAttributesMap.put(groupModelEntry.getKey(), attributeEntry
+                                                    .getValue());
+                                        }
+                                );
+                    }
+                });
+
+        Map<String, List<GroupPartition>> uniqueGroupIdToGroupPartitionsMap = new HashMap<>();
+        if (!connectorIdToUniqueGroupIdToAttributesMap.isEmpty()) {
+            for (Map.Entry<String, Map<String, List<Attribute>>> entry : connectorIdToUniqueGroupIdToAttributesMap
+                    .entrySet()) {
+
+                Map<String, String> uniqueGroupIds;
+                try {
+                    uniqueGroupIds = domain.getIdentityStoreConnectorFromId(entry.getKey()).addGroups(entry.getValue());
+                } catch (IdentityStoreConnectorException e) {
+                    if (!uniqueGroupIdToGroupPartitionsMap.isEmpty()) {
+                        uniqueGroupIdToGroupPartitionsMap.entrySet().stream()
+                                .forEach(partitionEntry -> removeAddedGroupsInAFailure(domain,
+                                        partitionEntry.getValue()));
+                    }
+                    throw new IdentityStoreServerException("Failed to add groups.", e);
+                }
+                if (uniqueGroupIds != null) {
+                    uniqueGroupIds.entrySet().stream()
+                            .forEach(uniqueGroupId -> {
+                                List<GroupPartition> groupPartitions = uniqueGroupIdToGroupPartitionsMap
+                                        .get(uniqueGroupId.getKey());
+                                if (groupPartitions == null) {
+                                    groupPartitions = new ArrayList<>();
+                                    uniqueGroupIdToGroupPartitionsMap.put(uniqueGroupId.getKey(), groupPartitions);
+                                }
+                                groupPartitions.add(new GroupPartition(entry.getKey(), uniqueGroupId.getValue()));
+                            });
+                }
+            }
+        }
+
+        List<UniqueGroup> uniqueGroups = uniqueGroupIdToGroupPartitionsMap.entrySet().stream()
+                .map(entry -> new UniqueGroup(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
 
-        Map<String, Map<String, List<Attribute>>> connectorViseGroupMap = getConnectorViseAttributesMap
-                (connectorAttributesMaps);
-
-        Map<String, List<ConnectedGroup>> connectedGroupsMaps = new HashMap<>();
-
-        for (Map.Entry<String, Map<String, List<Attribute>>> entry : connectorViseGroupMap.entrySet()) {
-
-            Map<String, String> uniqueIds = null;
-            try {
-                uniqueIds = domain.getIdentityStoreConnectorFromId(entry.getKey()).
-                        addGroups(entry.getValue());
-            } catch (IdentityStoreConnectorException e) {
-                throw new IdentityStoreServerException("Failed to add groups", e);
+        try {
+            domain.getUniqueIdResolver().addGroups(uniqueGroups, domain.getDomainName());
+        } catch (UniqueIdResolverException e) {
+            if (!uniqueGroupIdToGroupPartitionsMap.isEmpty()) {
+                uniqueGroupIdToGroupPartitionsMap.entrySet().stream()
+                        .forEach(partitionEntry -> removeAddedGroupsInAFailure(domain, partitionEntry.getValue()));
             }
-
-            if (uniqueIds != null) {
-                uniqueIds.entrySet().stream()
-                        .forEach(t -> {
-                            List<ConnectedGroup> connectedGroups = connectedGroupsMaps.get(t.getKey());
-                            if (connectedGroups == null) {
-                                connectedGroups = new ArrayList<>();
-                                connectedGroupsMaps.put(t.getKey(), connectedGroups);
-                            }
-                            connectedGroups.add(new ConnectedGroup(entry.getKey(), t.getValue()));
-                        });
-            }
-            // TODO handle any failure
+            throw new IdentityStoreServerException("Error occurred while persisting group unique ids.", e);
         }
 
-//        try {
-//            //domain.getUniqueIdResolver().addGroups(connectedGroupsMaps);
-//        } catch (UniqueIdResolverException e) {
-//            // TODO handle any failure
-//            throw new IdentityStoreServerException("Error occurred while persisting group unique ids.", e);
-//        }
-
-        return connectedGroupsMaps.entrySet().stream()
-                .map(entry -> new Group.GroupBuilder()
-                        .setGroupId(entry.getKey())
+        return uniqueGroups.stream()
+                .map(uniqueGroup -> new Group.GroupBuilder()
+                        .setGroupId(uniqueGroup.getUniqueGroupId())
                         .setDomainName(domain.getDomainName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getRealmService()
-                                .getAuthorizationStore())
+                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -2554,7 +2665,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         if ((claims == null || claims.isEmpty()) && !existingConnectorIdToConnectorGroupIdMap.isEmpty()) {
             for (Map.Entry<String, String> entry : existingConnectorIdToConnectorGroupIdMap.entrySet()) {
-                String updatedConnectorGroupId = null;
+                String updatedConnectorGroupId;
                 try {
                     updatedConnectorGroupId = domain.getIdentityStoreConnectorFromId(entry.getKey())
                             .updateGroupAttributes(entry.getValue(), new ArrayList<>());
@@ -2824,32 +2935,31 @@ public class IdentityStoreImpl implements IdentityStore {
     private Map<String, List<Attribute>> getConnectorIdToAttributesMap(List<Claim> claims,
                                                                        List<MetaClaimMapping> metaClaimMappings) {
 
-        if (claims == null || claims.isEmpty()) {
-            return Collections.emptyMap();
-        }
-
         Map<String, List<Attribute>> connectorIdToAttributesMap = new HashMap<>();
 
-        claims.stream()
-                .forEach(claim -> {
-                            Optional<MetaClaimMapping> optional = metaClaimMappings.stream()
-                                    .filter(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimUri()
-                                            .equals(claim.getClaimUri()))
-                                    .findFirst();
+        if (claims != null && !claims.isEmpty()) {
+            claims.stream()
+                    .forEach(claim -> {
+                                Optional<MetaClaimMapping> optional = metaClaimMappings.stream()
+                                        .filter(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimUri()
+                                                .equals(claim.getClaimUri()))
+                                        .findFirst();
 
-                            if (optional.isPresent()) {
-                                MetaClaimMapping metaClaimMapping = optional.get();
-                                List<Attribute> attributes = connectorIdToAttributesMap.get(metaClaimMapping
-                                        .getIdentityStoreConnectorId());
-                                if (attributes == null) {
-                                    attributes = new ArrayList<>();
-                                    connectorIdToAttributesMap.put(metaClaimMapping.getIdentityStoreConnectorId(),
-                                            attributes);
+                                if (optional.isPresent()) {
+                                    MetaClaimMapping metaClaimMapping = optional.get();
+                                    List<Attribute> attributes = connectorIdToAttributesMap.get(metaClaimMapping
+                                            .getIdentityStoreConnectorId());
+                                    if (attributes == null) {
+                                        attributes = new ArrayList<>();
+                                        connectorIdToAttributesMap.put(metaClaimMapping.getIdentityStoreConnectorId(),
+                                                attributes);
+                                    }
+                                    attributes.add(new Attribute(metaClaimMapping.getAttributeName(),
+                                            claim.getValue()));
                                 }
-                                attributes.add(new Attribute(metaClaimMapping.getAttributeName(), claim.getValue()));
                             }
-                        }
-                );
+                    );
+        }
 
         return connectorIdToAttributesMap;
     }
@@ -2859,26 +2969,29 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<Claim> claims = new ArrayList<>();
 
-        connectorIdToAttributesMap.entrySet().stream()
-                .filter(entry -> entry.getValue() == null || entry.getValue().isEmpty())
-                .forEach(entry -> {
-                            entry.getValue().stream()
-                                    .forEach(attribute -> {
-                                                Optional<MetaClaim> optional = metaClaimMappings.stream()
-                                                        .filter(metaClaimMapping -> metaClaimMapping.getAttributeName()
-                                                                .equals(attribute.getAttributeName()))
-                                                        .map(MetaClaimMapping::getMetaClaim)
-                                                        .findAny();
+        if (!connectorIdToAttributesMap.isEmpty()) {
+            connectorIdToAttributesMap.entrySet().stream()
+                    .filter(entry -> entry.getValue() == null || entry.getValue().isEmpty())
+                    .forEach(entry -> {
+                                entry.getValue().stream()
+                                        .forEach(attribute -> {
+                                                    Optional<MetaClaim> optional = metaClaimMappings.stream()
+                                                            .filter(metaClaimMapping -> metaClaimMapping
+                                                                    .getAttributeName().equals(attribute
+                                                                            .getAttributeName()))
+                                                            .map(MetaClaimMapping::getMetaClaim)
+                                                            .findAny();
 
-                                                if (optional.isPresent()) {
-                                                    MetaClaim metaClaim = optional.get();
-                                                    claims.add(new Claim(metaClaim.getDialectUri(), metaClaim
-                                                            .getClaimUri(), attribute.getAttributeValue()));
+                                                    if (optional.isPresent()) {
+                                                        MetaClaim metaClaim = optional.get();
+                                                        claims.add(new Claim(metaClaim.getDialectUri(), metaClaim
+                                                                .getClaimUri(), attribute.getAttributeValue()));
+                                                    }
                                                 }
-                                            }
-                                    );
-                        }
-                );
+                                        );
+                            }
+                    );
+        }
 
         return claims;
     }
@@ -2888,78 +3001,28 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Map<String, List<Callback>> connectorIdToCredentialsMap = new HashMap<>();
 
-        credentials.stream()
-                .filter(Objects::nonNull)
-                .forEach(callback -> {
-                    Optional<CredentialStoreConnector> optional = credentialStoreConnectors.stream()
-                            .filter(connector -> connector.canStore(new Callback[]{callback}))
-                            .findAny();
+        if (!credentials.isEmpty()) {
+            credentials.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(callback -> {
+                        Optional<CredentialStoreConnector> optional = credentialStoreConnectors.stream()
+                                .filter(connector -> connector.canStore(new Callback[]{callback}))
+                                .findAny();
 
-                    if (optional.isPresent()) {
-                        CredentialStoreConnector connector = optional.get();
-                        List<Callback> callbacks = connectorIdToCredentialsMap.get(connector
-                                .getCredentialStoreConnectorId());
-                        if (callbacks == null) {
-                            callbacks = new ArrayList<>();
-                            connectorIdToCredentialsMap.put(connector.getCredentialStoreConnectorId(), callbacks);
+                        if (optional.isPresent()) {
+                            CredentialStoreConnector connector = optional.get();
+                            List<Callback> callbacks = connectorIdToCredentialsMap.get(connector
+                                    .getCredentialStoreConnectorId());
+                            if (callbacks == null) {
+                                callbacks = new ArrayList<>();
+                                connectorIdToCredentialsMap.put(connector.getCredentialStoreConnectorId(), callbacks);
+                            }
+                            callbacks.add(callback);
                         }
-                        callbacks.add(callback);
-                    }
-                });
+                    });
+        }
 
         return connectorIdToCredentialsMap;
-    }
-
-    private Map<String, List<Attribute>> getConnectorAttributesMap(List<Claim> claims, Map<String,
-            List<MetaClaimMapping>> metaClaimMappings) {
-
-        Map<String, List<Attribute>> connectorAttributeMap = new HashMap<>();
-        claims.stream()
-                .filter(Objects::nonNull)
-                .forEach(claim -> {
-                    metaClaimMappings.entrySet().stream()
-                            .filter(entry -> entry.getValue() != null)
-                            .forEach(entry -> {
-                                Optional<MetaClaimMapping> optional = entry.getValue().stream()
-                                        .filter(metaClaimMapping -> claim.getClaimUri().equals(metaClaimMapping
-                                                .getMetaClaim().getClaimUri()) && claim.getDialectUri().equals
-                                                (metaClaimMapping.getMetaClaim().getDialectUri()))
-                                        .findFirst();
-                                if (optional.isPresent()) {
-                                    Attribute attribute = new Attribute();
-                                    MetaClaimMapping metaClaimMapping = optional.get();
-                                    attribute.setAttributeName(metaClaimMapping.getAttributeName());
-                                    attribute.setAttributeValue(claim.getValue());
-                                    List<Attribute> attributes = connectorAttributeMap.get(entry.getKey());
-                                    if (attributes == null) {
-                                        attributes = new ArrayList<>();
-                                        connectorAttributeMap.put(entry.getKey(), attributes);
-                                    }
-                                    attributes.add(attribute);
-                                }
-                            });
-                });
-        return connectorAttributeMap;
-    }
-
-    private Map<String, Map<String, List<Attribute>>> getConnectorViseAttributesMap(
-            List<Map<String, List<Attribute>>> connectorAttributesMaps) {
-        Map<String, Map<String, List<Attribute>>> uuidConnectorAttributeMap = new HashMap<>();
-        connectorAttributesMaps.stream()
-                .forEach(map -> {
-                    String uuid = IdentityUserMgtUtil.generateUUID();
-                    map.entrySet().stream()
-                            .forEach(entry -> {
-                                Map<String, List<Attribute>> uuidAttributesMap = uuidConnectorAttributeMap.get(entry
-                                        .getKey());
-                                if (uuidAttributesMap == null) {
-                                    uuidAttributesMap = new HashMap<>();
-                                    uuidConnectorAttributeMap.put(entry.getKey(), uuidAttributesMap);
-                                }
-                                uuidAttributesMap.put(uuid, entry.getValue());
-                            });
-                });
-        return uuidConnectorAttributeMap;
     }
 
     private Map<String, List<String>> getConnectorIdToAttributeNameMap(List<MetaClaimMapping> metaClaimMappings,
@@ -2967,28 +3030,30 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Map<String, List<String>> connectorIdToAttributeNameMap = new HashMap<>();
 
-        metaClaims.stream()
-                .filter(Objects::nonNull)
-                .filter(metaClaim -> isNullOrEmpty(metaClaim.getClaimUri()))
-                .forEach(metaClaim -> {
-                            Optional<MetaClaimMapping> optional = metaClaimMappings.stream()
-                                    .filter(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimUri()
-                                            .equals(metaClaim.getClaimUri()))
-                                    .findFirst();
-                            if (optional.isPresent()) {
-                                MetaClaimMapping metaClaimMapping = optional.get();
+        if (!metaClaims.isEmpty()) {
+            metaClaims.stream()
+                    .filter(Objects::nonNull)
+                    .filter(metaClaim -> isNullOrEmpty(metaClaim.getClaimUri()))
+                    .forEach(metaClaim -> {
+                                Optional<MetaClaimMapping> optional = metaClaimMappings.stream()
+                                        .filter(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimUri()
+                                                .equals(metaClaim.getClaimUri()))
+                                        .findFirst();
+                                if (optional.isPresent()) {
+                                    MetaClaimMapping metaClaimMapping = optional.get();
 
-                                List<String> attributeNames = connectorIdToAttributeNameMap.get(metaClaimMapping
-                                        .getIdentityStoreConnectorId());
-                                if (attributeNames == null) {
-                                    attributeNames = new ArrayList<String>();
-                                    connectorIdToAttributeNameMap.put(metaClaimMapping.getIdentityStoreConnectorId(),
-                                            attributeNames);
+                                    List<String> attributeNames = connectorIdToAttributeNameMap.get(metaClaimMapping
+                                            .getIdentityStoreConnectorId());
+                                    if (attributeNames == null) {
+                                        attributeNames = new ArrayList<String>();
+                                        connectorIdToAttributeNameMap.put(metaClaimMapping
+                                                .getIdentityStoreConnectorId(), attributeNames);
+                                    }
+                                    attributeNames.add(metaClaimMapping.getAttributeName());
                                 }
-                                attributeNames.add(metaClaimMapping.getAttributeName());
                             }
-                        }
-                );
+                    );
+        }
         return connectorIdToAttributeNameMap;
     }
 

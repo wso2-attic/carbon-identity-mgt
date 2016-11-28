@@ -20,6 +20,8 @@ import org.wso2.carbon.identity.mgt.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.CredentialStoreConnectorException;
 
+import java.util.List;
+import java.util.Map;
 import javax.security.auth.callback.Callback;
 
 /**
@@ -83,6 +85,16 @@ public interface CredentialStoreConnector {
      * @throws CredentialStoreConnectorException Credential Store Exception.
      */
     String addCredential(Callback[] callbacks) throws CredentialStoreConnectorException;
+
+    /**
+     * Add users credentials.
+     *
+     * @param userUniqueIdToCallbacksMap Array of callbacks map to user unique ids.
+     * @return user unique id to connector user id map
+     * @throws CredentialStoreConnectorException Credential Store Exception.
+     */
+    Map<String, String> addCredentials(Map<String, List<Callback>> userUniqueIdToCallbacksMap) throws
+            CredentialStoreConnectorException;
 
 
     /**
