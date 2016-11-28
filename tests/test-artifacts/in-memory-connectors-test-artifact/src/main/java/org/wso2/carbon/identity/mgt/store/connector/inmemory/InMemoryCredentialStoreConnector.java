@@ -45,7 +45,8 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
     }
 
     @Override
-    public void authenticate(Callback[] callbacks) throws CredentialStoreConnectorException, AuthenticationFailure {
+    public void authenticate(String connectorUserId, Callback[] callbacks) throws CredentialStoreConnectorException,
+            AuthenticationFailure {
 
     }
 

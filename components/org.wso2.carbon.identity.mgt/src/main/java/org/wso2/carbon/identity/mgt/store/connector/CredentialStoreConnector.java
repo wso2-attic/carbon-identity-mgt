@@ -49,10 +49,12 @@ public interface CredentialStoreConnector {
      * Authenticate user using callbacks. Throws {@link AuthenticationFailure} if authentication is not successful.
      *
      * @param callbacks Callbacks to get the user attributes.
+     * @param connectorUserId connector user id
      * @throws CredentialStoreConnectorException Credential Store Exception.
      * @throws AuthenticationFailure    Authentication failure.
      */
-    void authenticate(Callback[] callbacks) throws CredentialStoreConnectorException, AuthenticationFailure;
+    void authenticate(String connectorUserId, Callback[] callbacks) throws CredentialStoreConnectorException,
+            AuthenticationFailure;
 
     /**
      * Checks whether this connector can handle the given callbacks.

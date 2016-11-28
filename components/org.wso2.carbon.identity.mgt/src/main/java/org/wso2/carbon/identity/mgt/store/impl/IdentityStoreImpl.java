@@ -22,11 +22,9 @@ import org.wso2.carbon.identity.mgt.bean.Attribute;
 import org.wso2.carbon.identity.mgt.bean.Domain;
 import org.wso2.carbon.identity.mgt.bean.Group;
 import org.wso2.carbon.identity.mgt.bean.User;
-import org.wso2.carbon.identity.mgt.callback.IdentityCallback;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
-import org.wso2.carbon.identity.mgt.constant.UserCoreConstants;
 import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.CredentialStoreConnectorException;
@@ -498,6 +496,7 @@ public class IdentityStoreImpl implements IdentityStore {
         return doListGroups(claim, offset, length, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length) throws
             IdentityStoreException {
@@ -520,6 +519,7 @@ public class IdentityStoreImpl implements IdentityStore {
         return doListGroups(metaClaim, filterPattern, offset, length, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length, String
             domainName) throws IdentityStoreException {
@@ -685,6 +685,7 @@ public class IdentityStoreImpl implements IdentityStore {
         return doGetClaims(uniqueUserId, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public List<Claim> getClaims(String uniqueUserId, String domainName) throws IdentityStoreException,
             UserNotFoundException {
@@ -708,6 +709,7 @@ public class IdentityStoreImpl implements IdentityStore {
         return doGetClaims(uniqueUserId, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims) throws IdentityStoreException,
             UserNotFoundException {
@@ -730,6 +732,7 @@ public class IdentityStoreImpl implements IdentityStore {
         return doGetClaims(uniqueUserId, metaClaims, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims, String domainName) throws
             IdentityStoreException, UserNotFoundException {
@@ -1093,6 +1096,7 @@ public class IdentityStoreImpl implements IdentityStore {
         }
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public Group addGroup(GroupModel groupModel) throws IdentityStoreException {
 
@@ -1110,6 +1114,7 @@ public class IdentityStoreImpl implements IdentityStore {
         return doAddGroup(groupModel, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public Group addGroup(GroupModel groupModel, String domainName) throws IdentityStoreException {
 
@@ -1132,6 +1137,7 @@ public class IdentityStoreImpl implements IdentityStore {
         return doAddGroup(groupModel, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public List<Group> addGroups(List<GroupModel> groupModels) throws IdentityStoreException {
 
@@ -1149,6 +1155,7 @@ public class IdentityStoreImpl implements IdentityStore {
         return doAddGroups(groupModels, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public List<Group> addGroups(List<GroupModel> groupModels, String domainName) throws IdentityStoreException {
 
@@ -1171,6 +1178,7 @@ public class IdentityStoreImpl implements IdentityStore {
         return doAddGroups(groupModels, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public void updateGroupClaims(String uniqueGroupId, List<Claim> claims) throws IdentityStoreException,
             GroupNotFoundException {
@@ -1189,6 +1197,7 @@ public class IdentityStoreImpl implements IdentityStore {
         doUpdateGroupClaims(uniqueGroupId, claims, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public void updateGroupClaims(String uniqueGroupId, List<Claim> claims, String domainName) throws
             IdentityStoreException, GroupNotFoundException {
@@ -1213,6 +1222,7 @@ public class IdentityStoreImpl implements IdentityStore {
         doUpdateGroupClaims(uniqueGroupId, claims, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public void updateGroupClaims(String uniqueGroupId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
             IdentityStoreException, GroupNotFoundException {
@@ -1235,6 +1245,7 @@ public class IdentityStoreImpl implements IdentityStore {
         doUpdateGroupClaims(uniqueGroupId, claimsToAdd, claimsToRemove, domain);
     }
 
+    //TODO:ClaimWrapper handle claim dialect conversion
     @Override
     public void updateGroupClaims(String uniqueGroupId, List<Claim> claimsToAdd, List<Claim>
             claimsToRemove, String domainName) throws IdentityStoreException, GroupNotFoundException {
@@ -1417,20 +1428,12 @@ public class IdentityStoreImpl implements IdentityStore {
      */
 
     @Override
-    public AuthenticationContext authenticate(Claim claim, Callback credential, String domainName)
+    public AuthenticationContext authenticate(Claim claim, Callback[] credentials, String domainName)
             throws AuthenticationFailure {
 
-        if (claim == null || isNullOrEmpty(claim.getValue()) || credential == null) {
-            throw new AuthenticationFailure("Invalid credentials.");
+        if (claim == null || isNullOrEmpty(claim.getValue()) || (credentials != null && credentials.length > 0)) {
+            throw new AuthenticationFailure("Invalid user credentials.");
         }
-
-        //TODO claim wrapper will handle the dialect conversion
-//        try {
-//            claim = claimManager.convertToDefaultClaimDialect(claim);
-//        } catch (ClaimManagerException e) {
-//            log.error("Failed to convert to the default claim dialect.", e);
-//            throw new AuthenticationFailure("Provided claim is invalid.");
-//        }
 
         if (!isNullOrEmpty(domainName)) {
 
@@ -1439,26 +1442,28 @@ public class IdentityStoreImpl implements IdentityStore {
                 domain = getDomainFromDomainName(domainName);
             } catch (DomainException e) {
                 log.error(String.format("Error while retrieving domain from the domain name - %s", domainName), e);
-                throw new AuthenticationFailure("Domain name is invalid.");
+                throw new AuthenticationFailure(String.format("Invalid domain name - %s.", domainName));
             }
-            return doAuthenticate(claim, credential, domain);
+            return doAuthenticate(claim, credentials, domain);
         }
-
 
         AuthenticationContext context = null;
         for (Domain domain : sortedDomains) {
             if (domain.isClaimSupported(claim.getClaimUri())) {
                 try {
-                    context = doAuthenticate(claim, credential, domain);
+                    context = doAuthenticate(claim, credentials, domain);
                     break;
                 } catch (AuthenticationFailure e) {
-
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Failed to authenticate user - %s from domain - %s", claim.getValue(),
+                                domainName), e);
+                    }
                 }
             }
         }
 
         if (context == null) {
-            throw new AuthenticationFailure("Invalid credentials.");
+            throw new AuthenticationFailure("Invalid user credentials.");
         }
         return context;
     }
@@ -2846,7 +2851,7 @@ public class IdentityStoreImpl implements IdentityStore {
         }
     }
 
-    private AuthenticationContext doAuthenticate(Claim claim, Callback credential, Domain domain)
+    private AuthenticationContext doAuthenticate(Claim claim, Callback[] credentials, Domain domain)
             throws AuthenticationFailure {
 
         MetaClaimMapping metaClaimMapping;
@@ -2854,10 +2859,6 @@ public class IdentityStoreImpl implements IdentityStore {
             metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
         } catch (DomainException e) {
             throw new AuthenticationFailure("Failed to retrieve the meta claim mapping for the claim URI.", e);
-        }
-
-        if (!metaClaimMapping.isUnique()) {
-            throw new AuthenticationFailure("Provided claim is not unique.");
         }
 
         String connectorUserId;
@@ -2880,26 +2881,18 @@ public class IdentityStoreImpl implements IdentityStore {
             if (!userPartition.isIdentityStore()) {
                 CredentialStoreConnector connector = domain.getCredentialStoreConnectorFromId(userPartition
                         .getConnectorId());
-                IdentityCallback<Map> carbonCallback = new IdentityCallback<>(null);
-
-                Callback[] callbacks = new Callback[2];
-                Map<String, String> userData = new HashMap<>();
-                userData.put(UserCoreConstants.USER_ID, userPartition.getConnectorUserId());
-                carbonCallback.setContent(userData);
-
-                callbacks[0] = credential;
-                callbacks[1] = carbonCallback;
-                if (connector.canHandle(callbacks)) {
+                if (connector.canHandle(credentials)) {
                     try {
-                        connector.authenticate(callbacks);
+                        connector.authenticate(userPartition.getConnectorUserId(), credentials);
 
-                        return new AuthenticationContext(new User.UserBuilder()
-                                .setUserId(uniqueUser.getUniqueUserId())
-                                .setIdentityStore(this)
-                                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getRealmService()
-                                        .getAuthorizationStore())
-                                .setDomainName(domain.getDomainName())
-                                .build());
+                        return new AuthenticationContext(
+                                new User.UserBuilder()
+                                        .setUserId(uniqueUser.getUniqueUserId())
+                                        .setIdentityStore(this)
+                                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance()
+                                                .getAuthorizationStore())
+                                        .setDomainName(domain.getDomainName())
+                                        .build());
                     } catch (CredentialStoreConnectorException e) {
                         throw new AuthenticationFailure("Failed to authenticate from the provided credential.", e);
                     }
