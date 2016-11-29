@@ -21,7 +21,7 @@ package org.wso2.carbon.identity.mgt.test.osgi;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.ops4j.pax.exam.testng.listener.PaxExam;
 import org.osgi.framework.BundleContext;
 import org.testng.Assert;
@@ -49,7 +49,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
  */
 
 @Listeners(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
+@ExamReactorStrategy(PerSuite.class)
 public class IdentityStoreTest {
 
     private static List<User> users = new ArrayList<>();
@@ -65,8 +65,9 @@ public class IdentityStoreTest {
 
         List<Option> optionList = IdentityMgtOSGiTestUtils.getDefaultSecurityPAXOptions();
 
-        optionList.add(systemProperty("java.security.auth.login.config").value(Paths.get(
-                IdentityMgtOSGiTestUtils.getCarbonHome(), "conf", "security", "carbon-jaas.config").toString()));
+        optionList.add(systemProperty("java.security.auth.login.config")
+                .value(Paths.get(IdentityMgtOSGiTestUtils.getCarbonHome(), "conf", "security", "carbon-jaas.config")
+                        .toString()));
 
         return optionList.toArray(new Option[optionList.size()]);
     }
@@ -78,11 +79,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         UserModel userModel = new UserModel();
-        List<Claim> claims = Arrays.asList(
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "lucifer"),
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Lucifer"),
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Morningstar"),
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "lucifer@wso2.com"));
+        List<Claim> claims = Arrays
+                .asList(new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "lucifer"),
+                        new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Lucifer"),
+                        new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Morningstar"),
+                        new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "lucifer@wso2.com"));
         userModel.setClaims(claims);
         User user = realmService.getIdentityStore().addUser(userModel);
 
@@ -141,8 +142,8 @@ public class IdentityStoreTest {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
-        User user = realmService.getIdentityStore().getUser(new Claim("http://wso2.org/claims", "http://wso2" +
-                ".org/claims/username", "lucifer"));
+        User user = realmService.getIdentityStore()
+                .getUser(new Claim("http://wso2.org/claims", "http://wso2" + ".org/claims/username", "lucifer"));
 
         Assert.assertNotNull(user, "Failed to receive the user.");
 
