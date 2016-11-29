@@ -132,8 +132,8 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean hasRole(String roleName) throws AuthorizationStoreException {
-        //return authorizationStore.isGroupInRole(uniqueGroupId, domainName, roleName);
-        return false;
+        //TODO
+        return authorizationStore.isGroupInRole(uniqueGroupId, null, roleName);
     }
 
     /**
@@ -158,13 +158,24 @@ public class Group {
     }
 
     /**
+     * Change the identity store
+     * @param identityStore identity store instance
+     */
+    public void setIdentityStore(IdentityStore identityStore) {
+        this.identityStore = identityStore;
+    }
+
+    /**
      * Builder for group bean.
      */
     public static class GroupBuilder {
 
         private String groupId;
+
         private String domainName;
+
         private IdentityStore identityStore;
+
         private AuthorizationStore authorizationStore;
 
         public String getGroupId() {

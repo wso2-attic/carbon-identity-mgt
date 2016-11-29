@@ -680,12 +680,12 @@ public interface IdentityStore {
      * Authenticate the user.
      *
      * @param claim      Unique claim.
-     * @param credential Credential.
+     * @param credentials Credentials.
      * @param domainName Domain name.
      * @return Authentication context.
      * @throws AuthenticationFailure Authentication failure.
      */
-    AuthenticationContext authenticate(Claim claim, Callback credential, String domainName)
+    AuthenticationContext authenticate(Claim claim, Callback[] credentials, String domainName)
             throws AuthenticationFailure;
 
     /**

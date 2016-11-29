@@ -22,10 +22,12 @@ import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.identity.mgt.bean.Domain;
 import org.wso2.carbon.identity.mgt.bean.Group;
 import org.wso2.carbon.identity.mgt.bean.User;
+import org.wso2.carbon.identity.mgt.cache.CacheHelper;
+import org.wso2.carbon.identity.mgt.cache.CachedGroup;
+import org.wso2.carbon.identity.mgt.cache.CachedUser;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.config.CacheConfig;
-import org.wso2.carbon.identity.mgt.constant.CacheNames;
 import org.wso2.carbon.identity.mgt.context.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
@@ -36,14 +38,16 @@ import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.model.GroupModel;
 import org.wso2.carbon.identity.mgt.model.UserModel;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
-import org.wso2.carbon.identity.mgt.util.CacheHelper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
 import javax.security.auth.callback.Callback;
+
+import static org.wso2.carbon.kernel.utils.StringUtils.isNullOrEmpty;
 
 /**
  * Virtual identity store with the caching.
@@ -54,8 +58,16 @@ public class CacheBackedIdentityStore implements IdentityStore {
 
     private static Logger log = LoggerFactory.getLogger(CacheBackedIdentityStore.class);
 
+    private static final String UNIQUE_USER_CACHE = "uniqueUserCache";
+
+    private static final String UNIQUE_GROUP_CACHE = "uniqueGroupCache";
+
     private IdentityStore identityStore = new IdentityStoreImpl();
+
+    private Map<String, Boolean> cacheStatus = new HashMap<>();
+
     private CacheManager cacheManager;
+
     private Map<String, CacheConfig> cacheConfigs;
 
     public CacheBackedIdentityStore(Map<String, CacheConfig> cacheConfigs) {
@@ -72,20 +84,19 @@ public class CacheBackedIdentityStore implements IdentityStore {
         } catch (CarbonSecurityDataHolderException e) {
             throw new IdentityStoreException("Caching service is not available.", e);
         }
-        cacheManager = carbonCachingService.getCachingProvider().getCacheManager();
+
         identityStore.init(domains);
 
+        cacheManager = carbonCachingService.getCachingProvider().getCacheManager();
+
         // Initialize all caches.
-        CacheHelper.createCache(CacheNames.USER_USERNAME, String.class, User.class, CacheHelper.MEDIUM_EXPIRE_TIME,
-                cacheConfigs, cacheManager);
-        CacheHelper.createCache(CacheNames.USER_USERID, String.class, User.class, CacheHelper.MEDIUM_EXPIRE_TIME,
-                cacheConfigs, cacheManager);
-        CacheHelper.createCache(CacheNames.GROUP_GROUPNAME, String.class, Group.class, CacheHelper.MEDIUM_EXPIRE_TIME,
-                cacheConfigs, cacheManager);
-        CacheHelper.createCache(CacheNames.GROUP_GROUPID, String.class, Group.class, CacheHelper.MEDIUM_EXPIRE_TIME,
-                cacheConfigs, cacheManager);
-        CacheHelper.createCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class, List.class,
-                CacheHelper.MEDIUM_EXPIRE_TIME, cacheConfigs, cacheManager);
+        if (CacheHelper.isCacheEnabled(cacheConfigs, UNIQUE_USER_CACHE)) {
+            CacheHelper.createCache(UNIQUE_USER_CACHE, String.class, CachedUser.class, CacheHelper.MEDIUM_EXPIRE_TIME,
+                    cacheConfigs, cacheManager);
+            cacheStatus.put(UNIQUE_USER_CACHE, true);
+        } else {
+            cacheStatus.put(UNIQUE_USER_CACHE, false);
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("Cache backed identity store successfully initialized.");
@@ -93,455 +104,505 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public User getUser(String username)
-            throws IdentityStoreException, UserNotFoundException {
+    public User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
-        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.USER_USERNAME)) {
-            return identityStore.getUser(username);
+        if (cacheStatus.get(UNIQUE_USER_CACHE) && isNullOrEmpty(uniqueUserId)) {
+            return doGetUser(uniqueUserId, identityStore.getPrimaryDomainName());
         }
 
-        Cache<String, User> cache = cacheManager.getCache(CacheNames.USER_USERNAME, String.class, User.class);
-        User user = cache.get(username);
-
-        if (user == null) {
-            user = identityStore.getUser(username);
-            cache.put(username, user);
-            if (log.isDebugEnabled()) {
-                log.debug("User cached for username: {}.", username);
-            }
-        }
-
+        User user = identityStore.getUser(uniqueUserId);
+        user.setIdentityStore(this);
         return user;
     }
 
     @Override
-    public User getUser(String userId, String domain) throws IdentityStoreException, UserNotFoundException {
-        return identityStore.getUser(userId, domain);
+    public User getUser(String uniqueUserId, String domainName) throws IdentityStoreException, UserNotFoundException {
+
+        if (isNullOrEmpty(domainName)) {
+            return getUser(uniqueUserId);
+        }
+
+        if (cacheStatus.get(UNIQUE_USER_CACHE) && isNullOrEmpty(uniqueUserId)) {
+            return doGetUser(uniqueUserId, domainName);
+        }
+
+        User user = identityStore.getUser(uniqueUserId);
+        user.setIdentityStore(this);
+        return user;
     }
 
     @Override
     public User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
+
         return identityStore.getUser(claim);
     }
 
     @Override
     public User getUser(Claim claim, String domainName) throws IdentityStoreException, UserNotFoundException {
-        return identityStore.getUser(claim, domainName);
+
+        return identityStore.getUser(claim);
     }
 
     @Override
     public List<User> listUsers(int offset, int length) throws IdentityStoreException {
+
         return identityStore.listUsers(offset, length);
     }
 
     @Override
     public List<User> listUsers(int offset, int length, String domainName) throws IdentityStoreException {
+
         return identityStore.listUsers(offset, length, domainName);
     }
 
-
-//    @Override
-//    public User getUserBuilder(String userId, Domain domain) throws IdentityStoreException {
-//
-//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.USER_USERID)) {
-//            return identityStore.getUserBuilder(userId, domain);
-//        }
-//
-//        Cache<String, User> cache = cacheManager.getCache(CacheNames.USER_USERID, String.class, User.class);
-//        User user = cache.get(userId + domain);
-//
-//        if (user == null) {
-//            user = identityStore.getUserBuilder(userId, domain);
-//            cache.put(userId + domain, user);
-//            if (log.isDebugEnabled()) {
-//                log.debug("User cached for user id: {} and identity store id: {}.", user, domain);
-//            }
-//        }
-//
-//        return user;
-//    }
-
-
     @Override
     public List<User> listUsers(Claim claim, int offset, int length) throws IdentityStoreException {
-        // TODO: Implement this method.
-        return null;
+
+        return identityStore.listUsers(claim, offset, length);
     }
 
     @Override
-    public List<User> listUsers(Claim claim, int offset, int length, String domain) throws IdentityStoreException {
-        return null;
+    public List<User> listUsers(Claim claim, int offset, int length, String domainName) throws IdentityStoreException {
+
+        return identityStore.listUsers(claim, offset, length, domainName);
     }
 
     @Override
     public List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length) throws
             IdentityStoreException {
-        return null;
+
+        return identityStore.listUsers(metaClaim, filterPattern, offset, length);
     }
 
     @Override
-    public List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain)
+    public List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, String domainName)
             throws IdentityStoreException {
-        return null;
+
+        return identityStore.listUsers(metaClaim, filterPattern, offset, length, domainName);
     }
 
-
     @Override
-    public Group getGroup(String groupName) throws IdentityStoreException, GroupNotFoundException {
+    public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
-        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUPNAME)) {
-            return identityStore.getGroup(groupName);
+        if (cacheStatus.get(UNIQUE_GROUP_CACHE) && isNullOrEmpty(uniqueGroupId)) {
+            return doGetGroup(uniqueGroupId, identityStore.getPrimaryDomainName());
         }
 
-        Cache<String, Group> cache = cacheManager.getCache(CacheNames.GROUP_GROUPNAME, String.class, Group.class);
-        Group group = cache.get(groupName);
-
-        if (group == null) {
-            group = identityStore.getGroup(groupName);
-            cache.put(groupName, group);
-            if (log.isDebugEnabled()) {
-                log.debug("Group cached for group name: {}.", groupName);
-            }
-        }
-
+        Group group = identityStore.getGroup(uniqueGroupId);
+        group.setIdentityStore(this);
         return group;
     }
 
     @Override
-    public Group getGroup(String groupId, String domain) throws IdentityStoreException, GroupNotFoundException {
-        return null;
+    public Group getGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
+            GroupNotFoundException {
+
+        if (isNullOrEmpty(domainName)) {
+            return getGroup(uniqueGroupId);
+        }
+
+        if (cacheStatus.get(UNIQUE_GROUP_CACHE) && isNullOrEmpty(uniqueGroupId)) {
+            return doGetGroup(uniqueGroupId, domainName);
+        }
+
+        Group group = identityStore.getGroup(uniqueGroupId);
+        group.setIdentityStore(this);
+        return group;
     }
 
     @Override
     public Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
-        // TODO: Implement this.
-        return null;
+
+        return identityStore.getGroup(claim);
     }
 
     @Override
-    public Group getGroup(Claim claim, String domain) throws IdentityStoreException, GroupNotFoundException {
-        return null;
+    public Group getGroup(Claim claim, String domainName) throws IdentityStoreException, GroupNotFoundException {
+
+        return identityStore.getGroup(claim, domainName);
     }
 
     @Override
     public List<Group> listGroups(int offset, int length) throws IdentityStoreException {
-        return null;
+
+        return identityStore.listGroups(offset, length);
     }
 
     @Override
-    public List<Group> listGroups(int offset, int length, String domain) throws IdentityStoreException {
-        return null;
+    public List<Group> listGroups(int offset, int length, String domainName) throws IdentityStoreException {
+
+        return identityStore.listGroups(offset, length, domainName);
     }
 
     @Override
     public List<Group> listGroups(Claim claim, int offset, int length) throws IdentityStoreException {
-        return null;
+
+        return identityStore.listGroups(claim, offset, length);
     }
 
     @Override
-    public List<Group> listGroups(Claim claim, int offset, int length, String domain) throws IdentityStoreException {
-        return null;
+    public List<Group> listGroups(Claim claim, int offset, int length, String domainName) throws
+            IdentityStoreException {
+
+        return identityStore.listGroups(claim, offset, length, domainName);
     }
 
     @Override
-    public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length)
-            throws IdentityStoreException {
-        return null;
+    public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length) throws
+            IdentityStoreException {
+
+        return identityStore.listGroups(metaClaim, filterPattern, offset, length);
     }
 
     @Override
-    public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length, String domain)
-            throws IdentityStoreException {
-        return null;
-    }
+    public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length, String
+            domainName) throws IdentityStoreException {
 
-//    @Override
-//    public Group getGroupFromId(String groupId, String identityStoreId) throws IdentityStoreException {
-//
-//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUPID)) {
-//            return identityStore.getGroupFromId(groupId, identityStoreId);
-//        }
-//
-//        Cache<String, Group> cache = cacheManager.getCache(CacheNames.GROUP_GROUPID, String.class, Group.class);
-//        Group group = cache.get(groupId + identityStoreId);
-//
-//        if (group == null) {
-//            group = identityStore.getGroupFromId(groupId, identityStoreId);
-//            cache.put(groupId + identityStoreId, group);
-//            if (log.isDebugEnabled()) {
-//                log.debug("Group cached for group id: {} and for identity store id: {}.", groupId, identityStoreId);
-//            }
-//        }
-//
-//        return group;
-//    }
-
-
-    @Override
-    public List<Group> getGroupsOfUser(String userName) throws IdentityStoreException {
-
-//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
-//            return identityStore.getGroupsOfUser(userName);
-//        }
-//
-//        Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
-//                List.class);
-//
-//        List<Group> groups = cache.get(userName);
-//
-//        if (groups == null) {
-//            groups = identityStore.getGroupsOfUser(userName);
-//            cache.put(userName, groups);
-//            if (log.isDebugEnabled()) {
-//                log.debug("Groups cached for user id: {} and identity store id: {}.", userName);
-//            }
-//        }
-//
-//        return groups;
-        return null;
+        return identityStore.listGroups(metaClaim, filterPattern, offset, length, domainName);
     }
 
     @Override
-    public List<User> getUsersOfGroup(String groupID) throws IdentityStoreException {
-//        return identityStore.getUsersOfGroup(groupID);
-        return null;
+    public List<Group> getGroupsOfUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
+
+        return identityStore.getGroupsOfUser(uniqueUserId);
     }
 
     @Override
-    public List<Group> getGroupsOfUser(String userId, String domain) throws IdentityStoreException {
-        return null;
+    public List<Group> getGroupsOfUser(String uniqueUserId, String domainName) throws IdentityStoreException,
+            UserNotFoundException {
+
+        return identityStore.getGroupsOfUser(uniqueUserId, domainName);
     }
 
     @Override
-    public List<User> getUsersOfGroup(String groupId, String domain) throws IdentityStoreException {
-        return null;
+    public List<User> getUsersOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
+
+        return identityStore.getUsersOfGroup(uniqueGroupId);
     }
 
     @Override
-    public boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException {
-//
-//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
-//            return identityStore.isUserInGroup(userId, groupId);
-//        }
-//
-//        Cache<String, List> cache = cacheManager.getCache(CacheNames.GROUPS_USERID_IDENTITYSTOREID, String.class,
-//                List.class);
-//
-//        boolean isUserInGroup = false;
-//        List<Group> groups = cache.get(userId);
-//
-//        if (groups == null) {
-//            isUserInGroup = identityStore.isUserInGroup(userId, groupId);
-//        } else {
-//            // If there are groups for this user id and identity store id in the cache,
-//            // do the validation logic here.
-//            for (Group group : groups) {
-//                if (group.getUniqueGroupId().equals(groupId)) {
-//                    isUserInGroup = true;
-//                    break;
-//                }
-//            }
-//        }
-//        return isUserInGroup;
-        return false;
+    public List<User> getUsersOfGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
+            GroupNotFoundException {
+
+        return identityStore.getUsersOfGroup(uniqueGroupId, domainName);
     }
 
     @Override
-    public boolean isUserInGroup(String userId, String groupId, String domain) throws IdentityStoreException {
-        return false;
+    public boolean isUserInGroup(String uniqueUserId, String uniqueGroupId) throws IdentityStoreException,
+            UserNotFoundException {
+
+        return identityStore.isUserInGroup(uniqueUserId, uniqueGroupId);
+    }
+
+    @Override
+    public boolean isUserInGroup(String uniqueUserId, String uniqueGroupId, String domainName) throws
+            IdentityStoreException, UserNotFoundException {
+
+        return identityStore.isUserInGroup(uniqueUserId, uniqueGroupId, domainName);
     }
 
     @Override
     public List<Claim> getClaims(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
-        return null;
+
+        return identityStore.getClaims(uniqueUserId);
     }
 
     @Override
     public List<Claim> getClaims(String uniqueUserId, String domainName) throws IdentityStoreException,
             UserNotFoundException {
-        return null;
+
+        return identityStore.getClaims(uniqueUserId, domainName);
     }
 
     @Override
     public List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims) throws IdentityStoreException,
             UserNotFoundException {
-        return null;
+
+        return identityStore.getClaims(uniqueUserId, metaClaims);
     }
 
     @Override
     public List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims, String domainName) throws
             IdentityStoreException, UserNotFoundException {
-        return null;
+
+        return identityStore.getClaims(uniqueUserId, metaClaims, domainName);
     }
 
     @Override
-    public User addUser(UserModel user) throws IdentityStoreException {
-        return null;
+    public User addUser(UserModel userModel) throws IdentityStoreException {
+
+        return identityStore.addUser(userModel);
     }
 
     @Override
-    public User addUser(UserModel user, String domain) throws IdentityStoreException {
-        return null;
+    public User addUser(UserModel userModel, String domainName) throws IdentityStoreException {
+
+        return identityStore.addUser(userModel, domainName);
     }
 
     @Override
-    public List<User> addUsers(List<UserModel> users) throws IdentityStoreException {
-        return null;
+    public List<User> addUsers(List<UserModel> userModels) throws IdentityStoreException {
+
+        return identityStore.addUsers(userModels);
     }
 
     @Override
-    public List<User> addUsers(List<UserModel> users, String domain) throws IdentityStoreException {
-        return null;
+    public List<User> addUsers(List<UserModel> userModels, String domainName) throws IdentityStoreException {
+
+        return identityStore.addUsers(userModels, domainName);
     }
 
     @Override
     public void updateUserClaims(String uniqueUserId, List<Claim> claims) throws IdentityStoreException,
             UserNotFoundException {
 
+        identityStore.updateUserClaims(uniqueUserId, claims);
     }
 
     @Override
     public void updateUserClaims(String uniqueUserId, List<Claim> claims, String domainName) throws
             IdentityStoreException, UserNotFoundException {
 
+        identityStore.updateUserClaims(uniqueUserId, claims, domainName);
     }
 
     @Override
-    public void updateUserClaims(String userId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
-            IdentityStoreException {
+    public void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
+            IdentityStoreException, UserNotFoundException {
 
+        identityStore.updateUserClaims(uniqueUserId, claimsToAdd, claimsToRemove);
     }
 
     @Override
     public void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove, String
             domainName) throws IdentityStoreException, UserNotFoundException {
 
+        identityStore.updateUserClaims(uniqueUserId, claimsToAdd, claimsToRemove, domainName);
     }
 
     @Override
-    public void deleteUser(String userId) throws IdentityStoreException {
+    public void deleteUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
+        identityStore.deleteUser(uniqueUserId);
+
+        doDeleteUser(uniqueUserId, identityStore.getPrimaryDomainName());
     }
 
     @Override
     public void deleteUser(String uniqueUserId, String domainName) throws IdentityStoreException,
             UserNotFoundException {
 
+        if (isNullOrEmpty(domainName)) {
+            deleteUser(uniqueUserId);
+            return;
+        }
+
+        identityStore.deleteUser(uniqueUserId, domainName);
+        doDeleteUser(uniqueUserId, domainName);
     }
 
     @Override
-    public void updateGroupsOfUser(String userId, List<String> groupIds) throws IdentityStoreException {
+    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds) throws IdentityStoreException {
 
+        identityStore.updateGroupsOfUser(uniqueUserId, uniqueGroupIds);
     }
 
     @Override
     public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds, String domainName) throws
             IdentityStoreException {
 
+        identityStore.updateGroupsOfUser(uniqueUserId, uniqueGroupIds, domainName);
     }
 
     @Override
-    public void updateGroupsOfUser(String userId, List<String> groupIdsToAdd, List<String> groupIdsToRemove) throws
-            IdentityStoreException {
+    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd, List<String>
+            uniqueGroupIdsToRemove) throws IdentityStoreException {
 
+        identityStore.updateGroupsOfUser(uniqueUserId, uniqueGroupIdsToAdd, uniqueGroupIdsToRemove);
     }
 
     @Override
     public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd, List<String>
             uniqueGroupIdsToRemove, String domainName) throws IdentityStoreException {
 
+        identityStore.updateGroupsOfUser(uniqueUserId, uniqueGroupIdsToAdd, uniqueGroupIdsToRemove, domainName);
     }
 
     @Override
     public Group addGroup(GroupModel groupModel) throws IdentityStoreException {
-        return null;
+
+        return identityStore.addGroup(groupModel);
     }
 
     @Override
-    public Group addGroup(GroupModel groupModel, String domain) throws IdentityStoreException {
-        return null;
+    public Group addGroup(GroupModel groupModel, String domainName) throws IdentityStoreException {
+
+        return identityStore.addGroup(groupModel, domainName);
     }
 
     @Override
-    public List<Group> addGroups(List<GroupModel> groups) throws IdentityStoreException {
-        return null;
+    public List<Group> addGroups(List<GroupModel> groupModels) throws IdentityStoreException {
+
+        return identityStore.addGroups(groupModels);
     }
 
     @Override
-    public List<Group> addGroups(List<GroupModel> groups, String domain) throws IdentityStoreException {
-        return null;
+    public List<Group> addGroups(List<GroupModel> groupModels, String domainName) throws IdentityStoreException {
+
+        return identityStore.addGroups(groupModels, domainName);
     }
 
     @Override
-    public void updateGroupClaims(String groupId, List<Claim> claims) throws IdentityStoreException {
+    public void updateGroupClaims(String uniqueGroupId, List<Claim> claims) throws IdentityStoreException,
+            GroupNotFoundException {
 
+        identityStore.updateGroupClaims(uniqueGroupId, claims);
     }
 
     @Override
     public void updateGroupClaims(String uniqueGroupId, List<Claim> claims, String domainName) throws
             IdentityStoreException, GroupNotFoundException {
 
+        identityStore.updateGroupClaims(uniqueGroupId, claims, domainName);
     }
 
     @Override
-    public void updateGroupClaims(String groupId, List<Claim> claimsToAdd, List<Claim> claimsToRemove)
-            throws IdentityStoreException {
+    public void updateGroupClaims(String uniqueGroupId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
+            IdentityStoreException, GroupNotFoundException {
 
+        identityStore.updateGroupClaims(uniqueGroupId, claimsToAdd, claimsToRemove);
     }
 
     @Override
     public void updateGroupClaims(String uniqueGroupId, List<Claim> claimsToAdd, List<Claim> claimsToRemove, String
             domainName) throws IdentityStoreException, GroupNotFoundException {
 
+        identityStore.updateGroupClaims(uniqueGroupId, claimsToAdd, claimsToRemove, domainName);
     }
 
     @Override
-    public void deleteGroup(String groupId) throws IdentityStoreException {
+    public void deleteGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
+        identityStore.deleteGroup(uniqueGroupId);
+
+        doDeleteGroup(uniqueGroupId, identityStore.getPrimaryDomainName());
     }
 
     @Override
     public void deleteGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
             GroupNotFoundException {
 
+        if (isNullOrEmpty(domainName)) {
+            deleteGroup(uniqueGroupId);
+            return;
+        }
+
+        identityStore.deleteGroup(uniqueGroupId, domainName);
+
+        doDeleteGroup(uniqueGroupId, domainName);
     }
 
     @Override
-    public void updateUsersOfGroup(String groupId, List<String> userIds) throws IdentityStoreException {
+    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds) throws IdentityStoreException {
 
+        identityStore.updateUsersOfGroup(uniqueGroupId, uniqueUserIds);
     }
 
     @Override
     public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds, String domainName) throws
             IdentityStoreException {
 
+        identityStore.updateUsersOfGroup(uniqueGroupId, uniqueUserIds, domainName);
     }
 
     @Override
-    public void updateUsersOfGroup(String groupId, List<String> userIdsToAdd, List<String> userIdsToRemove) throws
-            IdentityStoreException {
+    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String>
+            uniqueUserIdsToRemove) throws IdentityStoreException {
 
+        identityStore.updateUsersOfGroup(uniqueGroupId, uniqueUserIdsToAdd, uniqueUserIdsToRemove);
     }
 
     @Override
     public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String>
             uniqueUserIdsToRemove, String domainName) throws IdentityStoreException {
 
+        identityStore.updateUsersOfGroup(uniqueGroupId, uniqueUserIdsToAdd, uniqueUserIdsToRemove);
     }
 
     @Override
-    public AuthenticationContext authenticate(Claim claim, Callback credential, String domainName) throws
+    public AuthenticationContext authenticate(Claim claim, Callback[] credentials, String domainName) throws
             AuthenticationFailure {
-        return null;
+
+        return identityStore.authenticate(claim, credentials, domainName);
     }
 
     @Override
     public String getPrimaryDomainName() throws IdentityStoreException {
-        return null;
+
+        return identityStore.getPrimaryDomainName();
     }
 
     @Override
     public Set<String> getDomainNames() throws IdentityStoreException {
-        return null;
+
+        return identityStore.getDomainNames();
+    }
+
+    private User doGetUser(String uniqueUserId, String domainName) throws IdentityStoreException,
+            UserNotFoundException {
+
+        Cache<String, CachedUser> userCache = cacheManager.getCache(UNIQUE_USER_CACHE, String.class, CachedUser.class);
+        CachedUser cachedUser = userCache.get(uniqueUserId.hashCode() + ":" + domainName.hashCode());
+
+        if (cachedUser == null) {
+            User user = identityStore.getUser(uniqueUserId);
+            userCache.put(user.getUniqueUserId().hashCode() + ":" + user.getDomainName().hashCode(),
+                    new CachedUser(user.getUniqueUserId(), user.getDomainName()));
+            user.setIdentityStore(this);
+            return user;
+        }
+
+        return new User.UserBuilder()
+                .setUserId(cachedUser.getUniqueUserId())
+                .setDomainName(cachedUser.getDomainName())
+                .setIdentityStore(this)
+                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+                .build();
+    }
+
+    private Group doGetGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
+            GroupNotFoundException {
+
+        Cache<String, CachedGroup> groupCache = cacheManager.getCache(UNIQUE_GROUP_CACHE, String.class, CachedGroup
+                .class);
+        CachedGroup cachedGroup = groupCache.get(uniqueGroupId.hashCode() + ":" + domainName.hashCode());
+
+        if (cachedGroup == null) {
+            Group group = identityStore.getGroup(uniqueGroupId);
+            groupCache.put(group.getUniqueGroupId().hashCode() + ":" + group.getDomainName().hashCode(),
+                    new CachedGroup(group.getUniqueGroupId(), group.getDomainName()));
+            group.setIdentityStore(this);
+            return group;
+        }
+
+        return new Group.GroupBuilder()
+                .setGroupId(cachedGroup.getUniqueGroupId())
+                .setDomainName(cachedGroup.getDomainName())
+                .setIdentityStore(this)
+                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+                .build();
+    }
+
+    private void doDeleteUser(String uniqueUserId, String domainName) {
+
+        Cache<String, CachedUser> userCache = cacheManager.getCache(UNIQUE_USER_CACHE, String.class, CachedUser.class);
+        userCache.remove(uniqueUserId.hashCode() + ":" + domainName.hashCode());
+    }
+
+    private void doDeleteGroup(String uniqueGroupId, String domainName) {
+
+        Cache<String, CachedGroup> groupCache = cacheManager.getCache(UNIQUE_GROUP_CACHE, String.class,
+                CachedGroup.class);
+        groupCache.remove(uniqueGroupId.hashCode() + ":" + domainName.hashCode());
     }
 }
