@@ -20,9 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.identity.mgt.config.UniqueIdResolverConfig;
+import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
-import org.wso2.carbon.identity.mgt.user.ConnectedGroup;
+import org.wso2.carbon.identity.mgt.user.UniqueGroup;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.user.UniqueUser;
 import org.wso2.carbon.identity.mgt.user.UserPartition;
@@ -33,7 +35,6 @@ import org.wso2.carbon.identity.mgt.util.UnitOfWork;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -43,7 +44,7 @@ import javax.sql.DataSource;
  */
 public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
-    private static Logger log = LoggerFactory.getLogger(JDBCUniqueIdResolver.class);
+    private static final Logger log = LoggerFactory.getLogger(JDBCUniqueIdResolver.class);
 
     private DataSource dataSource;
 
@@ -63,7 +64,13 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public UniqueUser getUniqueUser(String connectorUserId, String connectorId) throws UniqueIdResolverException {
+    public UniqueUser getUniqueUser(String uniqueUserId) throws UniqueIdResolverException, UserNotFoundException {
+        return null;
+    }
+
+    @Override
+    public UniqueUser getUniqueUserFromConnectorUserId(String connectorUserId, String connectorId) throws
+            UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUserUuid = "SELECT USER_UUID, CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_USER_ID FROM " +
@@ -108,6 +115,13 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
+    public List<UniqueUser> getUniqueUsers(List<String> connectorUserIds, String connectorId) throws
+            UniqueIdResolverException {
+        //TODO
+        return null;
+    }
+
+    @Override
     public boolean isUserExists(String uniqueUserId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
@@ -133,31 +147,48 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public String getConnectorUserId(String uniqueUserId, String connectorId) throws UniqueIdResolverException {
-
-        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUserUuid = "SELECT CONNECTOR_USER_ID FROM IDM_ENTITY " +
-                    "WHERE USER_UUID = :user_uuid; " +
-                    "AND CONNECTOR_ID = :connector_id;";
-
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
-                    unitOfWork.getConnection(),
-                    selectUserUuid);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID, connectorId);
-            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
-
-                if (resultSet.next()) {
-                    return resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_USER_ID);
-                } else {
-                    throw new UniqueIdResolverException("User not found.");
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new UniqueIdResolverException("Error while searching user.", e);
-        }
+    public List<UniqueUser> listUsers(int offset, int length) throws UniqueIdResolverException {
+        //TODO
+        return null;
     }
+
+    @Override
+    public UniqueGroup getUniqueGroup(String uniqueGroupId) throws UniqueIdResolverException, GroupNotFoundException {
+        return null;
+    }
+
+    @Override
+    public UniqueGroup getUniqueGroupFromConnectorGroupId(String connectorGroupId, String connectorId) throws
+            UniqueIdResolverException {
+        return null;
+    }
+
+//    @Override
+//    public String getConnectorUserId(String uniqueUserId, String connectorId) throws UniqueIdResolverException {
+//
+//        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+//            final String selectUserUuid = "SELECT CONNECTOR_USER_ID FROM IDM_ENTITY " +
+//                    "WHERE USER_UUID = :user_uuid; " +
+//                    "AND CONNECTOR_ID = :connector_id;";
+//
+//            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+//                    unitOfWork.getConnection(),
+//                    selectUserUuid);
+//            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+//            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID, connectorId);
+//            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
+//
+//                if (resultSet.next()) {
+//                    return resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_USER_ID);
+//                } else {
+//                    throw new UniqueIdResolverException("User not found.");
+//                }
+//            }
+//
+//        } catch (SQLException e) {
+//            throw new UniqueIdResolverException("Error while searching user.", e);
+//        }
+//    }
 
     @Override
     public void addUser(UniqueUser uniqueUser, String domainName) throws
@@ -191,9 +222,14 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void addUsers(Map<String, List<UserPartition>> connectedUsersMap) throws UniqueIdResolverException {
+    public void addUsers(List<UniqueUser> uniqueUsers, String domainName) throws UniqueIdResolverException {
 
     }
+//
+//    @Override
+//    public void addUsers(Map<String, List<UserPartition>> connectedUsersMap) throws UniqueIdResolverException {
+//
+//    }
 
     @Override
     public void updateUser(String uniqueUserId, Map<String, String> connectorUserIdMap) throws
@@ -238,79 +274,69 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
         }
     }
 
-    @Override
-    public Map<String, String> getConnectorUserIds(String userUniqueId) throws UniqueIdResolverException {
+//    @Override
+//    public Map<String, String> getConnectorUserIds(String userUniqueId) throws UniqueIdResolverException {
+//
+//        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+//            final String selectUserUuid = "SELECT CONNECTOR_ID, CONNECTOR_USER_ID FROM " +
+//                    "IDM_ENTITY WHERE USER_UUID = :user_uuid;";
+//
+//            Map<String, String> connectorUserIds = new HashMap<>();
+//            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+//                    unitOfWork.getConnection(),
+//                    selectUserUuid);
+//            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, userUniqueId);
+//            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
+//
+//                while (resultSet.next()) {
+//                    String connectorId = resultSet.getString(
+//                            UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_ID);
+//                    String connectorUserId = resultSet.getString(
+//                            UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_USER_ID);
+//                    connectorUserIds.put(connectorId, connectorUserId);
+//                }
+//            }
+//
+//            return connectorUserIds;
+//
+//        } catch (SQLException e) {
+//            throw new UniqueIdResolverException("Error while searching user.", e);
+//        }
+//    }
 
-        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUserUuid = "SELECT CONNECTOR_ID, CONNECTOR_USER_ID FROM " +
-                    "IDM_ENTITY WHERE USER_UUID = :user_uuid;";
-
-            Map<String, String> connectorUserIds = new HashMap<>();
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
-                    unitOfWork.getConnection(),
-                    selectUserUuid);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, userUniqueId);
-            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
-
-                while (resultSet.next()) {
-                    String connectorId = resultSet.getString(
-                            UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_ID);
-                    String connectorUserId = resultSet.getString(
-                            UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_USER_ID);
-                    connectorUserIds.put(connectorId, connectorUserId);
-                }
-            }
-
-            return connectorUserIds;
-
-        } catch (SQLException e) {
-            throw new UniqueIdResolverException("Error while searching user.", e);
-        }
-    }
-
-    @Override
-    public String getDomainNameFromUserUniqueId(String uniqueUserId) throws UniqueIdResolverException {
-
-        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            //TODO Do we need to limit 1 result?
-            final String selectUserUuid = "SELECT DOMAIN FROM " +
-                    "IDM_ENTITY WHERE USER_UUID = :user_uuid;";
-
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
-                    unitOfWork.getConnection(),
-                    selectUserUuid);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
-            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
-
-                if (resultSet.next()) {
-                    return resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.DOMAIN);
-                } else {
-                    throw new UniqueIdResolverException("User not found with the given user id.");
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new UniqueIdResolverException("Error while searching user.", e);
-        }
-    }
-
-    @Override
-    public String getDomainNameFromGroupUniqueId(String uniqueGroupId) throws UniqueIdResolverException {
-        return null;
-    }
+//    @Override
+//    public String getDomainNameFromUserUniqueId(String uniqueUserId) throws UniqueIdResolverException {
+//
+//        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+//            //TODO Do we need to limit 1 result?
+//            final String selectUserUuid = "SELECT DOMAIN FROM " +
+//                    "IDM_ENTITY WHERE USER_UUID = :user_uuid;";
+//
+//            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+//                    unitOfWork.getConnection(),
+//                    selectUserUuid);
+//            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+//            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
+//
+//                if (resultSet.next()) {
+//                    return resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.DOMAIN);
+//                } else {
+//                    throw new UniqueIdResolverException("User not found with the given user id.");
+//                }
+//            }
+//
+//        } catch (SQLException e) {
+//            throw new UniqueIdResolverException("Error while searching user.", e);
+//        }
+//    }
 
     @Override
-    public Map<String, String> getConnectorGroupIds(String uniqueGroupId) throws UniqueIdResolverException {
-        return null;
-    }
-
-    @Override
-    public void addGroup(String uniqueGroupId, List<ConnectedGroup> connectedGroups) throws UniqueIdResolverException {
+    public void addGroup(UniqueGroup uniqueGroup, String domainName) throws UniqueIdResolverException {
 
     }
 
     @Override
-    public void addGroups(Map<String, List<ConnectedGroup>> connectedGroupsMap) throws UniqueIdResolverException {
+    public void addGroups(List<UniqueGroup> uniqueGroups, String domainName) throws UniqueIdResolverException {
 
     }
 
@@ -326,12 +352,33 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public String getUniqueGroupId(String connectorGroupId, String connectorId) throws UniqueIdResolverException {
+    public boolean isGroupExists(String uniqueGroupId) throws UniqueIdResolverException {
+        return false;
+    }
+
+    @Override
+    public List<UniqueGroup> listGroups(int offset, int length) throws UniqueIdResolverException {
         return null;
     }
 
     @Override
-    public boolean isGroupExists(String uniqueGroupId) throws UniqueIdResolverException {
+    public List<UniqueGroup> getUniqueGroups(List<String> connectorGroupIds, String connectorId) throws
+            UniqueIdResolverException {
+        return null;
+    }
+
+    @Override
+    public List<UniqueGroup> getGroupsOfUser(String uniqueUserId) throws UniqueIdResolverException {
+        return null;
+    }
+
+    @Override
+    public List<UniqueUser> getUsersOfGroup(String uniqueGroupId) throws UniqueIdResolverException {
+        return null;
+    }
+
+    @Override
+    public boolean isUserInGroup(String uniqueUserId, String uniqueGroupId) throws UniqueIdResolverException {
         return false;
     }
 

@@ -17,12 +17,9 @@
 package org.wso2.carbon.identity.mgt.store.connector.inmemory;
 
 import org.wso2.carbon.identity.mgt.bean.Attribute;
-import org.wso2.carbon.identity.mgt.bean.Group;
-import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
-import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 
@@ -42,7 +39,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     private Map<String, List<Attribute>> userStoreMap = new HashMap<>();
 
     @Override
-    public void init(IdentityStoreConnectorConfig identityStoreConnectorConfig) throws IdentityStoreException {
+    public void init(IdentityStoreConnectorConfig identityStoreConnectorConfig) throws IdentityStoreConnectorException {
 
         this.identityStoreConnectorConfig = identityStoreConnectorConfig;
     }
@@ -54,7 +51,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public String getConnectorUserId(String attributeName, String attributeValue) throws UserNotFoundException,
-            IdentityStoreException {
+            IdentityStoreConnectorException {
 
         if (userStoreMap.size() == 0) {
             return null;
@@ -78,84 +75,74 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public int getUserCount() throws IdentityStoreException {
+    public List<String> listConnectorUserIds(String attributeName, String attributeValue, int offset, int length)
+            throws IdentityStoreConnectorException {
+        return null;
+    }
+
+    @Override
+    public List<String> listConnectorUserIdsByPattern(String attributeName, String filterPattern, int offset, int
+            length) throws IdentityStoreConnectorException {
+        return null;
+    }
+
+    @Override
+    public int getUserCount() throws IdentityStoreConnectorException {
         return 0;
     }
 
     @Override
-    public List<User.UserBuilder> getUserBuilderList(String attributeName, String filterPattern, int offset, int
-            length) throws IdentityStoreException {
-        return null;
-    }
-
-    @Override
-    public List<User.UserBuilder> getAllUserBuilderList(String attributeName, String filterPattern) throws
-            IdentityStoreException {
-        return null;
-    }
-
-    @Override
-    public List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreException {
+    public List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreConnectorException {
         return null;
     }
 
     @Override
     public List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames) throws
-            IdentityStoreException {
+            IdentityStoreConnectorException {
         return null;
     }
 
     @Override
-    public Group.GroupBuilder getGroupBuilder(String attributeName, String attributeValue) throws
-            GroupNotFoundException, IdentityStoreException {
-        return null;
-    }
-
-    @Override
-    public int getGroupCount() throws IdentityStoreException {
+    public int getGroupCount() throws IdentityStoreConnectorException {
         return 0;
     }
 
     @Override
     public String getConnectorGroupId(String attributeName, String attributeValue) throws GroupNotFoundException,
-            IdentityStoreException {
+            IdentityStoreConnectorException {
         return null;
     }
 
     @Override
-    public List<Group.GroupBuilder> getGroupBuilderList(String filterPattern, int offset, int length) throws
-            IdentityStoreException {
+    public List<String> listConnectorGroupIds(String attributeName, String attributeValue, int offset, int length)
+            throws IdentityStoreConnectorException {
         return null;
     }
 
     @Override
-    public List<Attribute> getGroupAttributeValues(String groupId) throws IdentityStoreException {
+    public List<String> listConnectorGroupIdsByPattern(String attributeName, String filterPattern, int offset, int
+            length) throws IdentityStoreConnectorException {
+        return null;
+    }
+
+    @Override
+    public List<Attribute> getGroupAttributeValues(String groupId) throws IdentityStoreConnectorException {
         return null;
     }
 
     @Override
     public List<Attribute> getGroupAttributeValues(String groupId, List<String> attributeNames) throws
-            IdentityStoreException {
+            IdentityStoreConnectorException {
         return null;
     }
 
     @Override
-    public List<Group.GroupBuilder> getGroupBuildersOfUser(String userID) throws IdentityStoreException {
-        return null;
-    }
-
-    @Override
-    public List<User.UserBuilder> getUserBuildersOfGroup(String groupID) throws IdentityStoreException {
-        return null;
-    }
-
-    @Override
-    public boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException {
+    public boolean isUserInGroup(String userId, String groupId) throws IdentityStoreConnectorException {
         return false;
     }
 
     @Override
-    public boolean isReadOnly() throws IdentityStoreException {
+    public boolean isReadOnly() throws IdentityStoreConnectorException {
         return false;
     }
 
@@ -173,78 +160,87 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     }
 
     @Override
-    public Map<String, String> addUsers(Map<String, List<Attribute>> attributes) throws IdentityStoreException {
+    public Map<String, String> addUsers(Map<String, List<Attribute>> attributes) throws
+            IdentityStoreConnectorException {
         return null;
     }
 
     @Override
     public String updateUserAttributes(String userIdentifier, List<Attribute> attributes) throws
-            IdentityStoreException {
+            IdentityStoreConnectorException {
         return null;
     }
 
     @Override
     public String updateUserAttributes(String userIdentifier, List<Attribute> attributesToAdd, List<Attribute>
-            attributesToRemove) throws IdentityStoreException {
+            attributesToRemove) throws IdentityStoreConnectorException {
         return null;
     }
 
     @Override
-    public void deleteUser(String userIdentifier) throws IdentityStoreException {
+    public void deleteUser(String userIdentifier) throws IdentityStoreConnectorException {
 
     }
 
     @Override
-    public void updateGroupsOfUser(String userIdentifier, List<String> groupIdentifiers) throws IdentityStoreException {
+    public void updateGroupsOfUser(String userIdentifier, List<String> groupIdentifiers) throws
+            IdentityStoreConnectorException {
 
     }
 
     @Override
     public void updateGroupsOfUser(String userIdentifier, List<String> groupIdentifiersToAdd, List<String>
-            groupIdentifiersToRemove) throws IdentityStoreException {
+            groupIdentifiersToRemove) throws IdentityStoreConnectorException {
 
     }
 
     @Override
-    public String addGroup(List<Attribute> attributes) throws IdentityStoreException {
+    public String addGroup(List<Attribute> attributes) throws IdentityStoreConnectorException {
         return null;
     }
 
     @Override
-    public Map<String, String> addGroups(Map<String, List<Attribute>> attributes) throws IdentityStoreException {
+    public Map<String, String> addGroups(Map<String, List<Attribute>> attributes) throws
+            IdentityStoreConnectorException {
         return null;
     }
 
     @Override
     public String updateGroupAttributes(String groupIdentifier, List<Attribute> attributes) throws
-            IdentityStoreException {
+            IdentityStoreConnectorException {
         return null;
     }
 
     @Override
     public String updateGroupAttributes(String groupIdentifier, List<Attribute> attributesToAdd, List<Attribute>
-            attributesToRemove) throws IdentityStoreException {
+            attributesToRemove) throws IdentityStoreConnectorException {
         return null;
     }
 
     @Override
-    public void deleteGroup(String groupIdentifier) throws IdentityStoreException {
+    public void deleteGroup(String groupIdentifier) throws IdentityStoreConnectorException {
 
     }
 
     @Override
-    public void updateUsersOfGroup(String groupIdentifier, List<String> userIdentifiers) throws IdentityStoreException {
+    public void updateUsersOfGroup(String groupIdentifier, List<String> userIdentifiers) throws
+            IdentityStoreConnectorException {
 
     }
 
     @Override
     public void updateUsersOfGroup(String groupIdentifier, List<String> userIdentifiersToAdd, List<String>
-            userIdentifiersToRemove) throws IdentityStoreException {
+            userIdentifiersToRemove) throws IdentityStoreConnectorException {
 
     }
 
     @Override
     public void removeAddedUsersInAFailure(List<String> connectorUserIds) throws IdentityStoreConnectorException {
+
+    }
+
+    @Override
+    public void removeAddedGroupsInAFailure(List<String> connectorGroupIds) throws IdentityStoreConnectorException {
 
     }
 }

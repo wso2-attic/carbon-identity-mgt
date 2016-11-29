@@ -29,17 +29,17 @@ import java.util.List;
  */
 public class GroupModel {
 
-    private List<Claim> groupClaims = new ArrayList<>();
+    private List<Claim> claims = new ArrayList<>();
 
-    public List<Claim> getGroupClaims() {
-        if (groupClaims == null || groupClaims.isEmpty()) {
+    public List<Claim> getClaims() {
+        if (claims == null || claims.isEmpty()) {
             return Collections.emptyList();
         }
-        return groupClaims;
+        return claims;
     }
 
-    public void setGroupClaims(List<Claim> groupClaims) {
-        this.groupClaims = groupClaims;
+    public void setClaims(List<Claim> claims) {
+        this.claims = claims;
     }
 
 }
