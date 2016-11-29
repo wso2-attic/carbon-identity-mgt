@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.identity.mgt.user;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,5 +57,21 @@ public class UniqueGroup {
 
     public void setGroupPartitions(List<GroupPartition> groupPartitions) {
         this.groupPartitions = groupPartitions;
+    }
+
+    public void addGroupPartitions(List<GroupPartition> groupPartitions) {
+
+        if (this.groupPartitions == null) {
+            this.groupPartitions = new ArrayList<>();
+        }
+        this.groupPartitions.addAll(groupPartitions);
+    }
+
+    public void addGroupPartition(GroupPartition groupPartition) {
+
+        if (this.groupPartitions == null) {
+            this.groupPartitions = new ArrayList<>();
+        }
+        this.groupPartitions.add(groupPartition);
     }
 }

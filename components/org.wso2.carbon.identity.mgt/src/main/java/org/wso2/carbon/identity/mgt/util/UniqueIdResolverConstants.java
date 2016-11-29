@@ -32,19 +32,24 @@ public class UniqueIdResolverConstants {
      * SQL Placeholders
      */
     public static final class SQLPlaceholders {
-        public static final String CONNECTOR_USER_ID = "connector_user_id";
+        public static final String CONNECTOR_ENTITY_ID = "connector_entity_id";
         public static final String CONNECTOR_ID = "connector_id";
+        public static final String ENTITY_UUID = "entity_uuid";
         public static final String USER_UUID = "user_uuid";
+        public static final String GROUP_UUID = "group_uuid";
         public static final String DOMAIN = "domain";
         public static final String CONNECTOR_TYPE = "connector_type";
+
+        public static final String LIMIT = "limit";
+        public static final String OFFSET = "offset";
     }
 
     /**
      * Database Column Names
      */
     public static final class DatabaseColumnNames {
-        public static final String USER_UUID = "USER_UUID";
-        public static final String CONNECTOR_USER_ID = "CONNECTOR_USER_ID";
+        public static final String ENTITY_UUID = "ENTITY_UUID";
+        public static final String CONNECTOR_ENTITY_ID = "CONNECTOR_ENTITY_ID";
         public static final String CONNECTOR_ID = "CONNECTOR_ID";
         public static final String CONNECTOR_TYPE = "CONNECTOR_TYPE";
         public static final String DOMAIN = "DOMAIN";
