@@ -9,6 +9,10 @@ public class UniqueIdResolverException extends Exception {
         super(message);
     }
 
+    public UniqueIdResolverException() {
+        super();
+    }
+
     public UniqueIdResolverException(String message, Throwable cause) {
         super(message, cause);
     }
