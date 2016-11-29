@@ -36,11 +36,8 @@ public class IdentityMgtConstants {
 
     //Config file names
     public static final String STORE_CONFIG_FILE = "store-config.yml";
-    public static final String PERMISSION_CONFIG_FILE = "permissions.yml";
-    public static final String CLAIM_STORE_FILE = "claim-store.yml";
     public static final String CLAIM_MAPPING_FILE = "claim-mapping.yml";
     public static final String DOMAIN_CONFIG_FILE = "domain-config.yml";
-    public static final String CONNECTOR_CONFIG_FILE = "connector-config.yml";
 
     public static final String UNIQUE_ID_RESOLVER_TYPE = "JDBCUniqueIdResolver";
 
@@ -48,16 +45,7 @@ public class IdentityMgtConstants {
 
     public static final String USERNAME_CLAIM = "http://wso2.org/claims/username";
 
-    // Delimiters
-    public static final String URL_SPLITTER = "/";
-
     public static Path getCarbonHomeDirectory() {
         return Paths.get(System.getProperty(CARBON_HOME));
     }
-
-    public static final String USER_USERNAME = "user-username";
-    public static final String USER_USERID = "user-userid";
-    public static final String GROUP_GROUPNAME = "group-groupname";
-    public static final String GROUP_GROUPID = "group-groupid";
-    public static final String GROUPS_USERID_IDENTITYSTOREID = "groups-userid-identitystoreid";
 }
