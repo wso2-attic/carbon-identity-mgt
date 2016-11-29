@@ -27,10 +27,13 @@ import org.osgi.framework.BundleContext;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.wso2.carbon.identity.mgt.bean.Group;
 import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
+import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+import org.wso2.carbon.identity.mgt.model.GroupModel;
 import org.wso2.carbon.identity.mgt.model.UserModel;
 import org.wso2.carbon.identity.mgt.service.RealmService;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
@@ -53,6 +56,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 public class IdentityStoreTest {
 
     private static List<User> users = new ArrayList<>();
+    private static List<Group> groups = new ArrayList<>();
 
     @Inject
     private BundleContext bundleContext;
@@ -156,10 +160,98 @@ public class IdentityStoreTest {
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         User user = realmService.getIdentityStore().getUser(new Claim("http://wso2.org/claims", "http://wso2" +
-                ".org/claims/username", "lucifer"), "PRIMARY");
+                ".org/claims/username", "chloe"), "PRIMARY");
 
         Assert.assertNotNull(user, "Failed to receive the user.");
 
         Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
+    }
+
+    @Test
+    public void testAddGroup() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        GroupModel groupModel = new GroupModel();
+        List<Claim> claims = Arrays.asList(
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "Angels"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Heaven"));
+        groupModel.setClaims(claims);
+        Group group = realmService.getIdentityStore().addGroup(groupModel);
+
+        Assert.assertNotNull(group, "Failed to receive the group.");
+        Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
+
+        groups.add(group);
+    }
+
+    @Test
+    public void testAddGroupByDomain() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        GroupModel groupModel = new GroupModel();
+        List<Claim> claims = Arrays.asList(
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "Demons"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Hell"));
+        groupModel.setClaims(claims);
+        Group group = realmService.getIdentityStore().addGroup(groupModel, "PRIMARY");
+
+        Assert.assertNotNull(group, "Failed to receive the group.");
+        Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
+
+        groups.add(group);
+    }
+
+    @Test(dependsOnMethods = {"testAddGroup"})
+    public void testGetGroupByUniqueGroupId() throws IdentityStoreException, GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        Group group = realmService.getIdentityStore().getGroup(groups.get(0).getUniqueGroupId());
+
+        Assert.assertNotNull(group, "Failed to receive the group.");
+    }
+
+    @Test(dependsOnMethods = {"testAddGroup"})
+    public void testGetGroupByUniqueGroupIdAndDomain() throws IdentityStoreException, GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        Group user = realmService.getIdentityStore().getGroup(groups.get(0).getUniqueGroupId(), "PRIMARY");
+
+        Assert.assertNotNull(user, "Failed to receive the group.");
+    }
+
+    @Test(dependsOnMethods = {"testAddGroup"})
+    public void testGetGroupByClaim() throws IdentityStoreException, GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        Group group = realmService.getIdentityStore().getGroup(new Claim("http://wso2.org/claims", "http://wso2" +
+                ".org/claims/groupName", "Angels"));
+
+        Assert.assertNotNull(group, "Failed to receive the group.");
+
+        Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
+    }
+
+    @Test(dependsOnMethods = {"testAddGroup"})
+    public void testGetGroupByClaimAndDomain() throws IdentityStoreException, GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        Group group = realmService.getIdentityStore().getGroup(new Claim("http://wso2.org/claims", "http://wso2" +
+                ".org/claims/groupName", "Demons"), "PRIMARY");
+
+        Assert.assertNotNull(group, "Failed to receive the group.");
+
+        Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
     }
 }
