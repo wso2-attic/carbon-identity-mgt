@@ -93,10 +93,9 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public User getUser(String username)
-            throws IdentityStoreException, UserNotFoundException {
+    public User getUser(String username) throws IdentityStoreException, UserNotFoundException {
 
-        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.USER_USERNAME)) {
+        if (CacheHelper.isCacheEnabled(cacheConfigs, CacheNames.USER_USERNAME)) {
             return identityStore.getUser(username);
         }
 
@@ -143,7 +142,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
 //    @Override
 //    public User getUserBuilder(String userId, Domain domain) throws IdentityStoreException {
 //
-//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.USER_USERID)) {
+//        if (CacheHelper.isCacheEnabled(cacheConfigs, CacheNames.USER_USERID)) {
 //            return identityStore.getUserBuilder(userId, domain);
 //        }
 //
@@ -189,7 +188,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public Group getGroup(String groupName) throws IdentityStoreException, GroupNotFoundException {
 
-        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUPNAME)) {
+        if (CacheHelper.isCacheEnabled(cacheConfigs, CacheNames.GROUP_GROUPNAME)) {
             return identityStore.getGroup(groupName);
         }
 
@@ -258,7 +257,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
 //    @Override
 //    public Group getGroupFromId(String groupId, String identityStoreId) throws IdentityStoreException {
 //
-//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUP_GROUPID)) {
+//        if (CacheHelper.isCacheEnabled(cacheConfigs, CacheNames.GROUP_GROUPID)) {
 //            return identityStore.getGroupFromId(groupId, identityStoreId);
 //        }
 //
@@ -280,7 +279,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public List<Group> getGroupsOfUser(String userName) throws IdentityStoreException {
 
-//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
+//        if (CacheHelper.isCacheEnabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
 //            return identityStore.getGroupsOfUser(userName);
 //        }
 //
@@ -320,7 +319,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public boolean isUserInGroup(String userId, String groupId) throws IdentityStoreException {
 //
-//        if (CacheHelper.isCacheDisabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
+//        if (CacheHelper.isCacheEnabled(cacheConfigs, CacheNames.GROUPS_USERID_IDENTITYSTOREID)) {
 //            return identityStore.isUserInGroup(userId, groupId);
 //        }
 //

@@ -71,18 +71,18 @@ public class CacheHelper {
     }
 
     /**
-     * Find whether the cache is disabled for the given cache name.
+     * Find whether the cache is enables for the given cache name.
      *
      * @param cacheConfigs Map of available cache configs.
      * @param cacheName    Name of the cache to be checked.
-     * @return True if cache is disabled.
+     * @return True if cache is not disabled.
      */
-    public static boolean isCacheDisabled(Map<String, CacheConfig> cacheConfigs, String cacheName) {
+    public static boolean isCacheEnabled(Map<String, CacheConfig> cacheConfigs, String cacheName) {
 
         // The default behaviour is there will be no cache config. So default value will be null for respective
         // cache config. Cache will be enabled by default and 'enabled' property will be true by default. (Even if it
         // is not present in the config.)
-        return cacheConfigs.get(cacheName) != null && !cacheConfigs.get(cacheName).isEnable();
+        return cacheConfigs.get(cacheName) == null || cacheConfigs.get(cacheName).isEnable();
     }
 
     /**

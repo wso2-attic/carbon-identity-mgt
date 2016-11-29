@@ -112,7 +112,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     @Reference(
             name = "IdentityStoreConnectorFactory",
             service = IdentityStoreConnectorFactory.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
+            cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unregisterIdentityStoreConnectorFactory"
     )
@@ -132,7 +132,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     @Reference(
             name = "CredentialStoreConnectorFactory",
             service = CredentialStoreConnectorFactory.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
+            cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unregisterCredentialStoreConnectorFactory"
     )
@@ -148,7 +148,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
                                                                      credentialStoreConnectorFactory) {
     }
 
-    //TODO make this MANDATORY
+    //TODO make this MANDATORY in M2 release
     @Reference(
             name = "AuthorizationStore",
             service = AuthorizationStore.class,
@@ -169,7 +169,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     @Reference(
             name = "UniqueIdResolverFactory",
             service = UniqueIdResolverFactory.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
+            cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC,
             unbind = "unregisterUniqueIdResolverFactory"
     )
