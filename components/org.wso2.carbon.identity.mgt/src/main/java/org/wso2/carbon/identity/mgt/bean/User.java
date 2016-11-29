@@ -209,13 +209,24 @@ public class User {
     }
 
     /**
+     * Change the identity store
+     * @param identityStore identity store instance
+     */
+    public void setIdentityStore(IdentityStore identityStore) {
+        this.identityStore = identityStore;
+    }
+
+    /**
      * Builder for the user bean.
      */
     public static class UserBuilder {
 
         private String userId;
+
         private String domainName;
+
         private IdentityStore identityStore;
+
         private AuthorizationStore authorizationStore;
 
         public String getUserId() {
