@@ -21,18 +21,18 @@ applications:
   dialectURI: "http://application1.com/"
   name: "Application1"
   mappings:
-   name : "http://wso2.org/claims/username"
-   role : "http://wso2.org/claims/role"
+   name: "http://wso2.org/claims/username"
+   role: "http://wso2.org/claims/role"
    mobile: "http://wso2.org/claims/mobile"
-   email : "http://wso2.org/claims/email"
+   email: "http://wso2.org/claims/email"
  -
-  dialectURI: "http://application1.com"
-  name: "Application1"
+  dialectURI: "http://application2.com"
+  name: "Application2"
   mappings:
-   sp1name : "http://wso2.org/claims/username"
-   sp1role : "http://wso2.org/claims/role"
+   sp1name: "http://wso2.org/claims/username"
+   sp1role: "http://wso2.org/claims/role"
    sp1mobile: "http://wso2.org/claims/mobile"
-   sp1email : "http://wso2.org/claims/email"
+   sp1email: "http://wso2.org/claims/email"
 
 #Configure claim dialect for identity providers
 identityProviders:
@@ -40,26 +40,26 @@ identityProviders:
   dialectURI: "http://identityprovider1.com"
   name: "IDP1"
   mappings:
-   idp-name : "http://wso2.org/claims/username"
-   idp-role : "http://wso2.org/claims/role"
+   idp-name: "http://wso2.org/claims/username"
+   idp-role: "http://wso2.org/claims/role"
    idp-mobile: "http://wso2.org/claims/mobile"
-   idp-email : "http://wso2.org/claims/email"
+   idp-email: "http://wso2.org/claims/email"
  -
-  dialectURI: "http://identityprovider1.com"
-  name: "IDP1"
+  dialectURI: "http://identityprovider2.com"
+  name: "IDP2"
   mappings:
-   idp-name : "http://wso2.org/claims/username"
-   idp-role : "http://wso2.org/claims/role"
+   idp-name: "http://wso2.org/claims/username"
+   idp-role: "http://wso2.org/claims/role"
    idp-mobile: "http://wso2.org/claims/mobile"
-   idp-email : "http://wso2.org/claims/email"
+   idp-email: "http://wso2.org/claims/email"
 
 #Configure claim dialect for other standards like SCIM, OIDC
 standards:
  -
-  dialectURI: "urn:scim:schemas:core:1.0"
+  dialectURI: ""
   name: "SCIM"
   mappings:
-   username : "http://wso2.org/claims/username"
-   role : "http://wso2.org/claims/role"
+   username: "http://wso2.org/claims/username"
+   role: "http://wso2.org/claims/role"
    mobile: "http://wso2.org/claims/mobile"
-   email : "http://wso2.org/claims/email"
+   email: "http://wso2.org/claims/email"

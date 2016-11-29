@@ -23,6 +23,7 @@ import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -30,23 +31,48 @@ import java.util.stream.Collectors;
  */
 public class ClaimMappingBuilder {
 
-    private static ClaimMappingBuilder instance = new ClaimMappingBuilder();
+    private ClaimMappingFile claimConfig = null;
+    //Map(ApplicationNAme, Map(External Claim : Root claim))
+    private Map<String, Map<String, String>> applicationMappings;
+    private Map<String, Map<String, String>> idpMappings;
+    private Map<String, Map<String, String>> standardMappings;
 
-    private ClaimMappingBuilder() {
+    private static class ClaimMappingBuilderHolder {
+        private static final ClaimMappingBuilder CLAIM_MAPPING_BUILDER;
 
+        static {
+            try {
+                CLAIM_MAPPING_BUILDER = new ClaimMappingBuilder();
+            } catch (CarbonSecurityConfigException e) {
+                throw new ExceptionInInitializerError(e);
+            }
+        }
     }
 
-    public static ClaimMappingBuilder getInstance() {
-        return instance;
-    }
-
-    private ClaimMappingFile buildClaimConfig() throws CarbonSecurityConfigException {
+    private ClaimMappingBuilder() throws CarbonSecurityConfigException {
 
         Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.CLAIM_MAPPING_FILE);
+        claimConfig = FileUtil.readConfigFile(file, ClaimMappingFile.class);
+        applicationMappings = claimConfig.getApplicationClaimMapping().stream().filter(Objects::nonNull)
+                .filter(claimMappingEntry -> !claimMappingEntry.getMappings().isEmpty()).collect(Collectors
+                        .toMap(claimMappingEntry -> claimMappingEntry.getName(),
+                                claimMappingEntry -> getMappings(claimMappingEntry)));
 
-        // claim-mapping.yml is a not a mandatory configuration file.
-        return FileUtil.readConfigFile(file, ClaimMappingFile.class);
+        idpMappings = claimConfig.getIdpMappings().stream().filter(Objects::nonNull)
+                .filter(claimMappingEntry -> !claimMappingEntry.getMappings().isEmpty()).collect(Collectors
+                        .toMap(claimMappingEntry -> claimMappingEntry.getName(),
+                                claimMappingEntry -> getMappings(claimMappingEntry)));
+
+        standardMappings = claimConfig.getStandardMappings().stream().filter(Objects::nonNull)
+                .filter(claimMappingEntry -> !claimMappingEntry.getMappings().isEmpty()).collect(Collectors
+                        .toMap(claimMappingEntry -> claimMappingEntry.getName(),
+                                claimMappingEntry -> getMappings(claimMappingEntry)));
+
+    }
+
+    public static ClaimMappingBuilder getInstance() throws CarbonSecurityConfigException {
+        return ClaimMappingBuilderHolder.CLAIM_MAPPING_BUILDER;
     }
 
     /**
@@ -56,9 +82,8 @@ public class ClaimMappingBuilder {
      * @return Map(application claim : root claim URI)
      * @throws CarbonSecurityConfigException
      */
-    public Map<String, String> getApplicationClaimMappings(String applicationName)
-            throws CarbonSecurityConfigException {
-        return getMappings(applicationName);
+    public Map<String, String> getApplicationClaimMapping(String applicationName) throws CarbonSecurityConfigException {
+        return applicationMappings.get(applicationName);
 
     }
 
@@ -69,8 +94,8 @@ public class ClaimMappingBuilder {
      * @return Map(idp claim : root claim URI)
      * @throws CarbonSecurityConfigException
      */
-    public Map<String, String> getIdpClaimMappings(String idpName) throws CarbonSecurityConfigException {
-        return getMappings(idpName);
+    public Map<String, String> getIdpClaimMapping(String idpName) throws CarbonSecurityConfigException {
+        return idpMappings.get(idpName);
 
     }
 
@@ -81,25 +106,21 @@ public class ClaimMappingBuilder {
      * @return Map(standard claim : root claim URI)
      * @throws CarbonSecurityConfigException
      */
-    public Map<String, String> getStandardClaimMappings(String standardName) throws CarbonSecurityConfigException {
-        return getMappings(standardName);
+    public Map<String, String> getStandardClaimMapping(String standardName) throws CarbonSecurityConfigException {
+        return standardMappings.get(standardName);
 
     }
 
-    private Map<String, String> getMappings(String appName) throws CarbonSecurityConfigException {
-        ClaimMappingFile claimMappingFile = buildClaimConfig();
-        ClaimMappingEntry claimMappings = claimMappingFile.getApplicationClaimMapping(appName);
-
-        if (claimMappings == null) {
-            throw new CarbonSecurityConfigException("Invalid claim configuration found.");
-        }
-
-        return claimMappings.getMappings().entrySet().stream().collect(Collectors
-                .toMap(p -> appendDialect(claimMappings.getMappingDialectURI(), p.getKey()), Map.Entry::getValue));
+    private Map<String, String> getMappings(ClaimMappingEntry claimMappingEntry) {
+        return claimMappingEntry.getMappings().entrySet().stream().collect(Collectors
+                .toMap(p -> appendDialect(claimMappingEntry.getMappingDialectURI(), p.getKey()), Map.Entry::getValue));
 
     }
 
     private String appendDialect(String dialect, String claim) {
+        if (dialect.isEmpty()) {
+            return claim;
+        }
         //In case claim dialect in not followed by '/', add it.
         if (!dialect.endsWith("/")) {
             dialect = dialect + "/";
