@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * InMemory Identity Store Connector.
@@ -79,7 +80,16 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public List<String> listConnectorUserIds(String attributeName, String attributeValue, int offset, int length)
             throws IdentityStoreConnectorException {
-        return null;
+
+        return userStoreMap.entrySet().stream()
+                .filter(entry ->
+                        entry.getValue().stream()
+                                .filter(attribute -> attribute.getAttributeName().equals(attributeName) && attribute
+                                        .getAttributeValue().equals(attributeValue))
+                                .findAny().isPresent()
+                )
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -183,7 +193,14 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public Map<String, String> addUsers(Map<String, List<Attribute>> attributes) throws
             IdentityStoreConnectorException {
-        return null;
+        Map<String, String> userIds = new HashMap<>();
+        for (Map.Entry<String, List<Attribute>> entry : attributes.entrySet()) {
+            String userId = UUID.randomUUID().toString();
+            userStoreMap.put(userId, entry.getValue());
+            userIds.put(entry.getKey(), userId);
+        }
+
+        return userIds;
     }
 
     @Override
