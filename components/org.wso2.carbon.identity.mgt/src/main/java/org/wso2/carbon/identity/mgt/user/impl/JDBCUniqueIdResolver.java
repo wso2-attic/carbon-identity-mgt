@@ -509,6 +509,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                         group.addGroupPartition(groupPartition);
                     } else {
                         group = new UniqueGroup();
+                        group.setUniqueGroupId(groupUUID);
                         group.addGroupPartition(groupPartition);
                         groupMap.put(groupUUID, group);
                     }
