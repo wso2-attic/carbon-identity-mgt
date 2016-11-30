@@ -57,6 +57,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.security.auth.callback.Callback;
@@ -73,7 +74,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private static final Logger log = LoggerFactory.getLogger(IdentityStoreImpl.class);
 
-    private Map<String, Domain> domainNameToDomainMap = new HashMap<>();
+    private Map<String, Domain> domainNameToDomainMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     private SortedSet<Domain> sortedDomains = new TreeSet<>((d1, d2) -> {
 
@@ -96,7 +97,9 @@ public class IdentityStoreImpl implements IdentityStore {
         }
 
         sortedDomains.addAll(domains);
-        domainNameToDomainMap = domains.stream().collect(Collectors.toMap(Domain::getDomainName, domain -> domain));
+        domainNameToDomainMap = domains.stream()
+                .filter(domain -> !isNullOrEmpty(domain.getDomainName()))
+                .collect(Collectors.toMap(Domain::getDomainName, domain -> domain));
 
         if (log.isDebugEnabled()) {
             log.debug("Identity store successfully initialized.");
