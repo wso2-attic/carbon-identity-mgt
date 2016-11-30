@@ -55,7 +55,13 @@ public class DomainConfigBuilder {
         return instance;
     }
 
-    public List<DomainConfig> getDomainConfigs(Map<String, StoreConnectorConfig> connectorIdToStoreConnectorConfigMap)
+    /**
+     *
+     * @param storeConnectorConfigMap
+     * @return
+     * @throws CarbonSecurityConfigException
+     */
+    public List<DomainConfig> getDomainConfigs(Map<String, StoreConnectorConfig> storeConnectorConfigMap)
             throws CarbonSecurityConfigException {
 
         DomainConfigFile domainConfigFile = buildDomainConfig();
@@ -65,91 +71,102 @@ public class DomainConfigBuilder {
         }
 
         return domainConfigFile.getDomains().stream()
+                //TODO remove
                 .filter(Objects::nonNull)
+                //TODO remove
                 .filter(domainConfigEntry -> !StringUtils.isNullOrEmpty(domainConfigEntry.getName()))
+                .map(domainConfigEntry -> getDomainConfig(storeConnectorConfigMap, domainConfigEntry))
+                .collect(Collectors.toList());
+    }
 
-                .map(domainConfigEntry -> {
-                    DomainConfig domainConfig = new DomainConfig();
-                    domainConfig.setName(domainConfigEntry.getName());
-                    domainConfig.setPriority(domainConfigEntry.getPriority());
+    private DomainConfig getDomainConfig(Map<String, StoreConnectorConfig> connectorIdToStoreConnectorConfigMap,
+                                         DomainConfigEntry domainConfigEntry) {
 
-                    UniqueIdResolverConfigEntry uniqueIdResolverConfigEntry = domainConfigEntry.getUniqueIdResolver();
-                    if (uniqueIdResolverConfigEntry == null || StringUtils.isNullOrEmpty(uniqueIdResolverConfigEntry
-                            .getType())) {
-                        domainConfig.setUniqueIdResolverConfig(new UniqueIdResolverConfig(UNIQUE_ID_RESOLVER_TYPE,
-                                Collections.emptyMap()));
-                    } else {
-                        domainConfig.setUniqueIdResolverConfig((new UniqueIdResolverConfig
-                                (uniqueIdResolverConfigEntry.getType(), uniqueIdResolverConfigEntry.getProperties())));
-                    }
+        DomainConfig domainConfig = new DomainConfig();
+        domainConfig.setName(domainConfigEntry.getName());
+        domainConfig.setPriority(domainConfigEntry.getPriority());
 
-                    if (!domainConfigEntry.getIdentityStoreConnectors().isEmpty()) {
+        UniqueIdResolverConfigEntry uniqueIdResolverConfigEntry = domainConfigEntry.getUniqueIdResolver();
+        if (uniqueIdResolverConfigEntry == null || StringUtils.isNullOrEmpty(uniqueIdResolverConfigEntry
+                .getType())) {
+            domainConfig.setUniqueIdResolverConfig(new UniqueIdResolverConfig(UNIQUE_ID_RESOLVER_TYPE,
+                    Collections.emptyMap()));
+        } else {
+            domainConfig.setUniqueIdResolverConfig((new UniqueIdResolverConfig
+                    (uniqueIdResolverConfigEntry.getType(), uniqueIdResolverConfigEntry.getProperties())));
+        }
 
-                        List<IdentityStoreConnectorConfig> identityStoreConnectorConfigs = new ArrayList<>();
-                        List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
+        if (!domainConfigEntry.getIdentityStoreConnectors().isEmpty()) {
 
-                        domainConfigEntry.getIdentityStoreConnectors().stream()
-                                .filter(Objects::nonNull)
-                                .filter(domainStoreConnectorEntry ->
-                                        !StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorId()))
+            List<IdentityStoreConnectorConfig> identityStoreConnectorConfigs = new ArrayList<>();
+            List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
 
-                                .forEach(domainStoreConnectorEntry -> {
-                                    if (StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorType())) {
+            domainConfigEntry.getIdentityStoreConnectors().stream()
+                    //TODO remove
+                    .filter(Objects::nonNull)
+                    .filter(domainStoreConnectorEntry ->
+                            //TODO remove
+                            !StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorId()))
 
-                                        StoreConnectorConfig storeConnectorConfig =
-                                                connectorIdToStoreConnectorConfigMap.get(domainStoreConnectorEntry
-                                                        .getConnectorId());
-                                        if (storeConnectorConfig == null || !(storeConnectorConfig instanceof
-                                                IdentityStoreConnectorConfig)) {
-                                            return;
-                                        }
-                                        identityStoreConnectorConfigs.add((IdentityStoreConnectorConfig)
-                                                storeConnectorConfig);
-                                    } else {
+                    .forEach(domainStoreConnectorEntry -> {
+                        //TODO remove
+                        if (StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorType())) {
 
-                                        identityStoreConnectorConfigs.add(new IdentityStoreConnectorConfig(
-                                                domainStoreConnectorEntry.getConnectorId(), domainStoreConnectorEntry
-                                                .getConnectorType(), domainStoreConnectorEntry.getProperties()));
-                                    }
+                            StoreConnectorConfig storeConnectorConfig =
+                                    connectorIdToStoreConnectorConfigMap.get(domainStoreConnectorEntry
+                                            .getConnectorId());
+                            if (storeConnectorConfig == null || !(storeConnectorConfig instanceof
+                                    IdentityStoreConnectorConfig)) {
+                                return;
+                            }
+                            identityStoreConnectorConfigs.add((IdentityStoreConnectorConfig)
+                                    storeConnectorConfig);
+                        } else {
 
-                                    metaClaimMappings.addAll(getMetaClaimMappings(domainStoreConnectorEntry
-                                            .getConnectorId(), domainStoreConnectorEntry.getAttributeMappings()));
-                                });
-                        domainConfig.setIdentityStoreConnectorConfigs(identityStoreConnectorConfigs);
-                        domainConfig.setMetaClaimMappings(metaClaimMappings);
-                    }
+                            identityStoreConnectorConfigs.add(new IdentityStoreConnectorConfig(
+                                    domainStoreConnectorEntry.getConnectorId(), domainStoreConnectorEntry
+                                    .getConnectorType(), domainStoreConnectorEntry.getProperties()));
+                        }
 
-                    if (!domainConfigEntry.getIdentityStoreConnectors().isEmpty()) {
+                        metaClaimMappings.addAll(getMetaClaimMappings(domainStoreConnectorEntry
+                                .getConnectorId(), domainStoreConnectorEntry.getAttributeMappings()));
+                    });
+            domainConfig.setIdentityStoreConnectorConfigs(identityStoreConnectorConfigs);
+            domainConfig.setMetaClaimMappings(metaClaimMappings);
+        }
 
-                        List<CredentialStoreConnectorConfig> credentialStoreConnectorConfigs = new ArrayList<>();
+        if (!domainConfigEntry.getCredentialStoreConnectors().isEmpty()) {
 
-                        domainConfigEntry.getCredentialStoreConnectors()
-                                .stream()
-                                .filter(Objects::nonNull)
-                                .filter(domainStoreConnectorEntry -> !StringUtils
-                                        .isNullOrEmpty(domainStoreConnectorEntry.getConnectorId()))
+            List<CredentialStoreConnectorConfig> credentialStoreConnectorConfigs = new ArrayList<>();
 
-                                .forEach(domainStoreConnectorEntry -> {
-                                    if (StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorType())) {
-                                        StoreConnectorConfig storeConnectorConfig =
-                                                connectorIdToStoreConnectorConfigMap.get(domainStoreConnectorEntry
-                                                        .getConnectorId());
-                                        if (storeConnectorConfig == null || !(storeConnectorConfig instanceof
-                                                CredentialStoreConnectorConfig)) {
-                                            return;
-                                        }
-                                        credentialStoreConnectorConfigs.add((CredentialStoreConnectorConfig)
-                                                storeConnectorConfig);
-                                    } else {
-                                        credentialStoreConnectorConfigs.add(new CredentialStoreConnectorConfig(
-                                                domainStoreConnectorEntry.getConnectorId(), domainStoreConnectorEntry
-                                                .getConnectorType(), domainStoreConnectorEntry.getProperties()));
-                                    }
-                                });
-                        domainConfig.setCredentialStoreConnectorConfigs(credentialStoreConnectorConfigs);
-                    }
-                    return domainConfig;
-                }).collect(Collectors.toList());
+            domainConfigEntry.getCredentialStoreConnectors()
+                    .stream()
+                    //TODO remove
+                    .filter(Objects::nonNull)
+                    .filter(domainStoreConnectorEntry -> !StringUtils
+                            .isNullOrEmpty(domainStoreConnectorEntry.getConnectorId()))
+
+                    .forEach(domainStoreConnectorEntry -> {
+                        //TODO remove
+                        if (StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorType())) {
+                            StoreConnectorConfig storeConnectorConfig =
+                                    connectorIdToStoreConnectorConfigMap.get(domainStoreConnectorEntry
+                                            .getConnectorId());
+                            if (storeConnectorConfig == null || !(storeConnectorConfig instanceof
+                                    CredentialStoreConnectorConfig)) {
+                                return;
+                            }
+                            credentialStoreConnectorConfigs.add((CredentialStoreConnectorConfig)
+                                    storeConnectorConfig);
+                        } else {
+                            credentialStoreConnectorConfigs.add(new CredentialStoreConnectorConfig(
+                                    domainStoreConnectorEntry.getConnectorId(), domainStoreConnectorEntry
+                                    .getConnectorType(), domainStoreConnectorEntry.getProperties()));
+                        }
+                    });
+            domainConfig.setCredentialStoreConnectorConfigs(credentialStoreConnectorConfigs);
+        }
+        return domainConfig;
     }
 
     private DomainConfigFile buildDomainConfig() throws CarbonSecurityConfigException {
