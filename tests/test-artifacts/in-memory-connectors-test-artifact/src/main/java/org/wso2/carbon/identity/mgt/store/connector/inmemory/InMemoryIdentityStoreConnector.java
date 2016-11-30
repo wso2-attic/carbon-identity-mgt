@@ -23,9 +23,11 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -114,13 +116,26 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public List<Attribute> getUserAttributeValues(String userID) throws IdentityStoreConnectorException {
-        return null;
+
+        return userStoreMap.get(userID);
     }
 
     @Override
     public List<Attribute> getUserAttributeValues(String userID, List<String> attributeNames) throws
             IdentityStoreConnectorException {
-        return null;
+
+        if (attributeNames.isEmpty() || userStoreMap.get(userID) == null) {
+            return Collections.emptyList();
+        }
+
+        return userStoreMap.get(userID).stream()
+                .filter(attribute ->
+                        attributeNames.stream()
+                                .filter(Objects::nonNull)
+                                .filter(attributeName -> attribute.getAttributeName().equals(attributeName))
+                                .findAny()
+                                .isPresent()
+                ).collect(Collectors.toList());
     }
 
     @Override
@@ -185,13 +200,26 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public List<Attribute> getGroupAttributeValues(String groupId) throws IdentityStoreConnectorException {
-        return null;
+
+        return groupStoreMap.get(groupId);
     }
 
     @Override
     public List<Attribute> getGroupAttributeValues(String groupId, List<String> attributeNames) throws
             IdentityStoreConnectorException {
-        return null;
+
+        if (attributeNames.isEmpty() || groupStoreMap.get(groupId) == null) {
+            return Collections.emptyList();
+        }
+
+        return groupStoreMap.get(groupId).stream()
+                .filter(attribute ->
+                        attributeNames.stream()
+                                .filter(Objects::nonNull)
+                                .filter(attributeName -> attribute.getAttributeName().equals(attributeName))
+                                .findAny()
+                                .isPresent()
+                ).collect(Collectors.toList());
     }
 
     @Override
@@ -233,12 +261,25 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public String updateUserAttributes(String userIdentifier, List<Attribute> attributes) throws
             IdentityStoreConnectorException {
-        return null;
+
+        userStoreMap.put(userIdentifier, attributes);
+        return userIdentifier;
     }
 
     @Override
     public String updateUserAttributes(String userIdentifier, List<Attribute> attributesToAdd, List<Attribute>
             attributesToRemove) throws IdentityStoreConnectorException {
+
+//        if ((attributesToAdd.isEmpty() && attributesToRemove.isEmpty()) || userStoreMap.get(userIdentifier) == null) {
+//            return userIdentifier;
+//        }
+//
+//        List<Attribute> attributes = userStoreMap.get(userIdentifier);
+//
+//        if (attributesToAdd.isEmpty()) {
+//            attributes.addAll(attributes.stream())
+//        }
+//
         return null;
     }
 

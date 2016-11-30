@@ -641,7 +641,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUsersOfGroup = "SELECT ID " +
                     "FROM IDM_USER_GROUP_MAPPING " +
-                    "WHERE GROUP_UUID = :group_uuid; AND USER_UUID = :user_uuid; )";
+                    "WHERE GROUP_UUID = :group_uuid; AND USER_UUID = :user_uuid;";
 
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),

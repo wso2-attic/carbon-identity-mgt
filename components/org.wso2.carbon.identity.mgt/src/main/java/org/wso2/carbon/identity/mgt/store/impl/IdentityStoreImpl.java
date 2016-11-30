@@ -2333,7 +2333,7 @@ public class IdentityStoreImpl implements IdentityStore {
                     metaClaimMappings);
 
             Map<String, String> connectorIdToConnectorUserIdMap = connectorIdToAttributesMap.keySet().stream()
-                    .collect(Collectors.toMap(connectorId -> connectorId, connectorId -> null));
+                    .collect(Collectors.toMap(connectorId -> connectorId, connectorId -> ""));
 
             connectorIdToConnectorUserIdMap.putAll(existingConnectorIdToConnectorUserIdMap);
 
@@ -2694,7 +2694,7 @@ public class IdentityStoreImpl implements IdentityStore {
                     metaClaimMappings);
 
             Map<String, String> connectorIdToConnectorGroupIdMap = connectorIdToAttributesMap.keySet().stream()
-                    .collect(Collectors.toMap(connectorId -> connectorId, connectorId -> null));
+                    .collect(Collectors.toMap(connectorId -> connectorId, connectorId -> ""));
 
             connectorIdToConnectorGroupIdMap.putAll(existingConnectorIdToConnectorGroupIdMap);
 
@@ -2967,7 +2967,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         if (!connectorIdToAttributesMap.isEmpty()) {
             connectorIdToAttributesMap.entrySet().stream()
-                    .filter(entry -> entry.getValue() == null || entry.getValue().isEmpty())
+                    .filter(entry -> entry.getValue() != null && !entry.getValue().isEmpty())
                     .forEach(entry -> {
                                 entry.getValue().stream()
                                         .forEach(attribute -> {
@@ -3029,7 +3029,7 @@ public class IdentityStoreImpl implements IdentityStore {
         if (!metaClaims.isEmpty()) {
             metaClaims.stream()
                     .filter(Objects::nonNull)
-                    .filter(metaClaim -> isNullOrEmpty(metaClaim.getClaimUri()))
+                    .filter(metaClaim -> !isNullOrEmpty(metaClaim.getClaimUri()))
                     .forEach(metaClaim -> {
                                 Optional<MetaClaimMapping> optional = metaClaimMappings.stream()
                                         .filter(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimUri()
