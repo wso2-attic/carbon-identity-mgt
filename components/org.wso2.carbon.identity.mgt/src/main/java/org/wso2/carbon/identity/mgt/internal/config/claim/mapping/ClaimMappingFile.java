@@ -16,51 +16,52 @@
 
 package org.wso2.carbon.identity.mgt.internal.config.claim.mapping;
 
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Claim Mapping File.
  */
 public class ClaimMappingFile {
 
-    //Map<travelocity, Entry>
-    private Map<String, ClaimMappingEntry> applicationMappings;
-    private Map<String, ClaimMappingEntry> idpMappings;
-    private Map<String, ClaimMappingEntry> standardMappings;
+    //List<Entry>
+    private List<ClaimMappingEntry> applications;
+    private List<ClaimMappingEntry> identityProviders;
+    private List<ClaimMappingEntry> standards;
 
-    public ClaimMappingEntry getApplicationClaimMapping(String name) {
+    public List<ClaimMappingEntry> getApplicationClaimMapping() {
 
-        if (applicationMappings == null) {
-            return null;
+        if (applications == null) {
+            return Collections.emptyList();
         }
-        return applicationMappings.get(name);
+        return applications;
     }
 
-    public void setApplicationClaimMappings(Map<String, ClaimMappingEntry> claims) {
-        this.applicationMappings = claims;
+    public void setApplicationClaimMappings(List<ClaimMappingEntry> claims) {
+        this.applications = claims;
     }
 
-    public ClaimMappingEntry getIdpMappings(String name) {
+    public List<ClaimMappingEntry> getIdpMappings() {
 
-        if (idpMappings == null) {
-            return null;
+        if (identityProviders == null) {
+            return Collections.emptyList();
         }
-        return idpMappings.get(name);
+        return identityProviders;
     }
 
-    public void setIdpMappings(Map<String, ClaimMappingEntry> claims) {
-        this.idpMappings = claims;
+    public void setIdpMappings(List<ClaimMappingEntry> claims) {
+        this.identityProviders = claims;
     }
 
-    public ClaimMappingEntry getStandardMappings(String name) {
+    public List<ClaimMappingEntry> getStandardMappings() {
 
-        if (standardMappings == null) {
-            return null;
+        if (standards == null) {
+            return Collections.emptyList();
         }
-        return standardMappings.get(name);
+        return standards;
     }
 
-    public void setStandardMappings(Map<String, ClaimMappingEntry> claims) {
-        this.standardMappings = claims;
+    public void setStandardMappings(List<ClaimMappingEntry> claims) {
+        this.standards = claims;
     }
 }

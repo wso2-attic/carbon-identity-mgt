@@ -1431,7 +1431,7 @@ public class IdentityStoreImpl implements IdentityStore {
     public AuthenticationContext authenticate(Claim claim, Callback[] credentials, String domainName)
             throws AuthenticationFailure {
 
-        if (claim == null || isNullOrEmpty(claim.getValue()) || (credentials != null && credentials.length > 0)) {
+        if (claim == null || isNullOrEmpty(claim.getValue()) || credentials == null || credentials.length == 0) {
             throw new AuthenticationFailure("Invalid user credentials.");
         }
 

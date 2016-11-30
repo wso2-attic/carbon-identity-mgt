@@ -46,7 +46,9 @@ import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.internal.config.connector.ConnectorConfigBuilder;
 import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfigBuilder;
 import org.wso2.carbon.identity.mgt.internal.config.store.StoreConfigBuilder;
+import org.wso2.carbon.identity.mgt.service.ClaimResolvingService;
 import org.wso2.carbon.identity.mgt.service.RealmService;
+import org.wso2.carbon.identity.mgt.service.impl.ClaimResolvingServiceImpl;
 import org.wso2.carbon.identity.mgt.service.impl.RealmServiceImpl;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
@@ -86,6 +88,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     private static final Logger log = LoggerFactory.getLogger(IdentityMgtComponent.class);
 
     private ServiceRegistration realmServiceRegistration;
+    private ServiceRegistration<ClaimResolvingService> claimResolvingServiceRegistration;
 
     @Activate
     public void registerCarbonIdentityMgtProvider(BundleContext bundleContext) {
@@ -270,6 +273,14 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
             realmServiceRegistration = bundleContext.registerService(RealmService.class, realmService, null);
             log.info("Realm service registered successfully.");
+
+            // Register the claim resolving service.
+            ClaimResolvingServiceImpl claimResolvingService = new ClaimResolvingServiceImpl();
+            identityMgtDataHolder.setClaimResolvingService(claimResolvingService);
+
+            claimResolvingServiceRegistration = bundleContext
+                    .registerService(ClaimResolvingService.class, claimResolvingService, null);
+            log.info("Claim resolving service registered successfully.");
 
             log.info("Carbon-Security bundle activated successfully.");
 
