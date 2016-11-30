@@ -11,26 +11,29 @@ import javax.ws.rs.core.Response;
 public class ExternalclaimsApiServiceImpl extends ExternalclaimsApiService {
     @Override
     public Response externalclaimsDelete(String dialectURI
-, String claimURI
- ) throws NotFoundException {
+            , String claimURI
+    ) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
+
     @Override
     public Response externalclaimsGet(String dialect
- ) throws NotFoundException {
+    ) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
+
     @Override
     public Response externalclaimsPatch(ExternalClaimDTO externalclaim
- ) throws NotFoundException {
+    ) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
+
     @Override
     public Response externalclaimsPost(ExternalClaimDTO externalclaim
- ) throws NotFoundException {
+    ) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }

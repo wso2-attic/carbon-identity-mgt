@@ -12,24 +12,27 @@ import javax.ws.rs.core.Response;
 public class DialectsApiServiceImpl extends DialectsApiService {
     @Override
     public Response dialectsDelete(String claim
- ) throws NotFoundException {
+    ) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
+
     @Override
     public Response dialectsGet() throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
+
     @Override
     public Response dialectsPost(ClaimDialectDTO claimDialect
- ) throws NotFoundException {
+    ) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
+
     @Override
     public Response dialectsPut(PairOfClaimsDTO claimPair
- ) throws NotFoundException {
+    ) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }

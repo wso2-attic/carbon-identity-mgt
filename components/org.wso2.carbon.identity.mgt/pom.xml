@@ -17,8 +17,9 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.wso2.carbon.identity.mgt</groupId>
@@ -48,6 +49,15 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -73,8 +83,37 @@
             <artifactId>org.wso2.carbon.caching</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.security.caas</groupId>
+            <artifactId>org.wso2.carbon.security.caas</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.orbit.org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.datasources</groupId>
+            <artifactId>org.wso2.carbon.datasource.core</artifactId>
+        </dependency>
+        <!-- Dependencies for unit tests -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-testng</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -100,13 +139,17 @@
             net.minidev.asm.*;version="${asm.package.version.range}",
             org.wso2.carbon.kernel.*,
             org.wso2.carbon.messaging.*,
-            org.wso2.carbon.caching.*
+            org.wso2.carbon.caching.*,
+            org.wso2.carbon.security.caas.user.core.store.*,
+            org.wso2.carbon.security.caas.user.core.bean.*,
+            org.wso2.carbon.security.caas.user.core.exception.*,
+            org.wso2.carbon.datasource.core.*;version="${org.wso2.carbon.datasource.version.range}",
         </import.package>
 
         <carbon.component>
             startup.listener;
             componentName="wso2-carbon-identity-mgt";
-            requiredService="org.wso2.carbon.identity.mgt.store.connector.AuthorizationStoreConnectorFactory,
+            requiredService="
             org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory,
             org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory"
         </carbon.component>
@@ -124,6 +167,7 @@
         <com.nimbusds.package.import.version.range>[2.26.1, 2.27)</com.nimbusds.package.import.version.range>
         <asm.package.version.range>[1.0.2, 2.0.0)</asm.package.version.range>
         <org.wso2.carbon.security.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.security.version.range>
+        <org.wso2.carbon.datasource.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.datasource.version.range>
 
         <!--Logging API version range-->
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>

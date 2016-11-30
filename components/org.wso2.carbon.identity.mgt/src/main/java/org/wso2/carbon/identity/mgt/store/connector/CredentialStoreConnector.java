@@ -18,8 +18,10 @@ package org.wso2.carbon.identity.mgt.store.connector;
 
 import org.wso2.carbon.identity.mgt.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
-import org.wso2.carbon.identity.mgt.exception.CredentialStoreException;
+import org.wso2.carbon.identity.mgt.exception.CredentialStoreConnectorException;
 
+import java.util.List;
+import java.util.Map;
 import javax.security.auth.callback.Callback;
 
 /**
@@ -29,14 +31,16 @@ public interface CredentialStoreConnector {
 
     /**
      * Initialize the Credential store connector.
+     *
      * @param credentialStoreConnectorConfig Credential store configurations for this connector.
-     * @throws CredentialStoreException Credential Store Exception.
+     * @throws CredentialStoreConnectorException Credential Store Exception.
      */
     void init(CredentialStoreConnectorConfig credentialStoreConnectorConfig)
-            throws CredentialStoreException;
+            throws CredentialStoreConnectorException;
 
     /**
      * Get the Id of this CredentialStoreConnector.
+     *
      * @return Id of the CredentialStoreConnector.
      */
     String getCredentialStoreConnectorId();
@@ -45,20 +49,32 @@ public interface CredentialStoreConnector {
      * Authenticate user using callbacks. Throws {@link AuthenticationFailure} if authentication is not successful.
      *
      * @param callbacks Callbacks to get the user attributes.
-     * @throws CredentialStoreException Credential Store Exception.
-     * @throws AuthenticationFailure Authentication failure.
+     * @param connectorUserId connector user id
+     * @throws CredentialStoreConnectorException Credential Store Exception.
+     * @throws AuthenticationFailure    Authentication failure.
      */
-    void authenticate(Callback[] callbacks) throws CredentialStoreException, AuthenticationFailure;
+    void authenticate(String connectorUserId, Callback[] callbacks) throws CredentialStoreConnectorException,
+            AuthenticationFailure;
 
     /**
      * Checks whether this connector can handle the given callbacks.
+     *
      * @param callbacks Array of callbacks.
      * @return True if there are all of the callbacks required for this connector.
      */
     boolean canHandle(Callback[] callbacks);
 
     /**
+     * Checks whether this connector can store the given callbacks.
+     *
+     * @param callbacks Array of callbacks.
+     * @return True if there are all of the callbacks required for this connector.
+     */
+    boolean canStore(Callback[] callbacks);
+
+    /**
      * Get the Credential store config.
+     *
      * @return CredentialStoreConnectorConfig.
      */
     CredentialStoreConnectorConfig getCredentialStoreConfig();
@@ -66,44 +82,54 @@ public interface CredentialStoreConnector {
     /**
      * Add user credentials.
      *
-     * @param callbacks  Array of callbacks.
+     * @param callbacks Array of callbacks.
      * @return connector user id
-     * @throws CredentialStoreException Credential Store Exception.
+     * @throws CredentialStoreConnectorException Credential Store Exception.
      */
-    String addCredential(Callback[] callbacks) throws CredentialStoreException;
+    String addCredential(Callback[] callbacks) throws CredentialStoreConnectorException;
+
+    /**
+     * Add users credentials.
+     *
+     * @param userUniqueIdToCallbacksMap Array of callbacks map to user unique ids.
+     * @return user unique id to connector user id map
+     * @throws CredentialStoreConnectorException Credential Store Exception.
+     */
+    Map<String, String> addCredentials(Map<String, List<Callback>> userUniqueIdToCallbacksMap) throws
+            CredentialStoreConnectorException;
 
 
     /**
      * Update user credentials.
      *
-     * @param callbacks  Array of callbacks.
-     * @throws CredentialStoreException Credential Store Exception.
+     * @param callbacks Array of callbacks.
+     * @throws CredentialStoreConnectorException Credential Store Exception.
      */
-    void updateCredential(Callback[] callbacks) throws CredentialStoreException;
+    void updateCredential(Callback[] callbacks) throws CredentialStoreConnectorException;
 
     /**
      * Update user credentials.
      *
-     * @param username Username of the user.
+     * @param username            Username of the user.
      * @param credentialCallbacks Array of callbacks which contains credentials.
-     * @throws CredentialStoreException Credential Store Exception.
+     * @throws CredentialStoreConnectorException Credential Store Exception.
      */
-    void updateCredential(String username, Callback[] credentialCallbacks) throws CredentialStoreException;
+    void updateCredential(String username, Callback[] credentialCallbacks) throws CredentialStoreConnectorException;
 
     /**
      * Add user credentials.
      *
-     * @param username Username of the user.
+     * @param username            Username of the user.
      * @param credentialCallbacks Array of callbacks which contains credentials.
-     * @throws CredentialStoreException Credential Store Exception.
+     * @throws CredentialStoreConnectorException Credential Store Exception.
      */
-    void addCredential(String username, Callback[] credentialCallbacks) throws CredentialStoreException;
+    void addCredential(String username, Callback[] credentialCallbacks) throws CredentialStoreConnectorException;
 
     /**
      * Delete credential
      *
      * @param username unique user id of the connector
-     * @throws CredentialStoreException CredentialStore Exception
+     * @throws CredentialStoreConnectorException CredentialStore Exception
      */
-    void deleteCredential(String username) throws CredentialStoreException;
+    void deleteCredential(String username) throws CredentialStoreConnectorException;
 }

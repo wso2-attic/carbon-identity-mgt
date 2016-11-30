@@ -36,12 +36,14 @@ public class IdentityMgtConstants {
 
     //Config file names
     public static final String STORE_CONFIG_FILE = "store-config.yml";
-    public static final String PERMISSION_CONFIG_FILE = "permissions.yml";
-    public static final String CLAIM_STORE_FILE = "claim-store.yml";
+    public static final String CLAIM_MAPPING_FILE = "claim-mapping.yml";
     public static final String DOMAIN_CONFIG_FILE = "domain-config.yml";
 
-    // Delimiters
-    public static final String URL_SPLITTER = "/";
+    public static final String UNIQUE_ID_RESOLVER_TYPE = "JDBCUniqueIdResolver";
+
+    public static final String CLAIM_ROOT_DIALECT = "http://wso2.org/claims";
+
+    public static final String USERNAME_CLAIM = "http://wso2.org/claims/username";
 
     public static Path getCarbonHomeDirectory() {
         return Paths.get(System.getProperty(CARBON_HOME));

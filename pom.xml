@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -140,9 +141,19 @@
                 <version>${org.wso2.carbon.caching.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.security.caas</groupId>
+                <artifactId>org.wso2.carbon.security.caas</artifactId>
+                <version>${org.wso2.carbon.security.caas.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.identity.mgt</groupId>
                 <artifactId>org.wso2.carbon.identity.mgt</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.datasources</groupId>
+                <artifactId>org.wso2.carbon.datasource.core</artifactId>
+                <version>${carbon.datasources.version}</version>
             </dependency>
             <!-- Unit Tests -->
 
@@ -247,6 +258,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.messaging</groupId>
+                <artifactId>org.wso2.carbon.messaging</artifactId>
+                <scope>test</scope>
+                <version>${org.wso2.carbon.messaging.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.identity.mgt.tests</groupId>
                 <artifactId>org.wso2.carbon.identity.mgt.test.distribution</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
@@ -279,7 +296,6 @@
 
     <modules>
         <module>components/org.wso2.carbon.identity.mgt</module>
-        <!--<module>components/org.wso2.carbon.meta.claim.mgt</module>-->
         <module>feature</module>
         <module>tests</module>
     </modules>
@@ -296,7 +312,8 @@
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <org.wso2.carbon.messaging.version>1.0.3</org.wso2.carbon.messaging.version>
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
-        <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
+        <org.wso2.carbon.security.caas.version>1.0.0-SNAPSHOT</org.wso2.carbon.security.caas.version>
+        <carbon.datasources.version>1.0.0</carbon.datasources.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>

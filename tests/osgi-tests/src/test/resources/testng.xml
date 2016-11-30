@@ -14,10 +14,11 @@ limitations under the License.
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Carbon-Security-Test-Suite">
-    <test name="carbon-security-tests" preserve-order="true" parallel="false">
-        <!--<classes>-->
-            <!--<class name="JAASTests"/>-->
-        <!--</classes>-->
+<suite name="Identity-Mgt-Test-Suite">
+    <test name="identity-store-tests" preserve-order="true" parallel="false">
+        <classes>
+        <class name="org.wso2.carbon.identity.mgt.test.osgi.IdentityStoreTest"/>
+        <class name="org.wso2.carbon.identity.mgt.test.osgi.ClaimResolvingServiceTest"/>
+        </classes>
     </test>
 </suite>

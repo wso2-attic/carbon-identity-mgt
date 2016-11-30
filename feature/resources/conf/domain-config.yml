@@ -14,15 +14,43 @@
 #   limitations under the License.
 ###############################################################################
 domains:
+ -
+  name: "PRIMARY"
+  priority: 1
+  uniqueIdResolver:
+   type: "JDBCUniqueIdResolver"
+   properties:
+    dataSource: "WSO2_CARBON_DB"
+
+  identityStoreConnectors:
   -
-    domainName: "carbon"
-    priority: 1
-    identityStoreConnectors:
-    -
-      connectorId: "FBIS1"
-      attributeMappings:
-      - http://wso2.org/claims/username: "username"
-      - http://wso2.org/claims/email: "email"
-      - http://wso2.org/claims/firstName: "firstName"
-      - http://wso2.org/claims/lastName: "lastName"
+   connectorId: "INMEM_ISC"
+   connectorType: "InMemoryIdentityStore"
+   properties:
+    dataSource: "WSO2_CARBON_DB"
+    hashAlgorithm: "SHA256"
+    databaseType: "MySQL"
+   attributeMappings:
+   -
+    attribute: "username"
+    claimUri: "http://wso2.org/claims/username"
+    properties:
+     required: "true"
+   -
+    attribute: "email"
+    claimUri: "http://wso2.org/claims/email"
+   -
+    attribute: "firstName"
+    claimUri: "http://wso2.org/claims/firstName"
+   -
+    attribute: "lastName"
+    claimUri: "http://wso2.org/claims/lastName"
+
+  credentialStoreConnectors:
+  -
+   connectorId: "INMEM_CSC"
+   connectorType: "InMemoryCredentialStore"
+   properties:
+    dataSource: "WSO2_CARBON_DB"
+    databaseType: "MySQL"
 

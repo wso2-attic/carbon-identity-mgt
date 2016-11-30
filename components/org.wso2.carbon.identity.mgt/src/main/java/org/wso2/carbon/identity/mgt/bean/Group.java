@@ -16,11 +16,15 @@
 
 package org.wso2.carbon.identity.mgt.bean;
 
-import org.wso2.carbon.identity.mgt.exception.AuthorizationStoreException;
+import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.StoreException;
-import org.wso2.carbon.identity.mgt.store.AuthorizationStore;
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
+import org.wso2.carbon.security.caas.user.core.bean.Permission;
+import org.wso2.carbon.security.caas.user.core.bean.Role;
+import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
+import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 import java.util.List;
 
@@ -32,12 +36,12 @@ public class Group {
     /**
      * Unique group id.
      */
-    private String groupId;
+    private String uniqueGroupId;
 
     /**
      * Domain in which the group belongs.
      */
-    private Domain domain;
+    private String domainName;
 
     /**
      * The IdentityStore this user originates from.
@@ -49,10 +53,11 @@ public class Group {
      */
     private AuthorizationStore authorizationStore;
 
-    private Group(String groupId, Domain domain, IdentityStore identityStore, AuthorizationStore authorizationStore) {
+    private Group(String uniqueGroupId, String domainName, IdentityStore identityStore, AuthorizationStore
+            authorizationStore) {
 
-        this.groupId = groupId;
-        this.domain = domain;
+        this.uniqueGroupId = uniqueGroupId;
+        this.domainName = domainName;
         this.identityStore = identityStore;
         this.authorizationStore = authorizationStore;
     }
@@ -62,17 +67,17 @@ public class Group {
      *
      * @return Group id.
      */
-    public String getGroupId() {
-        return groupId;
+    public String getUniqueGroupId() {
+        return uniqueGroupId;
     }
 
     /**
-     * Get this group's domain.
+     * Get this group's domainName name.
      *
-     * @return Domain of this group.
+     * @return Domain name of this group.
      */
-    public Domain getDomain() {
-        return domain;
+    public String getDomainName() {
+        return domainName;
     }
 
     /**
@@ -81,8 +86,8 @@ public class Group {
      * @return List of users assigned to this group.
      * @throws IdentityStoreException Identity store exception.
      */
-    public List<User> getUsers() throws IdentityStoreException {
-        return identityStore.getUsersOfGroup(groupId);
+    public List<User> getUsers() throws IdentityStoreException, GroupNotFoundException {
+        return identityStore.getUsersOfGroup(uniqueGroupId);
     }
 
     /**
@@ -92,7 +97,8 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public List<Role> getRoles() throws AuthorizationStoreException {
-        return authorizationStore.getRolesOfGroup(groupId, domain);
+        //return authorizationStore.getRolesOfGroup(uniqueGroupId, domainName);
+        return null;
     }
 
     /**
@@ -103,7 +109,8 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean isAuthorized(Permission permission) throws AuthorizationStoreException {
-        return authorizationStore.isGroupAuthorized(groupId, domain, permission);
+        //return authorizationStore.isGroupAuthorized(uniqueGroupId, domainName, permission);
+        return false;
     }
 
     /**
@@ -113,8 +120,8 @@ public class Group {
      * @return True if User is in this Group.
      * @throws IdentityStoreException Identity store exception.
      */
-    public boolean hasUser(String userId) throws IdentityStoreException {
-        return identityStore.isUserInGroup(userId, groupId);
+    public boolean hasUser(String userId) throws IdentityStoreException, UserNotFoundException {
+        return identityStore.isUserInGroup(userId, uniqueGroupId);
     }
 
     /**
@@ -125,7 +132,8 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public boolean hasRole(String roleName) throws AuthorizationStoreException {
-        return authorizationStore.isGroupInRole(groupId, domain, roleName);
+        //TODO
+        return authorizationStore.isGroupInRole(uniqueGroupId, null, roleName);
     }
 
     /**
@@ -135,7 +143,7 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updateRoles(List<Role> newRoleList) throws AuthorizationStoreException {
-        authorizationStore.updateRolesInGroup(groupId, domain, newRoleList);
+        //authorizationStore.updateRolesInGroup(uniqueGroupId, domainName, newRoleList);
     }
 
     /**
@@ -146,7 +154,15 @@ public class Group {
      * @throws AuthorizationStoreException Authorization store exception.
      */
     public void updateRoles(List<Role> assignList, List<Role> unAssignList) throws AuthorizationStoreException {
-        authorizationStore.updateRolesInGroup(groupId, domain, assignList, unAssignList);
+        //authorizationStore.updateRolesInGroup(uniqueGroupId, domainName, assignList, unAssignList);
+    }
+
+    /**
+     * Change the identity store
+     * @param identityStore identity store instance
+     */
+    public void setIdentityStore(IdentityStore identityStore) {
+        this.identityStore = identityStore;
     }
 
     /**
@@ -155,16 +171,19 @@ public class Group {
     public static class GroupBuilder {
 
         private String groupId;
-        private Domain domain;
+
+        private String domainName;
+
         private IdentityStore identityStore;
+
         private AuthorizationStore authorizationStore;
 
         public String getGroupId() {
             return groupId;
         }
 
-        public Domain getDomain() {
-            return domain;
+        public String getDomainName() {
+            return domainName;
         }
 
         public IdentityStore getIdentityStore() {
@@ -180,8 +199,8 @@ public class Group {
             return this;
         }
 
-        public GroupBuilder setDomain(Domain domain) {
-            this.domain = domain;
+        public GroupBuilder setDomainName(String domainName) {
+            this.domainName = domainName;
             return this;
         }
 
@@ -197,11 +216,12 @@ public class Group {
 
         public Group build() {
 
-            if (groupId == null || identityStore == null || authorizationStore == null || domain == null) {
+            //TODO add authorizationStore == null
+            if (groupId == null || identityStore == null || domainName == null) {
                 throw new StoreException("Required data missing for building group.");
             }
 
-            return new Group(groupId, domain, identityStore, authorizationStore);
+            return new Group(groupId, domainName, identityStore, authorizationStore);
         }
     }
 }

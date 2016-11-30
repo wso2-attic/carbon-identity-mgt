@@ -1,0 +1,65 @@
+###############################################################################
+#   Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+###############################################################################
+---
+# Configurations related to claim mappings
+#Configure claim dialect for applications
+applications:
+ -
+  dialectURI: "http://application1.com/"
+  name: "Application1"
+  mappings:
+   name: "http://wso2.org/claims/username"
+   role: "http://wso2.org/claims/role"
+   mobile: "http://wso2.org/claims/mobile"
+   email: "http://wso2.org/claims/email"
+ -
+  dialectURI: "http://application2.com"
+  name: "Application2"
+  mappings:
+   sp1name: "http://wso2.org/claims/username"
+   sp1role: "http://wso2.org/claims/role"
+   sp1mobile: "http://wso2.org/claims/mobile"
+   sp1email: "http://wso2.org/claims/email"
+
+#Configure claim dialect for identity providers
+identityProviders:
+ -
+  dialectURI: "http://identityprovider1.com"
+  name: "IDP1"
+  mappings:
+   idp-name: "http://wso2.org/claims/username"
+   idp-role: "http://wso2.org/claims/role"
+   idp-mobile: "http://wso2.org/claims/mobile"
+   idp-email: "http://wso2.org/claims/email"
+ -
+  dialectURI: "http://identityprovider2.com"
+  name: "IDP2"
+  mappings:
+   idp-name: "http://wso2.org/claims/username"
+   idp-role: "http://wso2.org/claims/role"
+   idp-mobile: "http://wso2.org/claims/mobile"
+   idp-email: "http://wso2.org/claims/email"
+
+#Configure claim dialect for other standards like SCIM, OIDC
+standards:
+ -
+  dialectURI: ""
+  name: "SCIM"
+  mappings:
+   username: "http://wso2.org/claims/username"
+   role: "http://wso2.org/claims/role"
+   mobile: "http://wso2.org/claims/mobile"
+   email: "http://wso2.org/claims/email"

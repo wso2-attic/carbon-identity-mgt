@@ -18,6 +18,7 @@ package org.wso2.carbon.identity.mgt.exception;
 
 /**
  * This exception is used to represent all store related runtime exceptions.
+ *
  * @since 1.0.0
  */
 public class StoreException extends RuntimeException {

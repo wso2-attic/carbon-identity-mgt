@@ -21,7 +21,7 @@ package org.wso2.carbon.identity.mgt.exception;
 /**
  * CarbonSecurityDataHolderException class to handle
  * NullPointerExceptions when retrieving data from
- * CarbonSecurityDataHolder
+ * IdentityMgtDataHolder
  */
 public class CarbonSecurityDataHolderException extends Exception {
 

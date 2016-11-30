@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.identity.mgt.user;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class UniqueUser {
 
     private String uniqueUserId;
 
-    List<UserPartition> userPartitions;
+    private List<UserPartition> userPartitions;
 
     public UniqueUser(String uniqueUserId, List<UserPartition> userPartitions) {
 
@@ -58,5 +59,19 @@ public class UniqueUser {
 
     public void setUserPartitions(List<UserPartition> userPartitions) {
         this.userPartitions = userPartitions;
+    }
+
+    public void addUserPartitions(List<UserPartition> userPartitions) {
+        if (this.userPartitions == null) {
+            this.userPartitions = new ArrayList<>();
+        }
+        this.userPartitions.addAll(userPartitions);
+    }
+
+    public void addUserPartition(UserPartition userPartition) {
+        if (this.userPartitions == null) {
+            this.userPartitions = new ArrayList<>();
+        }
+        this.userPartitions.add(userPartition);
     }
 }

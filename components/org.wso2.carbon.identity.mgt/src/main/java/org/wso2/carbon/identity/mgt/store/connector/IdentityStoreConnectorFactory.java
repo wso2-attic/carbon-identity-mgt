@@ -23,7 +23,8 @@ public interface IdentityStoreConnectorFactory {
 
     /**
      * Get @see IdentityStoreConnector instance.
+     *
      * @return IdentityStoreConnector.
      */
-    IdentityStoreConnector getConnector();
+    IdentityStoreConnector getInstance();
 }

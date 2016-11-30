@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.identity.mgt.claim;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -26,13 +27,13 @@ public class MetaClaim {
     /**
      * An URI to uniquely identify the dialect of a claim.
      */
-    private String dialectURI;
+    private String dialectUri;
 
     /**
      * An URI to uniquely identify a given claim. This is the one used by the
      * top layers applications are aware of.
      */
-    private String claimURI;
+    private String claimUri;
 
     /**
      * Other properties related to the claim.
@@ -43,26 +44,33 @@ public class MetaClaim {
 
     }
 
-    public MetaClaim(String dialectURI, String claimURI, Map<String, String> properties) {
-        this.dialectURI = dialectURI;
-        this.claimURI = claimURI;
+    public MetaClaim(String dialectUri, String claimUri) {
+
+        this.dialectUri = dialectUri;
+        this.claimUri = claimUri;
+    }
+
+    public MetaClaim(String dialectUri, String claimUri, Map<String, String> properties) {
+
+        this.dialectUri = dialectUri;
+        this.claimUri = claimUri;
         this.properties = properties;
     }
 
-    public String getDialectURI() {
-        return dialectURI;
+    public String getDialectUri() {
+        return dialectUri;
     }
 
-    public void setDialectURI(String dialectURI) {
-        this.dialectURI = dialectURI;
+    public void setDialectUri(String dialectUri) {
+        this.dialectUri = dialectUri;
     }
 
-    public String getClaimURI() {
-        return claimURI;
+    public String getClaimUri() {
+        return claimUri;
     }
 
-    public void setClaimURI(String claimURI) {
-        this.claimURI = claimURI;
+    public void setClaimUri(String claimUri) {
+        this.claimUri = claimUri;
     }
 
     public String getProperty(String key) {
@@ -70,6 +78,10 @@ public class MetaClaim {
     }
 
     public Map<String, String> getProperties() {
+
+        if (properties == null) {
+            return Collections.emptyMap();
+        }
         return properties;
     }
 

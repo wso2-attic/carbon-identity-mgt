@@ -17,18 +17,17 @@
 package org.wso2.carbon.identity.mgt.bean;
 
 import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
-import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
-import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
+import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Represents a domain.
@@ -46,42 +45,23 @@ public class Domain {
     private Map<String, CredentialStoreConnector> credentialStoreConnectorsMap = new HashMap<>();
 
     /**
-     * Set of CredentialStoreConnectors for this domain sorted by their priority.
-     */
-    private SortedSet<CredentialStoreConnector> sortedCredentialStoreConnectors = new TreeSet<>(
-            (c1, c2) -> {
-                int c1Priority = c1.getCredentialStoreConfig().getPriority();
-                int c2Priority = c2.getCredentialStoreConfig().getPriority();
-
-                if (c1Priority == c2Priority) {
-                    c2Priority++;
-                }
-
-                return Integer.compare(c1Priority, c2Priority);
-            }
-    );
-
-    /**
      * Set of IdentityStoreConnectors for this domain sorted by their priority.
      */
-    private SortedSet<IdentityStoreConnector> sortedIdentityStoreConnectors = new TreeSet<>(
-            (c1, c2) -> {
-                int c1Priority = c1.getIdentityStoreConfig().getPriority();
-                int c2Priority = c2.getIdentityStoreConfig().getPriority();
+    private List<IdentityStoreConnector> identityStoreConnectors = new ArrayList<>();
 
-                if (c1Priority == c2Priority) {
-                    c2Priority++;
-                }
-
-                return Integer.compare(c1Priority, c2Priority);
-            }
-    );
-
+    /**
+     * Set of CredentialStoreConnectors for this domain sorted by their priority.
+     */
+    private List<CredentialStoreConnector> credentialStoreConnectors = new ArrayList<>();
 
     /**
      * Mapping between IdentityStoreConnector ID and MetaClaimMapping
      */
-    private Map<String, List<MetaClaimMapping>> claimMappings = new HashMap<>();
+    private Map<String, List<MetaClaimMapping>> connectorIdToMetaClaimMappings = new HashMap<>();
+
+    private List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
+
+    private Map<String, MetaClaimMapping> claimUriToMetaClaimMappings = new HashMap<>();
 
     /**
      * Name of the domain.
@@ -95,7 +75,9 @@ public class Domain {
      */
     private int domainPriority;
 
-    public Domain(String domainName, int domainPriority) throws DomainException {
+    private UniqueIdResolver uniqueIdResolver;
+
+    public Domain(String domainName, int domainPriority, UniqueIdResolver uniqueIdResolver) throws DomainException {
 
         if (domainPriority < 1) {
             throw new DomainException("Domain priority value should be greater than 0");
@@ -103,6 +85,7 @@ public class Domain {
 
         this.domainName = domainName;
         this.domainPriority = domainPriority;
+        this.uniqueIdResolver = uniqueIdResolver;
     }
 
     /**
@@ -127,38 +110,21 @@ public class Domain {
     /**
      * Add an identity store connector to the map.
      *
-     * @param identityStoreConnectorConfig identity Store Connector Config.
      * @param identityStoreConnector Identity Store connector.
-     *
      * @throws DomainException domain exception.
      */
-    public void addIdentityStoreConnector(IdentityStoreConnector identityStoreConnector,
-                                          IdentityStoreConnectorConfig identityStoreConnectorConfig)
-            throws DomainException {
+    public void addIdentityStoreConnector(IdentityStoreConnector identityStoreConnector) throws DomainException {
 
-        String identityStoreConnectorId = identityStoreConnectorConfig.getConnectorId();
-
-        if (identityStoreConnectorsMap.containsKey(identityStoreConnectorId)) {
-
-            throw new DomainException(String
-                    .format("IdentityStoreConnector %s already exists in the identity store connector map",
-                            identityStoreConnectorId));
-        }
-
-        try {
-            identityStoreConnector.init(identityStoreConnectorConfig);
-            identityStoreConnectorsMap.put(identityStoreConnectorId, identityStoreConnector);
-            sortedIdentityStoreConnectors.add(identityStoreConnector);
-        } catch (IdentityStoreException e) {
-            throw new DomainException("Error adding identity store to domain", e);
-        }
+        identityStoreConnectorsMap.put(identityStoreConnector.getIdentityStoreConfig().getConnectorId(),
+                identityStoreConnector);
+        identityStoreConnectors.add(identityStoreConnector);
     }
 
     /**
      * Get IdentityStoreConnector from identity store connector id.
      *
-     * @param identityStoreConnectorId String - IdentityStoreConnectorId
-     * @return IdentityStoreConnector
+     * @param identityStoreConnectorId identity store connector id.
+     * @return IdentityStoreConnector instance.
      */
     public IdentityStoreConnector getIdentityStoreConnectorFromId(String identityStoreConnectorId) {
 
@@ -171,20 +137,11 @@ public class Domain {
      * @param credentialStoreConnector Credential Store connector
      * @throws DomainException domain exception
      */
-    public void addCredentialStoreConnector(CredentialStoreConnector credentialStoreConnector)
-            throws DomainException {
+    public void addCredentialStoreConnector(CredentialStoreConnector credentialStoreConnector) throws DomainException {
 
-        String credentialStoreConnectorId = credentialStoreConnector.getCredentialStoreConnectorId();
-
-        if (credentialStoreConnectorsMap.containsKey(credentialStoreConnectorId)) {
-
-            throw new DomainException(String
-                    .format("CredentialStoreConnector %s already exists in the credential store connector map",
-                            credentialStoreConnectorId));
-        }
-
-        credentialStoreConnectorsMap.put(credentialStoreConnectorId, credentialStoreConnector);
-        sortedCredentialStoreConnectors.add(credentialStoreConnector);
+        credentialStoreConnectorsMap.put(credentialStoreConnector.getCredentialStoreConfig().getConnectorId(),
+                credentialStoreConnector);
+        credentialStoreConnectors.add(credentialStoreConnector);
     }
 
     /**
@@ -204,11 +161,11 @@ public class Domain {
      * @param claimURI Claim
      * @return is claim belong to domain
      */
-    public boolean isClaimAvailable(String claimURI) {
+    public boolean isClaimSupported(String claimURI) {
 
-        return claimMappings.values().stream()
+        return connectorIdToMetaClaimMappings.values().stream()
                 .anyMatch(list -> list.stream().filter(metaClaimMapping ->
-                        claimURI.equals(metaClaimMapping.getMetaClaim().getClaimURI()))
+                        claimURI.equals(metaClaimMapping.getMetaClaim().getClaimUri()))
                         .findFirst().isPresent());
     }
 
@@ -217,28 +174,51 @@ public class Domain {
      *
      * @return Map of connector Id to List of MetaClaimMapping
      */
-    public Map<String, List<MetaClaimMapping>> getClaimMappings() {
+    public Map<String, List<MetaClaimMapping>> getConnectorIdToMetaClaimMappings() {
 
-        return claimMappings;
+        return connectorIdToMetaClaimMappings;
+    }
+
+    public MetaClaimMapping getMetaClaimMapping(String claimURI) throws DomainException {
+
+        if (claimUriToMetaClaimMappings.isEmpty()) {
+            throw new DomainException("Invalid domain configuration found. No meta claim mappings.");
+        }
+
+        return claimUriToMetaClaimMappings.get(claimURI);
     }
 
     public List<MetaClaimMapping> getMetaClaimMappings() throws DomainException {
 
-        if (claimMappings.isEmpty()) {
+        if (metaClaimMappings.isEmpty()) {
             throw new DomainException("Invalid domain configuration found. No meta claim mappings.");
         }
-        //TODO
-        return Collections.emptyList();
+
+        return metaClaimMappings;
+    }
+
+    public void setMetaClaimMappings(List<MetaClaimMapping> metaClaimMappings) {
+
+        if (metaClaimMappings == null || metaClaimMappings.isEmpty()) {
+            this.metaClaimMappings.clear();
+            this.claimUriToMetaClaimMappings.clear();
+            return;
+        }
+
+        this.metaClaimMappings = metaClaimMappings;
+        this.claimUriToMetaClaimMappings = this.metaClaimMappings.stream()
+                .collect(Collectors.toMap(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimUri(),
+                        metaClaimMapping -> metaClaimMapping));
     }
 
     /**
      * Set claim mappings for an identity store id.
      *
-     * @param claimMappings Map&lt;String, List&lt;MetaClaimMapping&gt;&gt; claim mappings
+     * @param connectorIdToMetaClaimMappings Map&lt;String, List&lt;MetaClaimMapping&gt;&gt; claim mappings
      */
-    public void setClaimMappings(Map<String, List<MetaClaimMapping>> claimMappings) {
+    public void setConnectorIdToMetaClaimMappings(Map<String, List<MetaClaimMapping>> connectorIdToMetaClaimMappings) {
 
-        this.claimMappings = claimMappings;
+        this.connectorIdToMetaClaimMappings = connectorIdToMetaClaimMappings;
     }
 
     /**
@@ -246,12 +226,12 @@ public class Domain {
      *
      * @return Sorted IdentityStoreConnectors set
      */
-    public SortedSet<IdentityStoreConnector> getSortedIdentityStoreConnectors() {
+    public List<IdentityStoreConnector> getIdentityStoreConnectors() {
 
-        if (sortedIdentityStoreConnectors == null) {
-            return Collections.emptySortedSet();
+        if (identityStoreConnectors == null) {
+            return Collections.emptyList();
         }
-        return sortedIdentityStoreConnectors;
+        return identityStoreConnectors;
     }
 
     /**
@@ -259,11 +239,19 @@ public class Domain {
      *
      * @return Sorted CredentialStoreConnectors set
      */
-    public SortedSet<CredentialStoreConnector> getSortedCredentialStoreConnectors() {
+    public List<CredentialStoreConnector> getCredentialStoreConnectors() {
 
-        if (sortedCredentialStoreConnectors == null) {
-            return Collections.emptySortedSet();
+        if (credentialStoreConnectors == null) {
+            return Collections.emptyList();
         }
-        return sortedCredentialStoreConnectors;
+        return credentialStoreConnectors;
+    }
+
+    public UniqueIdResolver getUniqueIdResolver() {
+        return uniqueIdResolver;
+    }
+
+    public void setUniqueIdResolver(UniqueIdResolver uniqueIdResolver) {
+        this.uniqueIdResolver = uniqueIdResolver;
     }
 }
