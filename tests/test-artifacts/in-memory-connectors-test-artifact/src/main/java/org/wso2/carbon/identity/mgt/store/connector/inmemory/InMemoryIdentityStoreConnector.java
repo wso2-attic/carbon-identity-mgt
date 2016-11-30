@@ -95,7 +95,16 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public List<String> listConnectorUserIdsByPattern(String attributeName, String filterPattern, int offset, int
             length) throws IdentityStoreConnectorException {
-        return null;
+
+        return userStoreMap.entrySet().stream()
+                .filter(entry ->
+                        entry.getValue().stream()
+                                .filter(attribute -> attribute.getAttributeName().equals(attributeName) && attribute
+                                        .getAttributeValue().toLowerCase().matches(filterPattern.toLowerCase()))
+                                .findAny().isPresent()
+                )
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -147,13 +156,31 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public List<String> listConnectorGroupIds(String attributeName, String attributeValue, int offset, int length)
             throws IdentityStoreConnectorException {
-        return null;
+
+        return groupStoreMap.entrySet().stream()
+                .filter(entry ->
+                        entry.getValue().stream()
+                                .filter(attribute -> attribute.getAttributeName().equals(attributeName) && attribute
+                                        .getAttributeValue().equals(attributeValue))
+                                .findAny().isPresent()
+                )
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<String> listConnectorGroupIdsByPattern(String attributeName, String filterPattern, int offset, int
             length) throws IdentityStoreConnectorException {
-        return null;
+
+        return groupStoreMap.entrySet().stream()
+                .filter(entry ->
+                        entry.getValue().stream()
+                                .filter(attribute -> attribute.getAttributeName().equals(attributeName) && attribute
+                                        .getAttributeValue().toLowerCase().matches(filterPattern.toLowerCase()))
+                                .findAny().isPresent()
+                )
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -243,7 +270,15 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public Map<String, String> addGroups(Map<String, List<Attribute>> attributes) throws
             IdentityStoreConnectorException {
-        return null;
+
+        Map<String, String> groupIds = new HashMap<>();
+        for (Map.Entry<String, List<Attribute>> entry : attributes.entrySet()) {
+            String groupId = UUID.randomUUID().toString();
+            groupStoreMap.put(groupId, entry.getValue());
+            groupIds.put(entry.getKey(), groupId);
+        }
+
+        return groupIds;
     }
 
     @Override

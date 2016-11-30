@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.identity.mgt.bean.Group;
 import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
+import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
@@ -271,6 +272,48 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
+    @Test(dependsOnMethods = {"testAddUser", "testAddUserByDomain", "testAddUsers", "testAddUsersByDomain"})
+    public void testListUsersByClaimOffsetAndLengthInADomain() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Decker");
+        List<User> users = realmService.getIdentityStore().listUsers(claim, 2, 3, "PRIMARY");
+
+        Assert.assertNotNull(users, "Failed to list the users.");
+        Assert.assertTrue(!users.isEmpty() && users.size() == 2, "Number of users received in the response " +
+                "is invalid.");
+    }
+
+    @Test(dependsOnMethods = {"testAddUser", "testAddUserByDomain", "testAddUsers", "testAddUsersByDomain"})
+    public void testListUsersByMetaClaimFilterPatternOffsetAndLength() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        MetaClaim metaClaim = new MetaClaim("http://wso2.org/claims", "http://wso2.org/claims/lastName");
+        List<User> users = realmService.getIdentityStore().listUsers(metaClaim, "(?i).*cke.*", 2, 3);
+
+        Assert.assertNotNull(users, "Failed to list the users.");
+        Assert.assertTrue(!users.isEmpty() && users.size() == 2, "Number of users received in the response " +
+                "is invalid.");
+    }
+
+    @Test(dependsOnMethods = {"testAddUser", "testAddUserByDomain", "testAddUsers", "testAddUsersByDomain"})
+    public void testListUsersByMetaClaimFilterPatternOffsetAndLengthInDomain() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        MetaClaim metaClaim = new MetaClaim("http://wso2.org/claims", "http://wso2.org/claims/lastName");
+        List<User> users = realmService.getIdentityStore().listUsers(metaClaim, "(?i).*cke.*", 2, 3, "PRIMARY");
+
+        Assert.assertNotNull(users, "Failed to list the users.");
+        Assert.assertTrue(!users.isEmpty() && users.size() == 2, "Number of users received in the response " +
+                "is invalid.");
+    }
+
     @Test
     public void testAddGroup() throws IdentityStoreException {
 
@@ -307,6 +350,61 @@ public class IdentityStoreTest {
         Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
 
         groups.add(group);
+    }
+
+    @Test
+    public void testAddGroups() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        GroupModel groupModel1 = new GroupModel();
+        List<Claim> claims1 = Arrays.asList(
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "humans"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Society"));
+        groupModel1.setClaims(claims1);
+
+        GroupModel groupModel2 = new GroupModel();
+        List<Claim> claims2 = Arrays.asList(
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "children"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Society"));
+        groupModel2.setClaims(claims2);
+
+        List<Group> addedGroups = realmService.getIdentityStore().addGroups(Arrays.asList(groupModel1, groupModel2));
+
+        Assert.assertNotNull(addedGroups, "Failed to receive the groups.");
+        Assert.assertTrue(!addedGroups.isEmpty() && addedGroups.size() == 2, "Number of groups received in the " +
+                "response is invalid.");
+
+        groups.addAll(addedGroups);
+    }
+
+    @Test
+    public void testAddGroupsByDomain() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        GroupModel groupModel1 = new GroupModel();
+        List<Claim> claims1 = Arrays.asList(
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "SuperAngels"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "SuperHeaven"));
+        groupModel1.setClaims(claims1);
+
+        GroupModel groupModel2 = new GroupModel();
+        List<Claim> claims2 = Arrays.asList(
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "SuperDemons"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "SupperHell"));
+        groupModel2.setClaims(claims2);
+
+        List<Group> addedGroups = realmService.getIdentityStore().addGroups(Arrays.asList(groupModel1, groupModel2),
+                "PRIMARY");
+
+        Assert.assertNotNull(addedGroups, "Failed to receive the groups.");
+        Assert.assertTrue(!addedGroups.isEmpty() && addedGroups.size() == 2, "Number of groups received in the " +
+                "response is invalid.");
+
+        groups.addAll(addedGroups);
     }
 
     @Test(dependsOnMethods = {"testAddGroup"})
@@ -357,5 +455,87 @@ public class IdentityStoreTest {
         Assert.assertNotNull(group, "Failed to receive the group.");
 
         Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
+    }
+
+    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    public void testListGroupsByOffsetAndLength() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        List<Group> groups = realmService.getIdentityStore().listGroups(2, 3);
+
+        Assert.assertNotNull(groups, "Failed to list the users.");
+        Assert.assertTrue(!groups.isEmpty() && groups.size() == 3, "Number of users received in the response " +
+                "is invalid.");
+    }
+
+    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    public void testListGroupsByOffsetAndLengthInADomain() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        List<Group> groups = realmService.getIdentityStore().listGroups(2, 3, "PRIMARY");
+
+        Assert.assertNotNull(groups, "Failed to list the groups.");
+        Assert.assertTrue(!groups.isEmpty() && groups.size() == 3, "Number of groups received in the response " +
+                "is invalid.");
+    }
+
+    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    public void testListGroupsByClaimOffsetAndLength() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Society");
+        List<Group> groups = realmService.getIdentityStore().listGroups(claim, 2, 3);
+
+        Assert.assertNotNull(groups, "Failed to list the groups.");
+        Assert.assertTrue(!groups.isEmpty() && groups.size() == 2, "Number of groups received in the response " +
+                "is invalid.");
+    }
+
+    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    public void testListGroupsByClaimOffsetAndLengthInADomain() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Society");
+        List<Group> groups = realmService.getIdentityStore().listGroups(claim, 2, 3, "PRIMARY");
+
+        Assert.assertNotNull(groups, "Failed to list the groups.");
+        Assert.assertTrue(!groups.isEmpty() && groups.size() == 2, "Number of groups received in the response " +
+                "is invalid.");
+    }
+
+    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    public void testListGroupsByMetaClaimFilterPatternOffsetAndLength() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        MetaClaim metaClaim = new MetaClaim("http://wso2.org/claims", "http://wso2.org/claims/organization");
+        List<Group> groups = realmService.getIdentityStore().listGroups(metaClaim, "(?i).*cie.*", 2, 3);
+
+        Assert.assertNotNull(groups, "Failed to list the groups.");
+        Assert.assertTrue(!groups.isEmpty() && groups.size() == 2, "Number of groups received in the response " +
+                "is invalid.");
+    }
+
+    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    public void testListGroupsByMetaClaimFilterPatternOffsetAndLengthInDomain() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        MetaClaim metaClaim = new MetaClaim("http://wso2.org/claims", "http://wso2.org/claims/organization");
+        List<Group> groups = realmService.getIdentityStore().listGroups(metaClaim, "(?i).*cie.*", 2, 3, "PRIMARY");
+
+        Assert.assertNotNull(groups, "Failed to list the groups.");
+        Assert.assertTrue(!groups.isEmpty() && groups.size() == 2, "Number of groups received in the response " +
+                "is invalid.");
     }
 }

@@ -44,7 +44,14 @@ public class MetaClaim {
 
     }
 
+    public MetaClaim(String dialectUri, String claimUri) {
+
+        this.dialectUri = dialectUri;
+        this.claimUri = claimUri;
+    }
+
     public MetaClaim(String dialectUri, String claimUri, Map<String, String> properties) {
+
         this.dialectUri = dialectUri;
         this.claimUri = claimUri;
         this.properties = properties;
