@@ -209,6 +209,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                         user.addUserPartition(userPartition);
                     } else {
                         user = new UniqueUser();
+                        user.setUniqueUserId(userUUID);
                         user.addUserPartition(userPartition);
                         userMap.put(userUUID, user);
                     }

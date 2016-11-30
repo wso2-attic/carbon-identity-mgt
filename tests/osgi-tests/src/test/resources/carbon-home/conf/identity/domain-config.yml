@@ -45,6 +45,15 @@ domains:
    -
     attribute: "lastName"
     claimUri: "http://wso2.org/claims/lastName"
+   -
+    attribute: "groupName"
+    claimUri: "http://wso2.org/claims/groupName"
+    properties:
+     required: "true"
+   -
+    attribute: "organization"
+    claimUri: "http://wso2.org/claims/organization"
+   -
 
   credentialStoreConnectors:
   -

@@ -216,7 +216,8 @@ public class Group {
 
         public Group build() {
 
-            if (groupId == null || identityStore == null || authorizationStore == null || domainName == null) {
+            //TODO add authorizationStore == null
+            if (groupId == null || identityStore == null || domainName == null) {
                 throw new StoreException("Required data missing for building group.");
             }
 

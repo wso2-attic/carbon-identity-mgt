@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * InMemory Identity Store Connector.
@@ -37,6 +38,8 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     private IdentityStoreConnectorConfig identityStoreConnectorConfig;
 
     private Map<String, List<Attribute>> userStoreMap = new HashMap<>();
+
+    private Map<String, List<Attribute>> groupStoreMap = new HashMap<>();
 
     @Override
     public void init(IdentityStoreConnectorConfig identityStoreConnectorConfig) throws IdentityStoreConnectorException {
@@ -54,7 +57,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
             IdentityStoreConnectorException {
 
         if (userStoreMap.size() == 0) {
-            return null;
+            throw new UserNotFoundException("User not found.");
         }
 
         Optional<Map.Entry<String, List<Attribute>>> mapEntry = userStoreMap.entrySet().stream()
@@ -77,7 +80,16 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public List<String> listConnectorUserIds(String attributeName, String attributeValue, int offset, int length)
             throws IdentityStoreConnectorException {
-        return null;
+
+        return userStoreMap.entrySet().stream()
+                .filter(entry ->
+                        entry.getValue().stream()
+                                .filter(attribute -> attribute.getAttributeName().equals(attributeName) && attribute
+                                        .getAttributeValue().equals(attributeValue))
+                                .findAny().isPresent()
+                )
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -110,7 +122,26 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public String getConnectorGroupId(String attributeName, String attributeValue) throws GroupNotFoundException,
             IdentityStoreConnectorException {
-        return null;
+
+        if (groupStoreMap.size() == 0) {
+            throw new GroupNotFoundException("Group not found.");
+        }
+
+        Optional<Map.Entry<String, List<Attribute>>> mapEntry = groupStoreMap.entrySet().stream()
+                .filter(entry -> {
+                    if (entry.getValue() != null) {
+                        Optional<Attribute> optional = entry.getValue().stream()
+                                .filter(attribute -> attribute.getAttributeName().equals(attributeName) && attribute
+                                        .getAttributeValue().equals(attributeValue))
+                                .findAny();
+                        return optional.isPresent();
+                    }
+                    return false;
+                }).findAny();
+        if (mapEntry.isPresent()) {
+            return mapEntry.get().getKey();
+        }
+        throw new GroupNotFoundException("Group not found.");
     }
 
     @Override
@@ -162,7 +193,14 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public Map<String, String> addUsers(Map<String, List<Attribute>> attributes) throws
             IdentityStoreConnectorException {
-        return null;
+        Map<String, String> userIds = new HashMap<>();
+        for (Map.Entry<String, List<Attribute>> entry : attributes.entrySet()) {
+            String userId = UUID.randomUUID().toString();
+            userStoreMap.put(userId, entry.getValue());
+            userIds.put(entry.getKey(), userId);
+        }
+
+        return userIds;
     }
 
     @Override
@@ -196,7 +234,10 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
 
     @Override
     public String addGroup(List<Attribute> attributes) throws IdentityStoreConnectorException {
-        return null;
+
+        String groupId = UUID.randomUUID().toString();
+        groupStoreMap.put(groupId, attributes);
+        return groupId;
     }
 
     @Override
