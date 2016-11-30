@@ -15,7 +15,8 @@
 ###############################################################################
 domains:
  -
-  name: "PRIMARY"
+  name: "WSO2"
+  #order
   priority: 1
   uniqueIdResolver:
    type: "JDBCUniqueIdResolver"

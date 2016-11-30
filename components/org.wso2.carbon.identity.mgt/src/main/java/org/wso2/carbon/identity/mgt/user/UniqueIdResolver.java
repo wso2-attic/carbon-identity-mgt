@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * UserManager interface.
+ * UniqueIdResolver interface.
  * <p>
  * The implementation of this interface is responsible for handling the globally unique user Id.
  */

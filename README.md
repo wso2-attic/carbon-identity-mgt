@@ -76,7 +76,7 @@ Pull requests are highly encouraged and we recommend you to create a [JIRA](http
 
 ## License
 
-Carbon Security is available under the Apache 2 License.
+Carbon Identity Management is available under the Apache 2 License.
 
 ## Copyright
 

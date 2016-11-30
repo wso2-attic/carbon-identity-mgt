@@ -28,7 +28,7 @@
     <groupId>org.wso2.carbon.identity.mgt</groupId>
     <artifactId>org.wso2.carbon.identity.mgt.parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>WSO2 Carbon Identity Management - Parent</name>
 
     <scm>
@@ -264,7 +264,7 @@
                 <version>${org.wso2.carbon.messaging.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.carbon.identity.mgt.tests</groupId>
+                <groupId>org.wso2.carbon.identity.mgt</groupId>
                 <artifactId>org.wso2.carbon.identity.mgt.test.distribution</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
                 <type>zip</type>
@@ -301,7 +301,7 @@
     </modules>
 
     <properties>
-        <carbon.identity.mgt.version>1.0.3-SNAPSHOT</carbon.identity.mgt.version>
+        <carbon.identity.mgt.version>1.0.0-SNAPSHOT</carbon.identity.mgt.version>
 
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.kernel.version>5.1.0</carbon.kernel.version>

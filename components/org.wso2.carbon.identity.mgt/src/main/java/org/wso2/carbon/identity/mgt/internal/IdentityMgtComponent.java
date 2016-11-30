@@ -151,7 +151,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
                                                                      credentialStoreConnectorFactory) {
     }
 
-    //TODO make this MANDATORY in M2 release
+    //TODO make this MANDATORY in M3 release
     @Reference(
             name = "AuthorizationStore",
             service = AuthorizationStore.class,
