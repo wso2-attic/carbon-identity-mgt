@@ -550,7 +550,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectGroupsOfUser = "SELECT ENTITY_UUID, CONNECTOR_ID, CONNECTOR_ENTITY_ID " +
-                    "FROM IDM_ENTITY WHERE ENTITY_UUID = ( " +
+                    "FROM IDM_ENTITY WHERE ENTITY_UUID IN ( " +
                     "SELECT GROUP_UUID " +
                     "FROM IDM_USER_GROUP_MAPPING " +
                     "WHERE USER_UUID = :user_uuid; )";
@@ -575,6 +575,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                         group.addGroupPartition(groupPartition);
                     } else {
                         group = new UniqueGroup();
+                        group.setUniqueGroupId(groupUUID);
                         group.addGroupPartition(groupPartition);
                         groupMap.put(groupUUID, group);
                     }
@@ -593,7 +594,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUsersOfGroup = "SELECT ENTITY_UUID, CONNECTOR_ID, CONNECTOR_ENTITY_ID, CONNECTOR_TYPE " +
-                    "FROM IDM_ENTITY WHERE ENTITY_UUID = ( " +
+                    "FROM IDM_ENTITY WHERE ENTITY_UUID IN ( " +
                     "SELECT USER_UUID " +
                     "FROM IDM_USER_GROUP_MAPPING " +
                     "WHERE GROUP_UUID = :group_uuid; )";
@@ -607,7 +608,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
                 while (resultSet.next()) {
                     UserPartition userPartition = new UserPartition();
-                    String groupUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.ENTITY_UUID);
+                    String userUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.ENTITY_UUID);
                     userPartition.setConnectorId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
                             .CONNECTOR_ID));
                     userPartition.setConnectorUserId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
@@ -616,12 +617,13 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                             .getString(UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_TYPE)));
 
                     UniqueUser user;
-                    if ((user = userMap.get(groupUUID)) != null) {
+                    if ((user = userMap.get(userUUID)) != null) {
                         user.addUserPartition(userPartition);
                     } else {
                         user = new UniqueUser();
+                        user.setUniqueUserId(userUUID);
                         user.addUserPartition(userPartition);
-                        userMap.put(groupUUID, user);
+                        userMap.put(userUUID, user);
                     }
                 }
             }

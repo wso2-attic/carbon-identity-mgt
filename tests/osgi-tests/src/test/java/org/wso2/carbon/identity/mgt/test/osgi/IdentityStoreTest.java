@@ -77,7 +77,7 @@ public class IdentityStoreTest {
         return optionList.toArray(new Option[optionList.size()]);
     }
 
-    @Test
+    @Test(groups = "addUsers")
     public void testAddUser() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -98,7 +98,7 @@ public class IdentityStoreTest {
         users.add(user);
     }
 
-    @Test
+    @Test(groups = "addUsers")
     public void testAddUserByDomain() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -119,7 +119,7 @@ public class IdentityStoreTest {
         users.add(user);
     }
 
-    @Test
+    @Test(groups = "addUsers")
     public void testAddUsers() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -150,7 +150,7 @@ public class IdentityStoreTest {
         users.addAll(addedUsers);
     }
 
-    @Test
+    @Test(groups = "addUsers")
     public void testAddUsersByDomain() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -182,7 +182,7 @@ public class IdentityStoreTest {
         users.addAll(addedUsers);
     }
 
-    @Test(dependsOnMethods = {"testAddUser"})
+    @Test(dependsOnGroups = {"addUsers"})
     public void testGetUserByUniqueUserId() throws IdentityStoreException, UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -193,7 +193,7 @@ public class IdentityStoreTest {
         Assert.assertNotNull(user, "Failed to receive the user.");
     }
 
-    @Test(dependsOnMethods = {"testAddUser"})
+    @Test(dependsOnGroups = {"addUsers"})
     public void testGetUserByUniqueUserIdAndDomain() throws IdentityStoreException, UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -204,7 +204,7 @@ public class IdentityStoreTest {
         Assert.assertNotNull(user, "Failed to receive the user.");
     }
 
-    @Test(dependsOnMethods = {"testAddUser"})
+    @Test(dependsOnGroups = {"addUsers"})
     public void testGetUserByClaim() throws IdentityStoreException, UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -218,7 +218,7 @@ public class IdentityStoreTest {
         Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
     }
 
-    @Test(dependsOnMethods = {"testAddUser"})
+    @Test(dependsOnGroups = {"addUsers"})
     public void testGetUserByClaimAndDomain() throws IdentityStoreException, UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -232,7 +232,7 @@ public class IdentityStoreTest {
         Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
     }
 
-    @Test(dependsOnMethods = {"testAddUser", "testAddUserByDomain", "testAddUsers", "testAddUsersByDomain"})
+    @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByOffsetAndLength() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -245,7 +245,7 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
-    @Test(dependsOnMethods = {"testAddUser", "testAddUserByDomain", "testAddUsers", "testAddUsersByDomain"})
+    @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByOffsetAndLengthInADomain() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -258,7 +258,7 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
-    @Test(dependsOnMethods = {"testAddUser", "testAddUserByDomain", "testAddUsers", "testAddUsersByDomain"})
+    @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByClaimOffsetAndLength() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -272,7 +272,7 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
-    @Test(dependsOnMethods = {"testAddUser", "testAddUserByDomain", "testAddUsers", "testAddUsersByDomain"})
+    @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByClaimOffsetAndLengthInADomain() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -286,7 +286,7 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
-    @Test(dependsOnMethods = {"testAddUser", "testAddUserByDomain", "testAddUsers", "testAddUsersByDomain"})
+    @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByMetaClaimFilterPatternOffsetAndLength() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -300,7 +300,7 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
-    @Test(dependsOnMethods = {"testAddUser", "testAddUserByDomain", "testAddUsers", "testAddUsersByDomain"})
+    @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByMetaClaimFilterPatternOffsetAndLengthInDomain() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -314,7 +314,7 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
-    @Test
+    @Test(groups = "addGroups")
     public void testAddGroup() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -333,7 +333,7 @@ public class IdentityStoreTest {
         groups.add(group);
     }
 
-    @Test
+    @Test(groups = "addGroups")
     public void testAddGroupByDomain() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -352,7 +352,7 @@ public class IdentityStoreTest {
         groups.add(group);
     }
 
-    @Test
+    @Test(groups = "addGroups")
     public void testAddGroups() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -379,7 +379,7 @@ public class IdentityStoreTest {
         groups.addAll(addedGroups);
     }
 
-    @Test
+    @Test(groups = "addGroups")
     public void testAddGroupsByDomain() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -407,7 +407,7 @@ public class IdentityStoreTest {
         groups.addAll(addedGroups);
     }
 
-    @Test(dependsOnMethods = {"testAddGroup"})
+    @Test(dependsOnGroups = {"addGroups"})
     public void testGetGroupByUniqueGroupId() throws IdentityStoreException, GroupNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -418,7 +418,7 @@ public class IdentityStoreTest {
         Assert.assertNotNull(group, "Failed to receive the group.");
     }
 
-    @Test(dependsOnMethods = {"testAddGroup"})
+    @Test(dependsOnGroups = {"addGroups"})
     public void testGetGroupByUniqueGroupIdAndDomain() throws IdentityStoreException, GroupNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -429,7 +429,7 @@ public class IdentityStoreTest {
         Assert.assertNotNull(user, "Failed to receive the group.");
     }
 
-    @Test(dependsOnMethods = {"testAddGroup"})
+    @Test(dependsOnGroups = {"addGroups"})
     public void testGetGroupByClaim() throws IdentityStoreException, GroupNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -443,7 +443,7 @@ public class IdentityStoreTest {
         Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
     }
 
-    @Test(dependsOnMethods = {"testAddGroup"})
+    @Test(dependsOnGroups = {"addGroups"})
     public void testGetGroupByClaimAndDomain() throws IdentityStoreException, GroupNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -457,7 +457,7 @@ public class IdentityStoreTest {
         Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
     }
 
-    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByOffsetAndLength() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -470,7 +470,7 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
-    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByOffsetAndLengthInADomain() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -483,7 +483,7 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
-    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByClaimOffsetAndLength() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -497,7 +497,7 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
-    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByClaimOffsetAndLengthInADomain() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -511,7 +511,7 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
-    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByMetaClaimFilterPatternOffsetAndLength() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -525,7 +525,7 @@ public class IdentityStoreTest {
                 "is invalid.");
     }
 
-    @Test(dependsOnMethods = {"testAddGroup", "testAddGroupByDomain", "testAddGroups", "testAddGroupsByDomain"})
+    @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByMetaClaimFilterPatternOffsetAndLengthInDomain() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -537,5 +537,111 @@ public class IdentityStoreTest {
         Assert.assertNotNull(groups, "Failed to list the groups.");
         Assert.assertTrue(!groups.isEmpty() && groups.size() == 2, "Number of groups received in the response " +
                 "is invalid.");
+    }
+
+    @Test(dependsOnGroups = {"addUsers", "addGroups"}, groups = "addGroupsToUser")
+    public void testUpdateGroupsOfUser() {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        try {
+            realmService.getIdentityStore().updateGroupsOfUser(users.get(0).getUniqueUserId(), Arrays.asList(groups.get
+                    (0).getUniqueGroupId(), groups.get(1).getUniqueGroupId()));
+        } catch (IdentityStoreException e) {
+            Assert.fail("Failed to update groups of user.");
+        }
+    }
+
+    @Test(dependsOnGroups = {"addUsers", "addGroups"}, groups = "addGroupsToUser")
+    public void testUpdateGroupsOfUserByDomain() {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        try {
+            realmService.getIdentityStore().updateGroupsOfUser(users.get(1).getUniqueUserId(), Arrays.asList(groups.get
+                    (0).getUniqueGroupId(), groups.get(1).getUniqueGroupId()), "PRIMARY");
+        } catch (IdentityStoreException e) {
+            Assert.fail("Failed to update groups of user.");
+        }
+    }
+
+    @Test(dependsOnGroups = {"addUsers", "addGroups"}, groups = "addUsersToGroup")
+    public void testUpdateUsersOfGroup() {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        try {
+            realmService.getIdentityStore().updateUsersOfGroup(groups.get(3).getUniqueGroupId(), Arrays.asList(users.get
+                    (2).getUniqueUserId(), users.get(3).getUniqueUserId()));
+        } catch (IdentityStoreException e) {
+            Assert.fail("Failed to update groups of user.");
+        }
+    }
+
+    @Test(dependsOnGroups = {"addUsers", "addGroups"}, groups = "addUsersToGroup")
+    public void testUpdateUsersOfGroupByDomain() {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        try {
+            realmService.getIdentityStore().updateUsersOfGroup(groups.get(4).getUniqueGroupId(), Arrays.asList(users.get
+                    (4).getUniqueUserId(), users.get(5).getUniqueUserId()), "PRIMARY");
+        } catch (IdentityStoreException e) {
+            Assert.fail("Failed to update groups of user.");
+        }
+    }
+
+    @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
+    public void testGetGroupsOfUser() throws IdentityStoreException, UserNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        List<Group> groupsOfUser = realmService.getIdentityStore().getGroupsOfUser(users.get(0).getUniqueUserId());
+        Assert.assertNotNull(groupsOfUser, "Failed to get the groups.");
+        Assert.assertTrue(!groupsOfUser.isEmpty() && groupsOfUser.size() > 0, "Number of groups received in the " +
+                "response is invalid.");
+    }
+
+    @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
+    public void testGetGroupsOfUserByDomain() throws IdentityStoreException, UserNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        List<Group> groupsOfUser = realmService.getIdentityStore().getGroupsOfUser(users.get(1).getUniqueUserId(),
+                "PRIMARY");
+        Assert.assertNotNull(groupsOfUser, "Failed to get the groups.");
+        Assert.assertTrue(!groupsOfUser.isEmpty() && groupsOfUser.size() > 0, "Number of groups received in the " +
+                "response is invalid.");
+    }
+
+    @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
+    public void testGetUsersOfGroup() throws IdentityStoreException, GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        List<User> usersOfGroup = realmService.getIdentityStore().getUsersOfGroup(groups.get(3).getUniqueGroupId());
+        Assert.assertNotNull(usersOfGroup, "Failed to get the users.");
+        Assert.assertTrue(!usersOfGroup.isEmpty() && usersOfGroup.size() > 0, "Number of users received in the " +
+                "response is invalid.");
+    }
+
+    @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
+    public void testGetUsersOfGroupByDomain() throws IdentityStoreException, GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        List<User> usersOfGroup = realmService.getIdentityStore().getUsersOfGroup(groups.get(4).getUniqueGroupId(),
+                "PRIMARY");
+        Assert.assertNotNull(usersOfGroup, "Failed to get the users.");
+        Assert.assertTrue(!usersOfGroup.isEmpty() && usersOfGroup.size() > 0, "Number of users received in the " +
+                "response is invalid.");
     }
 }
