@@ -19,7 +19,7 @@ package org.wso2.carbon.identity.mgt.internal.config.connector;
 import org.wso2.carbon.identity.mgt.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.StoreConnectorConfig;
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.wso2.carbon.identity.mgt.util.FileUtil;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 import org.wso2.carbon.kernel.utils.StringUtils;
@@ -33,21 +33,21 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * ConnectorConfigBuilder.
+ * Reads external identity/credential store connector config files.
  */
-public class ConnectorConfigBuilder {
+public class ConnectorConfigReader {
 
-    private static ConnectorConfigBuilder instance = new ConnectorConfigBuilder();
-
-    private ConnectorConfigBuilder() {
+    private ConnectorConfigReader() {
 
     }
 
-    public static ConnectorConfigBuilder getInstance() {
-        return instance;
-    }
-
-    public Map<String, StoreConnectorConfig> getStoreConnectorConfigs() throws CarbonSecurityConfigException {
+    /**
+     * Read all external connector config files.
+     *
+     * @return Connector name to connector config map.
+     * @throws CarbonIdentityMgtConfigException Carbon Identity Mgt Config Exception.
+     */
+    public static Map<String, StoreConnectorConfig> getStoreConnectorConfigs() throws CarbonIdentityMgtConfigException {
 
         List<StoreConnectorConfig> storeConnectorConfigs = new ArrayList<>();
 
@@ -73,10 +73,10 @@ public class ConnectorConfigBuilder {
      * Read the IdentityStoreConnector config entries from external identity-connector.yml files.
      *
      * @return List of external connector config entries.
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonIdentityMgtConfigException Carbon Identity Mgt Config Exception.
      */
-    private List<ConnectorConfigEntry> buildExternalIdentityStoreConnectorConfig() throws
-            CarbonSecurityConfigException {
+    private static List<ConnectorConfigEntry> buildExternalIdentityStoreConnectorConfig() throws
+            CarbonIdentityMgtConfigException {
 
         Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
 
@@ -87,17 +87,17 @@ public class ConnectorConfigBuilder {
      * Read the CredentialStoreConnector config entries from external identity-connector.yml files.
      *
      * @return List of external connector config entries.
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonIdentityMgtConfigException Carbon Identity Mgt Config Exception.
      */
-    private List<ConnectorConfigEntry> buildExternalCredentialStoreConnectorConfig() throws
-            CarbonSecurityConfigException {
+    private static List<ConnectorConfigEntry> buildExternalCredentialStoreConnectorConfig() throws
+            CarbonIdentityMgtConfigException {
 
         Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
 
         return FileUtil.readConfigFiles(path, ConnectorConfigEntry.class, "*-credential-connector.yml");
     }
 
-    private <T extends StoreConnectorConfig> List<StoreConnectorConfig> getStoreConnectorConfig
+    private static  <T extends StoreConnectorConfig> List<StoreConnectorConfig> getStoreConnectorConfig
             (List<ConnectorConfigEntry> connectorConfigEntries, Class<T> classType) {
 
         return connectorConfigEntries.stream()

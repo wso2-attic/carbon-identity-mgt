@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.identity.mgt.internal;
 
-import org.osgi.framework.BundleContext;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
@@ -53,8 +52,6 @@ public class IdentityMgtDataHolder {
     private Map<String, UniqueIdResolverFactory> uniqueIdResolverFactoryMap = new HashMap<>();
 
     private CarbonCachingService carbonCachingService;
-
-    private BundleContext bundleContext = null;
 
     private UniqueIdResolver uniqueIdResolver;
 
@@ -149,18 +146,6 @@ public class IdentityMgtDataHolder {
         }
 
         return carbonCachingService;
-    }
-
-    void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    public BundleContext getBundleContext() {
-
-        if (bundleContext == null) {
-            throw new IllegalStateException("BundleContext is null.");
-        }
-        return bundleContext;
     }
 
     public UniqueIdResolver getUniqueIdResolver() {

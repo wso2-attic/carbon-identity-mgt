@@ -18,7 +18,7 @@ package org.wso2.carbon.identity.mgt.internal.config.store;
 
 import org.wso2.carbon.identity.mgt.config.CacheConfig;
 import org.wso2.carbon.identity.mgt.config.StoreConfig;
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.wso2.carbon.identity.mgt.util.FileUtil;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 import org.wso2.carbon.kernel.utils.StringUtils;
@@ -36,25 +36,19 @@ import java.util.Objects;
  *
  * @since 1.0.0
  */
-public class StoreConfigBuilder {
+public class IdentityStoreConfigReader {
 
-    private static StoreConfigBuilder instance = new StoreConfigBuilder();
+    private IdentityStoreConfigReader() {
 
-    private StoreConfigBuilder() {
-
-    }
-
-    public static StoreConfigBuilder getInstance() {
-        return instance;
     }
 
     /**
      * Builder a config object based on the store-config.yml properties.
      *
      * @return StoreConfig
-     * @throws CarbonSecurityConfigException carbon security config exception.
+     * @throws CarbonIdentityMgtConfigException carbon security config exception.
      */
-    public StoreConfig getStoreConfig() throws CarbonSecurityConfigException {
+    public static StoreConfig getStoreConfig() throws CarbonIdentityMgtConfigException {
 
         StoreConfigFile storeConfigFile = buildStoreConfig();
         StoreConfig storeConfig = new StoreConfig();
@@ -92,9 +86,9 @@ public class StoreConfigBuilder {
      * Read store-config.yml file
      *
      * @return StoreConfig file from store-config.yml
-     * @throws CarbonSecurityConfigException on error in reading file.
+     * @throws CarbonIdentityMgtConfigException on error in reading file.
      */
-    private StoreConfigFile buildStoreConfig() throws CarbonSecurityConfigException {
+    private static StoreConfigFile buildStoreConfig() throws CarbonIdentityMgtConfigException {
 
         Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.STORE_CONFIG_FILE);
@@ -130,62 +124,4 @@ public class StoreConfigBuilder {
                 });
         return cacheConfigMap;
     }
-
-    /**
-     * Read the IdentityStoreConnector config entries from external identity-connector.yml files.
-     *
-     * @return List of external IdentityStoreConnector config entries.
-     * @throws CarbonSecurityConfigException
-     */
-//    private static List<IdentityStoreConnectorConfig> getExternalIdentityStoreConnectorConfig()
-//            throws CarbonSecurityConfigException {
-//
-//        List<IdentityStoreConnectorConfig> configEntries = new ArrayList<>();
-//        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
-//
-//        if (Files.exists(path)) {
-//            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-identity-connector.yml")) {
-//                for (Path filePath : stream) {
-//                    IdentityStoreConnectorConfig config = new Yaml().loadAs(Files.newInputStream(filePath),
-//                            IdentityStoreConnectorConfig.class);
-//
-//                    configEntries.add(config);
-//                }
-//            } catch (DirectoryIteratorException | IOException e) {
-//                throw new CarbonSecurityConfigException("Failed to read identity connector files from path: "
-//                        + path.toString(), e);
-//            }
-//        }
-//
-//        return configEntries;
-//    }
-//    /**
-//     * Read the CredentialStoreConnector config entries from external identity-connector.yml files.
-//     *
-//     * @return List of external CredentialStoreConnector Store config entries.
-//     * @throws CarbonSecurityConfigException
-//     */
-//    private static List<CredentialStoreConnectorConfig> getExternalCredentialStoreConnectorConfig()
-//            throws CarbonSecurityConfigException {
-//
-//        List<CredentialStoreConnectorConfig> configEntries = new ArrayList<>();
-//        Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
-//
-//        if (Files.exists(path)) {
-//            try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*-credential-connector.yml")) {
-//                for (Path filePath : stream) {
-//                    CredentialStoreConnectorConfig config = new Yaml().loadAs(Files.newInputStream(filePath),
-//                            CredentialStoreConnectorConfig.class);
-//
-//                    configEntries.add(config);
-//                }
-//            } catch (DirectoryIteratorException | IOException e) {
-//                throw new CarbonSecurityConfigException("Failed to read credential store connector files from path: "
-//                        + path.toString(), e);
-//            }
-//        }
-//
-//        return configEntries;
-//    }
-
 }
