@@ -282,7 +282,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             ClaimResolvingServiceImpl claimResolvingService = new ClaimResolvingServiceImpl();
             identityMgtDataHolder.setClaimResolvingService(claimResolvingService);
 
-            claimResolvingServiceRegistration = this.bundleContext.registerService(ClaimResolvingService.class,
+            claimResolvingServiceRegistration = bundleContext.registerService(ClaimResolvingService.class,
                     claimResolvingService, null);
             log.info("Claim resolving service registered successfully.");
 
