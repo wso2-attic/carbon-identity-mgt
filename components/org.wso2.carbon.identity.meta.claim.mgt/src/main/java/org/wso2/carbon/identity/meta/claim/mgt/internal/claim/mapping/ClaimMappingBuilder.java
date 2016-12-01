@@ -19,7 +19,7 @@ package org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping;
 
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimMappingBuilderException;
 import org.wso2.carbon.identity.meta.claim.mgt.util.ClaimMgtConstants;
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.wso2.carbon.identity.mgt.util.FileUtil;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 
@@ -46,7 +46,7 @@ public class ClaimMappingBuilder {
                 ClaimMgtConstants.CLAIM_MAPPING_FILE);
         try {
             claimConfig = FileUtil.readConfigFile(file, ClaimMappingFile.class);
-        } catch (CarbonSecurityConfigException e) {
+        } catch (CarbonIdentityMgtConfigException e) {
             throw new ClaimMappingBuilderException("Couldn't read the claim-mapping.yml file successfully.", e);
         }
         applicationMappings = claimConfig.getApplicationClaimMapping().stream().filter(Objects::nonNull)
