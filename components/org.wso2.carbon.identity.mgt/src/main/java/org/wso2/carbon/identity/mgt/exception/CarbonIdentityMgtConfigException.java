@@ -19,13 +19,13 @@ package org.wso2.carbon.identity.mgt.exception;
 /**
  * Represents all user core config related exceptions.
  */
-public class CarbonSecurityConfigException extends Exception {
+public class CarbonIdentityMgtConfigException extends Exception {
 
-    public CarbonSecurityConfigException(String message) {
+    public CarbonIdentityMgtConfigException(String message) {
         super(message);
     }
 
-    public CarbonSecurityConfigException(String message, Throwable cause) {
+    public CarbonIdentityMgtConfigException(String message, Throwable cause) {
         super(message, cause);
     }
 }

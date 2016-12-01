@@ -35,7 +35,7 @@ import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.StoreConfig;
 import org.wso2.carbon.identity.mgt.config.StoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.UniqueIdResolverConfig;
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.wso2.carbon.identity.mgt.exception.CredentialStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.DomainConfigException;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
@@ -43,9 +43,9 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.MetaClaimStoreException;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
-import org.wso2.carbon.identity.mgt.internal.config.connector.ConnectorConfigBuilder;
-import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfigBuilder;
-import org.wso2.carbon.identity.mgt.internal.config.store.StoreConfigBuilder;
+import org.wso2.carbon.identity.mgt.internal.config.connector.ConnectorConfigReader;
+import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfigReader;
+import org.wso2.carbon.identity.mgt.internal.config.store.IdentityStoreConfigReader;
 import org.wso2.carbon.identity.mgt.service.ClaimResolvingService;
 import org.wso2.carbon.identity.mgt.service.RealmService;
 import org.wso2.carbon.identity.mgt.service.impl.ClaimResolvingServiceImpl;
@@ -88,12 +88,15 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     private static final Logger log = LoggerFactory.getLogger(IdentityMgtComponent.class);
 
     private ServiceRegistration realmServiceRegistration;
+
+    private BundleContext bundleContext;
+
     private ServiceRegistration<ClaimResolvingService> claimResolvingServiceRegistration;
 
     @Activate
     public void registerCarbonIdentityMgtProvider(BundleContext bundleContext) {
 
-        IdentityMgtDataHolder.getInstance().setBundleContext(bundleContext);
+        this.bundleContext = bundleContext;
 
         // Register Default Unique Id Resolver
         IdentityMgtDataHolder.getInstance().registerUniqueIdResolverFactory(UNIQUE_ID_RESOLVER_TYPE,
@@ -104,7 +107,9 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     public void unregisterCarbonIdentityMgtProvider(BundleContext bundleContext) {
 
         try {
-            bundleContext.ungetService(realmServiceRegistration.getReference());
+            if (realmServiceRegistration != null) {
+                bundleContext.ungetService(realmServiceRegistration.getReference());
+            }
         } catch (Exception e) {
             log.error("Error occurred in un getting service", e);
         }
@@ -238,26 +243,25 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     public void onAllRequiredCapabilitiesAvailable() {
 
         IdentityMgtDataHolder identityMgtDataHolder = IdentityMgtDataHolder.getInstance();
-        BundleContext bundleContext = identityMgtDataHolder.getBundleContext();
 
         try {
 
             // Load all external store connector configs
-            Map<String, StoreConnectorConfig> connectorIdToStoreConnectorConfigMap = ConnectorConfigBuilder
-                    .getInstance().getStoreConnectorConfigs();
+            Map<String, StoreConnectorConfig> storeConnectorConfigs = ConnectorConfigReader
+                    .getStoreConnectorConfigs();
 
             // Load domain configurations
-            List<DomainConfig> domainConfigs = DomainConfigBuilder.getInstance().getDomainConfigs
-                    (connectorIdToStoreConnectorConfigMap);
+            List<DomainConfig> domainConfigs = DomainConfigReader.getDomainConfigs
+                    (storeConnectorConfigs);
 
             // Build Domains
             List<Domain> domains = buildDomains(domainConfigs);
 
             // Get the store configurations
-            StoreConfig storeConfig = StoreConfigBuilder.getInstance().getStoreConfig();
+            StoreConfig storeConfig = IdentityStoreConfigReader.getStoreConfig();
 
             //TODO
-            AuthorizationStore authorizationStore = IdentityMgtDataHolder.getInstance().getAuthorizationStore();
+            AuthorizationStore authorizationStore = identityMgtDataHolder.getAuthorizationStore();
 
             IdentityStore identityStore;
             if (storeConfig.isEnableCache() && storeConfig.isEnableIdentityStoreCache()) {
@@ -278,8 +282,8 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             ClaimResolvingServiceImpl claimResolvingService = new ClaimResolvingServiceImpl();
             identityMgtDataHolder.setClaimResolvingService(claimResolvingService);
 
-            claimResolvingServiceRegistration = bundleContext
-                    .registerService(ClaimResolvingService.class, claimResolvingService, null);
+            claimResolvingServiceRegistration = this.bundleContext.registerService(ClaimResolvingService.class,
+                    claimResolvingService, null);
             log.info("Claim resolving service registered successfully.");
 
             log.info("Carbon-Security bundle activated successfully.");
@@ -292,7 +296,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             log.error("Error occurred in building the domain configuration", e);
         } catch (UniqueIdResolverException e) {
             log.error("Error initializing unique id resolver.", e);
-        } catch (CarbonSecurityConfigException e) {
+        } catch (CarbonIdentityMgtConfigException e) {
             log.error("Error loading store configurations", e);
         } catch (IdentityStoreConnectorException e) {
             log.error("Error while initiating store connectors", e);

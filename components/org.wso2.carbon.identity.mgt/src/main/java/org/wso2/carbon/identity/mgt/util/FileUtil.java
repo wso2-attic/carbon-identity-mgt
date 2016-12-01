@@ -18,7 +18,7 @@
 
 package org.wso2.carbon.identity.mgt.util;
 
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
@@ -50,10 +50,10 @@ public class FileUtil {
      * @param classType Class type of the yml bean
      * @param <T>       Class T
      * @return Config file bean
-     * @throws CarbonSecurityConfigException Error if the file do not exists
+     * @throws CarbonIdentityMgtConfigException Error if the file do not exists
      */
     public static <T> T readConfigFile(String filePath, Class<T> classType)
-            throws CarbonSecurityConfigException {
+            throws CarbonIdentityMgtConfigException {
 
         Path file = Paths.get(filePath);
 
@@ -67,10 +67,10 @@ public class FileUtil {
      * @param classType Class type of the yml bean
      * @param <T>       Class T
      * @return Config file bean
-     * @throws CarbonSecurityConfigException Error in reading configuration file
+     * @throws CarbonIdentityMgtConfigException Error in reading configuration file
      */
     public static <T> T readConfigFile(Path file, Class<T> classType)
-            throws CarbonSecurityConfigException {
+            throws CarbonIdentityMgtConfigException {
 
         if (Files.exists(file)) {
             try {
@@ -79,10 +79,11 @@ public class FileUtil {
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 return yaml.loadAs(in, classType);
             } catch (IOException e) {
-                throw new CarbonSecurityConfigException(String.format("Error in reading file %s", file.toString()), e);
+                throw new CarbonIdentityMgtConfigException(String.format("Error in reading file %s", file.toString())
+                        , e);
             }
         } else {
-            throw new CarbonSecurityConfigException(String
+            throw new CarbonIdentityMgtConfigException(String
                     .format("Configuration file %s is not available.", file.toString()));
         }
     }
@@ -95,10 +96,10 @@ public class FileUtil {
      * @param fileNameRegex file name regex
      * @param <T>           Class T
      * @return Config file bean
-     * @throws CarbonSecurityConfigException Error in reading configuration file
+     * @throws CarbonIdentityMgtConfigException Error in reading configuration file
      */
     public static <T> List<T> readConfigFiles(Path path, Class<T> classType, String fileNameRegex)
-            throws CarbonSecurityConfigException {
+            throws CarbonIdentityMgtConfigException {
 
         List<T> configEntries = new ArrayList<>();
         if (Files.exists(path)) {
@@ -110,8 +111,8 @@ public class FileUtil {
                     configEntries.add(yaml.loadAs(in, classType));
                 }
             } catch (DirectoryIteratorException | IOException e) {
-                throw new CarbonSecurityConfigException(String.format("Failed to read identity connector files from " +
-                        "path: %s", path.toString()), e);
+                throw new CarbonIdentityMgtConfigException(String.format("Failed to read identity connector files " +
+                        "from path: %s", path.toString()), e);
             }
         }
         return configEntries;

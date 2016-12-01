@@ -1,6 +1,6 @@
 package org.wso2.carbon.identity.mgt.service.impl;
 
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.wso2.carbon.identity.mgt.internal.config.claim.mapping.ClaimMappingBuilder;
 import org.wso2.carbon.identity.mgt.service.ClaimResolvingService;
 
@@ -15,10 +15,11 @@ public class ClaimResolvingServiceImpl implements ClaimResolvingService {
      *
      * @param applicationName : Uniquely identifying name for application.
      * @return Map(application claims : root claim)
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonIdentityMgtConfigException
      */
     @Override
-    public Map<String, String> getApplicationClaimMapping(String applicationName) throws CarbonSecurityConfigException {
+    public Map<String, String> getApplicationClaimMapping(String applicationName) throws
+            CarbonIdentityMgtConfigException {
         return ClaimMappingBuilder.getInstance().getApplicationClaimMapping(applicationName);
     }
 
@@ -27,10 +28,10 @@ public class ClaimResolvingServiceImpl implements ClaimResolvingService {
      *
      * @param idpName : Uniquely identifying name for IDPs.
      * @return Map(Idp claim : root claim)
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonIdentityMgtConfigException
      */
     @Override
-    public Map<String, String> getIdpClaimMapping(String idpName) throws CarbonSecurityConfigException {
+    public Map<String, String> getIdpClaimMapping(String idpName) throws CarbonIdentityMgtConfigException {
         return ClaimMappingBuilder.getInstance().getIdpClaimMapping(idpName);
     }
 
@@ -39,10 +40,10 @@ public class ClaimResolvingServiceImpl implements ClaimResolvingService {
      *
      * @param standardName : Uniquely identifying name for standards.
      * @return Map(Standard claim : root claim)
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonIdentityMgtConfigException
      */
     @Override
-    public Map<String, String> getStandardClaimMapping(String standardName) throws CarbonSecurityConfigException {
+    public Map<String, String> getStandardClaimMapping(String standardName) throws CarbonIdentityMgtConfigException {
         return ClaimMappingBuilder.getInstance().getStandardClaimMapping(standardName);
     }
 }
