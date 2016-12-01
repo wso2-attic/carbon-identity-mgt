@@ -46,9 +46,7 @@ import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.internal.config.connector.ConnectorConfigReader;
 import org.wso2.carbon.identity.mgt.internal.config.domain.DomainConfigReader;
 import org.wso2.carbon.identity.mgt.internal.config.store.IdentityStoreConfigReader;
-import org.wso2.carbon.identity.mgt.service.ClaimResolvingService;
 import org.wso2.carbon.identity.mgt.service.RealmService;
-import org.wso2.carbon.identity.mgt.service.impl.ClaimResolvingServiceImpl;
 import org.wso2.carbon.identity.mgt.service.impl.RealmServiceImpl;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
@@ -91,8 +89,6 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
     private BundleContext bundleContext;
 
-    private ServiceRegistration<ClaimResolvingService> claimResolvingServiceRegistration;
-
     @Activate
     public void registerCarbonIdentityMgtProvider(BundleContext bundleContext) {
 
@@ -125,7 +121,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             unbind = "unregisterIdentityStoreConnectorFactory"
     )
     protected void registerIdentityStoreConnectorFactory(IdentityStoreConnectorFactory identityStoreConnectorFactory,
-                                                         Map<String, String> properties) {
+            Map<String, String> properties) {
 
         String connectorId = properties.get("connector-type");
         IdentityMgtDataHolder.getInstance().registerIdentityStoreConnectorFactory(connectorId,
@@ -133,7 +129,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     }
 
     protected void unregisterIdentityStoreConnectorFactory(IdentityStoreConnectorFactory
-                                                                   identityStoreConnectorFactory) {
+            identityStoreConnectorFactory) {
 
     }
 
@@ -153,7 +149,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     }
 
     protected void unregisterCredentialStoreConnectorFactory(CredentialStoreConnectorFactory
-                                                                     credentialStoreConnectorFactory) {
+            credentialStoreConnectorFactory) {
     }
 
     //TODO make this MANDATORY in M3 release
@@ -278,14 +274,6 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             realmServiceRegistration = bundleContext.registerService(RealmService.class, realmService, null);
             log.info("Realm service registered successfully.");
 
-            // Register the claim resolving service.
-            ClaimResolvingServiceImpl claimResolvingService = new ClaimResolvingServiceImpl();
-            identityMgtDataHolder.setClaimResolvingService(claimResolvingService);
-
-            claimResolvingServiceRegistration = bundleContext.registerService(ClaimResolvingService.class,
-                    claimResolvingService, null);
-            log.info("Claim resolving service registered successfully.");
-
             log.info("Carbon-Security bundle activated successfully.");
 
         } catch (CredentialStoreConnectorException | IdentityStoreException e) {
@@ -397,4 +385,3 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
         return domains;
     }
 }
-

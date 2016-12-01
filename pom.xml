@@ -296,6 +296,7 @@
 
     <modules>
         <module>components/org.wso2.carbon.identity.mgt</module>
+        <module>components/org.wso2.carbon.identity.meta.claim.mgt</module>
         <module>feature</module>
         <module>tests</module>
     </modules>
