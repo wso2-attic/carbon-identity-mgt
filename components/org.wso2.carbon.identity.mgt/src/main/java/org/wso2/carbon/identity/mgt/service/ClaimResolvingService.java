@@ -1,6 +1,6 @@
 package org.wso2.carbon.identity.mgt.service;
 
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 
 import java.util.Map;
 
@@ -14,25 +14,25 @@ public interface ClaimResolvingService {
      *
      * @param applicationName : Uniquely identifying name for application.
      * @return Map(application claims : root claim)
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonIdentityMgtConfigException
      */
-    Map<String, String> getApplicationClaimMapping(String applicationName) throws CarbonSecurityConfigException;
+    Map<String, String> getApplicationClaimMapping(String applicationName) throws CarbonIdentityMgtConfigException;
 
     /**
      * Provides claim mappings for IDPs.
      *
      * @param idpName : Uniquely identifying name for IDPs.
      * @return Map(Idp claim : root claim)
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonIdentityMgtConfigException
      */
-    Map<String, String> getIdpClaimMapping(String idpName) throws CarbonSecurityConfigException;
+    Map<String, String> getIdpClaimMapping(String idpName) throws CarbonIdentityMgtConfigException;
 
     /**
      * Provides claim mappings for standards.
      *
      * @param standardName : Uniquely identifying name for standards.
      * @return Map(Standard claim : root claim)
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonIdentityMgtConfigException
      */
-    Map<String, String> getStandardClaimMapping(String standardName) throws CarbonSecurityConfigException;
+    Map<String, String> getStandardClaimMapping(String standardName) throws CarbonIdentityMgtConfigException;
 }

@@ -23,7 +23,7 @@ import org.wso2.carbon.identity.mgt.config.DomainConfig;
 import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.StoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.config.UniqueIdResolverConfig;
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.wso2.carbon.identity.mgt.util.FileUtil;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 import org.wso2.carbon.kernel.utils.StringUtils;
@@ -43,26 +43,21 @@ import static org.wso2.carbon.identity.mgt.util.IdentityMgtConstants.UNIQUE_ID_R
 /**
  * Builder for retrieving Domain configurations.
  */
-public class DomainConfigBuilder {
+public class DomainConfigReader {
 
-    private static DomainConfigBuilder instance = new DomainConfigBuilder();
+    private DomainConfigReader() {
 
-    private DomainConfigBuilder() {
-
-    }
-
-    public static DomainConfigBuilder getInstance() {
-        return instance;
     }
 
     /**
+     * Reads domain configurations.
      *
-     * @param storeConnectorConfigMap
-     * @return
-     * @throws CarbonSecurityConfigException
+     * @param storeConnectorConfigMap connector id to connector configuration map.
+     * @return domain configurations.
+     * @throws CarbonIdentityMgtConfigException
      */
-    public List<DomainConfig> getDomainConfigs(Map<String, StoreConnectorConfig> storeConnectorConfigMap)
-            throws CarbonSecurityConfigException {
+    public static List<DomainConfig> getDomainConfigs(Map<String, StoreConnectorConfig> storeConnectorConfigMap)
+            throws CarbonIdentityMgtConfigException {
 
         DomainConfigFile domainConfigFile = buildDomainConfig();
 
@@ -79,8 +74,8 @@ public class DomainConfigBuilder {
                 .collect(Collectors.toList());
     }
 
-    private DomainConfig getDomainConfig(Map<String, StoreConnectorConfig> connectorIdToStoreConnectorConfigMap,
-                                         DomainConfigEntry domainConfigEntry) {
+    private static DomainConfig getDomainConfig(Map<String, StoreConnectorConfig> connectorIdToStoreConnectorConfigMap,
+                                                DomainConfigEntry domainConfigEntry) {
 
         DomainConfig domainConfig = new DomainConfig();
         domainConfig.setName(domainConfigEntry.getName());
@@ -169,7 +164,7 @@ public class DomainConfigBuilder {
         return domainConfig;
     }
 
-    private DomainConfigFile buildDomainConfig() throws CarbonSecurityConfigException {
+    private static DomainConfigFile buildDomainConfig() throws CarbonIdentityMgtConfigException {
 
         Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.DOMAIN_CONFIG_FILE);
@@ -178,7 +173,7 @@ public class DomainConfigBuilder {
         return FileUtil.readConfigFile(file, DomainConfigFile.class);
     }
 
-    private List<MetaClaimMapping> getMetaClaimMappings(String storeConnectorId, List<DomainAttributeConfigEntry>
+    private static List<MetaClaimMapping> getMetaClaimMappings(String storeConnectorId, List<DomainAttributeConfigEntry>
             attributeConfigEntries) {
 
         if (attributeConfigEntries.isEmpty()) {

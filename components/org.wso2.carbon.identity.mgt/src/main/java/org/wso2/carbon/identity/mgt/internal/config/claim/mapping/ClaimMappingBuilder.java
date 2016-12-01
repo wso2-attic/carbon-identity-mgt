@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.identity.mgt.internal.config.claim.mapping;
 
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.wso2.carbon.identity.mgt.util.FileUtil;
 import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 
@@ -43,13 +43,13 @@ public class ClaimMappingBuilder {
         static {
             try {
                 CLAIM_MAPPING_BUILDER = new ClaimMappingBuilder();
-            } catch (CarbonSecurityConfigException e) {
+            } catch (CarbonIdentityMgtConfigException e) {
                 throw new ExceptionInInitializerError(e);
             }
         }
     }
 
-    private ClaimMappingBuilder() throws CarbonSecurityConfigException {
+    private ClaimMappingBuilder() throws CarbonIdentityMgtConfigException {
 
         Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.CLAIM_MAPPING_FILE);
@@ -71,7 +71,7 @@ public class ClaimMappingBuilder {
 
     }
 
-    public static ClaimMappingBuilder getInstance() throws CarbonSecurityConfigException {
+    public static ClaimMappingBuilder getInstance() throws CarbonIdentityMgtConfigException {
         return ClaimMappingBuilderHolder.CLAIM_MAPPING_BUILDER;
     }
 
@@ -80,9 +80,10 @@ public class ClaimMappingBuilder {
      *
      * @param applicationName : Name to identify the application
      * @return Map(application claim : root claim URI)
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonIdentityMgtConfigException
      */
-    public Map<String, String> getApplicationClaimMapping(String applicationName) throws CarbonSecurityConfigException {
+    public Map<String, String> getApplicationClaimMapping(String applicationName) throws
+            CarbonIdentityMgtConfigException {
         return applicationMappings.get(applicationName);
 
     }
@@ -92,9 +93,9 @@ public class ClaimMappingBuilder {
      *
      * @param idpName : Name to identify the idp
      * @return Map(idp claim : root claim URI)
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonIdentityMgtConfigException
      */
-    public Map<String, String> getIdpClaimMapping(String idpName) throws CarbonSecurityConfigException {
+    public Map<String, String> getIdpClaimMapping(String idpName) throws CarbonIdentityMgtConfigException {
         return idpMappings.get(idpName);
 
     }
@@ -104,9 +105,9 @@ public class ClaimMappingBuilder {
      *
      * @param standardName : Name to identify the standard
      * @return Map(standard claim : root claim URI)
-     * @throws CarbonSecurityConfigException
+     * @throws CarbonIdentityMgtConfigException
      */
-    public Map<String, String> getStandardClaimMapping(String standardName) throws CarbonSecurityConfigException {
+    public Map<String, String> getStandardClaimMapping(String standardName) throws CarbonIdentityMgtConfigException {
         return standardMappings.get(standardName);
 
     }

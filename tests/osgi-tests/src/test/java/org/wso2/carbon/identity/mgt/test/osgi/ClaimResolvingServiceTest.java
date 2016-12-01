@@ -9,7 +9,7 @@ import org.osgi.framework.BundleContext;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityConfigException;
+import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.wso2.carbon.identity.mgt.service.ClaimResolvingService;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
@@ -48,7 +48,7 @@ public class ClaimResolvingServiceTest {
     }
 
     @Test
-    public void testGetApplicationClaimMapping() throws CarbonSecurityConfigException {
+    public void testGetApplicationClaimMapping() throws CarbonIdentityMgtConfigException {
         Map<String, String> applicationMappings = new HashMap<>();
         applicationMappings.put("http://application1.com/name", "http://wso2.org/claims/username");
         applicationMappings.put("http://application1.com/role", "http://wso2.org/claims/role");
@@ -65,7 +65,7 @@ public class ClaimResolvingServiceTest {
     }
 
     @Test
-    public void testIdpClaimMapping() throws CarbonSecurityConfigException {
+    public void testIdpClaimMapping() throws CarbonIdentityMgtConfigException {
         Map<String, String> idpMappings = new HashMap<>();
         idpMappings.put("http://identityprovider1.com/idp-name", "http://wso2.org/claims/username");
         idpMappings.put("http://identityprovider1.com/idp-role", "http://wso2.org/claims/role");
@@ -80,7 +80,7 @@ public class ClaimResolvingServiceTest {
     }
 
     @Test
-    public void testStandardClaimMapping() throws CarbonSecurityConfigException {
+    public void testStandardClaimMapping() throws CarbonIdentityMgtConfigException {
         Map<String, String> standardMappings = new HashMap<>();
         standardMappings.put("username", "http://wso2.org/claims/username");
         standardMappings.put("role", "http://wso2.org/claims/role");
