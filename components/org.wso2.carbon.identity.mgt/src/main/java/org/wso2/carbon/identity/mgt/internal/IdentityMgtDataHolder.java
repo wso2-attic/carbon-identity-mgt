@@ -21,7 +21,6 @@ import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
-import org.wso2.carbon.identity.mgt.service.ClaimResolvingService;
 import org.wso2.carbon.identity.mgt.service.RealmService;
 import org.wso2.carbon.identity.mgt.store.IdentityStore;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory;
@@ -60,8 +59,6 @@ public class IdentityMgtDataHolder {
     private UniqueIdResolver uniqueIdResolver;
 
     private DataSourceService dataSourceService;
-
-    private ClaimResolvingService claimResolvingService;
 
     private IdentityMgtDataHolder() {
     }
@@ -186,15 +183,4 @@ public class IdentityMgtDataHolder {
         this.dataSourceService = dataSourceService;
     }
 
-    public ClaimResolvingService getClaimResolvingService() throws CarbonSecurityDataHolderException {
-
-        if (claimResolvingService == null) {
-            throw new RuntimeException("Claim resolving service is null. Cannot retrieve claim mappings");
-        }
-        return claimResolvingService;
-    }
-
-    public void setClaimResolvingService(ClaimResolvingService claimResolvingService) {
-        this.claimResolvingService = claimResolvingService;
-    }
 }
