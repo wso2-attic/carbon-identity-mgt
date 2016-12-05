@@ -30,7 +30,7 @@
 
     <artifactId>org.wso2.carbon.identity.meta.claim.mgt</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon Meta Claim Mgt - services Bundle</name>
+    <name>WSO2 Carbon Identity Meta Claim Mgt - services Bundle</name>
 
     <build>
         <extensions>
