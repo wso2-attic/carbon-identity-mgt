@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.identity.mgt.bean;
 
+import org.wso2.carbon.identity.mgt.claim.Claim;
+import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.StoreException;
@@ -164,6 +166,29 @@ public class Group {
     public void setIdentityStore(IdentityStore identityStore) {
         this.identityStore = identityStore;
     }
+
+
+    /**
+     * Get claims of this group.
+     *
+     * @return List of Group claims.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    public List<Claim> getClaims() throws IdentityStoreException, GroupNotFoundException {
+        return identityStore.getClaimsOfGroup(this.uniqueGroupId, this.domainName);
+    }
+
+    /**
+     * Get claims of this group for given URIs.
+     *
+     * @param metaClaims Claim URIs that needs to be retrieved.
+     * @return List of Group claims.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    public List<Claim> getClaims(List<MetaClaim> metaClaims) throws IdentityStoreException, GroupNotFoundException {
+        return identityStore.getClaimsOfGroup(uniqueGroupId, metaClaims, domainName);
+    }
+
 
     /**
      * Builder for group bean.
