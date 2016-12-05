@@ -348,7 +348,7 @@ public interface IdentityStore {
      * @throws IdentityStoreException Identity Store Exception
      * @throws UserNotFoundException  User Not Found Exception
      */
-    List<Claim> getClaims(String uniqueUserId) throws IdentityStoreException, UserNotFoundException;
+    List<Claim> getClaimsOfUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException;
 
     /**
      * Get all claims of a user.
@@ -358,7 +358,8 @@ public interface IdentityStore {
      * @throws IdentityStoreException Identity Store Exception
      * @throws UserNotFoundException  User Not Found Exception
      */
-    List<Claim> getClaims(String uniqueUserId, String domainName) throws IdentityStoreException, UserNotFoundException;
+    List<Claim> getClaimsOfUser(String uniqueUserId, String domainName) throws IdentityStoreException,
+            UserNotFoundException;
 
     /**
      * Get all claims of a user for given URIs.
@@ -369,7 +370,7 @@ public interface IdentityStore {
      * @throws IdentityStoreException IdentityStore Exception
      * @throws UserNotFoundException  User Not Found Exception
      */
-    List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims) throws IdentityStoreException,
+    List<Claim> getClaimsOfUser(String uniqueUserId, List<MetaClaim> metaClaims) throws IdentityStoreException,
             UserNotFoundException;
 
     /**
@@ -382,8 +383,53 @@ public interface IdentityStore {
      * @throws IdentityStoreException IdentityStore Exception
      * @throws UserNotFoundException  User Not Found Exception
      */
-    List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims, String domainName) throws
+    List<Claim> getClaimsOfUser(String uniqueUserId, List<MetaClaim> metaClaims, String domainName) throws
             IdentityStoreException, UserNotFoundException;
+
+    /**
+     * Get all claims of a group.
+     *
+     * @param uniqueGroupId The group Id.
+     * @throws IdentityStoreException Identity Store Exception
+     * @throws GroupNotFoundException  Group Not Found Exception
+     */
+    List<Claim> getClaimsOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException;
+
+    /**
+     * Get all claims of a group.
+     *
+     * @param uniqueGroupId The group Id.
+     * @return domainName domainName.
+     * @throws IdentityStoreException Identity Store Exception
+     * @throws GroupNotFoundException  Group Not Found Exception
+     */
+    List<Claim> getClaimsOfGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
+            GroupNotFoundException;
+
+    /**
+     * Get all claims of a group for given URIs.
+     *
+     * @param uniqueGroupId The group to retrieve claims for
+     * @param metaClaims   List of meta claims to retrieve claims for
+     * @return List of claims
+     * @throws IdentityStoreException IdentityStore Exception
+     * @throws GroupNotFoundException  Group Not Found Exception
+     */
+    List<Claim> getClaimsOfGroup(String uniqueGroupId, List<MetaClaim> metaClaims) throws IdentityStoreException,
+            GroupNotFoundException;
+
+    /**
+     * Get all claims of a group for given URIs.
+     *
+     * @param uniqueGroupId The group to retrieve claims for
+     * @param metaClaims   List of meta claims to retrieve claims for
+     * @param domainName   Domain name
+     * @return List of claims
+     * @throws IdentityStoreException IdentityStore Exception
+     * @throws GroupNotFoundException  Group Not Found Exception
+     */
+    List<Claim> getClaimsOfGroup(String uniqueGroupId, List<MetaClaim> metaClaims, String domainName) throws
+            IdentityStoreException, GroupNotFoundException;
 
     /**
      * Add new user to the default domain.

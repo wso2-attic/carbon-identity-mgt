@@ -302,30 +302,57 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<Claim> getClaims(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
+    public List<Claim> getClaimsOfUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
-        return identityStore.getClaims(uniqueUserId);
+        return identityStore.getClaimsOfUser(uniqueUserId);
     }
 
     @Override
-    public List<Claim> getClaims(String uniqueUserId, String domainName) throws IdentityStoreException,
+    public List<Claim> getClaimsOfUser(String uniqueUserId, String domainName) throws IdentityStoreException,
             UserNotFoundException {
 
-        return identityStore.getClaims(uniqueUserId, domainName);
+        return identityStore.getClaimsOfUser(uniqueUserId, domainName);
     }
 
     @Override
-    public List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims) throws IdentityStoreException,
+    public List<Claim> getClaimsOfUser(String uniqueUserId, List<MetaClaim> metaClaims) throws IdentityStoreException,
             UserNotFoundException {
 
-        return identityStore.getClaims(uniqueUserId, metaClaims);
+        return identityStore.getClaimsOfUser(uniqueUserId, metaClaims);
     }
 
     @Override
-    public List<Claim> getClaims(String uniqueUserId, List<MetaClaim> metaClaims, String domainName) throws
+    public List<Claim> getClaimsOfUser(String uniqueUserId, List<MetaClaim> metaClaims, String domainName) throws
             IdentityStoreException, UserNotFoundException {
 
-        return identityStore.getClaims(uniqueUserId, metaClaims, domainName);
+        return identityStore.getClaimsOfUser(uniqueUserId, metaClaims, domainName);
+    }
+
+    @Override
+    public List<Claim> getClaimsOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
+
+        return identityStore.getClaimsOfGroup(uniqueGroupId);
+    }
+
+    @Override
+    public List<Claim> getClaimsOfGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
+            GroupNotFoundException {
+
+        return identityStore.getClaimsOfGroup(uniqueGroupId, domainName);
+    }
+
+    @Override
+    public List<Claim> getClaimsOfGroup(String uniqueGroupId, List<MetaClaim> metaClaims) throws
+            IdentityStoreException, GroupNotFoundException {
+
+        return identityStore.getClaimsOfGroup(uniqueGroupId, metaClaims);
+    }
+
+    @Override
+    public List<Claim> getClaimsOfGroup(String uniqueGroupId, List<MetaClaim> metaClaims, String domainName) throws
+            IdentityStoreException, GroupNotFoundException {
+
+        return identityStore.getClaimsOfGroup(uniqueGroupId, metaClaims, domainName);
     }
 
     @Override
