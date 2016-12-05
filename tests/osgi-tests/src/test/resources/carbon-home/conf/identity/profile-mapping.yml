@@ -1,0 +1,141 @@
+###############################################################################
+#   Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+###############################################################################
+---
+# Configurations related to profile claim mappings
+#Configure profiles for users
+users:
+ -
+  profile: "registration"
+  claims:
+   -
+    claimUri: "http://wso2.org/claims/username"
+     properties:
+     required: "true"
+     readonly: "true"
+     verify: "true"
+     unique: "true"
+     regex: "*"
+  -
+    claimUri: "http://wso2.org/claims/email"
+    properties:
+     required: "true"
+     readonly: "true"
+     verify: "true"
+     unique: "true"
+     regex: "*"
+ -
+  profile: "employee"
+   claims:
+   -
+    claimUri: "http://wso2.org/claims/employeeNumber"
+     properties:
+      required: "true"
+      readonly: "true"
+      verify: "true"
+      unique: "true"
+      regex: "*"
+   -
+     claimUri: "http://wso2.org/claims/mobile"
+     properties:
+      required: "true"
+      readonly: "true"
+      verify: "true"
+      unique: "true"
+      regex: "*"
+  -
+
+#Configure profiles for applications
+applications:
+ -
+  profile: "travelocity-A"
+  claims:
+   -
+    claimUri: "http://wso2.org/claims/role"
+     properties:
+     required: "true"
+     readonly: "true"
+     verify: "true"
+     unique: "true"
+     regex: "*"
+  -
+    claimUri: "http://wso2.org/claims/email"
+    properties:
+     required: "true"
+     readonly: "true"
+     verify: "true"
+     unique: "true"
+     regex: "*"
+ -
+  profile: "travelocity-B"
+   claims:
+   -
+    claimUri: "http://wso2.org/claims/username"
+     properties:
+      required: "true"
+      readonly: "true"
+      verify: "true"
+      unique: "true"
+      regex: "*"
+   -
+     claimUri: "http://wso2.org/claims/mobile"
+     properties:
+      required: "true"
+      readonly: "true"
+      verify: "true"
+      unique: "true"
+      regex: "*"
+  -
+
+#Configure profiles for identity providers
+identityProviders:
+ -
+  profile: "Google-user"
+  claims:
+   -
+    claimUri: "http://wso2.org/claims/username"
+     properties:
+     required: "true"
+     readonly: "true"
+     verify: "true"
+     unique: "true"
+     regex: "*"
+  -
+    claimUri: "http://wso2.org/claims/email"
+    properties:
+     required: "true"
+     readonly: "true"
+     verify: "true"
+     unique: "true"
+     regex: "*"
+ -
+  profile: "Google-employee"
+   claims:
+   -
+    claimUri: "http://wso2.org/claims/employeeNumber"
+     properties:
+      required: "true"
+      readonly: "true"
+      verify: "true"
+      unique: "true"
+      regex: "*"
+   -
+     claimUri: "http://wso2.org/claims/dob"
+     properties:
+      required: "true"
+      readonly: "true"
+      verify: "true"
+      unique: "true"
+      regex: "*"

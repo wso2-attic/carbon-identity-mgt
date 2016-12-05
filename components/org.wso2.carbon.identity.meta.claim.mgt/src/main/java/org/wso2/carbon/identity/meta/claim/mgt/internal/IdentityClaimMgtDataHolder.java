@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.identity.meta.claim.mgt.internal;
 
-import org.osgi.framework.BundleContext;
 import org.wso2.carbon.identity.meta.claim.mgt.exception.IdentityClaimMgtDataHolderException;
 import org.wso2.carbon.identity.meta.claim.mgt.service.ClaimResolvingService;
 
@@ -31,9 +30,8 @@ public class IdentityClaimMgtDataHolder {
 
     private ClaimResolvingService claimResolvingService;
 
-    private BundleContext bundleContext = null;
-
     private IdentityClaimMgtDataHolder() {
+
     }
 
     /**
@@ -43,18 +41,6 @@ public class IdentityClaimMgtDataHolder {
      */
     public static IdentityClaimMgtDataHolder getInstance() {
         return instance;
-    }
-
-    public BundleContext getBundleContext() {
-
-        if (bundleContext == null) {
-            throw new IllegalStateException("BundleContext is null.");
-        }
-        return bundleContext;
-    }
-
-    void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
     }
 
     public ClaimResolvingService getClaimResolvingService() throws IdentityClaimMgtDataHolderException {

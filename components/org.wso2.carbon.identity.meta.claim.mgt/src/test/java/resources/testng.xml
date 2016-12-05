@@ -12,12 +12,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<!--<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >-->
 
-<suite name="Identity-Claim-Mgt-Test-Suite">
-    <test name="identity-claim-mgt-tests" preserve-order="true" parallel="false">
-        <classes>
-            <class name="org.wso2.carbon.identity.meta.claim.mgt.test.unit.ClaimResolvingServiceTest"/>
-        </classes>
-    </test>
-</suite>
+<!--<suite name="Identity-Claim-Mgt-Test-Suite">-->
+    <!--<test name="identity-claim-mgt-tests" preserve-order="true" parallel="false">-->
+        <!--<classes>-->
+        <!--</classes>-->
+    <!--</test>-->
+<!--</suite>-->

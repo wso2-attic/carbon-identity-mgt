@@ -19,9 +19,8 @@
 package org.wso2.carbon.identity.meta.claim.mgt.exception;
 
 /**
- * CarbonSecurityDataHolderException class to handle
- * NullPointerExceptions when retrieving data from
- * IdentityMgtDataHolder
+ * Exception class to handle exceptions when retrieving data from
+ * ClaimResolvingService.
  */
 public class ClaimResolvingServiceException extends Exception {
 

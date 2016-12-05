@@ -18,6 +18,7 @@ limitations under the License.
     <test name="identity-store-tests" preserve-order="true" parallel="false">
         <classes>
         <class name="org.wso2.carbon.identity.mgt.test.osgi.IdentityStoreTest"/>
+        <!--<class name="org.wso2.carbon.identity.mgt.test.osgi.ClaimResolvingServiceTest"/>-->
         </classes>
     </test>
 </suite>

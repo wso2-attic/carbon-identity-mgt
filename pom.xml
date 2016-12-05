@@ -151,6 +151,11 @@
                 <version>${carbon.identity.mgt.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.identity.mgt</groupId>
+                <artifactId>org.wso2.carbon.identity.meta.claim.mgt</artifactId>
+                <version>${carbon.identity.mgt.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.datasources</groupId>
                 <artifactId>org.wso2.carbon.datasource.core</artifactId>
                 <version>${carbon.datasources.version}</version>
