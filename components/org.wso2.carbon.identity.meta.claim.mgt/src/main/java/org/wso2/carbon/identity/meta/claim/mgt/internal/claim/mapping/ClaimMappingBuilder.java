@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping;
 
-
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimMappingBuilderException;
 import org.wso2.carbon.identity.meta.claim.mgt.util.ClaimMgtConstants;
 import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;

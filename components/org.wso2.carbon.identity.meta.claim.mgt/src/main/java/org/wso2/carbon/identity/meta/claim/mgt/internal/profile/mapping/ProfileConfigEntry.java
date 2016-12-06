@@ -13,40 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Claim Mapping File.
+ * Configuration of a profile
  */
-public class ProfileMappingFile {
+public class ProfileConfigEntry {
+    private String profile;
+    private List<ProfileMappingEntry> claims;
 
-    //List<Entry>
-    private List<ProfileMappingEntry> profiles;
-
-    /**
-     * Get the profiles with their mapped claims.
-     *
-     * @return : A list of entries with a set of claims mapped to a profile.
-     */
-    public List<ProfileMappingEntry> getProfileClaimMapping() {
-
-        if (profiles == null) {
-            return Collections.emptyList();
-        }
-        return profiles;
+    public List<ProfileMappingEntry> getClaims() {
+        return claims;
     }
 
-    /**
-     * Set the claim mappings for profiles.
-     *
-     * @param profiles : List of profiles with claims mapped to each profile.
-     */
-    public void setProfileClaimMappings(List<ProfileMappingEntry> profiles) {
-        this.profiles = profiles;
+    public void setClaims(List<ProfileMappingEntry> claims) {
+        this.claims = claims;
+    }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
     }
 
 }

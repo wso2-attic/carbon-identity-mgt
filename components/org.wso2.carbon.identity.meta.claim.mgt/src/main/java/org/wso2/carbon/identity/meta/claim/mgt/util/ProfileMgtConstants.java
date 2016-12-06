@@ -13,33 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping;
-
-import java.util.Map;
+package org.wso2.carbon.identity.meta.claim.mgt.util;
 
 /**
- * Claim Mapping Entry.
+ *
  */
-public class ProfileMappingEntry {
+public class ProfileMgtConstants {
+    public static final String PROFILE_MAPPING_FILE = "profile-mapping.yml";
 
-    private String claimUri;
-
-    private Map<String, String> properties;
-
-    public String getClaim() {
-        return claimUri;
-    }
-
-    public void setClaim(String claim) {
-        this.claimUri = claim;
-    }
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
 }

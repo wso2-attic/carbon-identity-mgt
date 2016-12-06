@@ -15,8 +15,8 @@ limitations under the License.
 <!--<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >-->
 
 <!--<suite name="Identity-Claim-Mgt-Test-Suite">-->
-    <!--<test name="identity-claim-mgt-tests" preserve-order="true" parallel="false">-->
-        <!--<classes>-->
-        <!--</classes>-->
-    <!--</test>-->
+<!--<test name="identity-claim-mgt-tests" preserve-order="true" parallel="false">-->
+<!--<classes>-->
+<!--</classes>-->
+<!--</test>-->
 <!--</suite>-->

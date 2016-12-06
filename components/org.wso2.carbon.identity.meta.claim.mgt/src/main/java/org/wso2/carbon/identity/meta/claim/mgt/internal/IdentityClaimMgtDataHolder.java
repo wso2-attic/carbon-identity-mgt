@@ -18,6 +18,7 @@ package org.wso2.carbon.identity.meta.claim.mgt.internal;
 
 import org.wso2.carbon.identity.meta.claim.mgt.exception.IdentityClaimMgtDataHolderException;
 import org.wso2.carbon.identity.meta.claim.mgt.service.ClaimResolvingService;
+import org.wso2.carbon.identity.meta.claim.mgt.service.ProfileMgtService;
 
 /**
  * Carbon security data holder.
@@ -29,6 +30,7 @@ public class IdentityClaimMgtDataHolder {
     private static IdentityClaimMgtDataHolder instance = new IdentityClaimMgtDataHolder();
 
     private ClaimResolvingService claimResolvingService;
+    private ProfileMgtService profileMgtService;
 
     private IdentityClaimMgtDataHolder() {
 
@@ -53,5 +55,17 @@ public class IdentityClaimMgtDataHolder {
 
     public void setClaimResolvingService(ClaimResolvingService claimResolvingService) {
         this.claimResolvingService = claimResolvingService;
+    }
+
+    public ProfileMgtService getProfileMgtService() throws IdentityClaimMgtDataHolderException {
+
+        if (profileMgtService == null) {
+            throw new RuntimeException("Profile Mgt service is null. Cannot retrieve profile mappings");
+        }
+        return profileMgtService;
+    }
+
+    public void setProfileMgtService(ProfileMgtService profileMgtService) {
+        this.profileMgtService = profileMgtService;
     }
 }

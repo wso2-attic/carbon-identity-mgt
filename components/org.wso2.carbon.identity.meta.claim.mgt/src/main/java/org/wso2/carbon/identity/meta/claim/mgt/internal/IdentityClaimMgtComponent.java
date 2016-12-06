@@ -56,8 +56,8 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
         this.bundleContext = bundleContext;
 
         // Register Default Unique Id Resolver
-        IdentityMgtDataHolder.getInstance().registerUniqueIdResolverFactory(UNIQUE_ID_RESOLVER_TYPE,
-                new JDBCUniqueIdResolverFactory());
+        IdentityMgtDataHolder.getInstance()
+                .registerUniqueIdResolverFactory(UNIQUE_ID_RESOLVER_TYPE, new JDBCUniqueIdResolverFactory());
     }
 
     @Deactivate
@@ -79,16 +79,15 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
 
         IdentityClaimMgtDataHolder identityClaimMgtDataHolder = IdentityClaimMgtDataHolder.getInstance();
 
-            // Register the claim resolving service.
-            ClaimResolvingServiceImpl claimResolvingService = new ClaimResolvingServiceImpl();
-            identityClaimMgtDataHolder.setClaimResolvingService(claimResolvingService);
+        // Register the claim resolving service.
+        ClaimResolvingServiceImpl claimResolvingService = new ClaimResolvingServiceImpl();
+        identityClaimMgtDataHolder.setClaimResolvingService(claimResolvingService);
 
-            claimResolvingServiceRegistration = bundleContext
-                    .registerService(ClaimResolvingService.class, claimResolvingService, null);
-            log.info("Claim resolving service registered successfully.");
+        claimResolvingServiceRegistration = bundleContext
+                .registerService(ClaimResolvingService.class, claimResolvingService, null);
+        log.info("Claim resolving service registered successfully.");
 
-            log.info("Carbon-Identity-Claim-Mgt bundle activated successfully.");
-
+        log.info("Carbon-Identity-Claim-Mgt bundle activated successfully.");
 
     }
 }

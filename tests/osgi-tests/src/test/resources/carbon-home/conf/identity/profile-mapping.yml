@@ -15,8 +15,7 @@
 ###############################################################################
 ---
 # Configurations related to profile claim mappings
-#Configure profiles for users
-users:
+Profiles:
  -
   profile: "registration"
   claims:
@@ -25,7 +24,7 @@ users:
      properties:
      required: "true"
      readonly: "true"
-     verify: "true"
+     verify: "false"
      unique: "true"
      regex: "*"
   -
@@ -34,6 +33,7 @@ users:
      required: "true"
      readonly: "true"
      verify: "true"
+     verifyingMechanism: "send-email"
      unique: "true"
      regex: "*"
  -
@@ -44,7 +44,7 @@ users:
      properties:
       required: "true"
       readonly: "true"
-      verify: "true"
+      verify: "false"
       unique: "true"
       regex: "*"
    -
@@ -53,12 +53,9 @@ users:
       required: "true"
       readonly: "true"
       verify: "true"
+      verifyingMechanism: "SMS"
       unique: "true"
       regex: "*"
-  -
-
-#Configure profiles for applications
-applications:
  -
   profile: "travelocity-A"
   claims:
@@ -67,7 +64,7 @@ applications:
      properties:
      required: "true"
      readonly: "true"
-     verify: "true"
+     verify: "false"
      unique: "true"
      regex: "*"
   -
@@ -86,7 +83,7 @@ applications:
      properties:
       required: "true"
       readonly: "true"
-      verify: "true"
+      verify: "false"
       unique: "true"
       regex: "*"
    -
@@ -98,10 +95,6 @@ applications:
       unique: "true"
       regex: "*"
   -
-
-#Configure profiles for identity providers
-identityProviders:
- -
   profile: "Google-user"
   claims:
    -
@@ -109,7 +102,7 @@ identityProviders:
      properties:
      required: "true"
      readonly: "true"
-     verify: "true"
+     verify: "false"
      unique: "true"
      regex: "*"
   -
@@ -128,7 +121,7 @@ identityProviders:
      properties:
       required: "true"
       readonly: "true"
-      verify: "true"
+      verify: "false"
       unique: "true"
       regex: "*"
    -
@@ -136,6 +129,6 @@ identityProviders:
      properties:
       required: "true"
       readonly: "true"
-      verify: "true"
+      verify: "false"
       unique: "true"
       regex: "*"

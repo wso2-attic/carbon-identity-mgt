@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.wso2.carbon.identity.mgt</groupId>
@@ -355,7 +355,9 @@
                             </dependency>
                         </dependencies>
                         <configuration>
-                            <url>jdbc:h2:file:${basedir}/target/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;MV_STORE=FALSE</url>
+                            <url>
+                                jdbc:h2:file:${basedir}/target/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;MV_STORE=FALSE
+                            </url>
                             <username>wso2carbon</username>
                             <password>wso2carbon</password>
                             <driver>org.h2.Driver</driver>
@@ -371,7 +373,9 @@
                                 <configuration>
                                     <autocommit>true</autocommit>
                                     <srcFiles>
-                                        <srcFile>${basedir}/target/wso2carbon-kernel-${project.version}/dbscripts/identity-mgt/h2.sql</srcFile>
+                                        <srcFile>
+                                            ${basedir}/target/wso2carbon-kernel-${project.version}/dbscripts/identity-mgt/h2.sql
+                                        </srcFile>
                                     </srcFiles>
                                     <onError>abort</onError>
                                 </configuration>
