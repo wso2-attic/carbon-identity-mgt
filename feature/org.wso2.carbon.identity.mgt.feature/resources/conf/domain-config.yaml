@@ -37,10 +37,12 @@ domains:
     attribute: "username"
     claimUri: "http://wso2.org/claims/username"
     properties:
-     required: "true"
+     unique: "true"
    -
     attribute: "email"
     claimUri: "http://wso2.org/claims/email"
+    properties:
+     unique: "true"
    -
     attribute: "firstName"
     claimUri: "http://wso2.org/claims/firstName"
