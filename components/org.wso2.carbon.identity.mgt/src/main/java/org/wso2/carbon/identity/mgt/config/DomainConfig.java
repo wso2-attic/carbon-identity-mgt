@@ -26,9 +26,11 @@ import java.util.List;
  */
 public class DomainConfig {
 
+    private int id;
+
     private String name;
 
-    private int priority;
+    private int order;
 
     private UniqueIdResolverConfig uniqueIdResolverConfig;
 
@@ -38,6 +40,14 @@ public class DomainConfig {
 
     private List<MetaClaimMapping> metaClaimMappings;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -46,12 +56,12 @@ public class DomainConfig {
         this.name = name;
     }
 
-    public int getPriority() {
-        return priority;
+    public int getOrder() {
+        return order;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     public UniqueIdResolverConfig getUniqueIdResolverConfig() {

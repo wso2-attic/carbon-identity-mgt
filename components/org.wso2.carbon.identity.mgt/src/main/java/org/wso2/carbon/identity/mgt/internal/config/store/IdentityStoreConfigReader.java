@@ -43,7 +43,7 @@ public class IdentityStoreConfigReader {
     }
 
     /**
-     * Builder a config object based on the store-config.yml properties.
+     * Builder a config object based on the store-config.yaml properties.
      *
      * @return StoreConfig
      * @throws CarbonIdentityMgtConfigException carbon security config exception.
@@ -83,9 +83,9 @@ public class IdentityStoreConfigReader {
 
 
     /**
-     * Read store-config.yml file
+     * Read store-config.yaml file
      *
-     * @return StoreConfig file from store-config.yml
+     * @return StoreConfig file from store-config.yaml
      * @throws CarbonIdentityMgtConfigException on error in reading file.
      */
     private static StoreConfigFile buildStoreConfig() throws CarbonIdentityMgtConfigException {
@@ -93,7 +93,7 @@ public class IdentityStoreConfigReader {
         Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.STORE_CONFIG_FILE);
 
-        // store-config.yml is a mandatory configuration file.
+        // store-config.yaml is a mandatory configuration file.
         return FileUtil.readConfigFile(file, StoreConfigFile.class);
     }
 

@@ -70,7 +70,7 @@ public class ConnectorConfigReader {
     }
 
     /**
-     * Read the IdentityStoreConnector config entries from external identity-connector.yml files.
+     * Read the IdentityStoreConnector config entries from external identity-connector.yaml files.
      *
      * @return List of external connector config entries.
      * @throws CarbonIdentityMgtConfigException Carbon Identity Mgt Config Exception.
@@ -80,11 +80,11 @@ public class ConnectorConfigReader {
 
         Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
 
-        return FileUtil.readConfigFiles(path, ConnectorConfigEntry.class, "*-identity-connector.yml");
+        return FileUtil.readConfigFiles(path, ConnectorConfigEntry.class, "*-identity-connector.yaml");
     }
 
     /**
-     * Read the CredentialStoreConnector config entries from external identity-connector.yml files.
+     * Read the CredentialStoreConnector config entries from external identity-connector.yaml files.
      *
      * @return List of external connector config entries.
      * @throws CarbonIdentityMgtConfigException Carbon Identity Mgt Config Exception.
@@ -94,7 +94,7 @@ public class ConnectorConfigReader {
 
         Path path = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity");
 
-        return FileUtil.readConfigFiles(path, ConnectorConfigEntry.class, "*-credential-connector.yml");
+        return FileUtil.readConfigFiles(path, ConnectorConfigEntry.class, "*-credential-connector.yaml");
     }
 
     private static  <T extends StoreConnectorConfig> List<StoreConnectorConfig> getStoreConnectorConfig
@@ -107,10 +107,12 @@ public class ConnectorConfigReader {
                 .map(connectorConfigEntry -> {
                     if (classType.equals(IdentityStoreConnectorConfig.class)) {
                         return new IdentityStoreConnectorConfig(connectorConfigEntry.getConnectorId(),
-                                connectorConfigEntry.getConnectorType(), connectorConfigEntry.getProperties());
+                                connectorConfigEntry.getConnectorType(), connectorConfigEntry.isReadOnly(),
+                                connectorConfigEntry.getProperties());
                     }
                     return new CredentialStoreConnectorConfig(connectorConfigEntry.getConnectorId(),
-                            connectorConfigEntry.getConnectorType(), connectorConfigEntry.getProperties());
+                            connectorConfigEntry.getConnectorType(), connectorConfigEntry.isReadOnly(),
+                            connectorConfigEntry.getProperties());
                 })
                 .collect(Collectors.toList());
     }

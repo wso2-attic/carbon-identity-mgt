@@ -29,6 +29,8 @@ public class DomainStoreConnectorEntry {
 
     private String connectorType;
 
+    private boolean readOnly;
+
     private Map<String, String> properties;
 
     private List<DomainAttributeConfigEntry> attributeMappings;
@@ -47,6 +49,14 @@ public class DomainStoreConnectorEntry {
 
     public void setConnectorType(String connectorType) {
         this.connectorType = connectorType;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     public Map<String, String> getProperties() {
