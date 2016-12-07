@@ -28,16 +28,20 @@ public class StoreConnectorConfig {
 
     private String connectorType;
 
+    private boolean readOnly;
+
     private Map<String, String> properties;
 
     public StoreConnectorConfig() {
 
     }
 
-    public StoreConnectorConfig(String connectorId, String connectorType, Map<String, String> properties) {
+    public StoreConnectorConfig(String connectorId, String connectorType, boolean readOnly,
+                                Map<String, String> properties) {
 
         this.connectorId = connectorId;
         this.connectorType = connectorType;
+        this.readOnly = readOnly;
         this.properties = properties;
     }
 
@@ -55,6 +59,14 @@ public class StoreConnectorConfig {
 
     public void setConnectorType(String connectorType) {
         this.connectorType = connectorType;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     public Map<String, String> getProperties() {

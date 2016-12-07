@@ -11,8 +11,9 @@ public class IdentityStoreConnectorConfig extends StoreConnectorConfig {
 
     }
 
-    public IdentityStoreConnectorConfig(String connectorId, String connectorType, Map<String, String> properties) {
+    public IdentityStoreConnectorConfig(String connectorId, String connectorType, boolean readOnly,
+                                        Map<String, String> properties) {
 
-        super(connectorId, connectorType, properties);
+        super(connectorId, connectorType, readOnly, properties);
     }
 }

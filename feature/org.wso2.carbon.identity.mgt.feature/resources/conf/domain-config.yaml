@@ -15,8 +15,9 @@
 ###############################################################################
 domains:
  -
-  name: "PRIMARY"
-  priority: 1
+  id: 1
+  name: "WSO2"
+  order: 1
   uniqueIdResolver:
    type: "JDBCUniqueIdResolver"
    properties:
@@ -26,6 +27,7 @@ domains:
   -
    connectorId: "INMEM_ISC"
    connectorType: "InMemoryIdentityStore"
+   readOnly: false
    properties:
     dataSource: "WSO2_CARBON_DB"
     hashAlgorithm: "SHA256"
@@ -45,15 +47,6 @@ domains:
    -
     attribute: "lastName"
     claimUri: "http://wso2.org/claims/lastName"
-   -
-    attribute: "groupName"
-    claimUri: "http://wso2.org/claims/groupName"
-    properties:
-     required: "true"
-   -
-    attribute: "organization"
-    claimUri: "http://wso2.org/claims/organization"
-   -
 
   credentialStoreConnectors:
   -

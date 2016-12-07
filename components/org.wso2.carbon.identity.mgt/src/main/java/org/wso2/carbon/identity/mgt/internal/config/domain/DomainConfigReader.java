@@ -66,9 +66,7 @@ public class DomainConfigReader {
         }
 
         return domainConfigFile.getDomains().stream()
-                //TODO remove
                 .filter(Objects::nonNull)
-                //TODO remove
                 .filter(domainConfigEntry -> !StringUtils.isNullOrEmpty(domainConfigEntry.getName()))
                 .map(domainConfigEntry -> getDomainConfig(storeConnectorConfigMap, domainConfigEntry))
                 .collect(Collectors.toList());
@@ -78,8 +76,9 @@ public class DomainConfigReader {
                                                 DomainConfigEntry domainConfigEntry) {
 
         DomainConfig domainConfig = new DomainConfig();
+        domainConfig.setId(domainConfigEntry.getId());
         domainConfig.setName(domainConfigEntry.getName());
-        domainConfig.setPriority(domainConfigEntry.getPriority());
+        domainConfig.setOrder(domainConfigEntry.getOrder());
 
         UniqueIdResolverConfigEntry uniqueIdResolverConfigEntry = domainConfigEntry.getUniqueIdResolver();
         if (uniqueIdResolverConfigEntry == null || StringUtils.isNullOrEmpty(uniqueIdResolverConfigEntry
@@ -97,14 +96,11 @@ public class DomainConfigReader {
             List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
 
             domainConfigEntry.getIdentityStoreConnectors().stream()
-                    //TODO remove
                     .filter(Objects::nonNull)
                     .filter(domainStoreConnectorEntry ->
-                            //TODO remove
                             !StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorId()))
 
                     .forEach(domainStoreConnectorEntry -> {
-                        //TODO remove
                         if (StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorType())) {
 
                             StoreConnectorConfig storeConnectorConfig =
@@ -120,7 +116,8 @@ public class DomainConfigReader {
 
                             identityStoreConnectorConfigs.add(new IdentityStoreConnectorConfig(
                                     domainStoreConnectorEntry.getConnectorId(), domainStoreConnectorEntry
-                                    .getConnectorType(), domainStoreConnectorEntry.getProperties()));
+                                    .getConnectorType(), domainStoreConnectorEntry.isReadOnly(),
+                                    domainStoreConnectorEntry.getProperties()));
                         }
 
                         metaClaimMappings.addAll(getMetaClaimMappings(domainStoreConnectorEntry
@@ -136,13 +133,11 @@ public class DomainConfigReader {
 
             domainConfigEntry.getCredentialStoreConnectors()
                     .stream()
-                    //TODO remove
                     .filter(Objects::nonNull)
                     .filter(domainStoreConnectorEntry -> !StringUtils
                             .isNullOrEmpty(domainStoreConnectorEntry.getConnectorId()))
 
                     .forEach(domainStoreConnectorEntry -> {
-                        //TODO remove
                         if (StringUtils.isNullOrEmpty(domainStoreConnectorEntry.getConnectorType())) {
                             StoreConnectorConfig storeConnectorConfig =
                                     connectorIdToStoreConnectorConfigMap.get(domainStoreConnectorEntry
@@ -156,7 +151,8 @@ public class DomainConfigReader {
                         } else {
                             credentialStoreConnectorConfigs.add(new CredentialStoreConnectorConfig(
                                     domainStoreConnectorEntry.getConnectorId(), domainStoreConnectorEntry
-                                    .getConnectorType(), domainStoreConnectorEntry.getProperties()));
+                                    .getConnectorType(), domainStoreConnectorEntry.isReadOnly(),
+                                    domainStoreConnectorEntry.getProperties()));
                         }
                     });
             domainConfig.setCredentialStoreConnectorConfigs(credentialStoreConnectorConfigs);
@@ -169,7 +165,7 @@ public class DomainConfigReader {
         Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 IdentityMgtConstants.DOMAIN_CONFIG_FILE);
 
-        // domain-config.yml is a mandatory configuration file.
+        // domain-config.yaml is a mandatory configuration file.
         return FileUtil.readConfigFile(file, DomainConfigFile.class);
     }
 

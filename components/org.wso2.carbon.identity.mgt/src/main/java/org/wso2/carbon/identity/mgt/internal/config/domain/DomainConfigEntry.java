@@ -25,15 +25,23 @@ import java.util.List;
 public class DomainConfigEntry {
 
     /**
+     * Domain Id value.
+     */
+    private int id;
+
+    /**
      * Unique name of the domain.
      */
     private String name;
 
     /**
-     * Priority level of the domain
+     * Order of the domain
      */
-    private int priority;
+    private int order;
 
+    /**
+     * Domain status
+     */
     private boolean active = true;
 
     private UniqueIdResolverConfigEntry uniqueIdResolver;
@@ -47,6 +55,14 @@ public class DomainConfigEntry {
      * IdentityStoreConnector domain configuration list.
      */
     private List<DomainStoreConnectorEntry> credentialStoreConnectors;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     /**
      * Get the name of the domain.
@@ -67,21 +83,21 @@ public class DomainConfigEntry {
     }
 
     /**
-     * Get the priority level of the domain.
+     * Get the order of the domain.
      *
-     * @return integer - domain priority level
+     * @return integer - domain order
      */
-    public int getPriority() {
-        return priority;
+    public int getOrder() {
+        return order;
     }
 
     /**
-     * Set the priority level of the domain.
+     * Set the order of the domain.
      *
-     * @param priority - integer domain level priority
+     * @param order - domain order
      */
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     public boolean isActive() {
