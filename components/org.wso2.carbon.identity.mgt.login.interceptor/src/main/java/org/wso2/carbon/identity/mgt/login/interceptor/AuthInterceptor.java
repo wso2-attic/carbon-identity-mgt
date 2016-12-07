@@ -41,6 +41,7 @@ import java.util.Base64;
 import java.util.Map;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.PasswordCallback;
+import javax.ws.rs.HttpMethod;
 
 /**
  * Authentication and Authorization interceptor for Carbon Admin Services
@@ -59,7 +60,17 @@ public class AuthInterceptor implements Interceptor {
     @Override
     public boolean preCall(Request request, Response response, ServiceMethodInfo serviceMethodInfo) throws Exception {
 
-        if (request == null || request.getHeader("Authorization") == null) {
+        if (request == null) {
+            sendUnauthorized(response);
+            return false;
+        }
+
+        if ("/scim/v2/Me".equals(request.getUri()) && HttpMethod.POST.equals(request.getHttpMethod())) {
+            return true;
+        }
+
+        if (request.getHeader("Authorization") == null) {
+            sendUnauthorized(response);
             return false;
         }
 

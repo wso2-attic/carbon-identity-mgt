@@ -33,17 +33,12 @@
     <artifactId>org.wso2.carbon.identity.mgt.login.feature</artifactId>
 
     <packaging>carbon-feature</packaging>
-    <name>WSO2 Carbon Identity Management - Feature</name>
+    <name>WSO2 Carbon Identity Management Login Interceptor - Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required by the Carbon Identity Management feature
     </description>
 
     <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>org.wso2.carbon.identity.mgt</groupId>-->
-            <!--<artifactId>org.wso2.carbon.identity.mgt.login.module</artifactId>-->
-            <!--<version>${carbon.identity.mgt.version}</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.wso2.carbon.identity.mgt</groupId>
             <artifactId>org.wso2.carbon.identity.mgt.login.interceptor</artifactId>
@@ -106,10 +101,6 @@
                                 </advice>
                             </adviceFileContents>
                             <bundles>
-                                <!--<bundle>-->
-                                    <!--<symbolicName>org.wso2.carbon.identity.mgt.login.module</symbolicName>-->
-                                    <!--<version>${carbon.identity.mgt.version}</version>-->
-                                <!--</bundle>-->
                                 <bundle>
                                     <symbolicName>org.wso2.carbon.identity.mgt.login.interceptor</symbolicName>
                                     <version>${carbon.identity.mgt.version}</version>
