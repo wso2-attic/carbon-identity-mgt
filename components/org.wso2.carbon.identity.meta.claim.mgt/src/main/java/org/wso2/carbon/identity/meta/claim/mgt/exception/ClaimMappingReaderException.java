@@ -23,17 +23,17 @@ package org.wso2.carbon.identity.meta.claim.mgt.exception;
  * NullPointerExceptions when retrieving data from
  * IdentityMgtDataHolder
  */
-public class ClaimMappingBuilderException extends Exception {
+public class ClaimMappingReaderException extends Exception {
 
-    public ClaimMappingBuilderException() {
+    public ClaimMappingReaderException() {
         super();
     }
 
-    public ClaimMappingBuilderException(String message) {
+    public ClaimMappingReaderException(String message) {
         super(message);
     }
 
-    public ClaimMappingBuilderException(String message, Throwable cause) {
+    public ClaimMappingReaderException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -23,17 +23,17 @@ package org.wso2.carbon.identity.meta.claim.mgt.exception;
  * NullPointerExceptions when retrieving data from
  * IdentityMgtDataHolder
  */
-public class ProfileBuilderException extends Exception {
+public class ProfileReaderException extends Exception {
 
-    public ProfileBuilderException() {
+    public ProfileReaderException() {
         super();
     }
 
-    public ProfileBuilderException(String message) {
+    public ProfileReaderException(String message) {
         super(message);
     }
 
-    public ProfileBuilderException(String message, Throwable cause) {
+    public ProfileReaderException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -25,18 +25,18 @@ import java.util.List;
 public class ClaimMappingFile {
 
     //List<Entry>
-    private List<ClaimMappingEntry> claimMappingEntries;
+    private List<ClaimMappingEntry> claimMappings;
 
     public List<ClaimMappingEntry> getClaimMapping() {
 
-        if (claimMappingEntries == null) {
+        if (claimMappings == null) {
             return Collections.emptyList();
         }
-        return claimMappingEntries;
+        return claimMappings;
     }
 
     public void setClaimMappings(List<ClaimMappingEntry> claims) {
-        this.claimMappingEntries = claims;
+        this.claimMappings = claims;
     }
 
 }

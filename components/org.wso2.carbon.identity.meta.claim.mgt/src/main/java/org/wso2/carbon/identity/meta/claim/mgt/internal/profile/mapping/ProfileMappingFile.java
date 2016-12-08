@@ -25,14 +25,14 @@ import java.util.List;
 public class ProfileMappingFile {
 
     //List<Entry>
-    private List<ProfileMappingEntry> profiles;
+    private List<ProfileEntry> profiles;
 
     /**
      * Get the profiles with their mapped claims.
      *
      * @return : A list of entries with a set of claims mapped to a profile.
      */
-    public List<ProfileMappingEntry> getProfileClaimMapping() {
+    public List<ProfileEntry> getProfileClaimMapping() {
 
         if (profiles == null) {
             return Collections.emptyList();
@@ -45,7 +45,7 @@ public class ProfileMappingFile {
      *
      * @param profiles : List of profiles with claims mapped to each profile.
      */
-    public void setProfileClaimMappings(List<ProfileMappingEntry> profiles) {
+    public void setProfileClaimMappings(List<ProfileEntry> profiles) {
         this.profiles = profiles;
     }
 

@@ -195,6 +195,7 @@
         <carbon.component>
             startup.listener;
             componentName="wso2-carbon-identity-meta-claim-mgt";
+            requiredService="org.wso2.carbon.identity.mgt.service.RealmService"
         </carbon.component>
 
         <dsannotations>*</dsannotations>

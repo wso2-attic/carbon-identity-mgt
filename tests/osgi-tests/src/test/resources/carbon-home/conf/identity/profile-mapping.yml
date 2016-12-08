@@ -17,129 +17,129 @@
 # Configurations related to profile claim mappings
 Profiles:
  -
-  profile: "registration"
+  profileName: "registration"
   claims:
    -
-    claimUri: "http://wso2.org/claims/username"
+    claimURI: "http://wso2.org/claims/username"
+    required: "true"
     readonly: "true"
-     overide: "false" // no need to mention when false
-    verify: "false"
-    unique: "true" //get in lowest connector level
+    verifier: "claim verifying extension"
+    validator: "claim validating extension"
     regex: "*"
-    default:
-    datatype:
+    defaultValue: "user1"
+    dataType: "text"
     properties:
-      required: "true"   //make them to top level, newly adding ones may come with properties
-       overide: "true"
-      readonly: "true"
-      verify: "false"
-      unique: "true"
-      regex: "*"
+     customproperty: "custom value"
   -
-    claimUri: "http://wso2.org/claims/email"
+    claimURI: "http://wso2.org/claims/email"
     properties:
      required: "true"
      readonly: "true"
-     default: enum
-     verify: "true"//verifiable
-     verifier: claim verifying extension
-     validator: claim validating extension
-     unique: "true"
+     defaultValue: "user@domain.com"
+     verifier: "claim verifying extension"
+     validator: "claim validating extension"
      regex: "*"
+     properties:
+      customproperty: "custom value"
 
  -
-  profile: "employee"
+  profileName: "employee"
    claims:
    -
-    claimUri: "http://wso2.org/claims/employeeNumber"
+    claimURI: "http://wso2.org/claims/employeeNumber"
      properties:
       required: "true"
       readonly: "true"
       verify: "false"
-      unique: "true"
       regex: "*"
+      properties:
+       customproperty: "custom value"
    -
-     claimUri: "http://wso2.org/claims/mobile"
+     claimURI: "http://wso2.org/claims/mobile"
      properties:
       required: "true"
       readonly: "true"
-      verify: "true"
-      verifyingMechanism: "SMS"
-      unique: "true"
+      verifier: "claim verifying extension"
+      validator: "claim validating extension"
       regex: "*"
+      properties:
+       customproperty: "custom value"
  -
-  profile: "travelocity-A"
+  profileName: "travelocity-A"
   claims:
    -
-    claimUri: "http://wso2.org/claims/role"
-     properties:
-     required: "true"
-     readonly: "true"
-     verify: "false"
-     unique: "true"
-     regex: "*"
+    claimURI: "http://wso2.org/claims/role"
+    required: "true"
+    readonly: "true"
+    verifier: "claim verifying extension"
+    validator: "claim validating extension"
+    defaultValue: "everyone"
+    dataType: "enum"
+    regex: "*"
+    properties:
+     customproperty: "custom value"
   -
-    claimUri: "http://wso2.org/claims/email"
+    claimURI: "http://wso2.org/claims/email"
     properties:
      required: "true"
      readonly: "true"
-     verify: "true"
-     unique: "true"
      regex: "*"
+     properties:
+      customproperty: "custom value"
  -
-  profile: "travelocity-B"
+  profileName: "travelocity-B"
    claims:
    -
-    claimUri: "http://wso2.org/claims/username"
+    claimURI: "http://wso2.org/claims/username"
      properties:
       required: "true"
       readonly: "true"
-      verify: "false"
-      unique: "true"
       regex: "*"
+      properties:
+       customproperty: "custom value"
    -
-     claimUri: "http://wso2.org/claims/mobile"
+     claimURI: "http://wso2.org/claims/mobile"
      properties:
       required: "true"
       readonly: "true"
-      verify: "true"
-      unique: "true"
       regex: "*"
+      properties:
+       customproperty: "custom value"
   -
-  profile: "Google-user"
+  profileName: "Google-user"
   claims:
    -
-    claimUri: "http://wso2.org/claims/username"
+    claimURI: "http://wso2.org/claims/username"
      properties:
      required: "true"
      readonly: "true"
-     verify: "false"
-     unique: "true"
      regex: "*"
+     properties:
+      customproperty: "custom value"
   -
-    claimUri: "http://wso2.org/claims/email"
+    claimURI: "http://wso2.org/claims/email"
     properties:
      required: "true"
      readonly: "true"
-     verify: "true"
-     unique: "true"
      regex: "*"
+     properties:
+      customproperty: "custom value"
  -
-  profile: "Google-employee"
+  profileName: "Google-employee"
    claims:
    -
-    claimUri: "http://wso2.org/claims/employeeNumber"
+    claimURI: "http://wso2.org/claims/employeeNumber"
      properties:
       required: "true"
       readonly: "true"
-      verify: "false"
-      unique: "true"
       regex: "*"
+      properties:
+       customproperty: "custom value"
    -
-     claimUri: "http://wso2.org/claims/dob"
+     claimURI: "http://wso2.org/claims/dob"
      properties:
       required: "true"
       readonly: "true"
-      verify: "false"
-      unique: "true"
       regex: "*"
+      properties:
+       customproperty: "custom value"

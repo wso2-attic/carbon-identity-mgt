@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping;
 
-import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimMappingBuilderException;
+import org.wso2.carbon.identity.meta.claim.mgt.exception.ProfileReaderException;
 import org.wso2.carbon.identity.meta.claim.mgt.util.ProfileMgtConstants;
 import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.wso2.carbon.identity.mgt.util.FileUtil;
@@ -24,6 +24,7 @@ import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,61 +34,36 @@ import java.util.stream.Collectors;
  */
 public class ProfileMappingReader {
 
-    private ProfileMappingFile profileConfig = null;
-    //Map(ApplicationNAme, Map(External Claim : Root claim))
-    private Map<String, Map<String, String>> profiles;
+    public ProfileMappingReader() {
 
-    private ProfileMappingReader() throws ClaimMappingBuilderException {
+    }
+
+    private static ProfileMappingFile buildProfileMappings() throws ProfileReaderException {
+        ProfileMappingFile profileMappingFile = null;
 
         Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 ProfileMgtConstants.PROFILE_MAPPING_FILE);
         try {
-            profileConfig = FileUtil.readConfigFile(file, ProfileMappingFile.class);
+            profileMappingFile = FileUtil.readConfigFile(file, ProfileMappingFile.class);
         } catch (CarbonIdentityMgtConfigException e) {
-            throw new ClaimMappingBuilderException("Couldn't read the claim-mapping.yml file successfully.", e);
+            throw new ProfileReaderException("Couldn't read the profile-mapping.yml file successfully.", e);
         }
-        profiles = profileConfig.getProfileClaimMapping().stream().filter(Objects::nonNull)
-                .filter(profileMappingEntry -> !profileMappingEntry.getProperties().isEmpty()).collect(Collectors
-                        .toMap(profileMappingEntry -> profileMappingEntry.getClaim(),
-                                profileMappingEntry -> profileMappingEntry.getProperties()));
 
-    }
-
-    public static ProfileMappingReader getInstance() throws ClaimMappingBuilderException {
-        return ProfileMappingBuilderHolder.PROFILE_MAPPING_BUILDER;
+        return profileMappingFile;
     }
 
     /**
-     * Provides the profile-claim mappings for a defined user profile
+     * Provides the set of claims with their properties for a given profile.
      *
-     * @return Map(ProfileName, Map(application claim : root claim URI)
+     * @return Map(profileName : claim configurations)
      */
-    public Map<String, Map<String, String>> getProfiles() {
-        return profiles;
+    public static Map<String, ProfileEntry> getProfileMappings() throws ProfileReaderException {
+        ProfileMappingFile profileMappingFile = buildProfileMappings();
+        List<ProfileEntry> profileEntryList = profileMappingFile.getProfileClaimMapping();
+        return profileEntryList.stream().filter(Objects::nonNull)
+                .filter(profileEntry -> !profileEntry.getClaims().isEmpty())
+                .collect(Collectors.toMap(profileEntry -> profileEntry.getProfileName(), profileEntry -> profileEntry));
 
-    }
-
-    /**
-     * Provides the claim mappings for a defined user profile
-     *
-     * @param profileName : Name to identify the application
-     * @return Map(application claim : root claim URI)
-     */
-    public Map<String, String> getProfileMapping(String profileName) {
-        return profiles.get(profileName);
-
-    }
-
-    private static class ProfileMappingBuilderHolder {
-        private static final ProfileMappingReader PROFILE_MAPPING_BUILDER;
-
-        static {
-            try {
-                PROFILE_MAPPING_BUILDER = new ProfileMappingReader();
-            } catch (ClaimMappingBuilderException e) {
-                throw new ExceptionInInitializerError(e);
-            }
-        }
     }
 
 }

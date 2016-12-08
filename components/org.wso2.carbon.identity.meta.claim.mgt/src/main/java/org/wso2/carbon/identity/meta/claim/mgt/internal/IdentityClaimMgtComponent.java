@@ -25,11 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.meta.claim.mgt.service.ClaimResolvingService;
 import org.wso2.carbon.identity.meta.claim.mgt.service.impl.ClaimResolvingServiceImpl;
-import org.wso2.carbon.identity.mgt.internal.IdentityMgtDataHolder;
-import org.wso2.carbon.identity.mgt.user.impl.JDBCUniqueIdResolverFactory;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
-
-import static org.wso2.carbon.identity.mgt.util.IdentityMgtConstants.UNIQUE_ID_RESOLVER_TYPE;
 
 /**
  * OSGi service component which handle identity claim management.
@@ -56,8 +52,7 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
         this.bundleContext = bundleContext;
 
         // Register Default Unique Id Resolver
-        IdentityMgtDataHolder.getInstance()
-                .registerUniqueIdResolverFactory(UNIQUE_ID_RESOLVER_TYPE, new JDBCUniqueIdResolverFactory());
+        IdentityClaimMgtDataHolder.getInstance().setClaimResolvingService(new ClaimResolvingServiceImpl());
     }
 
     @Deactivate

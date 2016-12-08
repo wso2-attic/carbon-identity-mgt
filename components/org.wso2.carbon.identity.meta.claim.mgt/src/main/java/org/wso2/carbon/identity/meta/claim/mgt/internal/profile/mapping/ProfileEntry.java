@@ -16,30 +16,30 @@
 
 package org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Claim Mapping Entry.
  */
-public class ProfileMappingEntry {
+public class ProfileEntry {
 
-    private String claimUri;
+    private String profileName;
 
-    private Map<String, String> properties;
+    private List<ClaimConfigEntry> claims;
 
-    public String getClaim() {
-        return claimUri;
+    public String getProfileName() {
+        return profileName;
     }
 
-    public void setClaim(String claim) {
-        this.claimUri = claim;
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
+    public List<ClaimConfigEntry> getClaims() {
+        return claims;
     }
 
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
+    public void setClaims(List<ClaimConfigEntry> claims) {
+        this.claims = claims;
     }
 }

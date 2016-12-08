@@ -15,7 +15,7 @@
  */
 package org.wso2.carbon.identity.meta.claim.mgt.service.impl;
 
-import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimMappingBuilderException;
+import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimMappingReaderException;
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimResolvingServiceException;
 import org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping.ClaimMappingReader;
 import org.wso2.carbon.identity.meta.claim.mgt.service.ClaimResolvingService;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class ClaimResolvingServiceImpl implements ClaimResolvingService {
     Map<String, Map<String, String>> claimMappings = null;
 
-    private Map<String, Map<String, String>> buildClaimMappings() throws ClaimMappingBuilderException {
+    private Map<String, Map<String, String>> buildClaimMappings() throws ClaimMappingReaderException {
         if (claimMappings == null) {
             claimMappings = ClaimMappingReader.getClaimMappings();
         }
@@ -46,7 +46,7 @@ public class ClaimResolvingServiceImpl implements ClaimResolvingService {
         try {
 
             return buildClaimMappings();
-        } catch (ClaimMappingBuilderException e) {
+        } catch (ClaimMappingReaderException e) {
             throw new ClaimResolvingServiceException("Error while getting the claim mappings.", e);
         }
     }
@@ -62,7 +62,7 @@ public class ClaimResolvingServiceImpl implements ClaimResolvingService {
     public Map<String, String> getClaimMapping(String dialectURI) throws ClaimResolvingServiceException {
         try {
             return buildClaimMappings().get(dialectURI);
-        } catch (ClaimMappingBuilderException e) {
+        } catch (ClaimMappingReaderException e) {
             throw new ClaimResolvingServiceException("Error while getting the claim mapping for dialect:." + dialectURI,
                     e);
         }

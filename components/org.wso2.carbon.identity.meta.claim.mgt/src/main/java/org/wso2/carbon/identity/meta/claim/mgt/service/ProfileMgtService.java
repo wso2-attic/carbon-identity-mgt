@@ -16,6 +16,8 @@
 package org.wso2.carbon.identity.meta.claim.mgt.service;
 
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ProfileMgtServiceException;
+import org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping.ClaimConfigEntry;
+import org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping.ProfileEntry;
 
 import java.util.List;
 import java.util.Map;
@@ -28,20 +30,20 @@ public interface ProfileMgtService {
     /**
      * Get the claims set of profiles.
      *
-     * @return Map(profileName,(Map(claim, Map(Property Key: Property Value))) with the set of claims and their
+     * @return Map(ProfileName, List of claim entries of the profile) with the set of claims and their
      * properties.
-     * @throws ProfileMgtServiceException : Error in getting the profile.
+     * @throws ProfileMgtServiceException : Error in getting the profiles.
      */
-    Map<String, Map<String, Map<String, String>>> getProfiles() throws ProfileMgtServiceException;
+    Map<String, ProfileEntry> getProfiles() throws ProfileMgtServiceException;
 
     /**
      * Get the claims set of a profile.
      *
      * @param profileName : Uniquely identifying name of the profile.
-     * @return Map(claim, Map(Property Key: Property Value)) with the set of claims and their properties.
+     * @return ProfileEntry with the set of claims and their properties.
      * @throws ProfileMgtServiceException : Error in getting the profile.
      */
-    Map<String, Map<String, String>> getProfile(String profileName) throws ProfileMgtServiceException;
+    ProfileEntry getProfile(String profileName) throws ProfileMgtServiceException;
 
     /**
      * Get the properties of a particular claim of a profile.
@@ -51,7 +53,7 @@ public interface ProfileMgtService {
      * @return Map(Property Key : Property Value)
      * @throws ProfileMgtServiceException : Error in getting the properties of a claim.
      */
-    Map<String, String> getClaimProperties(String profileName, String claim) throws ProfileMgtServiceException;
+    ClaimConfigEntry getClaimProperties(String profileName, String claim) throws ProfileMgtServiceException;
 
     /**
      * Get the claims marked as required for a particular profile.
@@ -96,7 +98,7 @@ public interface ProfileMgtService {
      * @return Map(Claim : Verifying mechanism)
      * @throws ProfileMgtServiceException : Error in getting the claims with verifying mechanism.
      */
-    Map<String, String> getVerifyingPropertyMechanisms(String profileName) throws ProfileMgtServiceException;
+    Map<String, String> getValidating(String profileName) throws ProfileMgtServiceException;
 
     /**
      * Get the claims marked for regex validations.

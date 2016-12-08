@@ -16,7 +16,7 @@
 
 package org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping;
 
-import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimMappingBuilderException;
+import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimMappingReaderException;
 import org.wso2.carbon.identity.meta.claim.mgt.util.ClaimMgtConstants;
 import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.wso2.carbon.identity.mgt.util.FileUtil;
@@ -38,7 +38,7 @@ public class ClaimMappingReader {
 
     }
 
-    private static ClaimMappingFile buildClaimMappings() throws ClaimMappingBuilderException {
+    private static ClaimMappingFile buildClaimMappings() throws ClaimMappingReaderException {
         ClaimMappingFile claimConfig = null;
 
         Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
@@ -46,7 +46,7 @@ public class ClaimMappingReader {
         try {
             claimConfig = FileUtil.readConfigFile(file, ClaimMappingFile.class);
         } catch (CarbonIdentityMgtConfigException e) {
-            throw new ClaimMappingBuilderException("Couldn't read the claim-mapping.yml file successfully.", e);
+            throw new ClaimMappingReaderException("Couldn't read the claim-mapping.yml file successfully.", e);
         }
 
         return claimConfig;
@@ -57,7 +57,7 @@ public class ClaimMappingReader {
      *
      * @return Map(application claim : root claim URI)
      */
-    public static Map<String, Map<String, String>> getClaimMappings() throws ClaimMappingBuilderException {
+    public static Map<String, Map<String, String>> getClaimMappings() throws ClaimMappingReaderException {
         ClaimMappingFile claimMappingFile = buildClaimMappings();
         List<ClaimMappingEntry> claimMappingEntryList = claimMappingFile.getClaimMapping();
         return claimMappingEntryList.stream().filter(Objects::nonNull)
