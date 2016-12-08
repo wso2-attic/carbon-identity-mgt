@@ -197,6 +197,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     @Override
     public List<UniqueUser> listUsers(int offset, int length) throws UniqueIdResolverException {
 
+        // In listUsers API offset is actually the start index and start with 1. For the database start value is 0
+        if (offset > 0) {
+            offset--;
+        }
+
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUniqueUser = "SELECT USER_UUID, CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_USER_ID " +
                     "FROM IDM_USER LIMIT :limit; OFFSET :offset;";
@@ -513,6 +518,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
     @Override
     public List<UniqueGroup> listGroups(int offset, int length) throws UniqueIdResolverException {
+
+        // In listGroups API offset is actually the start index and start with 1. For the database start value is 0
+        if (offset > 0) {
+            offset--;
+        }
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUniqueUser = "SELECT GROUP_UUID, CONNECTOR_ID, CONNECTOR_GROUP_ID " +
