@@ -320,7 +320,8 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             }
             uniqueIdResolver.init(uniqueIdResolverConfig);
 
-            Domain domain = new Domain(domainConfig.getName(), domainConfig.getOrder(), uniqueIdResolver);
+            Domain domain = new Domain(domainConfig.getId(), domainConfig.getName(), domainConfig.getOrder(),
+                    uniqueIdResolver);
 
             domain.setMetaClaimMappings(domainConfig.getMetaClaimMappings());
 

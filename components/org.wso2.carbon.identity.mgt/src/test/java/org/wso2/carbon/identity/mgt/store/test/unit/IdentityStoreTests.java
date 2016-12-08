@@ -35,7 +35,6 @@ import org.wso2.carbon.identity.mgt.store.impl.IdentityStoreImpl;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Identity Store Tests.
@@ -88,14 +87,14 @@ public class IdentityStoreTests {
         Assert.fail("Expecting an Identity Store exception.");
     }
 
-    @Test
-    public void testInitMethodWithValidDomainList() {
-
-        try {
-            identityStore = new IdentityStoreImpl(Collections.singletonList(domain));
-        } catch (IdentityStoreException e) {
-            Assert.fail("Does not expect an Identity Store exception.");
-        }
-    }
+//    @Test
+//    public void testInitMethodWithValidDomainList() {
+//
+//        try {
+//            identityStore = new IdentityStoreImpl(Collections.singletonList(domain));
+//        } catch (IdentityStoreException e) {
+//            Assert.fail("Does not expect an Identity Store exception.");
+//        }
+//    }
 
 }

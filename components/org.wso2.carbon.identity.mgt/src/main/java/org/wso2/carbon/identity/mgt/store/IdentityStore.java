@@ -301,7 +301,7 @@ public interface IdentityStore {
      *
      * @param uniqueGroupId The group Id.
      * @throws IdentityStoreException Identity Store Exception
-     * @throws GroupNotFoundException  Group Not Found Exception
+     * @throws GroupNotFoundException Group Not Found Exception
      */
     List<Claim> getClaimsOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException;
 
@@ -309,10 +309,10 @@ public interface IdentityStore {
      * Get all claims of a group for given URIs.
      *
      * @param uniqueGroupId The group to retrieve claims for
-     * @param metaClaims   List of meta claims to retrieve claims for
+     * @param metaClaims    List of meta claims to retrieve claims for
      * @return List of claims
      * @throws IdentityStoreException IdentityStore Exception
-     * @throws GroupNotFoundException  Group Not Found Exception
+     * @throws GroupNotFoundException Group Not Found Exception
      */
     List<Claim> getClaimsOfGroup(String uniqueGroupId, List<MetaClaim> metaClaims) throws IdentityStoreException,
             GroupNotFoundException;
@@ -376,6 +376,17 @@ public interface IdentityStore {
      */
     void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
             IdentityStoreException, UserNotFoundException;
+
+    /**
+     * Update user credentials by user id.
+     *
+     * @param uniqueUserId User unique id.
+     * @param callbacks    Credentials.
+     * @throws IdentityStoreException Identity store exception.
+     * @throws UserNotFoundException  User Not Found Exception
+     */
+    void updateUserCredentials(String uniqueUserId, List<Callback> callbacks) throws IdentityStoreException,
+            UserNotFoundException;
 
     /**
      * Delete a user by user id.
@@ -496,9 +507,9 @@ public interface IdentityStore {
     /**
      * Authenticate the user.
      *
-     * @param claim      Unique claim.
+     * @param claim       Unique claim.
      * @param credentials Credentials.
-     * @param domainName Domain name.
+     * @param domainName  Domain name.
      * @return Authentication context.
      * @throws AuthenticationFailure Authentication failure.
      */

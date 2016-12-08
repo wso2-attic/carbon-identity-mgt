@@ -18,16 +18,23 @@ package org.wso2.carbon.identity.mgt.bean;
 
 import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
+import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
+import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
+import org.wso2.carbon.identity.mgt.user.UniqueUser;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static org.wso2.carbon.kernel.utils.StringUtils.isNullOrEmpty;
 
 /**
  * Represents a domain.
@@ -64,28 +71,40 @@ public class Domain {
     private Map<String, MetaClaimMapping> claimUriToMetaClaimMappings = new HashMap<>();
 
     /**
+     * Id of the domain.
+     */
+    private int id;
+
+    /**
      * Name of the domain.
      */
-    private String domainName;
+    private String name;
 
     /**
      * Priority of the domain.
      * Highest priority for domain is 1
      * Domain priority value should be greater than 0
      */
-    private int domainPriority;
+    private int order;
 
     private UniqueIdResolver uniqueIdResolver;
 
-    public Domain(String domainName, int domainPriority, UniqueIdResolver uniqueIdResolver) throws DomainException {
+    public Domain(int id, String name, int order, UniqueIdResolver uniqueIdResolver) throws
+            DomainException {
 
-        if (domainPriority < 1) {
+        if (order < 1) {
             throw new DomainException("Domain priority value should be greater than 0");
         }
 
-        this.domainName = domainName;
-        this.domainPriority = domainPriority;
+        this.id = id;
+        this.name = name;
+        this.order = order;
         this.uniqueIdResolver = uniqueIdResolver;
+    }
+
+    public int getId() {
+
+        return id;
     }
 
     /**
@@ -93,8 +112,8 @@ public class Domain {
      *
      * @return String - domain name
      */
-    public String getDomainName() {
-        return domainName;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -102,9 +121,9 @@ public class Domain {
      *
      * @return integer - domain priority
      */
-    public int getDomainPriority() {
+    public int getOrder() {
 
-        return domainPriority;
+        return order;
     }
 
     /**
@@ -167,6 +186,124 @@ public class Domain {
                 .anyMatch(list -> list.stream().filter(metaClaimMapping ->
                         claimURI.equals(metaClaimMapping.getMetaClaim().getClaimUri()))
                         .findFirst().isPresent());
+    }
+
+    /**
+     * Is user exists in the domain.
+     *
+     * @param domainUserId domain user id.
+     * @return user existence.
+     * @throws DomainException Domain Exception.
+     */
+    public boolean isUserExists(String domainUserId) throws DomainException {
+
+        try {
+            return this.uniqueIdResolver.isUserExists(domainUserId);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException("Failed to check existence of user", e);
+        }
+    }
+
+
+    public String getDomainUserId(String claimUri, String claimValue) throws DomainException, UserNotFoundException {
+
+        MetaClaimMapping metaClaimMapping = claimUriToMetaClaimMappings.get(claimUri);
+
+        if (!metaClaimMapping.isUnique()) {
+            throw new DomainException("Provided claim is not unique.");
+        }
+
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap
+                .get(metaClaimMapping.getIdentityStoreConnectorId());
+
+        String connectorUserId;
+        try {
+            connectorUserId = identityStoreConnector.getConnectorUserId(metaClaimMapping.getAttributeName(),
+                    claimValue);
+        } catch (IdentityStoreConnectorException e) {
+            throw new DomainException("Failed to get connector user id", e);
+        }
+
+        if (isNullOrEmpty(connectorUserId)) {
+            throw new UserNotFoundException("Invalid claim value.");
+        }
+
+        UniqueUser uniqueUser;
+        try {
+            uniqueUser = uniqueIdResolver.getUniqueUserFromConnectorUserId(connectorUserId, metaClaimMapping
+                    .getIdentityStoreConnectorId());
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException("Failed to retrieve the domain user id.", e);
+        }
+
+        if (uniqueUser == null || isNullOrEmpty(uniqueUser.getUniqueUserId())) {
+            throw new DomainException("Failed to retrieve the domain user id.");
+        }
+
+        return uniqueUser.getUniqueUserId();
+    }
+
+    public List<String> listDomainUsers(int offset, int length) throws DomainException {
+
+        List<UniqueUser> uniqueUsers;
+        try {
+            uniqueUsers = this.uniqueIdResolver.listUsers(offset, length);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException("Failed to retrieve partitions of users.", e);
+        }
+
+        if (uniqueUsers == null || uniqueUsers.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return uniqueUsers.stream()
+                .filter(Objects::nonNull)
+                .filter(uniqueUser -> !isNullOrEmpty(uniqueUser.getUniqueUserId()))
+                .map(UniqueUser::getUniqueUserId)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> listDomainUsers(String claimUri, String claimValue, int offset, int length)
+            throws DomainException {
+
+        MetaClaimMapping metaClaimMapping = claimUriToMetaClaimMappings.get(claimUri);
+
+        if (!metaClaimMapping.isUnique()) {
+            throw new DomainException("Provided claim is not unique.");
+        }
+
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap
+                .get(metaClaimMapping.getIdentityStoreConnectorId());
+
+        List<String> connectorUserIds;
+        try {
+            connectorUserIds = identityStoreConnector.listConnectorUserIds(metaClaimMapping.getAttributeName(),
+                    claimValue, offset, length);
+        } catch (IdentityStoreConnectorException e) {
+            throw new DomainException("Failed to list connector user ids", e);
+        }
+
+        if (connectorUserIds == null || connectorUserIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<UniqueUser> uniqueUsers;
+        try {
+            uniqueUsers = uniqueIdResolver.getUniqueUsers(connectorUserIds, metaClaimMapping
+                    .getIdentityStoreConnectorId());
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException("Failed to retrieve the unique user ids.", e);
+        }
+
+        if (uniqueUsers == null || uniqueUsers.isEmpty()) {
+            throw new DomainException("Failed to retrieve the unique user ids.");
+        }
+
+        return uniqueUsers.stream()
+                .filter(Objects::nonNull)
+                .filter(uniqueUser -> !isNullOrEmpty(uniqueUser.getUniqueUserId()))
+                .map(UniqueUser::getUniqueUserId)
+                .collect(Collectors.toList());
     }
 
     /**
