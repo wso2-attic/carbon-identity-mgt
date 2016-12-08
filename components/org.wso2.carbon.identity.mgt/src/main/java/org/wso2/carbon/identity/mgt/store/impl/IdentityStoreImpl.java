@@ -90,8 +90,7 @@ public class IdentityStoreImpl implements IdentityStore {
         return Integer.compare(d1Priority, d2Priority);
     });
 
-    @Override
-    public void init(List<Domain> domains) throws IdentityStoreException {
+    public IdentityStoreImpl(List<Domain> domains) throws IdentityStoreException {
 
         if (domains.isEmpty()) {
             throw new IdentityStoreException("No domains registered.");

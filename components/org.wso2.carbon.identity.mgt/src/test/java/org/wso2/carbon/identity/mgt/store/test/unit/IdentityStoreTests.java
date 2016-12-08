@@ -55,7 +55,7 @@ public class IdentityStoreTests {
     @Mock
     private Domain domain;
 
-    private IdentityStore identityStore = new IdentityStoreImpl();
+    private IdentityStore identityStore;
 
     @BeforeClass
     public void initClass() {
@@ -71,7 +71,6 @@ public class IdentityStoreTests {
     @AfterMethod
     public void resetMocks() {
 
-        identityStore = new IdentityStoreImpl();
         Mockito.reset(realmService);
         Mockito.reset(authorizationStore);
         Mockito.reset(identityMgtDataHolder);
@@ -81,7 +80,7 @@ public class IdentityStoreTests {
     public void testInitMethodWithEmptyDomainList() {
 
         try {
-            identityStore.init(new ArrayList<Domain>());
+            identityStore = new IdentityStoreImpl(new ArrayList<>());
         } catch (IdentityStoreException e) {
             return;
         }
@@ -93,7 +92,7 @@ public class IdentityStoreTests {
     public void testInitMethodWithValidDomainList() {
 
         try {
-            identityStore.init(Collections.singletonList(domain));
+            identityStore = new IdentityStoreImpl(Collections.singletonList(domain));
         } catch (IdentityStoreException e) {
             Assert.fail("Does not expect an Identity Store exception.");
         }

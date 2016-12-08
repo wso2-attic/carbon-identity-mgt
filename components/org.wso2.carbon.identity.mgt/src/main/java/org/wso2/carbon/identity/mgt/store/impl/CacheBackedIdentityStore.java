@@ -62,30 +62,24 @@ public class CacheBackedIdentityStore implements IdentityStore {
 
     private static final String UNIQUE_GROUP_CACHE = "uniqueGroupCache";
 
-    private IdentityStore identityStore = new IdentityStoreImpl();
+    private IdentityStore identityStore;
 
     private Map<String, Boolean> cacheStatus = new HashMap<>();
 
     private CacheManager cacheManager;
 
-    private Map<String, CacheConfig> cacheConfigs;
 
-    public CacheBackedIdentityStore(Map<String, CacheConfig> cacheConfigs) {
-        this.cacheConfigs = cacheConfigs;
-    }
-
-    @Override
-    public void init(List<Domain> domains) throws IdentityStoreException {
+    public CacheBackedIdentityStore(Map<String, CacheConfig> cacheConfigs, List<Domain> domains)
+            throws IdentityStoreException {
 
         CarbonCachingService carbonCachingService;
-
         try {
             carbonCachingService = IdentityMgtDataHolder.getInstance().getCarbonCachingService();
         } catch (CarbonSecurityDataHolderException e) {
             throw new IdentityStoreException("Caching service is not available.", e);
         }
 
-        identityStore.init(domains);
+        identityStore = new IdentityStoreImpl(domains);
 
         cacheManager = carbonCachingService.getCachingProvider().getCacheManager();
 

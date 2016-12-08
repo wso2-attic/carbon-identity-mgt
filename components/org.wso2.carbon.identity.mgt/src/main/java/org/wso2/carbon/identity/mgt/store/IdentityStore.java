@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.identity.mgt.store;
 
-import org.wso2.carbon.identity.mgt.bean.Domain;
 import org.wso2.carbon.identity.mgt.bean.Group;
 import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
@@ -40,14 +39,6 @@ import javax.security.auth.callback.Callback;
  */
 
 public interface IdentityStore {
-
-    /**
-     * Initialize IdentityStore with {@link Domain} list.
-     *
-     * @param domains domains
-     * @throws IdentityStoreException IdentityStore Exception
-     */
-    void init(List<Domain> domains) throws IdentityStoreException;
 
     /**
      * Retrieve a user by global unique Id.
