@@ -394,7 +394,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
 
     @Override
     public AuthenticationContext authenticate(Claim claim, Callback[] credentials, String domainName) throws
-            AuthenticationFailure {
+            AuthenticationFailure, IdentityStoreException {
 
         return identityStore.authenticate(claim, credentials, domainName);
     }

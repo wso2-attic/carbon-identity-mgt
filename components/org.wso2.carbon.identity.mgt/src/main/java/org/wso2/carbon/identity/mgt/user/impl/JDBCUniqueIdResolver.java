@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 /**
@@ -65,8 +66,10 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
         }
     }
 
+    //TODO
     @Override
-    public DomainUser getDomainUser(String domainUserId) throws UniqueIdResolverException, UserNotFoundException {
+    public DomainUser getUser(String domainUserId, int domainId) throws UniqueIdResolverException,
+            UserNotFoundException {
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUniqueUser = "SELECT CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_USER_ID FROM " +
                     "IDM_USER WHERE USER_UUID = :user_uuid;";
@@ -102,7 +105,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public DomainUser getDomainUserFromConnectorUserId(String connectorUserId, String connectorId) throws
+    public DomainUser getUserFromConnectorUserId(String connectorUserId, String connectorId, int domainId) throws
             UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
@@ -148,14 +151,14 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public List<DomainUser> getDomainUsers(List<String> connectorUserIds, String connectorId) throws
+    public List<DomainUser> getUsers(List<String> connectorUserIds, String connectorId, int domainId) throws
             UniqueIdResolverException {
 
         UniqueIdResolverException uniqueIdResolverException = new UniqueIdResolverException();
         List<DomainUser> domainUsers = new ArrayList<>();
         connectorUserIds.stream().forEach(entry -> {
             try {
-                DomainUser domainUser = getDomainUserFromConnectorUserId(entry, connectorId);
+                DomainUser domainUser = getUserFromConnectorUserId(entry, connectorId, domainId);
                 domainUsers.add(domainUser);
             } catch (UniqueIdResolverException e) {
                 uniqueIdResolverException.addSuppressed(e);
@@ -170,7 +173,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public boolean isUserExists(String domainUserId) throws UniqueIdResolverException {
+    public boolean isUserExists(String domainUserId, int domainId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUser = "SELECT ID FROM IDM_USER " +
@@ -195,7 +198,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public List<DomainUser> listDomainUsers(int offset, int length) throws UniqueIdResolverException {
+    public List<DomainUser> listDomainUsers(int offset, int length, int domainId) throws UniqueIdResolverException {
 
         // In listDomainUsers API offset is actually the start index and start with 1. For the database start value is 0
         if (offset > 0) {
@@ -244,7 +247,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public DomainGroup getUniqueGroup(String uniqueGroupId) throws UniqueIdResolverException, GroupNotFoundException {
+    public DomainGroup getGroup(String domainGroupId, int domainId) throws UniqueIdResolverException,
+            GroupNotFoundException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUniqueUser = "SELECT CONNECTOR_ID, CONNECTOR_GROUP_ID FROM " +
@@ -255,7 +259,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectUniqueUser);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroupId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, domainGroupId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
                 while (resultSet.next()) {
                     GroupPartition userPartition = new GroupPartition();
@@ -267,7 +271,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                 }
             }
 
-            domainGroup.setDomainGroupId(uniqueGroupId);
+            domainGroup.setDomainGroupId(domainGroupId);
             domainGroup.setGroupPartitions(groupPartitions);
             return domainGroup;
 
@@ -277,8 +281,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public DomainGroup getDomainGroupFromConnectorGroupId(String connectorGroupId, String connectorId) throws
-            UniqueIdResolverException {
+    public DomainGroup getGroupFromConnectorGroupId(String connectorGroupId, String connectorId, int domainId)
+            throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUniqueGroup = "SELECT GROUP_UUID, CONNECTOR_ID, CONNECTOR_GROUP_ID " +
@@ -321,8 +325,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void addUser(DomainUser domainUser, String domainName) throws
-            UniqueIdResolverException {
+    public String addUser(DomainUser domainUser, String domainName, int domainId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
             final String addUser = "INSERT INTO IDM_USER " +
@@ -349,15 +352,18 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while adding user.", e);
         }
+
+        return domainUser.getDomainUserId();
     }
 
     @Override
-    public void addUsers(List<DomainUser> domainUsers, String domainName) throws UniqueIdResolverException {
+    public List<String> addUsers(List<DomainUser> domainUsers, String domainName, int domainId)
+            throws UniqueIdResolverException {
 
         UniqueIdResolverException uniqueIdResolverException = new UniqueIdResolverException();
         domainUsers.stream().forEach(uniqueUser -> {
             try {
-                addUser(uniqueUser, domainName);
+                addUser(uniqueUser, domainName, domainId);
             } catch (UniqueIdResolverException e) {
                 uniqueIdResolverException.addSuppressed(e);
             }
@@ -366,22 +372,26 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
         if (uniqueIdResolverException.getSuppressed().length > 0) {
             throw uniqueIdResolverException;
         }
+
+        return domainUsers.stream()
+                .map(DomainUser::getDomainUserId)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void updateUser(String uniqueUserId, Map<String, String> connectorUserIdMap) throws
+    public void updateUser(String domainUserId, Map<String, String> connectorUserIdMap, int domainId) throws
             UniqueIdResolverException {
 
         // Put operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
-            deleteUser(uniqueUserId, unitOfWork);
+            deleteUser(domainUserId, unitOfWork, domainId);
             final String addUser = "INSERT INTO IDM_USER " +
                     "(USER_UUID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
                     "VALUES (:user_uuid;, :connector_user_id;, :connector_id;, :domain;, :connector_type;)";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), addUser);
             for (Map.Entry<String, String> entry : connectorUserIdMap.entrySet()) {
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, domainUserId);
                 namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_USER_ID,
                         entry.getValue());
                 namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID,
@@ -396,11 +406,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void deleteUser(String uniqueUserId) throws UniqueIdResolverException {
+    public void deleteUser(String domainUserId, int domainId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            deleteUser(uniqueUserId, unitOfWork);
-            deleteUserGroupMappingsForUser(uniqueUserId, unitOfWork);
+            deleteUser(domainUserId, unitOfWork, domainId);
+            deleteUserGroupMappingsForUser(domainUserId, unitOfWork, domainId);
             unitOfWork.endTransaction();
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while adding user.", e);
@@ -408,7 +418,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void addGroup(DomainGroup domainGroup, String domainName) throws UniqueIdResolverException {
+    public String addGroup(DomainGroup domainGroup, String domainName, int domainId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
             final String addGroup = "INSERT INTO IDM_GROUP " +
@@ -433,15 +443,18 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while adding group.", e);
         }
+
+        return domainGroup.getDomainGroupId();
     }
 
     @Override
-    public void addGroups(List<DomainGroup> domainGroups, String domainName) throws UniqueIdResolverException {
+    public List<String> addGroups(List<DomainGroup> domainGroups, String domainName, int domainId)
+            throws UniqueIdResolverException {
 
         UniqueIdResolverException uniqueIdResolverException = new UniqueIdResolverException();
         domainGroups.stream().forEach(uniqueGroup -> {
             try {
-                addGroup(uniqueGroup, domainName);
+                addGroup(uniqueGroup, domainName, domainId);
             } catch (UniqueIdResolverException e) {
                 uniqueIdResolverException.addSuppressed(e);
             }
@@ -450,22 +463,26 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
         if (uniqueIdResolverException.getSuppressed().length > 0) {
             throw uniqueIdResolverException;
         }
+
+        return domainGroups.stream()
+                .map(DomainGroup::getDomainGroupId)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void updateGroup(String uniqueGroupId, Map<String, String> connectorGroupIdMap) throws
+    public void updateGroup(String domainGroupId, Map<String, String> connectorGroupIdMap, int domainId) throws
             UniqueIdResolverException {
 
         // Put operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
-            deleteGroup(uniqueGroupId, unitOfWork);
+            deleteGroup(domainGroupId, unitOfWork, domainId);
             final String addGroup = "INSERT INTO IDM_GROUP " +
                     "(GROUP_UUID, CONNECTOR_GROUP_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
                     "VALUES (:group_uuid;, :connector_group_id;, :connector_id;, :domain;, :connector_type;)";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), addGroup);
             for (Map.Entry<String, String> entry : connectorGroupIdMap.entrySet()) {
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroupId);
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, domainGroupId);
                 namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_GROUP_ID,
                         entry.getValue());
                 namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID,
@@ -480,11 +497,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void deleteGroup(String uniqueGroupId) throws UniqueIdResolverException {
+    public void deleteGroup(String domainGroupId, int domainId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            deleteGroup(uniqueGroupId, unitOfWork);
-            deleteUserGroupMappingsForGroup(uniqueGroupId, unitOfWork);
+            deleteGroup(domainGroupId, unitOfWork, domainId);
+            deleteUserGroupMappingsForGroup(domainGroupId, unitOfWork, domainId);
             unitOfWork.endTransaction();
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while adding group.", e);
@@ -492,7 +509,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public boolean isGroupExists(String uniqueGroupId) throws UniqueIdResolverException {
+    public boolean isGroupExists(String uniqueGroupId, int domainId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUser = "SELECT ID FROM IDM_GROUP " +
@@ -517,7 +534,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public List<DomainGroup> listDomainGroups(int offset, int length) throws UniqueIdResolverException {
+    public List<DomainGroup> listGroups(int offset, int length, int domainId) throws UniqueIdResolverException {
 
         // In listDomainGroups API offset is actually the start index and start with 1. For the database start value
         // is 0
@@ -565,14 +582,14 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public List<DomainGroup> getDomainGroups(List<String> connectorGroupIds, String connectorId) throws
+    public List<DomainGroup> getGroups(List<String> connectorGroupIds, String connectorId, int domainId) throws
             UniqueIdResolverException {
 
         UniqueIdResolverException uniqueIdResolverException = new UniqueIdResolverException();
         List<DomainGroup> domainGroups = new ArrayList<>();
         connectorGroupIds.stream().forEach(entry -> {
             try {
-                DomainGroup domainGroup = getDomainGroupFromConnectorGroupId(entry, connectorId);
+                DomainGroup domainGroup = getGroupFromConnectorGroupId(entry, connectorId, domainId);
                 domainGroups.add(domainGroup);
             } catch (UniqueIdResolverException e) {
                 uniqueIdResolverException.addSuppressed(e);
@@ -587,7 +604,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public List<DomainGroup> getDomainGroupsOfUser(String uniqueUserId) throws UniqueIdResolverException {
+    public List<DomainGroup> getGroupsOfUser(String domainUserId, int domainId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectGroupsOfUser = "SELECT GROUP_UUID, CONNECTOR_ID, CONNECTOR_GROUP_ID " +
@@ -600,7 +617,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectGroupsOfUser);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, domainUserId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
                 while (resultSet.next()) {
@@ -631,7 +648,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public List<DomainUser> getDomainUsersOfGroup(String uniqueGroupId) throws UniqueIdResolverException {
+    public List<DomainUser> getUsersOfGroup(String domainGroupId, int domainId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUsersOfGroup = "SELECT USER_UUID, CONNECTOR_ID, CONNECTOR_USER_ID, CONNECTOR_TYPE " +
@@ -644,7 +661,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectUsersOfGroup);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroupId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, domainGroupId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
                 while (resultSet.next()) {
@@ -677,7 +694,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public boolean isUserInGroup(String domainUserId, String domainGroupId) throws UniqueIdResolverException {
+    public boolean isUserInGroup(String domainUserId, String domainGroupId, int domainId)
+            throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUsersOfGroup = "SELECT ID " +
@@ -703,18 +721,19 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds) throws UniqueIdResolverException {
+    public void updateGroupsOfUser(String domainUserId, List<String> domainGroupIds, int domainId)
+            throws UniqueIdResolverException {
 
         // Put operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            deleteUserGroupMappingsForUser(uniqueUserId, unitOfWork);
+            deleteUserGroupMappingsForUser(domainUserId, unitOfWork, domainId);
             final String insertGroupsOfUser = "INSERT INTO IDM_USER_GROUP_MAPPING (USER_UUID, GROUP_UUID) " +
                     "VALUES ( :user_uuid;, :group_uuid; ) ";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     insertGroupsOfUser);
-            for (String uniqueGroupId : uniqueGroupIds) {
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+            for (String uniqueGroupId : domainGroupIds) {
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, domainUserId);
                 namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroupId);
                 namedPreparedStatement.getPreparedStatement().addBatch();
             }
@@ -728,8 +747,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToUpdate, List<String>
-            uniqueGroupIdsToRemove) throws UniqueIdResolverException {
+    public void updateGroupsOfUser(String domainUserId, List<String> domainGroupIdsToUpdate, List<String>
+            domainGroupIdsToRemove, int domainId) throws UniqueIdResolverException {
 
         // Patch operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
@@ -738,9 +757,9 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                     "WHERE USER_UUID = :user_uuid; AND GROUP_UUID = :group_uuid; ";
             NamedPreparedStatement deleteNamedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), deleteUserGroupMapping);
-            for (String uniqueGroupId : uniqueGroupIdsToRemove) {
+            for (String uniqueGroupId : domainGroupIdsToRemove) {
                 deleteNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID,
-                        uniqueUserId);
+                        domainUserId);
                 deleteNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID,
                         uniqueGroupId);
                 deleteNamedPreparedStatement.getPreparedStatement().addBatch();
@@ -754,8 +773,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement addNamedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     insertGroupsOfUser);
-            for (String uniqueGroupId : uniqueGroupIdsToUpdate) {
-                addNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+            for (String uniqueGroupId : domainGroupIdsToUpdate) {
+                addNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, domainUserId);
                 addNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID,
                         uniqueGroupId);
                 addNamedPreparedStatement.getPreparedStatement().addBatch();
@@ -770,19 +789,20 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds) throws UniqueIdResolverException {
+    public void updateUsersOfGroup(String domainGroupId, List<String> domainUserIds, int domainId)
+            throws UniqueIdResolverException {
 
         // Put operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            deleteUserGroupMappingsForGroup(uniqueGroupId, unitOfWork);
+            deleteUserGroupMappingsForGroup(domainGroupId, unitOfWork, domainId);
             final String insertUsersOfGroup = "INSERT INTO IDM_USER_GROUP_MAPPING (USER_UUID, GROUP_UUID) " +
                     "VALUES ( :user_uuid;, :group_uuid; ) ";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     insertUsersOfGroup);
-            for (String uniqueUserId : uniqueUserIds) {
+            for (String uniqueUserId : domainUserIds) {
                 namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroupId);
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, domainGroupId);
                 namedPreparedStatement.getPreparedStatement().addBatch();
             }
             namedPreparedStatement.getPreparedStatement().executeBatch();
@@ -795,8 +815,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToUpdate, List<String>
-            uniqueUserIdsToRemove) throws UniqueIdResolverException {
+    public void updateUsersOfGroup(String doaminGroupId, List<String> domainUserIdsToUpdate, List<String>
+            domainUserIdsToRemove, int domainId) throws UniqueIdResolverException {
         // Patch operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             // Delete the user group mappings in uniqueUserIdsToRemove
@@ -804,11 +824,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                     "WHERE USER_UUID = :user_uuid; AND GROUP_UUID = :group_uuid; ";
             NamedPreparedStatement deleteNamedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), deleteUserGroupMapping);
-            for (String uniqueUserId : uniqueUserIdsToRemove) {
+            for (String uniqueUserId : domainUserIdsToRemove) {
                 deleteNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID,
                         uniqueUserId);
                 deleteNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID,
-                        uniqueGroupId);
+                        doaminGroupId);
                 deleteNamedPreparedStatement.getPreparedStatement().addBatch();
             }
 
@@ -820,9 +840,9 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     insertUsersOfGroup);
-            for (String uniqueUserId : uniqueUserIdsToUpdate) {
+            for (String uniqueUserId : domainUserIdsToUpdate) {
                 namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroupId);
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, doaminGroupId);
                 namedPreparedStatement.getPreparedStatement().addBatch();
             }
             namedPreparedStatement.getPreparedStatement().executeBatch();
@@ -834,7 +854,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
         }
     }
 
-    private void deleteUser(String uniqueUserId, UnitOfWork unitOfWork) throws SQLException {
+    private void deleteUser(String uniqueUserId, UnitOfWork unitOfWork, int domainId) throws SQLException {
 
         final String deleteUser = "DELETE FROM IDM_USER " +
                 "WHERE USER_UUID = :user_uuid;";
@@ -846,7 +866,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
     }
 
-    private void deleteGroup(String uniqueGroupId, UnitOfWork unitOfWork) throws SQLException {
+    private void deleteGroup(String uniqueGroupId, UnitOfWork unitOfWork, int domainId) throws SQLException {
 
         final String deleteGroup = "DELETE FROM IDM_GROUP " +
                 "WHERE GROUP_UUID = :group_uuid;";
@@ -858,7 +878,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
     }
 
-    private void deleteUserGroupMappingsForUser(String uniqueUserId, UnitOfWork unitOfWork) throws SQLException {
+    private void deleteUserGroupMappingsForUser(String uniqueUserId, UnitOfWork unitOfWork, int domainId)
+            throws SQLException {
 
         final String deleteUserGroupMapping = "DELETE FROM IDM_USER_GROUP_MAPPING " +
                 "WHERE GROUP_UUID = :group_uuid; ";
@@ -870,7 +891,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
     }
 
-    private void deleteUserGroupMappingsForGroup(String uniqueGroupId, UnitOfWork unitOfWork) throws SQLException {
+    private void deleteUserGroupMappingsForGroup(String uniqueGroupId, UnitOfWork unitOfWork, int domainId)
+            throws SQLException {
 
         final String deleteUserGroupMapping = "DELETE FROM IDM_USER_GROUP_MAPPING " +
                 "WHERE USER_UUID = :user_uuid;";

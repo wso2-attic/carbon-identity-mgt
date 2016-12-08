@@ -514,7 +514,7 @@ public interface IdentityStore {
      * @throws AuthenticationFailure Authentication failure.
      */
     AuthenticationContext authenticate(Claim claim, Callback[] credentials, String domainName)
-            throws AuthenticationFailure;
+            throws AuthenticationFailure, IdentityStoreException;
 
     /**
      * Get primary domain name.

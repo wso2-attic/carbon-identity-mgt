@@ -16,15 +16,21 @@
 
 package org.wso2.carbon.identity.mgt.bean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
+import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
+import org.wso2.carbon.identity.mgt.exception.CredentialStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.DomainClientException;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+import org.wso2.carbon.identity.mgt.model.GroupModel;
+import org.wso2.carbon.identity.mgt.model.UserModel;
 import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 import org.wso2.carbon.identity.mgt.user.DomainGroup;
@@ -32,15 +38,19 @@ import org.wso2.carbon.identity.mgt.user.DomainUser;
 import org.wso2.carbon.identity.mgt.user.GroupPartition;
 import org.wso2.carbon.identity.mgt.user.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.user.UserPartition;
+import org.wso2.carbon.identity.mgt.util.IdentityUserMgtUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import javax.security.auth.callback.Callback;
 
 import static org.wso2.carbon.kernel.utils.StringUtils.isNullOrEmpty;
 
@@ -48,6 +58,8 @@ import static org.wso2.carbon.kernel.utils.StringUtils.isNullOrEmpty;
  * Represents a domain.
  */
 public class Domain {
+
+    private static final Logger log = LoggerFactory.getLogger(Domain.class);
 
     /**
      * Mapping between IdentityStoreConnector ID and IdentityStoreConnector
@@ -206,7 +218,7 @@ public class Domain {
     public boolean isUserExists(String domainUserId) throws DomainException {
 
         try {
-            return this.uniqueIdResolver.isUserExists(domainUserId);
+            return this.uniqueIdResolver.isUserExists(domainUserId, this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to check existence of user.", e);
         }
@@ -237,8 +249,8 @@ public class Domain {
 
         DomainUser domainUser;
         try {
-            domainUser = uniqueIdResolver.getDomainUserFromConnectorUserId(connectorUserId, metaClaimMapping
-                    .getIdentityStoreConnectorId());
+            domainUser = uniqueIdResolver.getUserFromConnectorUserId(connectorUserId, metaClaimMapping
+                    .getIdentityStoreConnectorId(), this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to retrieve the domain user id.", e);
         }
@@ -254,7 +266,7 @@ public class Domain {
 
         List<DomainUser> domainUsers;
         try {
-            domainUsers = this.uniqueIdResolver.listDomainUsers(offset, length);
+            domainUsers = this.uniqueIdResolver.listDomainUsers(offset, length, this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to retrieve partitions of users.", e);
         }
@@ -295,8 +307,8 @@ public class Domain {
 
         List<DomainUser> domainUsers;
         try {
-            domainUsers = uniqueIdResolver.getDomainUsers(connectorUserIds, metaClaimMapping
-                    .getIdentityStoreConnectorId());
+            domainUsers = uniqueIdResolver.getUsers(connectorUserIds, metaClaimMapping
+                    .getIdentityStoreConnectorId(), this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to retrieve the unique user ids.", e);
         }
@@ -338,8 +350,8 @@ public class Domain {
 
         List<DomainUser> domainUsers;
         try {
-            domainUsers = uniqueIdResolver.getDomainUsers(connectorUserIds, metaClaimMapping
-                    .getIdentityStoreConnectorId());
+            domainUsers = uniqueIdResolver.getUsers(connectorUserIds, metaClaimMapping
+                    .getIdentityStoreConnectorId(), this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to retrieve the unique user ids.", e);
         }
@@ -365,7 +377,7 @@ public class Domain {
     public boolean isGroupExists(String domainGroupId) throws DomainException {
 
         try {
-            return this.uniqueIdResolver.isGroupExists(domainGroupId);
+            return this.uniqueIdResolver.isGroupExists(domainGroupId, this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to check existence of group.", e);
         }
@@ -396,8 +408,8 @@ public class Domain {
 
         DomainGroup domainGroup;
         try {
-            domainGroup = uniqueIdResolver.getDomainGroupFromConnectorGroupId(connectorGroupId, metaClaimMapping
-                    .getIdentityStoreConnectorId());
+            domainGroup = uniqueIdResolver.getGroupFromConnectorGroupId(connectorGroupId, metaClaimMapping
+                    .getIdentityStoreConnectorId(), this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to retrieve the domain group id.", e);
         }
@@ -413,7 +425,7 @@ public class Domain {
 
         List<DomainGroup> domainGroups;
         try {
-            domainGroups = this.uniqueIdResolver.listDomainGroups(offset, length);
+            domainGroups = this.uniqueIdResolver.listGroups(offset, length, this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to retrieve partitions of groups.", e);
         }
@@ -454,8 +466,8 @@ public class Domain {
 
         List<DomainGroup> domainGroups;
         try {
-            domainGroups = uniqueIdResolver.getDomainGroups(connectorGroupIds, metaClaimMapping
-                    .getIdentityStoreConnectorId());
+            domainGroups = uniqueIdResolver.getGroups(connectorGroupIds, metaClaimMapping
+                    .getIdentityStoreConnectorId(), this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to retrieve the unique group ids.", e);
         }
@@ -497,8 +509,8 @@ public class Domain {
 
         List<DomainGroup> domainGroups;
         try {
-            domainGroups = uniqueIdResolver.getDomainGroups(connectorGroupIds, metaClaimMapping
-                    .getIdentityStoreConnectorId());
+            domainGroups = uniqueIdResolver.getGroups(connectorGroupIds, metaClaimMapping
+                    .getIdentityStoreConnectorId(), this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to retrieve the unique group ids.", e);
         }
@@ -518,7 +530,7 @@ public class Domain {
 
         List<DomainGroup> domainGroups;
         try {
-            domainGroups = uniqueIdResolver.getDomainGroupsOfUser(domainUserId);
+            domainGroups = uniqueIdResolver.getGroupsOfUser(domainUserId, this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException(String.format("Failed to retrieve the unique group ids for user id - %s.",
                     domainUserId), e);
@@ -539,7 +551,7 @@ public class Domain {
 
         List<DomainUser> domainUsers;
         try {
-            domainUsers = uniqueIdResolver.getDomainUsersOfGroup(domainGroupId);
+            domainUsers = uniqueIdResolver.getUsersOfGroup(domainGroupId, this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException(String.format("Failed to retrieve the unique user ids for group id - %s.",
                     domainGroupId), e);
@@ -559,7 +571,7 @@ public class Domain {
     public boolean isUserInGroup(String domainUserId, String domainGroupId) throws DomainException {
 
         try {
-            return uniqueIdResolver.isUserInGroup(domainUserId, domainGroupId);
+            return uniqueIdResolver.isUserInGroup(domainUserId, domainGroupId, this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to check whether user exists in group.", e);
         }
@@ -569,7 +581,7 @@ public class Domain {
 
         DomainUser domainUser;
         try {
-            domainUser = uniqueIdResolver.getDomainUser(domainUserId);
+            domainUser = uniqueIdResolver.getUser(domainUserId, this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException(String.format("Failed to retrieve unique user - %s.", domainUserId), e);
         }
@@ -615,7 +627,7 @@ public class Domain {
 
         DomainUser domainUser;
         try {
-            domainUser = uniqueIdResolver.getDomainUser(domainUserId);
+            domainUser = uniqueIdResolver.getUser(domainUserId, this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException(String.format("Failed to retrieve unique user - %s.", domainUserId), e);
         }
@@ -661,7 +673,7 @@ public class Domain {
 
         DomainGroup domainGroup;
         try {
-            domainGroup = uniqueIdResolver.getUniqueGroup(domainGroupId);
+            domainGroup = uniqueIdResolver.getGroup(domainGroupId, this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException(String.format("Failed to retrieve unique group - %s.",
                     domainGroupId), e);
@@ -706,7 +718,7 @@ public class Domain {
 
         DomainGroup domainGroup;
         try {
-            domainGroup = uniqueIdResolver.getUniqueGroup(domainGroupId);
+            domainGroup = uniqueIdResolver.getGroup(domainGroupId, this.id);
         } catch (UniqueIdResolverException e) {
             throw new DomainException(String.format("Failed to retrieve unique group - %s.",
                     domainGroupId), e);
@@ -745,6 +757,735 @@ public class Domain {
         }
 
         return buildClaims(attributesMap);
+    }
+
+    public String addUser(UserModel userModel) throws DomainException {
+
+        List<UserPartition> userPartitions = new ArrayList<>();
+
+        if (!userModel.getClaims().isEmpty()) {
+
+            Map<String, List<Attribute>> attributesMap = getAttributesMap(userModel.getClaims());
+
+            for (Map.Entry<String, List<Attribute>> entry : attributesMap.entrySet()) {
+                IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+                String connectorUserId;
+                try {
+                    connectorUserId = identityStoreConnector.addUser(entry.getValue());
+                } catch (IdentityStoreConnectorException e) {
+                    // Recover from the inconsistent state in the connectors
+                    if (userPartitions.size() > 0) {
+                        removeAddedUsersInAFailure(userPartitions);
+                    }
+                    throw new DomainException("Identity store connector failed to add user attributes.", e);
+                }
+
+                userPartitions.add(new UserPartition(entry.getKey(), connectorUserId, true));
+            }
+        }
+
+        if (!userModel.getCredentials().isEmpty()) {
+            Map<String, List<Callback>> credentialsMap = getConnectorIdToCredentialsMap(userModel.getCredentials());
+            for (Map.Entry<String, List<Callback>> entry : credentialsMap.entrySet()) {
+                CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorsMap.get(entry.getKey());
+                String connectorUserId;
+                try {
+                    connectorUserId = credentialStoreConnector.addCredential(entry.getValue().toArray(new
+                            Callback[entry.getValue().size()]));
+                } catch (CredentialStoreConnectorException e) {
+                    // Recover from the inconsistent state in the connectors
+                    if (userPartitions.size() > 0) {
+                        removeAddedUsersInAFailure(userPartitions);
+                    }
+                    throw new DomainException("Credential store connector failed to add user attributes" +
+                            ".", e);
+                }
+
+                userPartitions.add(new UserPartition(entry.getKey(), connectorUserId, false));
+            }
+        }
+
+        String userUniqueId = IdentityUserMgtUtil.generateUUID();
+        try {
+            String receivedUserUniqueId = uniqueIdResolver.addUser(new DomainUser(userUniqueId, userPartitions),
+                    this.name, this.id);
+
+            if (isNullOrEmpty(receivedUserUniqueId)) {
+                return receivedUserUniqueId;
+            }
+        } catch (UniqueIdResolverException e) {
+            // Recover from the inconsistent state in the connectors
+            removeAddedUsersInAFailure(userPartitions);
+            throw new DomainException("Error occurred while persisting user unique id.", e);
+        }
+
+        return userUniqueId;
+    }
+
+    public List<String> addUsers(List<UserModel> userModels) throws DomainException {
+
+        // Assign unique user id for each user model
+        Map<String, UserModel> userModelMap = userModels.stream()
+                .filter(Objects::nonNull)
+                .filter(userModel -> !userModel.getClaims().isEmpty() || !userModel.getCredentials().isEmpty())
+                .collect(Collectors.toMap(userModel -> IdentityUserMgtUtil.generateUUID(), userModel -> userModel));
+
+        Map<String, Map<String, List<Attribute>>> attributesMap = getAttributesMapOfUsers(userModelMap);
+
+        Map<String, Map<String, List<Callback>>> credentialMap = getCredentialsMapOfUsers(userModelMap);
+
+        Map<String, List<UserPartition>> userPartitionsMapOfUsers = new HashMap<>();
+        if (!attributesMap.isEmpty()) {
+            for (Map.Entry<String, Map<String, List<Attribute>>> entry : attributesMap.entrySet()) {
+
+                IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+                Map<String, String> uniqueUserIds;
+                try {
+                    uniqueUserIds = identityStoreConnector.addUsers(entry.getValue());
+                } catch (IdentityStoreConnectorException e) {
+                    if (!userPartitionsMapOfUsers.isEmpty()) {
+                        userPartitionsMapOfUsers.entrySet().stream()
+                                .forEach(partitionEntry -> removeAddedUsersInAFailure(partitionEntry.getValue()));
+                    }
+                    throw new DomainException("Failed to add users.", e);
+                }
+
+                if (uniqueUserIds != null) {
+                    uniqueUserIds.entrySet().stream()
+                            .forEach(uniqueUserId -> {
+                                List<UserPartition> userPartitions = userPartitionsMapOfUsers.get(uniqueUserId
+                                        .getKey());
+                                if (userPartitions == null) {
+                                    userPartitions = new ArrayList<>();
+                                    userPartitionsMapOfUsers.put(uniqueUserId.getKey(), userPartitions);
+                                }
+                                userPartitions.add(new UserPartition(entry.getKey(), uniqueUserId.getValue(), true));
+                            });
+                }
+            }
+        }
+
+        if (!credentialMap.isEmpty()) {
+            for (Map.Entry<String, Map<String, List<Callback>>> entry : credentialMap
+                    .entrySet()) {
+
+                CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorsMap.get(entry.getKey());
+                Map<String, String> uniqueUserIds;
+                try {
+                    uniqueUserIds = credentialStoreConnector.addCredentials(entry.getValue());
+                } catch (CredentialStoreConnectorException e) {
+                    if (!userPartitionsMapOfUsers.isEmpty()) {
+                        userPartitionsMapOfUsers.entrySet().stream()
+                                .forEach(partitionEntry -> removeAddedUsersInAFailure(partitionEntry.getValue()));
+                    }
+                    throw new DomainException("Failed to add users.", e);
+                }
+
+                if (uniqueUserIds != null) {
+                    uniqueUserIds.entrySet().stream()
+                            .forEach(uniqueUserId -> {
+                                List<UserPartition> userPartitions = userPartitionsMapOfUsers.get(uniqueUserId
+                                        .getKey());
+                                if (userPartitions == null) {
+                                    userPartitions = new ArrayList<>();
+                                    userPartitionsMapOfUsers.put(uniqueUserId.getKey(), userPartitions);
+                                }
+                                userPartitions.add(new UserPartition(entry.getKey(), uniqueUserId.getValue(), false));
+                            });
+                }
+            }
+        }
+
+        if (userPartitionsMapOfUsers.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<DomainUser> domainUsers = userPartitionsMapOfUsers.entrySet().stream()
+                .map(entry -> new DomainUser(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+
+        try {
+            List<String> domainUserIds = uniqueIdResolver.addUsers(domainUsers, this.name, this.id);
+            if (domainUserIds != null && !domainUserIds.isEmpty()) {
+                return domainUserIds;
+            }
+        } catch (UniqueIdResolverException e) {
+            if (!userPartitionsMapOfUsers.isEmpty()) {
+                userPartitionsMapOfUsers.entrySet().stream()
+                        .forEach(partitionEntry -> removeAddedUsersInAFailure(partitionEntry.getValue()));
+            }
+            throw new DomainException("Error occurred while persisting user unique ids.", e);
+        }
+
+        return domainUsers.stream()
+                .map(DomainUser::getDomainUserId)
+                .collect(Collectors.toList());
+    }
+
+    public void updateUserClaims(String domainUserId, List<Claim> claims) throws DomainException,
+            UserNotFoundException {
+
+        DomainUser domainUser;
+        try {
+            domainUser = uniqueIdResolver.getUser(domainUserId, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException(String.format("Failed to retrieve unique user - %s.", domainUserId), e);
+        }
+
+        if (domainUser == null) {
+            throw new UserNotFoundException("Invalid unique user id.");
+        }
+
+        Map<String, String> connectorUserIdMap = new HashMap<>();
+
+        if (!domainUser.getUserPartitions().isEmpty()) {
+            connectorUserIdMap.putAll(domainUser.getUserPartitions().stream()
+                    .filter(UserPartition::isIdentityStore)
+                    .collect(Collectors.toMap(UserPartition::getConnectorId, UserPartition::getConnectorUserId)));
+        }
+
+        Map<String, String> updatedConnectorUserIdMap = new HashMap<>();
+
+        if ((claims == null || claims.isEmpty()) && !connectorUserIdMap.isEmpty()) {
+            for (Map.Entry<String, String> entry : connectorUserIdMap.entrySet()) {
+                IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+                String updatedConnectorUserId;
+                try {
+                    updatedConnectorUserId = identityStoreConnector.updateUserAttributes(entry.getValue(),
+                            new ArrayList<>());
+                } catch (IdentityStoreConnectorException e) {
+                    throw new DomainException("Failed to update connector user id", e);
+                }
+                updatedConnectorUserIdMap.put(entry.getKey(), updatedConnectorUserId);
+            }
+        } else {
+
+            Map<String, List<Attribute>> attributesMap = getAttributesMap(claims);
+
+            Map<String, String> tempConnectorUserIdMap = attributesMap.keySet().stream()
+                    .collect(Collectors.toMap(connectorId -> connectorId, connectorId -> ""));
+
+            tempConnectorUserIdMap.putAll(connectorUserIdMap);
+
+            for (Map.Entry<String, String> entry : tempConnectorUserIdMap.entrySet()) {
+
+                IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+                String updatedConnectorUserId;
+                if (isNullOrEmpty(entry.getValue())) {
+                    try {
+                        updatedConnectorUserId = identityStoreConnector.addUser(attributesMap.get(entry.getKey()));
+                    } catch (IdentityStoreConnectorException e) {
+                        throw new DomainException("Identity store connector failed to add user " +
+                                "attributes.", e);
+                    }
+                } else {
+                    try {
+                        updatedConnectorUserId = identityStoreConnector.updateUserAttributes(entry.getValue(),
+                                attributesMap.get(entry.getKey()));
+                    } catch (IdentityStoreConnectorException e) {
+                        throw new DomainException("Failed to update user attributes.", e);
+                    }
+                }
+                updatedConnectorUserIdMap.put(entry.getKey(), updatedConnectorUserId);
+            }
+        }
+
+        if (!connectorUserIdMap.equals(updatedConnectorUserIdMap)) {
+            try {
+                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIdMap, this.id);
+            } catch (UniqueIdResolverException e) {
+                throw new DomainException("Failed to update user connector ids.", e);
+            }
+        }
+    }
+
+    public void updateUserClaims(String domainUserId, List<Claim> claimsToUpdate, List<Claim> claimsToRemove)
+            throws DomainException, UserNotFoundException {
+
+        DomainUser domainUser;
+        try {
+            domainUser = uniqueIdResolver.getUser(domainUserId, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException(String.format("Failed to retrieve unique user - %s.", domainUserId), e);
+        }
+
+        if (domainUser == null) {
+            throw new UserNotFoundException("Invalid unique user id.");
+        }
+
+        Map<String, String> connectorUserIdMap = new HashMap<>();
+
+        if (!domainUser.getUserPartitions().isEmpty()) {
+            connectorUserIdMap.putAll(domainUser.getUserPartitions().stream()
+                    .filter(UserPartition::isIdentityStore)
+                    .collect(Collectors.toMap(UserPartition::getConnectorId, UserPartition::getConnectorUserId)));
+        }
+
+        Map<String, List<Attribute>> attributesMapToUpdate = getAttributesMap(claimsToUpdate);
+        Map<String, List<Attribute>> attributeMapToRemove = getAttributesMap(claimsToRemove);
+
+        Set<String> connectorIds = new HashSet<>();
+
+        if (!attributesMapToUpdate.isEmpty()) {
+            connectorIds.addAll(attributesMapToUpdate.keySet());
+        }
+
+        if (!attributeMapToRemove.isEmpty()) {
+            connectorIds.addAll(attributeMapToRemove.keySet());
+        }
+
+        Map<String, String> updatedConnectorUserIds = new HashMap<>();
+
+        for (String connectorId : connectorIds) {
+            IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(connectorId);
+            String updatedConnectorUserId;
+            if (isNullOrEmpty(connectorUserIdMap.get(connectorId))) {
+                if (attributesMapToUpdate.get(connectorId) != null) {
+                    try {
+                        updatedConnectorUserId = identityStoreConnector.addUser(attributesMapToUpdate.get(connectorId));
+                    } catch (IdentityStoreConnectorException e) {
+                        throw new DomainException("Identity store connector failed to add user " +
+                                "attributes.", e);
+                    }
+                    updatedConnectorUserIds.put(connectorId, updatedConnectorUserId);
+                }
+            } else {
+                try {
+                    updatedConnectorUserId = identityStoreConnector.updateUserAttributes(
+                            connectorUserIdMap.get(connectorId),
+                            attributesMapToUpdate.get(connectorId),
+                            attributeMapToRemove.get(connectorId));
+                } catch (IdentityStoreConnectorException e) {
+                    throw new DomainException("Failed to update user attributes", e);
+                }
+                updatedConnectorUserIds.put(connectorId, updatedConnectorUserId);
+            }
+
+        }
+
+        if (!connectorUserIdMap.equals(updatedConnectorUserIds)) {
+            try {
+                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIds, this.id);
+            } catch (UniqueIdResolverException e) {
+                throw new DomainException("Failed to update user connector ids.", e);
+            }
+        }
+    }
+
+    public void deleteUser(String domainUserId) throws DomainException, UserNotFoundException {
+
+        DomainUser domainUser;
+        try {
+            domainUser = uniqueIdResolver.getUser(domainUserId, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException(String.format("Failed to retrieve unique user - %s.", domainUserId), e);
+        }
+
+        if (domainUser == null) {
+            throw new UserNotFoundException("Invalid unique user id.");
+        }
+
+        List<UserPartition> userPartitions = domainUser.getUserPartitions();
+
+        if (!userPartitions.isEmpty()) {
+            for (UserPartition userPartition : userPartitions) {
+                if (userPartition.isIdentityStore()) {
+                    IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap
+                            .get(userPartition.getConnectorId());
+                    try {
+                        identityStoreConnector.deleteUser(userPartition.getConnectorUserId());
+                    } catch (IdentityStoreConnectorException e) {
+                        throw new DomainException("Failed to delete user", e);
+                    }
+                } else {
+                    CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorsMap
+                            .get(userPartition.getConnectorId());
+                    try {
+                        credentialStoreConnector.deleteCredential(userPartition.getConnectorUserId());
+                    } catch (CredentialStoreConnectorException e) {
+                        throw new DomainException(String.format("Failed to delete credential entry in " +
+                                "connector - %s with id - %s", userPartition.getConnectorId(), userPartition
+                                .getConnectorUserId()));
+                    }
+                }
+            }
+        }
+
+        try {
+            uniqueIdResolver.deleteUser(domainUserId, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException(String.format("Failed to delete unique user id - %s.", domainUserId));
+        }
+    }
+
+    public void updateGroupsOfUser(String domainUserId, List<String> domainGroupIds) throws DomainException {
+
+        try {
+            uniqueIdResolver.updateGroupsOfUser(domainUserId, domainGroupIds, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException("Failed update groups of user", e);
+        }
+    }
+
+    public void updateGroupsOfUser(String domainUserId, List<String> domainGroupIdsToUpdate,
+                                   List<String> domainGroupIdsToRemove) throws DomainException {
+
+        try {
+            uniqueIdResolver.updateGroupsOfUser(domainUserId, domainGroupIdsToUpdate, domainGroupIdsToRemove, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException("Failed update groups of user", e);
+        }
+    }
+
+    public String addGroup(GroupModel groupModel) throws DomainException {
+
+        Map<String, List<Attribute>> attributesMap = getAttributesMap(groupModel.getClaims());
+
+        List<GroupPartition> groupPartitions = new ArrayList<>();
+
+        for (Map.Entry<String, List<Attribute>> entry : attributesMap.entrySet()) {
+            IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+            String connectorGroupId;
+            try {
+                connectorGroupId = identityStoreConnector.addGroup(entry.getValue());
+            } catch (IdentityStoreConnectorException e) {
+                // Recover from the inconsistent state in the connectors
+                if (groupPartitions.size() > 0) {
+                    removeAddedGroupsInAFailure(groupPartitions);
+                }
+                throw new DomainException("Identity store connector failed to add user attributes.", e);
+            }
+
+            groupPartitions.add(new GroupPartition(entry.getKey(), connectorGroupId));
+        }
+
+
+        String groupUniqueId = IdentityUserMgtUtil.generateUUID();
+        try {
+            String receivedGroupUniqueId = uniqueIdResolver.addGroup(new DomainGroup(groupUniqueId, groupPartitions),
+                    this.getName(), this.id);
+            if (!isNullOrEmpty(receivedGroupUniqueId)) {
+                return receivedGroupUniqueId;
+            }
+        } catch (UniqueIdResolverException e) {
+            // Recover from the inconsistent state in the connectors
+            removeAddedGroupsInAFailure(groupPartitions);
+            throw new DomainException("Error occurred while persisting user unique id.", e);
+        }
+
+        return groupUniqueId;
+    }
+
+    public List<String> addGroups(List<GroupModel> groupModels) throws DomainException {
+
+        Map<String, GroupModel> groupModelMap = groupModels.stream()
+                .filter(Objects::nonNull)
+                .filter(groupModel -> !groupModel.getClaims().isEmpty())
+                .collect(Collectors.toMap(groupModel -> IdentityUserMgtUtil.generateUUID(), groupModel -> groupModel));
+
+        Map<String, Map<String, List<Attribute>>> attributesMap = getAttributesMapOfGroups(groupModelMap);
+
+        Map<String, List<GroupPartition>> groupPartitionMapOfGroups = new HashMap<>();
+        if (!attributesMap.isEmpty()) {
+            for (Map.Entry<String, Map<String, List<Attribute>>> entry : attributesMap
+                    .entrySet()) {
+
+                IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+                Map<String, String> uniqueGroupIds;
+                try {
+                    uniqueGroupIds = identityStoreConnector.addGroups(entry.getValue());
+                } catch (IdentityStoreConnectorException e) {
+                    if (!groupPartitionMapOfGroups.isEmpty()) {
+                        groupPartitionMapOfGroups.entrySet().stream()
+                                .forEach(partitionEntry -> removeAddedGroupsInAFailure(partitionEntry.getValue()));
+                    }
+                    throw new DomainException("Failed to add groups.", e);
+                }
+                if (uniqueGroupIds != null) {
+                    uniqueGroupIds.entrySet().stream()
+                            .forEach(uniqueGroupId -> {
+                                List<GroupPartition> groupPartitions = groupPartitionMapOfGroups
+                                        .get(uniqueGroupId.getKey());
+                                if (groupPartitions == null) {
+                                    groupPartitions = new ArrayList<>();
+                                    groupPartitionMapOfGroups.put(uniqueGroupId.getKey(), groupPartitions);
+                                }
+                                groupPartitions.add(new GroupPartition(entry.getKey(), uniqueGroupId.getValue()));
+                            });
+                }
+            }
+        }
+
+        if (groupPartitionMapOfGroups.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<DomainGroup> domainGroups = groupPartitionMapOfGroups.entrySet().stream()
+                .map(entry -> new DomainGroup(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+
+        try {
+
+            List<String> domainGroupIds = uniqueIdResolver.addGroups(domainGroups, this.name, this.id);
+            if (domainGroupIds != null && !domainGroupIds.isEmpty()) {
+                return domainGroupIds;
+            }
+        } catch (UniqueIdResolverException e) {
+            if (!groupPartitionMapOfGroups.isEmpty()) {
+                groupPartitionMapOfGroups.entrySet().stream()
+                        .forEach(partitionEntry -> removeAddedGroupsInAFailure(partitionEntry.getValue()));
+            }
+            throw new DomainException("Error occurred while persisting group unique ids.", e);
+        }
+
+        return domainGroups.stream()
+                .map(DomainGroup::getDomainGroupId)
+                .collect(Collectors.toList());
+    }
+
+    public void updateGroupClaims(String domainGroupId, List<Claim> claims) throws DomainException,
+            GroupNotFoundException {
+
+        DomainGroup domainGroup;
+        try {
+            domainGroup = uniqueIdResolver.getGroup(domainGroupId, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException(String.format("Failed to retrieve unique group - %s.",
+                    domainGroupId), e);
+        }
+
+        if (domainGroup == null) {
+            throw new GroupNotFoundException("Invalid unique group id.");
+        }
+
+        Map<String, String> connectorGroupIdMap = new HashMap<>();
+
+        if (!domainGroup.getGroupPartitions().isEmpty()) {
+            connectorGroupIdMap.putAll(domainGroup.getGroupPartitions().stream()
+                    .collect(Collectors.toMap(GroupPartition::getConnectorId, GroupPartition::getConnectorGroupId)));
+        }
+
+        Map<String, String> updatedConnectorGroupIdMap = new HashMap<>();
+
+        if ((claims == null || claims.isEmpty()) && !connectorGroupIdMap.isEmpty()) {
+            for (Map.Entry<String, String> entry : connectorGroupIdMap.entrySet()) {
+                IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+                String updatedConnectorGroupId;
+                try {
+                    updatedConnectorGroupId = identityStoreConnector.updateGroupAttributes(entry.getValue(),
+                            new ArrayList<>());
+                } catch (IdentityStoreConnectorException e) {
+                    throw new DomainException("Failed to update group attributes.", e);
+                }
+                updatedConnectorGroupIdMap.put(entry.getKey(), updatedConnectorGroupId);
+            }
+        } else {
+
+            Map<String, List<Attribute>> attributesMap = getAttributesMap(claims);
+
+            Map<String, String> tempConnectorIdMap = attributesMap.keySet().stream()
+                    .collect(Collectors.toMap(connectorId -> connectorId, connectorId -> ""));
+
+            tempConnectorIdMap.putAll(connectorGroupIdMap);
+
+            for (Map.Entry<String, String> entry : tempConnectorIdMap.entrySet()) {
+                IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+                String updatedConnectorGroupId;
+                if (isNullOrEmpty(entry.getValue())) {
+                    try {
+                        updatedConnectorGroupId = identityStoreConnector.addGroup(attributesMap.get(entry.getKey()));
+                    } catch (IdentityStoreConnectorException e) {
+                        throw new DomainException("Identity store connector failed to add group attributes.", e);
+                    }
+                } else {
+                    try {
+                        updatedConnectorGroupId = identityStoreConnector.updateGroupAttributes(entry.getValue(),
+                                attributesMap.get(entry.getKey()));
+                    } catch (IdentityStoreConnectorException e) {
+                        throw new DomainException("Failed to update group attributes.", e);
+                    }
+                }
+                updatedConnectorGroupIdMap.put(entry.getKey(), updatedConnectorGroupId);
+            }
+        }
+
+        if (!connectorGroupIdMap.equals(updatedConnectorGroupIdMap)) {
+            try {
+                uniqueIdResolver.updateGroup(domainGroupId, updatedConnectorGroupIdMap, this.id);
+            } catch (UniqueIdResolverException e) {
+                throw new DomainException("Failed to update group connector ids.", e);
+            }
+        }
+    }
+
+    public void updateGroupClaims(String domainGroupId, List<Claim> claimsToUpdate, List<Claim> claimsToRemove)
+            throws DomainException, GroupNotFoundException {
+
+        DomainGroup domainGroup;
+        try {
+            domainGroup = uniqueIdResolver.getGroup(domainGroupId, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException(String.format("Failed to retrieve unique group - %s.",
+                    domainGroupId), e);
+        }
+
+        if (domainGroup == null) {
+            throw new GroupNotFoundException("Invalid unique group id.");
+        }
+
+        Map<String, String> connectorGroupIdMap = new HashMap<>();
+
+        if (!domainGroup.getGroupPartitions().isEmpty()) {
+            connectorGroupIdMap.putAll(domainGroup.getGroupPartitions().stream()
+                    .collect(Collectors.toMap(GroupPartition::getConnectorId, GroupPartition::getConnectorGroupId)));
+        }
+
+        Map<String, List<Attribute>> attributesMapToUpdate = getAttributesMap(claimsToUpdate);
+        Map<String, List<Attribute>> attributesMapToRemove = getAttributesMap(claimsToRemove);
+
+        Set<String> connectorIds = new HashSet<>();
+
+        if (!attributesMapToUpdate.isEmpty()) {
+            connectorIds.addAll(attributesMapToUpdate.keySet());
+        }
+
+        if (!attributesMapToRemove.isEmpty()) {
+            connectorIds.addAll(attributesMapToRemove.keySet());
+        }
+
+        Map<String, String> updatedConnectorGroupIdMap = new HashMap<>();
+
+        for (String connectorId : connectorIds) {
+            IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(connectorId);
+            String updatedConnectorGroupId;
+            if (isNullOrEmpty(connectorGroupIdMap.get(connectorId))) {
+                if (attributesMapToUpdate.get(connectorId) != null) {
+                    try {
+                        updatedConnectorGroupId = identityStoreConnector.addGroup(attributesMapToUpdate
+                                .get(connectorId));
+                    } catch (IdentityStoreConnectorException e) {
+                        throw new DomainException("Identity store connector failed to add group attributes.", e);
+                    }
+                    updatedConnectorGroupIdMap.put(connectorId, updatedConnectorGroupId);
+                }
+            } else {
+                try {
+                    updatedConnectorGroupId = identityStoreConnector.updateGroupAttributes(
+                            connectorGroupIdMap.get(connectorId),
+                            attributesMapToUpdate.get(connectorId),
+                            attributesMapToRemove.get(connectorId));
+                } catch (IdentityStoreConnectorException e) {
+                    throw new DomainException("Failed to update group attributes.", e);
+                }
+                updatedConnectorGroupIdMap.put(connectorId, updatedConnectorGroupId);
+            }
+
+        }
+
+        if (!connectorGroupIdMap.equals(updatedConnectorGroupIdMap)) {
+            try {
+                uniqueIdResolver.updateGroup(domainGroupId, updatedConnectorGroupIdMap, this.id);
+            } catch (UniqueIdResolverException e) {
+                throw new DomainException("Failed to update group connector ids.", e);
+            }
+        }
+    }
+
+    public void deleteGroup(String domainGroupId) throws DomainException, GroupNotFoundException {
+
+        DomainGroup domainGroup;
+        try {
+            domainGroup = uniqueIdResolver.getGroup(domainGroupId, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException(String.format("Failed to retrieve unique group - %s.", domainGroupId), e);
+        }
+
+        if (domainGroup == null) {
+            throw new GroupNotFoundException("Invalid unique group id.");
+        }
+
+        List<GroupPartition> groupPartitions = domainGroup.getGroupPartitions();
+
+        if (!groupPartitions.isEmpty()) {
+            for (GroupPartition groupPartition : groupPartitions) {
+                IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(groupPartition
+                        .getConnectorId());
+                try {
+                    identityStoreConnector.deleteGroup(groupPartition.getConnectorGroupId());
+                } catch (IdentityStoreConnectorException e) {
+                    throw new DomainException(String.format("Failed to delete user entry in connector - %s with id - " +
+                            "%s", groupPartition.getConnectorId(), groupPartition.getConnectorGroupId()));
+                }
+            }
+        }
+
+        try {
+            uniqueIdResolver.deleteGroup(domainGroupId, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException(String.format("Failed to delete unique user id - %s.", domainGroupId));
+        }
+    }
+
+    public void updateUsersOfGroup(String domainGroupId, List<String> domainUserIds) throws DomainException {
+
+        try {
+            uniqueIdResolver.updateUsersOfGroup(domainGroupId, domainUserIds, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException("Failed update users of group.", e);
+        }
+    }
+
+    public void updateUsersOfGroup(String domainGroupId, List<String> domainUserIdsToUpdate,
+                                   List<String> domainUserIdsToRemove) throws DomainException {
+
+        try {
+            uniqueIdResolver.updateGroupsOfUser(domainGroupId, domainUserIdsToUpdate, domainUserIdsToRemove, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException("Failed update users of group.", e);
+        }
+    }
+
+    public String authenticate(Claim claim, Callback[] credentials) throws AuthenticationFailure {
+
+        MetaClaimMapping metaClaimMapping = claimUriToMetaClaimMappings.get(claim.getClaimUri());
+
+        if (!metaClaimMapping.isUnique()) {
+            throw new AuthenticationFailure("Provided claim is not unique.");
+        }
+
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(metaClaimMapping
+                .getIdentityStoreConnectorId());
+        String connectorUserId;
+        try {
+            connectorUserId = identityStoreConnector.getConnectorUserId(metaClaimMapping.getAttributeName(),
+                    claim.getValue());
+        } catch (UserNotFoundException | IdentityStoreConnectorException e) {
+            throw new AuthenticationFailure("Invalid claim value. No user mapped to the provided claim.", e);
+        }
+
+        DomainUser domainUser;
+        try {
+            domainUser = uniqueIdResolver.getUserFromConnectorUserId(connectorUserId, metaClaimMapping
+                    .getIdentityStoreConnectorId(), this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new AuthenticationFailure("Failed retrieve unique user info.", e);
+        }
+
+        for (UserPartition userPartition : domainUser.getUserPartitions()) {
+            if (!userPartition.isIdentityStore()) {
+                CredentialStoreConnector connector = credentialStoreConnectorsMap.get(userPartition.getConnectorId());
+                if (connector.canHandle(credentials)) {
+                    try {
+                        connector.authenticate(userPartition.getConnectorUserId(), credentials);
+                        return domainUser.getDomainUserId();
+                    } catch (CredentialStoreConnectorException e) {
+                        throw new AuthenticationFailure("Failed to authenticate from the provided credential.", e);
+                    }
+                }
+            }
+        }
+
+        throw new AuthenticationFailure("Failed to authenticate user.");
     }
 
     /**
@@ -894,5 +1635,189 @@ public class Domain {
                     );
         }
         return connectorIdToAttributeNameMap;
+    }
+
+    private Map<String, List<Attribute>> getAttributesMap(List<Claim> claims) {
+
+        Map<String, List<Attribute>> connectorIdToAttributesMap = new HashMap<>();
+
+        if (claims != null && !claims.isEmpty()) {
+            claims.stream()
+                    .forEach(claim -> {
+                                Optional<MetaClaimMapping> optional = metaClaimMappings.stream()
+                                        .filter(metaClaimMapping -> metaClaimMapping.getMetaClaim().getClaimUri()
+                                                .equals(claim.getClaimUri()))
+                                        .findFirst();
+
+                                if (optional.isPresent()) {
+                                    MetaClaimMapping metaClaimMapping = optional.get();
+                                    List<Attribute> attributes = connectorIdToAttributesMap.get(metaClaimMapping
+                                            .getIdentityStoreConnectorId());
+                                    if (attributes == null) {
+                                        attributes = new ArrayList<>();
+                                        connectorIdToAttributesMap.put(metaClaimMapping.getIdentityStoreConnectorId(),
+                                                attributes);
+                                    }
+                                    attributes.add(new Attribute(metaClaimMapping.getAttributeName(),
+                                            claim.getValue()));
+                                }
+                            }
+                    );
+        }
+
+        return connectorIdToAttributesMap;
+    }
+
+    private void removeAddedUsersInAFailure(List<UserPartition> userPartitions) {
+
+        for (UserPartition userPartition : userPartitions) {
+            try {
+                identityStoreConnectorsMap.get(userPartition.getConnectorId())
+                        .removeAddedUsersInAFailure(Collections.singletonList(userPartition
+                                .getConnectorUserId()));
+            } catch (IdentityStoreConnectorException e) {
+                log.error("Error occurred while removing invalid connector user ids. " + String.join(" , ",
+                        userPartitions.stream().map(UserPartition::toString).collect(Collectors.toList())
+                ), e);
+            }
+        }
+    }
+
+    private Map<String, List<Callback>> getConnectorIdToCredentialsMap(List<Callback> credentials) {
+
+        Map<String, List<Callback>> connectorIdToCredentialsMap = new HashMap<>();
+
+        if (!credentials.isEmpty()) {
+            credentials.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(callback -> {
+                        Optional<CredentialStoreConnector> optional = credentialStoreConnectors.stream()
+                                .filter(connector -> connector.canStore(new Callback[]{callback}))
+                                .findAny();
+
+                        if (optional.isPresent()) {
+                            CredentialStoreConnector connector = optional.get();
+                            List<Callback> callbacks = connectorIdToCredentialsMap.get(connector
+                                    .getCredentialStoreConnectorId());
+                            if (callbacks == null) {
+                                callbacks = new ArrayList<>();
+                                connectorIdToCredentialsMap.put(connector.getCredentialStoreConnectorId(), callbacks);
+                            }
+                            callbacks.add(callback);
+                        }
+                    });
+        }
+
+        return connectorIdToCredentialsMap;
+    }
+
+    private Map<String, Map<String, List<Attribute>>> getAttributesMapOfUsers(Map<String, UserModel> userModelMap) {
+
+        Map<String, Map<String, List<Attribute>>> attributesMap = new HashMap<>();
+
+        if (!userModelMap.entrySet().isEmpty()) {
+            userModelMap.entrySet().stream()
+                    .forEach(userModelEntry -> {
+                        Map<String, List<Attribute>> connectorIdToAttributesMap = getAttributesMap
+                                (userModelEntry.getValue().getClaims());
+
+                        if (!connectorIdToAttributesMap.isEmpty()) {
+                            connectorIdToAttributesMap.entrySet().stream()
+                                    .forEach(attributeEntry -> {
+                                                Map<String, List<Attribute>> uniqueUserIdToAttributesMap =
+                                                        attributesMap.get(attributeEntry
+                                                                .getKey());
+                                                if (uniqueUserIdToAttributesMap == null) {
+                                                    uniqueUserIdToAttributesMap = new HashMap<>();
+                                                    attributesMap.put(attributeEntry.getKey(),
+                                                            uniqueUserIdToAttributesMap);
+                                                }
+                                                uniqueUserIdToAttributesMap.put(userModelEntry.getKey(), attributeEntry
+                                                        .getValue());
+                                            }
+                                    );
+                        }
+                    });
+        }
+
+        return attributesMap;
+    }
+
+    private Map<String, Map<String, List<Callback>>> getCredentialsMapOfUsers(Map<String, UserModel> userModelMap) {
+
+        Map<String, Map<String, List<Callback>>> credentialMap = new HashMap<>();
+
+        if (!userModelMap.entrySet().isEmpty()) {
+            userModelMap.entrySet().stream()
+                    .forEach(userModelEntry -> {
+                        Map<String, List<Callback>> connectorIdToCredentialsMap = getConnectorIdToCredentialsMap
+                                (userModelEntry.getValue().getCredentials());
+
+                        if (!connectorIdToCredentialsMap.isEmpty()) {
+                            connectorIdToCredentialsMap.entrySet().stream()
+                                    .forEach(credentialEntry -> {
+                                                Map<String, List<Callback>> uniqueUserIdToCredentialMap =
+                                                        credentialMap.get(credentialEntry
+                                                                .getKey());
+                                                if (uniqueUserIdToCredentialMap == null) {
+                                                    uniqueUserIdToCredentialMap = new HashMap<>();
+                                                    credentialMap.put(credentialEntry.getKey(),
+                                                            uniqueUserIdToCredentialMap);
+                                                }
+                                                uniqueUserIdToCredentialMap.put(userModelEntry.getKey(),
+                                                        credentialEntry.getValue());
+                                            }
+                                    );
+                        }
+                    });
+        }
+
+        return credentialMap;
+    }
+
+    private void removeAddedGroupsInAFailure(List<GroupPartition> groupPartitions) {
+
+        for (GroupPartition groupPartition : groupPartitions) {
+            try {
+                identityStoreConnectorsMap.get(groupPartition.getConnectorId())
+                        .removeAddedGroupsInAFailure(Collections.singletonList(groupPartition.getConnectorGroupId()));
+            } catch (IdentityStoreConnectorException e) {
+                log.error("Error occurred while removing invalid connector user ids. " + String.join(" , ",
+                        groupPartitions.stream().map(GroupPartition::toString).collect(Collectors.toList())
+                ), e);
+            }
+        }
+    }
+
+    private Map<String, Map<String, List<Attribute>>> getAttributesMapOfGroups(Map<String, GroupModel> groupModelMap) {
+
+        Map<String, Map<String, List<Attribute>>> attributesMap = new HashMap<>();
+
+        if (!groupModelMap.entrySet().isEmpty()) {
+            groupModelMap.entrySet().stream()
+                    .forEach(groupModelEntry -> {
+                        Map<String, List<Attribute>> connectorIdToAttributesMap = getAttributesMap
+                                (groupModelEntry.getValue().getClaims());
+
+                        if (!connectorIdToAttributesMap.isEmpty()) {
+                            connectorIdToAttributesMap.entrySet().stream()
+                                    .forEach(attributeEntry -> {
+                                                Map<String, List<Attribute>> uniqueUserIdToAttributesMap =
+                                                        attributesMap.get(attributeEntry
+                                                                .getKey());
+                                                if (uniqueUserIdToAttributesMap == null) {
+                                                    uniqueUserIdToAttributesMap = new HashMap<>();
+                                                    attributesMap.put(attributeEntry.getKey(),
+                                                            uniqueUserIdToAttributesMap);
+                                                }
+                                                uniqueUserIdToAttributesMap.put(groupModelEntry.getKey(),
+                                                        attributeEntry.getValue());
+                                            }
+                                    );
+                        }
+                    });
+        }
+
+        return attributesMap;
     }
 }

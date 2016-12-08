@@ -41,7 +41,7 @@ public interface UniqueIdResolver {
      * @return Unique user.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    DomainUser getDomainUser(String domainUserId) throws UniqueIdResolverException, UserNotFoundException;
+    DomainUser getUser(String domainUserId, int domainId) throws UniqueIdResolverException, UserNotFoundException;
 
     /**
      * Get global unique Id for a connector specific user Id.
@@ -51,7 +51,7 @@ public interface UniqueIdResolver {
      * @return Globally unique user Id.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    DomainUser getDomainUserFromConnectorUserId(String connectorUserId, String connectorId) throws
+    DomainUser getUserFromConnectorUserId(String connectorUserId, String connectorId, int domainId) throws
             UniqueIdResolverException;
 
     /**
@@ -62,7 +62,8 @@ public interface UniqueIdResolver {
      * @return Globally unique user Ids.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    List<DomainUser> getDomainUsers(List<String> connectorUserIds, String connectorId) throws UniqueIdResolverException;
+    List<DomainUser> getUsers(List<String> connectorUserIds, String connectorId, int domainId) throws
+            UniqueIdResolverException;
 
     /**
      * Check whether user exists or not.
@@ -71,7 +72,7 @@ public interface UniqueIdResolver {
      * @return existence of user.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    boolean isUserExists(String domainUserId) throws UniqueIdResolverException;
+    boolean isUserExists(String domainUserId, int domainId) throws UniqueIdResolverException;
 
     /**
      * List a set of users selected from the given range.
@@ -81,16 +82,17 @@ public interface UniqueIdResolver {
      * @return list of unique users within given range
      * @throws UniqueIdResolverException Unique Id Resolver Exception
      */
-    List<DomainUser> listDomainUsers(int offset, int length) throws UniqueIdResolverException;
+    List<DomainUser> listDomainUsers(int offset, int length, int domainId) throws UniqueIdResolverException;
 
     /**
      * Get unique group for a unique group Id.
      *
-     * @param uniqueGroupId Globally unique group Id.
+     * @param domainGroupId Globally unique group Id.
      * @return Unique group.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    DomainGroup getUniqueGroup(String uniqueGroupId) throws UniqueIdResolverException, GroupNotFoundException;
+    DomainGroup getGroup(String domainGroupId, int domainId) throws UniqueIdResolverException,
+            GroupNotFoundException;
 
     /**
      * Get global unique Id for a connector specific group Id.
@@ -100,7 +102,7 @@ public interface UniqueIdResolver {
      * @return Globally unique group Id.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    DomainGroup getDomainGroupFromConnectorGroupId(String connectorGroupId, String connectorId) throws
+    DomainGroup getGroupFromConnectorGroupId(String connectorGroupId, String connectorId, int domainId) throws
             UniqueIdResolverException;
 
     /**
@@ -110,7 +112,7 @@ public interface UniqueIdResolver {
      * @return existence of group.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    boolean isGroupExists(String uniqueGroupId) throws UniqueIdResolverException;
+    boolean isGroupExists(String uniqueGroupId, int domainId) throws UniqueIdResolverException;
 
     /**
      * List a set of groups selected from the given range.
@@ -120,7 +122,7 @@ public interface UniqueIdResolver {
      * @return list of unique groups within given range
      * @throws UniqueIdResolverException Unique Id Resolver Exception
      */
-    List<DomainGroup> listDomainGroups(int offset, int length) throws UniqueIdResolverException;
+    List<DomainGroup> listGroups(int offset, int length, int domainId) throws UniqueIdResolverException;
 
     /**
      * Get global unique Ids for a connector specific group Ids.
@@ -130,26 +132,26 @@ public interface UniqueIdResolver {
      * @return Globally unique group Ids.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    List<DomainGroup> getDomainGroups(List<String> connectorGroupIds, String connectorId) throws
+    List<DomainGroup> getGroups(List<String> connectorGroupIds, String connectorId, int domainId) throws
             UniqueIdResolverException;
 
     /**
      * Get groups of user by user unique id.
      *
-     * @param uniqueUserId Globally unique user Id.
+     * @param domainUserId Globally unique user Id.
      * @return list of groups.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    List<DomainGroup> getDomainGroupsOfUser(String uniqueUserId) throws UniqueIdResolverException;
+    List<DomainGroup> getGroupsOfUser(String domainUserId, int domainId) throws UniqueIdResolverException;
 
     /**
      * Get users of group by group unique id.
      *
-     * @param uniqueGroupId Globally unique group Id.
+     * @param domainGroupId Globally unique group Id.
      * @return list of users.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    List<DomainUser> getDomainUsersOfGroup(String uniqueGroupId) throws UniqueIdResolverException;
+    List<DomainUser> getUsersOfGroup(String domainGroupId, int domainId) throws UniqueIdResolverException;
 
     /**
      * Check whether user belong to a specific group.
@@ -158,7 +160,7 @@ public interface UniqueIdResolver {
      * @return existence of the user in the group.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    boolean isUserInGroup(String domainUserId, String domainGroupId) throws UniqueIdResolverException;
+    boolean isUserInGroup(String domainUserId, String domainGroupId, int domainId) throws UniqueIdResolverException;
 
     /**
      * Add user.
@@ -167,7 +169,7 @@ public interface UniqueIdResolver {
      * @param domainName Domain name.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void addUser(DomainUser domainUser, String domainName) throws UniqueIdResolverException;
+    String addUser(DomainUser domainUser, String domainName, int domainId) throws UniqueIdResolverException;
 
     /**
      * Add users.
@@ -176,24 +178,26 @@ public interface UniqueIdResolver {
      * @param domainName Domain name.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void addUsers(List<DomainUser> domainUsers, String domainName) throws UniqueIdResolverException;
+    List<String> addUsers(List<DomainUser> domainUsers, String domainName, int domainId) throws
+            UniqueIdResolverException;
 
     /**
      * Update user.
      *
-     * @param uniqueUserId       Globally unique user Id.
+     * @param domainUserId       Globally unique user Id.
      * @param connectorUserIdMap Connector user id map.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void updateUser(String uniqueUserId, Map<String, String> connectorUserIdMap) throws UniqueIdResolverException;
+    void updateUser(String domainUserId, Map<String, String> connectorUserIdMap, int domainId) throws
+            UniqueIdResolverException;
 
     /**
      * Delete user.
      *
-     * @param uniqueUserId Globally unique user Id.
+     * @param domainUserId Globally unique user Id.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void deleteUser(String uniqueUserId) throws UniqueIdResolverException;
+    void deleteUser(String domainUserId, int domainId) throws UniqueIdResolverException;
 
     /**
      * Add group.
@@ -202,7 +206,7 @@ public interface UniqueIdResolver {
      * @param domainName Domain name.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void addGroup(DomainGroup domainGroup, String domainName) throws UniqueIdResolverException;
+    String addGroup(DomainGroup domainGroup, String domainName, int domainId) throws UniqueIdResolverException;
 
     /**
      * Add groups.
@@ -211,62 +215,66 @@ public interface UniqueIdResolver {
      * @param domainName Domain name.
      * @throws UniqueIdResolverException Unique Id Resolver Exception
      */
-    void addGroups(List<DomainGroup> domainGroups, String domainName) throws UniqueIdResolverException;
+    List<String> addGroups(List<DomainGroup> domainGroups, String domainName, int domainId) throws
+            UniqueIdResolverException;
 
     /**
      * Update group.
      *
-     * @param uniqueGroupId       Globally unique group Id.
+     * @param domainGroupId       Globally unique group Id.
      * @param connectorGroupIdMap Connector group id map.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void updateGroup(String uniqueGroupId, Map<String, String> connectorGroupIdMap) throws UniqueIdResolverException;
+    void updateGroup(String domainGroupId, Map<String, String> connectorGroupIdMap, int domainId) throws
+            UniqueIdResolverException;
 
     /**
      * Delete group.
      *
-     * @param uniqueGroupId Globally unique group Id.
+     * @param domainGroupId Globally unique group Id.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void deleteGroup(String uniqueGroupId) throws UniqueIdResolverException;
+    void deleteGroup(String domainGroupId, int domainId) throws UniqueIdResolverException;
 
     /**
      * Update groups of user.
      *
-     * @param uniqueUserId   Globally unique user Id.
-     * @param uniqueGroupIds Globally unique group Ids.
+     * @param domainUserId   Globally unique user Id.
+     * @param domainGroupIds Globally unique group Ids.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds) throws UniqueIdResolverException;
+    void updateGroupsOfUser(String domainUserId, List<String> domainGroupIds, int domainId) throws
+            UniqueIdResolverException;
 
     /**
      * Update groups of user.
      *
-     * @param uniqueUserId           Globally unique user Id.
-     * @param uniqueGroupIdsToUpdate Globally unique group ids to update.
-     * @param uniqueGroupIdsToRemove Globally unique group ids to remove.
+     * @param domainUserId           Globally unique user Id.
+     * @param domainGroupIdsToUpdate Globally unique group ids to update.
+     * @param domainGroupIdsToRemove Globally unique group ids to remove.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToUpdate,
-                            List<String> uniqueGroupIdsToRemove) throws UniqueIdResolverException;
+    void updateGroupsOfUser(String domainUserId, List<String> domainGroupIdsToUpdate,
+                            List<String> domainGroupIdsToRemove, int domainId) throws UniqueIdResolverException;
 
     /**
      * Update users of group.
      *
-     * @param uniqueGroupId Globally unique group Id.
-     * @param uniqueUserIds Globally unique user Ids.
+     * @param domainGroupId Globally unique group Id.
+     * @param domainUserIds Globally unique user Ids.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds) throws UniqueIdResolverException;
+    void updateUsersOfGroup(String domainGroupId, List<String> domainUserIds, int domainId) throws
+            UniqueIdResolverException;
 
     /**
      * Update users of group,
      *
-     * @param uniqueGroupId         Globally unique group Id.
-     * @param uniqueUserIdsToUpdate Globally unique user ids to update.
-     * @param uniqueUserIdsToRemove Globally unique user ids to remove.
+     * @param doaminGroupId         Globally unique group Id.
+     * @param domainUserIdsToUpdate Globally unique user ids to update.
+     * @param domainUserIdsToRemove Globally unique user ids to remove.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToUpdate,
-                            List<String> uniqueUserIdsToRemove) throws UniqueIdResolverException;
+    void updateUsersOfGroup(String doaminGroupId, List<String> domainUserIdsToUpdate,
+                            List<String> domainUserIdsToRemove, int domainId) throws UniqueIdResolverException;
 }

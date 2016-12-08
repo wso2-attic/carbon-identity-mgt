@@ -570,7 +570,7 @@ public class IdentityStoreTest {
     }
 
     @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
-    public void testIsUserInGroup() throws IdentityStoreException, UserNotFoundException {
+    public void testIsUserInGroup() throws IdentityStoreException, UserNotFoundException, GroupNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
