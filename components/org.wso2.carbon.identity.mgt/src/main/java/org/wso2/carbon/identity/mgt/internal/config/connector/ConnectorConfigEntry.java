@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.identity.mgt.internal.config.connector;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -26,6 +27,8 @@ public class ConnectorConfigEntry {
     private String connectorId;
 
     private String connectorType;
+
+    private boolean readOnly;
 
     private Map<String, String> properties;
 
@@ -45,7 +48,19 @@ public class ConnectorConfigEntry {
         this.connectorType = connectorType;
     }
 
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
     public Map<String, String> getProperties() {
+
+        if (properties == null) {
+            return Collections.emptyMap();
+        }
         return properties;
     }
 

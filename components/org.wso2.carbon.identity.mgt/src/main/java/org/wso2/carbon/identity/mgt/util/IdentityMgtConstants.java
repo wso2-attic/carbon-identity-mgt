@@ -35,9 +35,9 @@ public class IdentityMgtConstants {
     public static final String CARBON_HOME = "carbon.home";
 
     //Config file names
-    public static final String STORE_CONFIG_FILE = "store-config.yml";
-    public static final String CLAIM_MAPPING_FILE = "claim-mapping.yml";
-    public static final String DOMAIN_CONFIG_FILE = "domain-config.yml";
+    public static final String STORE_CONFIG_FILE = "store-config.yaml";
+    public static final String CLAIM_MAPPING_FILE = "claim-mapping.yaml";
+    public static final String DOMAIN_CONFIG_FILE = "domain-config.yaml";
 
     public static final String UNIQUE_ID_RESOLVER_TYPE = "JDBCUniqueIdResolver";
 

@@ -44,10 +44,10 @@ public class FileUtil {
     }
 
     /**
-     * Read a yml file according to a class type.
+     * Read a.yaml file according to a class type.
      *
      * @param filePath  File path of the configuration file
-     * @param classType Class type of the yml bean
+     * @param classType Class type of the.yaml bean
      * @param <T>       Class T
      * @return Config file bean
      * @throws CarbonIdentityMgtConfigException Error if the file do not exists
@@ -61,10 +61,10 @@ public class FileUtil {
     }
 
     /**
-     * Read a yml file according to a class type.
+     * Read a.yaml file according to a class type.
      *
      * @param file      File path of the configuration file
-     * @param classType Class type of the yml bean
+     * @param classType Class type of the.yaml bean
      * @param <T>       Class T
      * @return Config file bean
      * @throws CarbonIdentityMgtConfigException Error in reading configuration file
@@ -89,10 +89,10 @@ public class FileUtil {
     }
 
     /**
-     * Read a yml file according to a class type.
+     * Read a.yaml file according to a class type.
      *
      * @param path          folder which contain the config files
-     * @param classType     Class type of the yml bean
+     * @param classType     Class type of the.yaml bean
      * @param fileNameRegex file name regex
      * @param <T>           Class T
      * @return Config file bean

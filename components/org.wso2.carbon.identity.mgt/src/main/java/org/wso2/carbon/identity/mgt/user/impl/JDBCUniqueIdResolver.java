@@ -68,15 +68,15 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     @Override
     public UniqueUser getUniqueUser(String uniqueUserId) throws UniqueIdResolverException, UserNotFoundException {
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUniqueUser = "SELECT CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_ENTITY_ID FROM " +
-                    "IDM_ENTITY WHERE ENTITY_UUID = :entity_uuid;";
+            final String selectUniqueUser = "SELECT CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_USER_ID FROM " +
+                    "IDM_USER WHERE USER_UUID = :user_uuid;";
 
             UniqueUser uniqueUser = new UniqueUser();
             List<UserPartition> userPartitions = new ArrayList<>();
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectUniqueUser);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.ENTITY_UUID,
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID,
                     uniqueUserId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
@@ -85,7 +85,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                     userPartition.setConnectorId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
                             .CONNECTOR_ID));
                     userPartition.setConnectorUserId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
-                            .CONNECTOR_ENTITY_ID));
+                            .CONNECTOR_USER_ID));
                     userPartition.setIdentityStore(UniqueIdResolverConstants.IDENTITY_STORE_CONNECTOR.equals(resultSet
                             .getString(UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_TYPE)));
                     userPartitions.add(userPartition);
@@ -106,10 +106,10 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUniqueUser = "SELECT ENTITY_UUID, CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_ENTITY_ID " +
-                    "FROM IDM_ENTITY WHERE ENTITY_UUID = ( " +
-                    "SELECT ENTITY_UUID FROM IDM_ENTITY " +
-                    "WHERE CONNECTOR_ENTITY_ID = :connector_entity_id; " +
+            final String selectUniqueUser = "SELECT USER_UUID, CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_USER_ID " +
+                    "FROM IDM_USER WHERE USER_UUID = ( " +
+                    "SELECT USER_UUID FROM IDM_USER " +
+                    "WHERE CONNECTOR_USER_ID = :connector_user_id; " +
                     "AND CONNECTOR_ID = :connector_id;)";
 
             String userUUID = null;
@@ -118,18 +118,18 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectUniqueUser);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ENTITY_ID,
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_USER_ID,
                     connectorUserId);
             namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID, connectorId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
                 while (resultSet.next()) {
                     UserPartition userPartition = new UserPartition();
-                    userUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.ENTITY_UUID);
+                    userUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.USER_UUID);
                     userPartition.setConnectorId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
                             .CONNECTOR_ID));
                     userPartition.setConnectorUserId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
-                            .CONNECTOR_ENTITY_ID));
+                            .CONNECTOR_USER_ID));
                     userPartition.setIdentityStore(UniqueIdResolverConstants.IDENTITY_STORE_CONNECTOR.equals(resultSet
                             .getString(UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_TYPE)));
                     userPartitions.add(userPartition);
@@ -172,8 +172,23 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     @Override
     public boolean isUserExists(String uniqueUserId) throws UniqueIdResolverException {
 
-        try {
-            return isEntityExists(uniqueUserId);
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+            final String selectUser = "SELECT ID FROM IDM_USER " +
+                    "WHERE USER_UUID = :user_uuid;";
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    selectUser);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
+
+                if (resultSet.next()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while searching user.", e);
         }
@@ -183,8 +198,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     public List<UniqueUser> listUsers(int offset, int length) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUniqueUser = "SELECT ENTITY_UUID, CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_ENTITY_ID " +
-                    "FROM IDM_ENTITY LIMIT :limit; OFFSET :offset;";
+            final String selectUniqueUser = "SELECT USER_UUID, CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_USER_ID " +
+                    "FROM IDM_USER LIMIT :limit; OFFSET :offset;";
 
             Map<String, UniqueUser> userMap = new HashMap<>();
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
@@ -196,11 +211,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
                 while (resultSet.next()) {
                     UserPartition userPartition = new UserPartition();
-                    String userUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.ENTITY_UUID);
+                    String userUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.USER_UUID);
                     userPartition.setConnectorId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
                             .CONNECTOR_ID));
                     userPartition.setConnectorUserId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
-                            .CONNECTOR_ENTITY_ID));
+                            .CONNECTOR_USER_ID));
                     userPartition.setIdentityStore(UniqueIdResolverConstants.IDENTITY_STORE_CONNECTOR.equals(resultSet
                             .getString(UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_TYPE)));
 
@@ -227,22 +242,22 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     public UniqueGroup getUniqueGroup(String uniqueGroupId) throws UniqueIdResolverException, GroupNotFoundException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUniqueUser = "SELECT CONNECTOR_ID, CONNECTOR_ENTITY_ID FROM " +
-                    "IDM_ENTITY WHERE ENTITY_UUID = :entity_uuid;";
+            final String selectUniqueUser = "SELECT CONNECTOR_ID, CONNECTOR_GROUP_ID FROM " +
+                    "IDM_GROUP WHERE GROUP_UUID = :group_uuid;";
 
             UniqueGroup uniqueGroup = new UniqueGroup();
             List<GroupPartition> groupPartitions = new ArrayList<>();
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectUniqueUser);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.ENTITY_UUID, uniqueGroupId);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroupId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
                 while (resultSet.next()) {
                     GroupPartition userPartition = new GroupPartition();
                     userPartition.setConnectorId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
                             .CONNECTOR_ID));
                     userPartition.setConnectorGroupId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
-                            .CONNECTOR_ENTITY_ID));
+                            .CONNECTOR_GROUP_ID));
                     groupPartitions.add(userPartition);
                 }
             }
@@ -261,10 +276,10 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUniqueGroup = "SELECT ENTITY_UUID, CONNECTOR_ID, CONNECTOR_ENTITY_ID " +
-                    "FROM IDM_ENTITY WHERE ENTITY_UUID = ( " +
-                    "SELECT ENTITY_UUID FROM IDM_ENTITY " +
-                    "WHERE CONNECTOR_ENTITY_ID = :connector_entity_id; " +
+            final String selectUniqueGroup = "SELECT GROUP_UUID, CONNECTOR_ID, CONNECTOR_GROUP_ID " +
+                    "FROM IDM_GROUP WHERE GROUP_UUID = ( " +
+                    "SELECT GROUP_UUID FROM IDM_GROUP " +
+                    "WHERE CONNECTOR_GROUP_ID = :connector_group_id; " +
                     "AND CONNECTOR_ID = :connector_id;)";
 
             String groupUUID = null;
@@ -273,18 +288,18 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(),
                     selectUniqueGroup);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ENTITY_ID,
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_GROUP_ID,
                     connectorGroupId);
             namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID, connectorId);
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
                 while (resultSet.next()) {
                     GroupPartition groupPartition = new GroupPartition();
-                    groupUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.ENTITY_UUID);
+                    groupUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.GROUP_UUID);
                     groupPartition.setConnectorId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
                             .CONNECTOR_ID));
                     groupPartition.setConnectorGroupId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
-                            .CONNECTOR_ENTITY_ID));
+                            .CONNECTOR_GROUP_ID));
                     groupPartitions.add(groupPartition);
                 }
             }
@@ -305,15 +320,15 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
-            final String addUser = "INSERT INTO IDM_ENTITY " +
-                    "(ENTITY_UUID, CONNECTOR_ENTITY_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
-                    "VALUES (:entity_uuid;, :connector_entity_id;, :connector_id;, :domain;, :connector_type;)";
+            final String addUser = "INSERT INTO IDM_USER " +
+                    "(USER_UUID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
+                    "VALUES (:user_uuid;, :connector_user_id;, :connector_id;, :domain;, :connector_type;)";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), addUser);
             for (UserPartition userPartition : uniqueUser.getUserPartitions()) {
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.ENTITY_UUID, uniqueUser
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUser
                         .getUniqueUserId());
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ENTITY_ID,
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_USER_ID,
                         userPartition.getConnectorUserId());
                 namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID,
                         userPartition.getConnectorId());
@@ -354,15 +369,15 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
         // Put operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
-            deleteEntity(uniqueUserId, unitOfWork);
-            final String addUser = "INSERT INTO IDM_ENTITY " +
-                    "(ENTITY_UUID, CONNECTOR_ENTITY_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
-                    "VALUES (:entity_uuid;, :connector_entity_id;, :connector_id;, :domain;, :connector_type;)";
+            deleteUser(uniqueUserId, unitOfWork);
+            final String addUser = "INSERT INTO IDM_USER " +
+                    "(USER_UUID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
+                    "VALUES (:user_uuid;, :connector_user_id;, :connector_id;, :domain;, :connector_type;)";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), addUser);
             for (Map.Entry<String, String> entry : connectorUserIdMap.entrySet()) {
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.ENTITY_UUID, uniqueUserId);
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ENTITY_ID,
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_USER_ID,
                         entry.getValue());
                 namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID,
                         entry.getKey());
@@ -379,7 +394,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     public void deleteUser(String uniqueUserId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            deleteEntity(uniqueUserId, unitOfWork);
+            deleteUser(uniqueUserId, unitOfWork);
             deleteAllUserGroupMapping(uniqueUserId, unitOfWork);
             unitOfWork.endTransaction();
         } catch (SQLException e) {
@@ -391,15 +406,15 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     public void addGroup(UniqueGroup uniqueGroup, String domainName) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
-            final String addGroup = "INSERT INTO IDM_ENTITY " +
-                    "(ENTITY_UUID, CONNECTOR_ENTITY_ID, CONNECTOR_ID, DOMAIN) " +
-                    "VALUES (:entity_uuid;, :connector_entity_id;, :connector_id;, :domain;)";
+            final String addGroup = "INSERT INTO IDM_GROUP " +
+                    "(GROUP_UUID, CONNECTOR_GROUP_ID, CONNECTOR_ID, DOMAIN) " +
+                    "VALUES (:group_uuid;, :connector_group_id;, :connector_id;, :domain;)";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), addGroup);
             for (GroupPartition groupPartition : uniqueGroup.getGroupPartitions()) {
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.ENTITY_UUID, uniqueGroup
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroup
                         .getUniqueGroupId());
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ENTITY_ID,
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_GROUP_ID,
                         groupPartition.getConnectorGroupId());
                 namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID,
                         groupPartition.getConnectorId());
@@ -438,15 +453,15 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
         // Put operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
-            deleteEntity(uniqueGroupId, unitOfWork);
-            final String addGroup = "INSERT INTO IDM_ENTITY " +
-                    "(ENTITY_UUID, CONNECTOR_ENTITY_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
-                    "VALUES (:entity_uuid;, :connector_entity_id;, :connector_id;, :domain;, :connector_type;)";
+            deleteGroup(uniqueGroupId, unitOfWork);
+            final String addGroup = "INSERT INTO IDM_GROUP " +
+                    "(GROUP_UUID, CONNECTOR_GROUP_ID, CONNECTOR_ID, DOMAIN, CONNECTOR_TYPE) " +
+                    "VALUES (:group_uuid;, :connector_group_id;, :connector_id;, :domain;, :connector_type;)";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), addGroup);
             for (Map.Entry<String, String> entry : connectorGroupIdMap.entrySet()) {
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.ENTITY_UUID, uniqueGroupId);
-                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ENTITY_ID,
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroupId);
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_GROUP_ID,
                         entry.getValue());
                 namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.CONNECTOR_ID,
                         entry.getKey());
@@ -463,7 +478,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     public void deleteGroup(String uniqueGroupId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            deleteEntity(uniqueGroupId, unitOfWork);
+            deleteGroup(uniqueGroupId, unitOfWork);
             deleteAllUserGroupMapping(uniqueGroupId, unitOfWork);
             unitOfWork.endTransaction();
         } catch (SQLException e) {
@@ -474,8 +489,23 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     @Override
     public boolean isGroupExists(String uniqueGroupId) throws UniqueIdResolverException {
 
-        try {
-            return isEntityExists(uniqueGroupId);
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+            final String selectUser = "SELECT ID FROM IDM_GROUP " +
+                    "WHERE GROUP_UUID = :group_uuid;";
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    selectUser);
+            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroupId);
+            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
+
+                if (resultSet.next()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while searching user.", e);
         }
@@ -485,8 +515,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     public List<UniqueGroup> listGroups(int offset, int length) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUniqueUser = "SELECT ENTITY_UUID, CONNECTOR_ID, CONNECTOR_ENTITY_ID " +
-                    "FROM IDM_ENTITY LIMIT :limit; OFFSET :offset;";
+            final String selectUniqueUser = "SELECT GROUP_UUID, CONNECTOR_ID, CONNECTOR_GROUP_ID " +
+                    "FROM IDM_GROUP LIMIT :limit; OFFSET :offset;";
 
             Map<String, UniqueGroup> groupMap = new HashMap<>();
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
@@ -498,11 +528,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
                 while (resultSet.next()) {
                     GroupPartition groupPartition = new GroupPartition();
-                    String groupUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.ENTITY_UUID);
+                    String groupUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.GROUP_UUID);
                     groupPartition.setConnectorId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
                             .CONNECTOR_ID));
                     groupPartition.setConnectorGroupId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
-                            .CONNECTOR_ENTITY_ID));
+                            .CONNECTOR_GROUP_ID));
 
                     UniqueGroup group;
                     if ((group = groupMap.get(groupUUID)) != null) {
@@ -549,8 +579,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     public List<UniqueGroup> getGroupsOfUser(String uniqueUserId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectGroupsOfUser = "SELECT ENTITY_UUID, CONNECTOR_ID, CONNECTOR_ENTITY_ID " +
-                    "FROM IDM_ENTITY WHERE ENTITY_UUID IN ( " +
+            final String selectGroupsOfUser = "SELECT GROUP_UUID, CONNECTOR_ID, CONNECTOR_GROUP_ID " +
+                    "FROM IDM_GROUP WHERE GROUP_UUID IN ( " +
                     "SELECT GROUP_UUID " +
                     "FROM IDM_USER_GROUP_MAPPING " +
                     "WHERE USER_UUID = :user_uuid; )";
@@ -564,11 +594,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
                 while (resultSet.next()) {
                     GroupPartition groupPartition = new GroupPartition();
-                    String groupUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.ENTITY_UUID);
+                    String groupUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.GROUP_UUID);
                     groupPartition.setConnectorId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
                             .CONNECTOR_ID));
                     groupPartition.setConnectorGroupId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
-                            .CONNECTOR_ENTITY_ID));
+                            .CONNECTOR_GROUP_ID));
 
                     UniqueGroup group;
                     if ((group = groupMap.get(groupUUID)) != null) {
@@ -593,8 +623,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     public List<UniqueUser> getUsersOfGroup(String uniqueGroupId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUsersOfGroup = "SELECT ENTITY_UUID, CONNECTOR_ID, CONNECTOR_ENTITY_ID, CONNECTOR_TYPE " +
-                    "FROM IDM_ENTITY WHERE ENTITY_UUID IN ( " +
+            final String selectUsersOfGroup = "SELECT USER_UUID, CONNECTOR_ID, CONNECTOR_USER_ID, CONNECTOR_TYPE " +
+                    "FROM IDM_USER WHERE USER_UUID IN ( " +
                     "SELECT USER_UUID " +
                     "FROM IDM_USER_GROUP_MAPPING " +
                     "WHERE GROUP_UUID = :group_uuid; )";
@@ -608,11 +638,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
                 while (resultSet.next()) {
                     UserPartition userPartition = new UserPartition();
-                    String userUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.ENTITY_UUID);
+                    String userUUID = resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames.USER_UUID);
                     userPartition.setConnectorId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
                             .CONNECTOR_ID));
                     userPartition.setConnectorUserId(resultSet.getString(UniqueIdResolverConstants.DatabaseColumnNames
-                            .CONNECTOR_ENTITY_ID));
+                            .CONNECTOR_USER_ID));
                     userPartition.setIdentityStore(UniqueIdResolverConstants.IDENTITY_STORE_CONNECTOR.equals(resultSet
                             .getString(UniqueIdResolverConstants.DatabaseColumnNames.CONNECTOR_TYPE)));
 
@@ -725,35 +755,25 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
     }
 
-    private boolean isEntityExists(String uniqueEntityId) throws UniqueIdResolverException, SQLException {
+    private void deleteUser(String uniqueUserId, UnitOfWork unitOfWork) throws SQLException {
 
-        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUser = "SELECT ID FROM IDM_ENTITY " +
-                    "WHERE ENTITY_UUID = :entity_uuid;";
+        final String deleteUser = "DELETE FROM IDM_USER " +
+                "WHERE USER_UUID = :user_uuid;";
+        NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+                unitOfWork.getConnection(), deleteUser);
+        namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
 
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
-                    unitOfWork.getConnection(),
-                    selectUser);
-            namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.ENTITY_UUID, uniqueEntityId);
-            try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
+        namedPreparedStatement.getPreparedStatement().executeUpdate();
 
-                if (resultSet.next()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-        }
     }
 
-    private void deleteEntity(String uniqueEntityId, UnitOfWork unitOfWork) throws SQLException {
+    private void deleteGroup(String uniqueGroupId, UnitOfWork unitOfWork) throws SQLException {
 
-        final String deleteGroup = "DELETE FROM IDM_ENTITY " +
-                "WHERE ENTITY_UUID = :entity_uuid;";
+        final String deleteGroup = "DELETE FROM IDM_GROUP " +
+                "WHERE GROUP_UUID = :group_uuid;";
         NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                 unitOfWork.getConnection(), deleteGroup);
-        namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.ENTITY_UUID, uniqueEntityId);
+        namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroupId);
 
         namedPreparedStatement.getPreparedStatement().executeUpdate();
 
