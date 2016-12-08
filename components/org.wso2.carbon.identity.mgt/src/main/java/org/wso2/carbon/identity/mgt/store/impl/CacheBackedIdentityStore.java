@@ -236,7 +236,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
 
     @Override
     public boolean isUserInGroup(String uniqueUserId, String uniqueGroupId) throws IdentityStoreException,
-            UserNotFoundException {
+            UserNotFoundException, GroupNotFoundException {
 
         return identityStore.isUserInGroup(uniqueUserId, uniqueGroupId);
     }

@@ -273,7 +273,7 @@ public interface IdentityStore {
      * @throws UserNotFoundException  User Not Found Exception
      */
     boolean isUserInGroup(String uniqueUserId, String uniqueGroupId) throws IdentityStoreException,
-            UserNotFoundException;
+            UserNotFoundException, GroupNotFoundException;
 
     /**
      * Get all claims of a user.

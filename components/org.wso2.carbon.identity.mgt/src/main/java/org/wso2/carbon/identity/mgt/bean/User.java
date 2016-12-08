@@ -182,7 +182,8 @@ public class User {
      * @return True if this User is in the group.
      * @throws IdentityStoreException Identity store exception.
      */
-    public boolean isInGroup(String groupName) throws IdentityStoreException, UserNotFoundException {
+    public boolean isInGroup(String groupName) throws IdentityStoreException, UserNotFoundException,
+            GroupNotFoundException {
         return identityStore.isUserInGroup(uniqueUserId, groupName);
     }
 
