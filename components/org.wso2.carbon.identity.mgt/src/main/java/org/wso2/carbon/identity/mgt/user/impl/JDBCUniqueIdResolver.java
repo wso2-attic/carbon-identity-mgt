@@ -197,6 +197,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     @Override
     public List<UniqueUser> listUsers(int offset, int length) throws UniqueIdResolverException {
 
+        // In listUsers API offset is actually the start index and start with 1. For the database start value is 0
+        if (offset > 0) {
+            offset--;
+        }
+
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUniqueUser = "SELECT USER_UUID, CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_USER_ID " +
                     "FROM IDM_USER LIMIT :limit; OFFSET :offset;";
@@ -395,7 +400,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             deleteUser(uniqueUserId, unitOfWork);
-            deleteAllUserGroupMapping(uniqueUserId, unitOfWork);
+            deleteUserGroupMappingsForUser(uniqueUserId, unitOfWork);
             unitOfWork.endTransaction();
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while adding user.", e);
@@ -479,7 +484,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             deleteGroup(uniqueGroupId, unitOfWork);
-            deleteAllUserGroupMapping(uniqueGroupId, unitOfWork);
+            deleteUserGroupMappingsForGroup(uniqueGroupId, unitOfWork);
             unitOfWork.endTransaction();
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while adding group.", e);
@@ -513,6 +518,11 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
     @Override
     public List<UniqueGroup> listGroups(int offset, int length) throws UniqueIdResolverException {
+
+        // In listGroups API offset is actually the start index and start with 1. For the database start value is 0
+        if (offset > 0) {
+            offset--;
+        }
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUniqueUser = "SELECT GROUP_UUID, CONNECTOR_ID, CONNECTOR_GROUP_ID " +
@@ -696,7 +706,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
         // Put operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            deleteAllUserGroupMapping(uniqueUserId, unitOfWork);
+            deleteUserGroupMappingsForUser(uniqueUserId, unitOfWork);
             final String insertGroupsOfUser = "INSERT INTO IDM_USER_GROUP_MAPPING (USER_UUID, GROUP_UUID) " +
                     "VALUES ( :user_uuid;, :group_uuid; ) ";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
@@ -721,7 +731,41 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             uniqueGroupIdsToRemove) throws UniqueIdResolverException {
 
         // Patch operation
-        
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+            // Delete the user group mappings in uniqueGroupIdsToRemove
+            final String deleteUserGroupMapping = "DELETE FROM IDM_USER_GROUP_MAPPING " +
+                    "WHERE USER_UUID = :user_uuid; AND GROUP_UUID = :group_uuid; ";
+            NamedPreparedStatement deleteNamedPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(), deleteUserGroupMapping);
+            for (String uniqueGroupId : uniqueGroupIdsToRemove) {
+                deleteNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID,
+                        uniqueUserId);
+                deleteNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID,
+                        uniqueGroupId);
+                deleteNamedPreparedStatement.getPreparedStatement().addBatch();
+            }
+
+            deleteNamedPreparedStatement.getPreparedStatement().executeBatch();
+
+            // Add the user group mappings in uniqueGroupIdsToUpdate
+            final String insertGroupsOfUser = "INSERT INTO IDM_USER_GROUP_MAPPING (USER_UUID, GROUP_UUID) " +
+                    "VALUES ( :user_uuid;, :group_uuid; ) ";
+            NamedPreparedStatement addNamedPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    insertGroupsOfUser);
+            for (String uniqueGroupId : uniqueGroupIdsToUpdate) {
+                addNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+                addNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID,
+                        uniqueGroupId);
+                addNamedPreparedStatement.getPreparedStatement().addBatch();
+            }
+            addNamedPreparedStatement.getPreparedStatement().executeBatch();
+
+            unitOfWork.endTransaction();
+
+        } catch (SQLException e) {
+            throw new UniqueIdResolverException("Error while updating groups of user", e);
+        }
     }
 
     @Override
@@ -729,7 +773,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
         // Put operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            deleteAllUserGroupMapping(uniqueGroupId, unitOfWork);
+            deleteUserGroupMappingsForGroup(uniqueGroupId, unitOfWork);
             final String insertUsersOfGroup = "INSERT INTO IDM_USER_GROUP_MAPPING (USER_UUID, GROUP_UUID) " +
                     "VALUES ( :user_uuid;, :group_uuid; ) ";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
@@ -752,7 +796,41 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     @Override
     public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToUpdate, List<String>
             uniqueUserIdsToRemove) throws UniqueIdResolverException {
+        // Patch operation
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+            // Delete the user group mappings in uniqueUserIdsToRemove
+            final String deleteUserGroupMapping = "DELETE FROM IDM_USER_GROUP_MAPPING " +
+                    "WHERE USER_UUID = :user_uuid; AND GROUP_UUID = :group_uuid; ";
+            NamedPreparedStatement deleteNamedPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(), deleteUserGroupMapping);
+            for (String uniqueUserId : uniqueUserIdsToRemove) {
+                deleteNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID,
+                        uniqueUserId);
+                deleteNamedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID,
+                        uniqueGroupId);
+                deleteNamedPreparedStatement.getPreparedStatement().addBatch();
+            }
 
+            deleteNamedPreparedStatement.getPreparedStatement().executeBatch();
+
+            // Add the user group mappings in uniqueUserIdsToUpdate
+            final String insertUsersOfGroup = "INSERT INTO IDM_USER_GROUP_MAPPING (USER_UUID, GROUP_UUID) " +
+                    "VALUES ( :user_uuid;, :group_uuid; ) ";
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(),
+                    insertUsersOfGroup);
+            for (String uniqueUserId : uniqueUserIdsToUpdate) {
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueUserId);
+                namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueGroupId);
+                namedPreparedStatement.getPreparedStatement().addBatch();
+            }
+            namedPreparedStatement.getPreparedStatement().executeBatch();
+
+            unitOfWork.endTransaction();
+
+        } catch (SQLException e) {
+            throw new UniqueIdResolverException("Error while updating groups of user", e);
+        }
     }
 
     private void deleteUser(String uniqueUserId, UnitOfWork unitOfWork) throws SQLException {
@@ -779,14 +857,25 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
     }
 
-    private void deleteAllUserGroupMapping(String uniqueEntityId, UnitOfWork unitOfWork) throws SQLException {
+    private void deleteUserGroupMappingsForUser(String uniqueUserId, UnitOfWork unitOfWork) throws SQLException {
 
         final String deleteUserGroupMapping = "DELETE FROM IDM_USER_GROUP_MAPPING " +
-                "WHERE USER_UUID = :user_uuid; OR GROUP_UUID = :group_uuid; ";
+                "WHERE GROUP_UUID = :group_uuid; ";
         NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                 unitOfWork.getConnection(), deleteUserGroupMapping);
-        namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueEntityId);
-        namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueEntityId);
+        namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.GROUP_UUID, uniqueUserId);
+
+        namedPreparedStatement.getPreparedStatement().executeUpdate();
+
+    }
+
+    private void deleteUserGroupMappingsForGroup(String uniqueGroupId, UnitOfWork unitOfWork) throws SQLException {
+
+        final String deleteUserGroupMapping = "DELETE FROM IDM_USER_GROUP_MAPPING " +
+                "WHERE USER_UUID = :user_uuid;";
+        NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+                unitOfWork.getConnection(), deleteUserGroupMapping);
+        namedPreparedStatement.setString(UniqueIdResolverConstants.SQLPlaceholders.USER_UUID, uniqueGroupId);
 
         namedPreparedStatement.getPreparedStatement().executeUpdate();
 
