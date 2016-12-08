@@ -261,11 +261,10 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
             IdentityStore identityStore;
             if (storeConfig.isEnableCache() && storeConfig.isEnableIdentityStoreCache()) {
-                identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap());
+                identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap(), domains);
             } else {
-                identityStore = new IdentityStoreImpl();
+                identityStore = new IdentityStoreImpl(domains);
             }
-            identityStore.init(domains);
 
             // Register the realm service.
             RealmService<IdentityStore> realmService = new RealmServiceImpl<>(identityStore, authorizationStore);
@@ -321,7 +320,8 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             }
             uniqueIdResolver.init(uniqueIdResolverConfig);
 
-            Domain domain = new Domain(domainConfig.getName(), domainConfig.getOrder(), uniqueIdResolver);
+            Domain domain = new Domain(domainConfig.getId(), domainConfig.getName(), domainConfig.getOrder(),
+                    uniqueIdResolver);
 
             domain.setMetaClaimMappings(domainConfig.getMetaClaimMappings());
 

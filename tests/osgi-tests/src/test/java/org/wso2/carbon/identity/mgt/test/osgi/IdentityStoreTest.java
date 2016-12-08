@@ -194,17 +194,6 @@ public class IdentityStoreTest {
     }
 
     @Test(dependsOnGroups = {"addUsers"})
-    public void testGetUserByUniqueUserIdAndDomain() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
-        Assert.assertNotNull(realmService, "Failed to get realm service instance");
-
-        User user = realmService.getIdentityStore().getUser(users.get(0).getUniqueUserId(), "PRIMARY");
-
-        Assert.assertNotNull(user, "Failed to receive the user.");
-    }
-
-    @Test(dependsOnGroups = {"addUsers"})
     public void testGetUserByClaim() throws IdentityStoreException, UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -419,17 +408,6 @@ public class IdentityStoreTest {
     }
 
     @Test(dependsOnGroups = {"addGroups"})
-    public void testGetGroupByUniqueGroupIdAndDomain() throws IdentityStoreException, GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
-        Assert.assertNotNull(realmService, "Failed to get realm service instance");
-
-        Group user = realmService.getIdentityStore().getGroup(groups.get(0).getUniqueGroupId(), "PRIMARY");
-
-        Assert.assertNotNull(user, "Failed to receive the group.");
-    }
-
-    @Test(dependsOnGroups = {"addGroups"})
     public void testGetGroupByClaim() throws IdentityStoreException, GroupNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -553,20 +531,6 @@ public class IdentityStoreTest {
         }
     }
 
-    @Test(dependsOnGroups = {"addUsers", "addGroups"}, groups = "addGroupsToUser")
-    public void testUpdateGroupsOfUserByDomain() {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
-        Assert.assertNotNull(realmService, "Failed to get realm service instance");
-
-        try {
-            realmService.getIdentityStore().updateGroupsOfUser(users.get(1).getUniqueUserId(), Arrays.asList(groups.get
-                    (0).getUniqueGroupId(), groups.get(1).getUniqueGroupId()), "PRIMARY");
-        } catch (IdentityStoreException e) {
-            Assert.fail("Failed to update groups of user.");
-        }
-    }
-
     @Test(dependsOnGroups = {"addUsers", "addGroups"}, groups = "addUsersToGroup")
     public void testUpdateUsersOfGroup() {
 
@@ -576,20 +540,6 @@ public class IdentityStoreTest {
         try {
             realmService.getIdentityStore().updateUsersOfGroup(groups.get(3).getUniqueGroupId(), Arrays.asList(users.get
                     (2).getUniqueUserId(), users.get(3).getUniqueUserId()));
-        } catch (IdentityStoreException e) {
-            Assert.fail("Failed to update groups of user.");
-        }
-    }
-
-    @Test(dependsOnGroups = {"addUsers", "addGroups"}, groups = "addUsersToGroup")
-    public void testUpdateUsersOfGroupByDomain() {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
-        Assert.assertNotNull(realmService, "Failed to get realm service instance");
-
-        try {
-            realmService.getIdentityStore().updateUsersOfGroup(groups.get(4).getUniqueGroupId(), Arrays.asList(users.get
-                    (4).getUniqueUserId(), users.get(5).getUniqueUserId()), "PRIMARY");
         } catch (IdentityStoreException e) {
             Assert.fail("Failed to update groups of user.");
         }
@@ -608,19 +558,6 @@ public class IdentityStoreTest {
     }
 
     @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
-    public void testGetGroupsOfUserByDomain() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
-        Assert.assertNotNull(realmService, "Failed to get realm service instance");
-
-        List<Group> groupsOfUser = realmService.getIdentityStore().getGroupsOfUser(users.get(1).getUniqueUserId(),
-                "PRIMARY");
-        Assert.assertNotNull(groupsOfUser, "Failed to get the groups.");
-        Assert.assertTrue(!groupsOfUser.isEmpty() && groupsOfUser.size() > 0, "Number of groups received in the " +
-                "response is invalid.");
-    }
-
-    @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
     public void testGetUsersOfGroup() throws IdentityStoreException, GroupNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -633,38 +570,13 @@ public class IdentityStoreTest {
     }
 
     @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
-    public void testGetUsersOfGroupByDomain() throws IdentityStoreException, GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
-        Assert.assertNotNull(realmService, "Failed to get realm service instance");
-
-        List<User> usersOfGroup = realmService.getIdentityStore().getUsersOfGroup(groups.get(4).getUniqueGroupId(),
-                "PRIMARY");
-        Assert.assertNotNull(usersOfGroup, "Failed to get the users.");
-        Assert.assertTrue(!usersOfGroup.isEmpty() && usersOfGroup.size() > 0, "Number of users received in the " +
-                "response is invalid.");
-    }
-
-    @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
-    public void testIsUserInGroup() throws IdentityStoreException, UserNotFoundException {
+    public void testIsUserInGroup() throws IdentityStoreException, UserNotFoundException, GroupNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         boolean isUserInGroup = realmService.getIdentityStore().isUserInGroup(users.get(0).getUniqueUserId(), groups
                 .get(0).getUniqueGroupId());
-
-        Assert.assertTrue(isUserInGroup, "Is user exists in group failed.");
-    }
-
-    @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
-    public void testIsUserInGroupByDomain() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
-        Assert.assertNotNull(realmService, "Failed to get realm service instance");
-
-        boolean isUserInGroup = realmService.getIdentityStore().isUserInGroup(users.get(1).getUniqueUserId(), groups
-                .get(1).getUniqueGroupId(), "PRIMARY");
 
         Assert.assertTrue(isUserInGroup, "Is user exists in group failed.");
     }
@@ -676,18 +588,6 @@ public class IdentityStoreTest {
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<Claim> claims = realmService.getIdentityStore().getClaimsOfUser(users.get(0).getUniqueUserId());
-        Assert.assertNotNull(claims, "Failed to get the claims.");
-        Assert.assertTrue(!claims.isEmpty() && claims.size() > 0, "Number of claims received in the " +
-                "response is invalid.");
-    }
-
-    @Test(dependsOnGroups = {"addUsers"})
-    public void testGetClaimsByDomain() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
-        Assert.assertNotNull(realmService, "Failed to get realm service instance");
-
-        List<Claim> claims = realmService.getIdentityStore().getClaimsOfUser(users.get(1).getUniqueUserId(), "PRIMARY");
         Assert.assertNotNull(claims, "Failed to get the claims.");
         Assert.assertTrue(!claims.isEmpty() && claims.size() > 0, "Number of claims received in the " +
                 "response is invalid.");
@@ -711,23 +611,6 @@ public class IdentityStoreTest {
     }
 
     @Test(dependsOnGroups = {"addUsers"})
-    public void testGetClaimFromMetaClaimsByDomain() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
-        Assert.assertNotNull(realmService, "Failed to get realm service instance");
-
-        List<MetaClaim> metaClaims = Arrays.asList(
-                new MetaClaim("http://wso2.org/claims", "http://wso2.org/claims/username"),
-                new MetaClaim("http://wso2.org/claims", "http://wso2.org/claims/email"));
-
-        List<Claim> claims = realmService.getIdentityStore().getClaimsOfUser(users.get(1).getUniqueUserId(), metaClaims,
-                "PRIMARY");
-        Assert.assertNotNull(claims, "Failed to get the claims.");
-        Assert.assertTrue(!claims.isEmpty() && claims.size() == 2, "Number of claims received in the " +
-                "response is invalid.");
-    }
-
-    @Test(dependsOnGroups = {"addUsers"})
     public void testUpdateUserClaims() throws UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -740,24 +623,6 @@ public class IdentityStoreTest {
 
         try {
             realmService.getIdentityStore().updateUserClaims(users.get(0).getUniqueUserId(), claims);
-        } catch (IdentityStoreException e) {
-            Assert.fail("Failed to update user claims.");
-        }
-    }
-
-    @Test(dependsOnGroups = {"addUsers"})
-    public void testUpdateUserClaimsByDomain() throws UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
-        Assert.assertNotNull(realmService, "Failed to get realm service instance");
-
-        List<Claim> claims = Arrays.asList(
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "chloe"),
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "UpdatedChloe"),
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "up.chloe@wso2.com"));
-
-        try {
-            realmService.getIdentityStore().updateUserClaims(users.get(0).getUniqueUserId(), claims, "PRIMARY");
         } catch (IdentityStoreException e) {
             Assert.fail("Failed to update user claims.");
         }
