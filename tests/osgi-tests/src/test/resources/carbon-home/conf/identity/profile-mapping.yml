@@ -21,21 +21,32 @@ Profiles:
   claims:
    -
     claimUri: "http://wso2.org/claims/username"
-     properties:
-     required: "true"
-     readonly: "true"
-     verify: "false"
-     unique: "true"
-     regex: "*"
+    readonly: "true"
+     overide: "false" // no need to mention when false
+    verify: "false"
+    unique: "true" //get in lowest connector level
+    regex: "*"
+    default:
+    datatype:
+    properties:
+      required: "true"   //make them to top level, newly adding ones may come with properties
+       overide: "true"
+      readonly: "true"
+      verify: "false"
+      unique: "true"
+      regex: "*"
   -
     claimUri: "http://wso2.org/claims/email"
     properties:
      required: "true"
      readonly: "true"
-     verify: "true"
-     verifyingMechanism: "send-email"
+     default: enum
+     verify: "true"//verifiable
+     verifier: claim verifying extension
+     validator: claim validating extension
      unique: "true"
      regex: "*"
+
  -
   profile: "employee"
    claims:

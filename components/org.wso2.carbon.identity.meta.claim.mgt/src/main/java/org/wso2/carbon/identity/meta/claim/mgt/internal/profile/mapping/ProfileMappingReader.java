@@ -31,13 +31,13 @@ import java.util.stream.Collectors;
 /**
  * Profile Mapping Builder.
  */
-public class ProfileMappingBuilder {
+public class ProfileMappingReader {
 
     private ProfileMappingFile profileConfig = null;
     //Map(ApplicationNAme, Map(External Claim : Root claim))
     private Map<String, Map<String, String>> profiles;
 
-    private ProfileMappingBuilder() throws ClaimMappingBuilderException {
+    private ProfileMappingReader() throws ClaimMappingBuilderException {
 
         Path file = Paths.get(IdentityMgtConstants.getCarbonHomeDirectory().toString(), "conf", "identity",
                 ProfileMgtConstants.PROFILE_MAPPING_FILE);
@@ -53,8 +53,18 @@ public class ProfileMappingBuilder {
 
     }
 
-    public static ProfileMappingBuilder getInstance() throws ClaimMappingBuilderException {
+    public static ProfileMappingReader getInstance() throws ClaimMappingBuilderException {
         return ProfileMappingBuilderHolder.PROFILE_MAPPING_BUILDER;
+    }
+
+    /**
+     * Provides the profile-claim mappings for a defined user profile
+     *
+     * @return Map(ProfileName, Map(application claim : root claim URI)
+     */
+    public Map<String, Map<String, String>> getProfiles() {
+        return profiles;
+
     }
 
     /**
@@ -63,17 +73,17 @@ public class ProfileMappingBuilder {
      * @param profileName : Name to identify the application
      * @return Map(application claim : root claim URI)
      */
-    public Map<String, String> getUserProfileMapping(String profileName) {
+    public Map<String, String> getProfileMapping(String profileName) {
         return profiles.get(profileName);
 
     }
 
     private static class ProfileMappingBuilderHolder {
-        private static final ProfileMappingBuilder PROFILE_MAPPING_BUILDER;
+        private static final ProfileMappingReader PROFILE_MAPPING_BUILDER;
 
         static {
             try {
-                PROFILE_MAPPING_BUILDER = new ProfileMappingBuilder();
+                PROFILE_MAPPING_BUILDER = new ProfileMappingReader();
             } catch (ClaimMappingBuilderException e) {
                 throw new ExceptionInInitializerError(e);
             }

@@ -28,7 +28,8 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
     /**
      * Get the claims set of profiles.
      *
-     * @return Map(profileName,(Map(claim, Map(Property Key: Property Value))) with the set of claims and their properties.
+     * @return Map(profileName,(Map(claim, Map(Property Key: Property Value))) with the set of claims and their
+     * properties.
      * @throws ProfileMgtServiceException : Error in getting the profile.
      */
     @Override

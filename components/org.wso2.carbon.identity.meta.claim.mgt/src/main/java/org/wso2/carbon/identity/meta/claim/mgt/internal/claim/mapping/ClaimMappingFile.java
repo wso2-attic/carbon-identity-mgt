@@ -25,43 +25,18 @@ import java.util.List;
 public class ClaimMappingFile {
 
     //List<Entry>
-    private List<ClaimMappingEntry> applications;
-    private List<ClaimMappingEntry> identityProviders;
-    private List<ClaimMappingEntry> standards;
+    private List<ClaimMappingEntry> claimMappingEntries;
 
-    public List<ClaimMappingEntry> getApplicationClaimMapping() {
+    public List<ClaimMappingEntry> getClaimMapping() {
 
-        if (applications == null) {
+        if (claimMappingEntries == null) {
             return Collections.emptyList();
         }
-        return applications;
+        return claimMappingEntries;
     }
 
-    public void setApplicationClaimMappings(List<ClaimMappingEntry> claims) {
-        this.applications = claims;
+    public void setClaimMappings(List<ClaimMappingEntry> claims) {
+        this.claimMappingEntries = claims;
     }
 
-    public List<ClaimMappingEntry> getIdpMappings() {
-
-        if (identityProviders == null) {
-            return Collections.emptyList();
-        }
-        return identityProviders;
-    }
-
-    public void setIdpMappings(List<ClaimMappingEntry> claims) {
-        this.identityProviders = claims;
-    }
-
-    public List<ClaimMappingEntry> getStandardMappings() {
-
-        if (standards == null) {
-            return Collections.emptyList();
-        }
-        return standards;
-    }
-
-    public void setStandardMappings(List<ClaimMappingEntry> claims) {
-        this.standards = claims;
-    }
 }

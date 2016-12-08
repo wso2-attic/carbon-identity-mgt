@@ -17,7 +17,7 @@ package org.wso2.carbon.identity.meta.claim.mgt.service.impl;
 
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimMappingBuilderException;
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimResolvingServiceException;
-import org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping.ClaimMappingBuilder;
+import org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping.ClaimMappingReader;
 import org.wso2.carbon.identity.meta.claim.mgt.service.ClaimResolvingService;
 
 import java.util.Map;
@@ -26,54 +26,46 @@ import java.util.Map;
  *
  */
 public class ClaimResolvingServiceImpl implements ClaimResolvingService {
+    Map<String, Map<String, String>> claimMappings = null;
+
+    private Map<String, Map<String, String>> buildClaimMappings() throws ClaimMappingBuilderException {
+        if (claimMappings == null) {
+            claimMappings = ClaimMappingReader.getClaimMappings();
+        }
+        return claimMappings;
+    }
+
     /**
      * Provides claim mappings for applications.
      *
-     * @param applicationName : Uniquely identifying name for application.
      * @return Map(application claims : root claim)
      * @throws ClaimResolvingServiceException : Error in getting the claim mapping for application.
      */
     @Override
-    public Map<String, String> getApplicationClaimMapping(String applicationName)
-            throws ClaimResolvingServiceException {
+    public Map<String, Map<String, String>> getClaimMapping() throws ClaimResolvingServiceException {
         try {
-            return ClaimMappingBuilder.getInstance().getApplicationClaimMapping(applicationName);
+
+            return buildClaimMappings();
         } catch (ClaimMappingBuilderException e) {
-            throw new ClaimResolvingServiceException(
-                    "Error while getting the application claim mapping for " + applicationName, e);
+            throw new ClaimResolvingServiceException("Error while getting the claim mappings.", e);
         }
     }
 
     /**
-     * Provides claim mappings for IDPs.
+     * Provides claim mappings for the dialect.
      *
-     * @param idpName : Uniquely identifying name for IDPs.
-     * @return Map(Idp claim : root claim)
-     * @throws ClaimResolvingServiceException : Error in getting the claim mapping for IDP.
+     * @param dialectURI : Uniquely identifying URI for the dialect.
+     * @return Map(application claims : root claim)
+     * @throws ClaimResolvingServiceException : Error in getting the claim mapping for dialect.
      */
     @Override
-    public Map<String, String> getIdpClaimMapping(String idpName) throws ClaimResolvingServiceException {
+    public Map<String, String> getClaimMapping(String dialectURI) throws ClaimResolvingServiceException {
         try {
-            return ClaimMappingBuilder.getInstance().getIdpClaimMapping(idpName);
+            return buildClaimMappings().get(dialectURI);
         } catch (ClaimMappingBuilderException e) {
-            throw new ClaimResolvingServiceException("Error while getting the IDP claim mapping for " + idpName, e);
+            throw new ClaimResolvingServiceException("Error while getting the claim mapping for dialect:." + dialectURI,
+                    e);
         }
     }
 
-    /**
-     * Provides claim mappings for standards.
-     *
-     * @param standardName : Uniquely identifying name for standards.
-     * @return Map(Standard claim : root claim)
-     * @throws ClaimResolvingServiceException : Error in getting the claim mapping for standard.
-     */
-    @Override
-    public Map<String, String> getStandardClaimMapping(String standardName) throws ClaimResolvingServiceException {
-        try {
-            return ClaimMappingBuilder.getInstance().getStandardClaimMapping(standardName);
-        } catch (ClaimMappingBuilderException e) {
-            throw new ClaimResolvingServiceException(
-                    "Error while getting the standard claim mapping for " + standardName, e);
-        }
-    }
 }

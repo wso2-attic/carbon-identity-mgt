@@ -25,29 +25,20 @@ import java.util.Map;
 public interface ClaimResolvingService {
 
     /**
-     * Provides claim mappings for applications.
+     * Provides claim mappings for the dialect.
      *
-     * @param applicationName : Uniquely identifying name for application.
+     * @param dialectURI : Uniquely identifying URI for the dialect.
      * @return Map(application claims : root claim)
-     * @throws ClaimResolvingServiceException : Error in getting the claim mapping for application.
+     * @throws ClaimResolvingServiceException : Error in getting the claim mapping for dialect.
      */
-    Map<String, String> getApplicationClaimMapping(String applicationName) throws ClaimResolvingServiceException;
+    Map<String, String> getClaimMapping(String dialectURI) throws ClaimResolvingServiceException;
 
     /**
-     * Provides claim mappings for IDPs.
+     * Provides all the claim mappings.
      *
-     * @param idpName : Uniquely identifying name for IDPs.
-     * @return Map(Idp claim : root claim)
-     * @throws ClaimResolvingServiceException : Error in getting the claim mapping for IDP.
+     * @return Map(application claims : root claim)
+     * @throws ClaimResolvingServiceException : Error in getting the claim mappings.
      */
-    Map<String, String> getIdpClaimMapping(String idpName) throws ClaimResolvingServiceException;
+    public Map<String, Map<String, String>> getClaimMapping() throws ClaimResolvingServiceException;
 
-    /**
-     * Provides claim mappings for standards.
-     *
-     * @param standardName : Uniquely identifying name for standards.
-     * @return Map(Standard claim : root claim)
-     * @throws ClaimResolvingServiceException : Error in getting the claim mapping for standard.
-     */
-    Map<String, String> getStandardClaimMapping(String standardName) throws ClaimResolvingServiceException;
 }

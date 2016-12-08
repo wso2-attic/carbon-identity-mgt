@@ -41,7 +41,7 @@ import static org.wso2.carbon.identity.mgt.util.IdentityMgtConstants.CLAIM_ROOT_
 import static org.wso2.carbon.identity.mgt.util.IdentityMgtConstants.UNIQUE_ID_RESOLVER_TYPE;
 
 /**
- * Builder for retrieving Domain configurations.
+ * Reader for retrieving Domain configurations.
  */
 public class DomainConfigReader {
 

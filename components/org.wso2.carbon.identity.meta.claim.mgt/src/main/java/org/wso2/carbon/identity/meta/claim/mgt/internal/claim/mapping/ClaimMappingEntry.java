@@ -23,19 +23,9 @@ import java.util.Map;
  */
 public class ClaimMappingEntry {
 
-    private String name;
-
     private String dialectURI;
 
     private Map<String, String> mappings;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getMappingDialectURI() {
         return dialectURI;

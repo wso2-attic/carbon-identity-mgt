@@ -39,15 +39,15 @@ public class ClaimResolvingServiceTest {
 
         List<Option> optionList = IdentityMgtOSGiTestUtils.getDefaultSecurityPAXOptions();
 
-        optionList.add(CoreOptions.systemProperty("java.security.auth.login.config").value(Paths
-                .get(IdentityMgtOSGiTestUtils.getCarbonHome(), "conf", "security", "carbon-jaas.config")
-                .toString()));
+        optionList.add(CoreOptions.systemProperty("java.security.auth.login.config")
+                .value(Paths.get(IdentityMgtOSGiTestUtils.getCarbonHome(), "conf", "security", "carbon-jaas.config")
+                        .toString()));
 
         return optionList.toArray(new Option[optionList.size()]);
     }
 
     @Test
-    public void testGetApplicationClaimMapping() throws ClaimResolvingServiceException {
+    public void testGetClaimMapping() throws ClaimResolvingServiceException {
         Map<String, String> applicationMappings = new HashMap<>();
         applicationMappings.put("http://application1.com/name", "http://wso2.org/claims/username");
         applicationMappings.put("http://application1.com/role", "http://wso2.org/claims/role");
@@ -58,39 +58,9 @@ public class ClaimResolvingServiceTest {
                 .getService(bundleContext.getServiceReference(ClaimResolvingService.class));
         Assert.assertNotNull(claimResolvingService, "Failed to get claim resolving service instance");
 
-        Assert.assertEquals(applicationMappings, claimResolvingService.getApplicationClaimMapping("Application1"),
+        Assert.assertEquals(applicationMappings, claimResolvingService.getClaimMapping("http://application1.com/"),
                 "Claim mappings not read correctly");
 
-    }
-
-    @Test
-    public void testIdpClaimMapping() throws ClaimResolvingServiceException {
-        Map<String, String> idpMappings = new HashMap<>();
-        idpMappings.put("http://identityprovider1.com/idp-name", "http://wso2.org/claims/username");
-        idpMappings.put("http://identityprovider1.com/idp-role", "http://wso2.org/claims/role");
-        idpMappings.put("http://identityprovider1.com/idp-mobile", "http://wso2.org/claims/mobile");
-        idpMappings.put("http://identityprovider1.com/idp-email", "http://wso2.org/claims/email");
-
-        ClaimResolvingService claimResolvingService = bundleContext
-                .getService(bundleContext.getServiceReference(ClaimResolvingService.class));
-        Assert.assertNotNull(claimResolvingService, "Failed to get claim resolving service instance");
-
-        Assert.assertEquals(idpMappings, claimResolvingService.getIdpClaimMapping("IDP1"));
-    }
-
-    @Test
-    public void testStandardClaimMapping() throws ClaimResolvingServiceException {
-        Map<String, String> standardMappings = new HashMap<>();
-        standardMappings.put("username", "http://wso2.org/claims/username");
-        standardMappings.put("role", "http://wso2.org/claims/role");
-        standardMappings.put("mobile", "http://wso2.org/claims/mobile");
-        standardMappings.put("email", "http://wso2.org/claims/email");
-
-        ClaimResolvingService claimResolvingService = bundleContext
-                .getService(bundleContext.getServiceReference(ClaimResolvingService.class));
-        Assert.assertNotNull(claimResolvingService, "Failed to get claim resolving service instance");
-
-        Assert.assertEquals(standardMappings, claimResolvingService.getStandardClaimMapping("SCIM"));
     }
 
 }

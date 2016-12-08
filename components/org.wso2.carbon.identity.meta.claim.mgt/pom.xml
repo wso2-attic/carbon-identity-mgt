@@ -30,7 +30,7 @@
 
     <artifactId>org.wso2.carbon.identity.meta.claim.mgt</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon Identity Meta Claim Mgt - services Bundle</name>
+    <name>WSO2 Carbon Identity Management - Meta Claim Mgt - services Bundle</name>
 
     <build>
         <extensions>
@@ -189,7 +189,7 @@
             org.wso2.carbon.kernel.*,
             org.wso2.carbon.identity.mgt.exception.*,
             org.wso2.carbon.identity.mgt.util.*,
-            org.wso2.carbon.identity.mgt.util.user.*,
+            org.wso2.carbon.identity.mgt.user.*;version="${carbon.identity.mgt.version}",
         </import.package>
 
         <carbon.component>
