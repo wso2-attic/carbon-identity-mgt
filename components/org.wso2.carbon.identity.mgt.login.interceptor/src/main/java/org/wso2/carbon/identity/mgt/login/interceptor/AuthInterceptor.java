@@ -65,7 +65,9 @@ public class AuthInterceptor implements Interceptor {
             return false;
         }
 
-        if ("/scim/v2/Me".equals(request.getUri()) && HttpMethod.POST.equals(request.getHttpMethod())) {
+        if (("/scim/v2/Me".equals(request.getUri()) && HttpMethod.POST.equals(request.getHttpMethod()))
+                || "/scim/v2/ServiceProviderConfig".equals(request.getUri())
+                || "/scim/v2/ResourceType".equals(request.getUri())) {
             return true;
         }
 
