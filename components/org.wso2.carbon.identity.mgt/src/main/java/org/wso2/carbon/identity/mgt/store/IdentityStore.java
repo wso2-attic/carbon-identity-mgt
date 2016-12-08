@@ -51,17 +51,6 @@ public interface IdentityStore {
     User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException;
 
     /**
-     * Retrieve a user by global unique Id.
-     *
-     * @param uniqueUserId The globally unique user Id
-     * @param domainName   The domain the user is in
-     * @return User
-     * @throws IdentityStoreException IdentityStore Exception
-     * @throws UserNotFoundException  when trying to get user with incorrect unique user id
-     */
-    User getUser(String uniqueUserId, String domainName) throws IdentityStoreException, UserNotFoundException;
-
-    /**
      * Retrieve a user by claim.
      *
      * @param claim Populated claim
@@ -162,17 +151,6 @@ public interface IdentityStore {
      * @throws GroupNotFoundException when group is not found
      */
     Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException;
-
-    /**
-     * Get group from group Id from a specific domain.
-     *
-     * @param uniqueGroupId The Id of the group
-     * @param domainName    The domain to retrieve group from
-     * @return Group
-     * @throws IdentityStoreException IdentityStore Exception
-     * @throws GroupNotFoundException when group is not found
-     */
-    Group getGroup(String uniqueGroupId, String domainName) throws IdentityStoreException, GroupNotFoundException;
 
     /**
      * Get group that matches a claim.
@@ -277,18 +255,6 @@ public interface IdentityStore {
     List<Group> getGroupsOfUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException;
 
     /**
-     * Get list of groups a user belongs to in a specific domain.
-     *
-     * @param uniqueUserId The Id of the user
-     * @param domainName   The domain the users belongs to
-     * @return List of groups the user is in
-     * @throws IdentityStoreException IdentityStore Exception
-     * @throws UserNotFoundException  User Not Found Exception
-     */
-    List<Group> getGroupsOfUser(String uniqueUserId, String domainName) throws IdentityStoreException,
-            UserNotFoundException;
-
-    /**
      * Get list of users in a given group.
      *
      * @param uniqueGroupId The group to find users of
@@ -296,17 +262,6 @@ public interface IdentityStore {
      * @throws IdentityStoreException IdentityStore Exception
      */
     List<User> getUsersOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException;
-
-    /**
-     * Get list of users in a given group for a specific domain.
-     *
-     * @param uniqueGroupId The group to find users of
-     * @param domainName    The domain the user belongs to
-     * @return List of users contained in the group
-     * @throws IdentityStoreException IdentityStore Exception
-     */
-    List<User> getUsersOfGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
-            GroupNotFoundException;
 
     /**
      * Check if a user belongs to a given group.
@@ -321,18 +276,6 @@ public interface IdentityStore {
             UserNotFoundException;
 
     /**
-     * Check if a user belongs to a given group in a specific domain.
-     *
-     * @param uniqueUserId  The user Id
-     * @param uniqueGroupId The group Id
-     * @param domainName    The domain the user and the group belongs to
-     * @return True if user belongs to the given group
-     * @throws IdentityStoreException IdentityStore Exception
-     */
-    boolean isUserInGroup(String uniqueUserId, String uniqueGroupId, String domainName) throws
-            IdentityStoreException, UserNotFoundException;
-
-    /**
      * Get all claims of a user.
      *
      * @param uniqueUserId The user Id.
@@ -340,17 +283,6 @@ public interface IdentityStore {
      * @throws UserNotFoundException  User Not Found Exception
      */
     List<Claim> getClaimsOfUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException;
-
-    /**
-     * Get all claims of a user.
-     *
-     * @param uniqueUserId The user Id.
-     * @return domainName domainName.
-     * @throws IdentityStoreException Identity Store Exception
-     * @throws UserNotFoundException  User Not Found Exception
-     */
-    List<Claim> getClaimsOfUser(String uniqueUserId, String domainName) throws IdentityStoreException,
-            UserNotFoundException;
 
     /**
      * Get all claims of a user for given URIs.
@@ -365,19 +297,6 @@ public interface IdentityStore {
             UserNotFoundException;
 
     /**
-     * Get all claims of a user for given URIs.
-     *
-     * @param uniqueUserId The user to retrieve claims for
-     * @param metaClaims   List of meta claims to retrieve claims for
-     * @param domainName   Domain name
-     * @return List of claims
-     * @throws IdentityStoreException IdentityStore Exception
-     * @throws UserNotFoundException  User Not Found Exception
-     */
-    List<Claim> getClaimsOfUser(String uniqueUserId, List<MetaClaim> metaClaims, String domainName) throws
-            IdentityStoreException, UserNotFoundException;
-
-    /**
      * Get all claims of a group.
      *
      * @param uniqueGroupId The group Id.
@@ -385,17 +304,6 @@ public interface IdentityStore {
      * @throws GroupNotFoundException  Group Not Found Exception
      */
     List<Claim> getClaimsOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException;
-
-    /**
-     * Get all claims of a group.
-     *
-     * @param uniqueGroupId The group Id.
-     * @return domainName domainName.
-     * @throws IdentityStoreException Identity Store Exception
-     * @throws GroupNotFoundException  Group Not Found Exception
-     */
-    List<Claim> getClaimsOfGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
-            GroupNotFoundException;
 
     /**
      * Get all claims of a group for given URIs.
@@ -408,19 +316,6 @@ public interface IdentityStore {
      */
     List<Claim> getClaimsOfGroup(String uniqueGroupId, List<MetaClaim> metaClaims) throws IdentityStoreException,
             GroupNotFoundException;
-
-    /**
-     * Get all claims of a group for given URIs.
-     *
-     * @param uniqueGroupId The group to retrieve claims for
-     * @param metaClaims   List of meta claims to retrieve claims for
-     * @param domainName   Domain name
-     * @return List of claims
-     * @throws IdentityStoreException IdentityStore Exception
-     * @throws GroupNotFoundException  Group Not Found Exception
-     */
-    List<Claim> getClaimsOfGroup(String uniqueGroupId, List<MetaClaim> metaClaims, String domainName) throws
-            IdentityStoreException, GroupNotFoundException;
 
     /**
      * Add new user to the default domain.
@@ -471,18 +366,6 @@ public interface IdentityStore {
     void updateUserClaims(String uniqueUserId, List<Claim> claims) throws IdentityStoreException, UserNotFoundException;
 
     /**
-     * Update user claims by user id.
-     *
-     * @param uniqueUserId User unique id.
-     * @param claims       User claims.
-     * @param domainName   domain name.
-     * @throws IdentityStoreException Identity store exception.
-     * @throws UserNotFoundException  User Not Found Exception
-     */
-    void updateUserClaims(String uniqueUserId, List<Claim> claims, String domainName) throws
-            IdentityStoreException, UserNotFoundException;
-
-    /**
      * Update selected user claims by user id.
      *
      * @param uniqueUserId   User unique id.
@@ -494,20 +377,6 @@ public interface IdentityStore {
     void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
             IdentityStoreException, UserNotFoundException;
 
-
-    /**
-     * Update selected user claims by user id.
-     *
-     * @param uniqueUserId   User unique id.
-     * @param claimsToAdd    user claims to update.
-     * @param claimsToRemove user claims to remove.
-     * @param domainName     domain name.
-     * @throws IdentityStoreException Identity store exception.
-     * @throws UserNotFoundException  User Not Found Exception
-     */
-    void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove, String
-            domainName) throws IdentityStoreException, UserNotFoundException;
-
     /**
      * Delete a user by user id.
      *
@@ -516,17 +385,6 @@ public interface IdentityStore {
      * @throws UserNotFoundException  User Not Found Exception
      */
     void deleteUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException;
-
-    /**
-     * Delete a user by user id.
-     *
-     * @param uniqueUserId User unique id.
-     * @param domainName   domain name.
-     * @throws IdentityStoreException Identity store exception.
-     * @throws UserNotFoundException  User Not Found Exception
-     */
-    void deleteUser(String uniqueUserId, String domainName) throws IdentityStoreException,
-            UserNotFoundException;
 
     /**
      * Update groups of a user by user id.
@@ -538,17 +396,6 @@ public interface IdentityStore {
     void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds) throws IdentityStoreException;
 
     /**
-     * Update groups of a user by user id.
-     *
-     * @param uniqueUserId   User unique id.
-     * @param uniqueGroupIds Group unique id list.
-     * @param domainName     domain name.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds, String domainName) throws
-            IdentityStoreException;
-
-    /**
      * Update selected groups of a user by user id.
      *
      * @param uniqueUserId           User unique id.
@@ -558,18 +405,6 @@ public interface IdentityStore {
      */
     void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd, List<String> uniqueGroupIdsToRemove)
             throws IdentityStoreException;
-
-    /**
-     * Update selected groups of a user by user id.
-     *
-     * @param uniqueUserId           User unique id.
-     * @param uniqueGroupIdsToAdd    Group ids to add.
-     * @param uniqueGroupIdsToRemove Group ids to remove.
-     * @param domainName             domain name.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd, List<String>
-            uniqueGroupIdsToRemove, String domainName) throws IdentityStoreException;
 
     /**
      * Add new group to the default domain.
@@ -620,17 +455,6 @@ public interface IdentityStore {
             GroupNotFoundException;
 
     /**
-     * Update group claims by group id.
-     *
-     * @param uniqueGroupId Group unique id.
-     * @param claims        Group claims.
-     * @param domainName    Group domain.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    void updateGroupClaims(String uniqueGroupId, List<Claim> claims, String domainName) throws
-            IdentityStoreException, GroupNotFoundException;
-
-    /**
      * Update selected group claims by group id.
      *
      * @param uniqueGroupId  Group unique id.
@@ -642,33 +466,12 @@ public interface IdentityStore {
             IdentityStoreException, GroupNotFoundException;
 
     /**
-     * Update selected group claims by group id.
-     *
-     * @param uniqueGroupId  Group unique id.
-     * @param claimsToAdd    Group ids to add.
-     * @param claimsToRemove Group ids to remove.
-     * @param domainName     Group domain.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    void updateGroupClaims(String uniqueGroupId, List<Claim> claimsToAdd, List<Claim> claimsToRemove,
-                           String domainName) throws IdentityStoreException, GroupNotFoundException;
-
-    /**
      * Delete a group by group id.
      *
      * @param uniqueGroupId Group unique id.
      * @throws IdentityStoreException Identity store exception.
      */
     void deleteGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException;
-
-    /**
-     * Delete a group by group id.
-     *
-     * @param uniqueGroupId Group unique id.
-     * @param domainName    Group domain.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    void deleteGroup(String uniqueGroupId, String domainName) throws IdentityStoreException, GroupNotFoundException;
 
     /**
      * Update users of a group by group id.
@@ -680,17 +483,6 @@ public interface IdentityStore {
     void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds) throws IdentityStoreException;
 
     /**
-     * Update users of a group by group id.
-     *
-     * @param uniqueGroupId Group unique id.
-     * @param uniqueUserIds User unique id list.
-     * @param domainName    Group domain.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds, String domainName) throws
-            IdentityStoreException;
-
-    /**
      * Update selected users of a group by group id.
      *
      * @param uniqueGroupId         Group unique id.
@@ -700,18 +492,6 @@ public interface IdentityStore {
      */
     void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String>
             uniqueUserIdsToRemove) throws IdentityStoreException;
-
-    /**
-     * Update selected users of a group by group id.
-     *
-     * @param uniqueGroupId         Group unique id.
-     * @param uniqueUserIdsToAdd    User unique id list to add.
-     * @param uniqueUserIdsToRemove User unique id list to remove.
-     * @param domainName            Group domain.
-     * @throws IdentityStoreException Identity store exception.
-     */
-    void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String>
-            uniqueUserIdsToRemove, String domainName) throws IdentityStoreException;
 
     /**
      * Authenticate the user.

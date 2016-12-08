@@ -175,7 +175,7 @@ public class Group {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Claim> getClaims() throws IdentityStoreException, GroupNotFoundException {
-        return identityStore.getClaimsOfGroup(this.uniqueGroupId, this.domainName);
+        return identityStore.getClaimsOfGroup(this.uniqueGroupId);
     }
 
     /**
@@ -186,7 +186,7 @@ public class Group {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Claim> getClaims(List<MetaClaim> metaClaims) throws IdentityStoreException, GroupNotFoundException {
-        return identityStore.getClaimsOfGroup(uniqueGroupId, metaClaims, domainName);
+        return identityStore.getClaimsOfGroup(uniqueGroupId, metaClaims);
     }
 
 

@@ -127,28 +127,6 @@ public class IdentityStoreImpl implements IdentityStore {
         return doGetUser(uniqueUserId, domain);
     }
 
-    @Override
-    public User getUser(String uniqueUserId, String domainName) throws IdentityStoreException, UserNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            return getUser(uniqueUserId);
-        }
-
-        if (isNullOrEmpty(uniqueUserId)) {
-            throw new IdentityStoreClientException("Invalid unique user id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        return doGetUser(uniqueUserId, domain);
-    }
-
     //TODO:ClaimWrapper handle uniqueness validation & claim dialect conversion
     @Override
     public User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
@@ -341,29 +319,6 @@ public class IdentityStoreImpl implements IdentityStore {
             domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
-        }
-
-        return doGetGroup(uniqueGroupId, domain);
-    }
-
-    @Override
-    public Group getGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
-            GroupNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            return getGroup(uniqueGroupId);
-        }
-
-        if (isNullOrEmpty(uniqueGroupId)) {
-            throw new IdentityStoreClientException("Invalid unique group id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
         }
 
         return doGetGroup(uniqueGroupId, domain);
@@ -568,29 +523,6 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<Group> getGroupsOfUser(String uniqueUserId, String domainName) throws IdentityStoreException,
-            UserNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            return getGroupsOfUser(uniqueUserId);
-        }
-
-        if (isNullOrEmpty(uniqueUserId)) {
-            throw new IdentityStoreClientException("Invalid unique user id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        return doGetGroupsOfUser(uniqueUserId, domain);
-    }
-
-    @Override
     public List<User> getUsersOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
         if (isNullOrEmpty(uniqueGroupId)) {
@@ -602,29 +534,6 @@ public class IdentityStoreImpl implements IdentityStore {
             domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
-        }
-
-        return doGetUsersOfGroup(uniqueGroupId, domain);
-    }
-
-    @Override
-    public List<User> getUsersOfGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
-            GroupNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            return getUsersOfGroup(uniqueGroupId);
-        }
-
-        if (isNullOrEmpty(uniqueGroupId)) {
-            throw new IdentityStoreClientException("Invalid unique group id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
         }
 
         return doGetUsersOfGroup(uniqueGroupId, domain);
@@ -649,29 +558,6 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public boolean isUserInGroup(String uniqueUserId, String uniqueGroupId, String domainName) throws
-            IdentityStoreException, UserNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            return isUserInGroup(uniqueUserId, uniqueGroupId);
-        }
-
-        if (isNullOrEmpty(uniqueUserId) || isNullOrEmpty(uniqueGroupId)) {
-            throw new IdentityStoreClientException("Invalid inputs.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        return doIsUserInGroup(uniqueUserId, uniqueGroupId, domain);
-    }
-
-    @Override
     public List<Claim> getClaimsOfUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
         if (isNullOrEmpty(uniqueUserId)) {
@@ -683,30 +569,6 @@ public class IdentityStoreImpl implements IdentityStore {
             domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
-        }
-
-        return doGetClaimsOfUser(uniqueUserId, domain);
-    }
-
-    //TODO:ClaimWrapper handle claim dialect conversion
-    @Override
-    public List<Claim> getClaimsOfUser(String uniqueUserId, String domainName) throws IdentityStoreException,
-            UserNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            return getClaimsOfUser(uniqueUserId);
-        }
-
-        if (isNullOrEmpty(uniqueUserId)) {
-            throw new IdentityStoreClientException("Invalid unique user id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
         }
 
         return doGetClaimsOfUser(uniqueUserId, domain);
@@ -735,34 +597,6 @@ public class IdentityStoreImpl implements IdentityStore {
         return doGetClaimsOfUser(uniqueUserId, metaClaims, domain);
     }
 
-    //TODO:ClaimWrapper handle claim dialect conversion
-    @Override
-    public List<Claim> getClaimsOfUser(String uniqueUserId, List<MetaClaim> metaClaims, String domainName) throws
-            IdentityStoreException, UserNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            return getClaimsOfUser(uniqueUserId, metaClaims);
-        }
-
-        if (isNullOrEmpty(uniqueUserId)) {
-            throw new IdentityStoreClientException("Invalid unique user id.");
-        }
-
-        if (metaClaims == null || metaClaims.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        return doGetClaimsOfUser(uniqueUserId, metaClaims, domain);
-    }
-
     @Override
     public List<Claim> getClaimsOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
@@ -775,29 +609,6 @@ public class IdentityStoreImpl implements IdentityStore {
             domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
-        }
-
-        return doGetClaimsOfGroup(uniqueGroupId, domain);
-    }
-
-    @Override
-    public List<Claim> getClaimsOfGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
-            GroupNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            return getClaimsOfGroup(uniqueGroupId);
-        }
-
-        if (isNullOrEmpty(uniqueGroupId)) {
-            throw new IdentityStoreClientException("Invalid unique group id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
         }
 
         return doGetClaimsOfGroup(uniqueGroupId, domain);
@@ -820,33 +631,6 @@ public class IdentityStoreImpl implements IdentityStore {
             domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
-        }
-
-        return doGetClaimsOfGroup(uniqueGroupId, metaClaims, domain);
-    }
-
-    @Override
-    public List<Claim> getClaimsOfGroup(String uniqueGroupId, List<MetaClaim> metaClaims, String domainName) throws
-            IdentityStoreException, GroupNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            return getClaimsOfGroup(uniqueGroupId, metaClaims);
-        }
-
-        if (isNullOrEmpty(uniqueGroupId)) {
-            throw new IdentityStoreClientException("Invalid unique group id.");
-        }
-
-        if (metaClaims == null || metaClaims.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
         }
 
         return doGetClaimsOfGroup(uniqueGroupId, metaClaims, domain);
@@ -969,31 +753,6 @@ public class IdentityStoreImpl implements IdentityStore {
         doUpdateUserClaims(uniqueUserId, claims, domain);
     }
 
-    //TODO:ClaimWrapper handle claim dialect conversion
-    @Override
-    public void updateUserClaims(String uniqueUserId, List<Claim> claims, String domainName) throws
-            IdentityStoreException, UserNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            updateUserClaims(uniqueUserId, claims);
-            return;
-        }
-
-        if (isNullOrEmpty(uniqueUserId)) {
-            throw new IdentityStoreClientException("Invalid user unique id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        doUpdateUserClaims(uniqueUserId, claims, domain);
-    }
-
     //TODO:ClaimWrapper handle claim dialect conversion,
     @Override
     public void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove)
@@ -1017,35 +776,6 @@ public class IdentityStoreImpl implements IdentityStore {
         doUpdateUserClaims(uniqueUserId, claimsToAdd, claimsToRemove, domain);
     }
 
-    //TODO:ClaimWrapper handle claim dialect conversion,
-    @Override
-    public void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove, String
-            domainName) throws IdentityStoreException, UserNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            updateUserClaims(uniqueUserId, claimsToAdd, claimsToRemove);
-            return;
-        }
-
-        if (isNullOrEmpty(uniqueUserId)) {
-            throw new IdentityStoreClientException("Invalid user unique id.");
-        }
-
-        if ((claimsToAdd == null || claimsToAdd.isEmpty()) && (claimsToRemove == null || claimsToRemove.isEmpty())) {
-            return;
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        doUpdateUserClaims(uniqueUserId, claimsToAdd, claimsToRemove, domain);
-    }
-
     @Override
     public void deleteUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
@@ -1058,30 +788,6 @@ public class IdentityStoreImpl implements IdentityStore {
             domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
-        }
-
-        doDeleteUser(uniqueUserId, domain);
-    }
-
-    @Override
-    public void deleteUser(String uniqueUserId, String domainName) throws IdentityStoreException,
-            UserNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            deleteUser(uniqueUserId);
-            return;
-        }
-
-        if (isNullOrEmpty(uniqueUserId)) {
-            throw new IdentityStoreClientException("Invalid user unique id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
         }
 
         doDeleteUser(uniqueUserId, domain);
@@ -1109,34 +815,6 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds, String domainName) throws
-            IdentityStoreException {
-
-        if (isNullOrEmpty(domainName)) {
-            updateGroupsOfUser(uniqueUserId, uniqueGroupIds);
-            return;
-        }
-
-        if (isNullOrEmpty(uniqueUserId)) {
-            throw new IdentityStoreClientException("Invalid user unique id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        try {
-            domain.getUniqueIdResolver().updateGroupsOfUser(uniqueUserId, uniqueGroupIds);
-        } catch (UniqueIdResolverException e) {
-            throw new IdentityStoreServerException(String.format("Failed to update groups of user - %s", uniqueUserId));
-        }
-    }
-
-    @Override
     public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd, List<String>
             uniqueGroupIdsToRemove) throws IdentityStoreException {
 
@@ -1149,34 +827,6 @@ public class IdentityStoreImpl implements IdentityStore {
             domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
-        }
-
-        try {
-            domain.getUniqueIdResolver().updateGroupsOfUser(uniqueUserId, uniqueGroupIdsToAdd, uniqueGroupIdsToRemove);
-        } catch (UniqueIdResolverException e) {
-            throw new IdentityStoreServerException(String.format("Failed to update groups of user - %s", uniqueUserId));
-        }
-    }
-
-    @Override
-    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd, List<String>
-            uniqueGroupIdsToRemove, String domainName) throws IdentityStoreException {
-
-        if (isNullOrEmpty(domainName)) {
-            updateGroupsOfUser(uniqueUserId, uniqueGroupIdsToAdd, uniqueGroupIdsToRemove);
-            return;
-        }
-
-        if (isNullOrEmpty(uniqueUserId)) {
-            throw new IdentityStoreClientException("Invalid user unique id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
         }
 
         try {
@@ -1289,31 +939,6 @@ public class IdentityStoreImpl implements IdentityStore {
 
     //TODO:ClaimWrapper handle claim dialect conversion
     @Override
-    public void updateGroupClaims(String uniqueGroupId, List<Claim> claims, String domainName) throws
-            IdentityStoreException, GroupNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            updateGroupClaims(uniqueGroupId, claims);
-            return;
-        }
-
-        if (isNullOrEmpty(uniqueGroupId)) {
-            throw new IdentityStoreClientException("Invalid group unique id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        doUpdateGroupClaims(uniqueGroupId, claims, domain);
-    }
-
-    //TODO:ClaimWrapper handle claim dialect conversion
-    @Override
     public void updateGroupClaims(String uniqueGroupId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
             IdentityStoreException, GroupNotFoundException {
 
@@ -1335,35 +960,6 @@ public class IdentityStoreImpl implements IdentityStore {
         doUpdateGroupClaims(uniqueGroupId, claimsToAdd, claimsToRemove, domain);
     }
 
-    //TODO:ClaimWrapper handle claim dialect conversion
-    @Override
-    public void updateGroupClaims(String uniqueGroupId, List<Claim> claimsToAdd, List<Claim>
-            claimsToRemove, String domainName) throws IdentityStoreException, GroupNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            updateGroupClaims(uniqueGroupId, claimsToAdd, claimsToRemove);
-            return;
-        }
-
-        if (isNullOrEmpty(uniqueGroupId)) {
-            throw new IdentityStoreClientException("Invalid group unique id.");
-        }
-
-        if ((claimsToAdd == null || claimsToAdd.isEmpty()) && (claimsToRemove == null || claimsToRemove.isEmpty())) {
-            return;
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        doUpdateGroupClaims(uniqueGroupId, claimsToAdd, claimsToRemove, domain);
-    }
-
     @Override
     public void deleteGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
@@ -1376,30 +972,6 @@ public class IdentityStoreImpl implements IdentityStore {
             domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
-        }
-
-        doDeleteGroup(uniqueGroupId, domain);
-    }
-
-    @Override
-    public void deleteGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
-            GroupNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            deleteGroup(uniqueGroupId);
-            return;
-        }
-
-        if (isNullOrEmpty(uniqueGroupId)) {
-            throw new IdentityStoreClientException("Invalid group unique id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
         }
 
         doDeleteGroup(uniqueGroupId, domain);
@@ -1428,35 +1000,6 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds, String domainName) throws
-            IdentityStoreException {
-
-        if (isNullOrEmpty(domainName)) {
-            updateUsersOfGroup(uniqueGroupId, uniqueUserIds);
-            return;
-        }
-
-        if (isNullOrEmpty(uniqueGroupId)) {
-            throw new IdentityStoreClientException("Invalid group unique id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
-        }
-
-        try {
-            domain.getUniqueIdResolver().updateUsersOfGroup(uniqueGroupId, uniqueUserIds);
-        } catch (UniqueIdResolverException e) {
-            throw new IdentityStoreServerException(String.format("Failed to update users of group - %s",
-                    uniqueGroupId));
-        }
-    }
-
-    @Override
     public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String>
             uniqueUserIdsToRemove) throws IdentityStoreException {
 
@@ -1469,36 +1012,6 @@ public class IdentityStoreImpl implements IdentityStore {
             domain = getPrimaryDomain();
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
-        }
-
-        try {
-            domain.getUniqueIdResolver().updateUsersOfGroup(uniqueGroupId, uniqueUserIdsToAdd, uniqueUserIdsToRemove);
-        } catch (UniqueIdResolverException e) {
-            throw new IdentityStoreServerException(String.format("Failed to update users of group - %s",
-                    uniqueGroupId));
-        }
-    }
-
-    @Override
-    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String>
-            uniqueUserIdsToRemove, String domainName) throws IdentityStoreException {
-
-
-        if (isNullOrEmpty(domainName)) {
-            updateUsersOfGroup(uniqueGroupId, uniqueUserIdsToAdd, uniqueUserIdsToRemove);
-            return;
-        }
-
-        if (isNullOrEmpty(uniqueGroupId)) {
-            throw new IdentityStoreClientException("Invalid group unique id.");
-        }
-
-        Domain domain;
-        try {
-            domain = getDomainFromDomainName(domainName);
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain from the domain name " +
-                    "- %s", domainName), e);
         }
 
         try {

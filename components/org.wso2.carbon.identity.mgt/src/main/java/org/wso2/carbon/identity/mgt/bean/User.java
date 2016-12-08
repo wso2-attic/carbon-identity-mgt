@@ -92,7 +92,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Claim> getClaims() throws IdentityStoreException, UserNotFoundException {
-        return identityStore.getClaimsOfUser(this.uniqueUserId, this.domainName);
+        return identityStore.getClaimsOfUser(this.uniqueUserId);
     }
 
     /**
@@ -103,7 +103,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Claim> getClaims(List<MetaClaim> metaClaims) throws IdentityStoreException, UserNotFoundException {
-        return identityStore.getClaimsOfUser(uniqueUserId, metaClaims, domainName);
+        return identityStore.getClaimsOfUser(uniqueUserId, metaClaims);
     }
 
     /**
@@ -113,7 +113,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Group> getGroups() throws IdentityStoreException, GroupNotFoundException, UserNotFoundException {
-        return identityStore.getGroupsOfUser(uniqueUserId, domainName);
+        return identityStore.getGroupsOfUser(uniqueUserId);
     }
 
     /**
