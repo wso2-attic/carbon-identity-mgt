@@ -30,7 +30,7 @@
 
     <artifactId>org.wso2.carbon.identity.meta.claim.mgt</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon Meta Claim Mgt - services Bundle</name>
+    <name>WSO2 Carbon Identity Management - Meta Claim Mgt - services Bundle</name>
 
     <build>
         <extensions>
@@ -159,13 +159,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity.mgt</groupId>
-            <artifactId>org.wso2.carbon.identity.mgt</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>osgi-test-util</artifactId>
-            <version>5.2.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -194,11 +189,13 @@
             org.wso2.carbon.kernel.*,
             org.wso2.carbon.identity.mgt.exception.*,
             org.wso2.carbon.identity.mgt.util.*,
+            org.wso2.carbon.identity.mgt.user.*;version="${carbon.identity.mgt.version}",
         </import.package>
 
         <carbon.component>
             startup.listener;
-            componentName="wso2-carbon-identity-claim-mgt";
+            componentName="wso2-carbon-identity-meta-claim-mgt";
+            requiredService="org.wso2.carbon.identity.mgt.service.RealmService"
         </carbon.component>
 
         <dsannotations>*</dsannotations>
@@ -224,219 +221,5 @@
         <!-- Dependency package version ranges -->
         <com.nimbusds.package.import.version.range>[2.26.1, 2.27)</com.nimbusds.package.import.version.range>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>with-tests</id>
-            <activation>
-                <property>
-                    <name>!maven.test.skip</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <!--<execution>-->
-                                <!--<id>unpack-distribution</id>-->
-                                <!--<phase>generate-resources</phase>-->
-                                <!--<goals>-->
-                                    <!--<goal>unpack</goal>-->
-                                <!--</goals>-->
-                                <!--<configuration>-->
-                                    <!--<artifactItems>-->
-                                        <!--<artifactItem>-->
-                                            <!--<groupId>org.wso2.carbon.identity.meta.claim.mgt</groupId>-->
-                                            <!--<artifactId>org.wso2.carbon.identity.meta.claim.mgt.test.distribution</artifactId>-->
-                                            <!--<type>zip</type>-->
-                                            <!--<overWrite>true</overWrite>-->
-                                            <!--<outputDirectory>${project.build.directory}</outputDirectory>-->
-                                        <!--</artifactItem>-->
-                                    <!--</artifactItems>-->
-                                <!--</configuration>-->
-                            <!--</execution>-->
-                            <execution>
-                                <id>copy-jacoco-dependencies</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>copy-dependencies</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                    <includeTypes>jar</includeTypes>
-                                    <includeArtifactIds>org.jacoco.ant</includeArtifactIds>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <!--copying carbon-jaas.config file to the unpacked distribution.-->
-                                <id>copy-resources-identity-mgt</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>
-                                        ${project.build.directory}/wso2carbon-kernel-${project.version}/conf
-                                    </outputDirectory>
-                                    <overwrite>true</overwrite>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/test/resources/carbon-home/conf</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!--<plugin>-->
-                        <!--<groupId>org.apache.maven.plugins</groupId>-->
-                        <!--<artifactId>maven-surefire-plugin</artifactId>-->
-                        <!--<configuration>-->
-                            <!--<systemPropertyVariables>-->
-                                <!--<org.ops4j.pax.url.mvn.localRepository>${settings.localRepository}-->
-                                <!--</org.ops4j.pax.url.mvn.localRepository>-->
-                                <!--<jacoco-agent.destfile>${project.build.directory}/jacoco.exec</jacoco-agent.destfile>-->
-                            <!--</systemPropertyVariables>-->
-                            <!--<systemProperties>-->
-                                <!--<property>-->
-                                    <!--<name>carbon.home</name>-->
-                                    <!--<value>${basedir}/target/wso2carbon-kernel-${project.version}</value>-->
-                                <!--</property>-->
-                            <!--</systemProperties>-->
-                            <!--<suiteXmlFiles>-->
-                                <!--<suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>-->
-                            <!--</suiteXmlFiles>-->
-                        <!--</configuration>-->
-                    <!--</plugin>-->
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>${jacoco.version}</version>
-                        <executions>
-                            <execution>
-                                <id>default-prepare-agent</id>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                                <configuration>
-                                    <includes>
-                                        <include>org.wso2.carbon*</include>
-                                    </includes>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>default-check</id>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                                <configuration>
-                                    <rules>
-                                        <rule>
-                                        </rule>
-                                    </rules>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>prepare-package</phase>
-                                <configuration>
-                                    <target xmlns:jacoco="antlib:org.jacoco.ant">
-                                        //this task is to provide class/src files locations for jacoco report generation
-                                        <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-                                            <classpath path="${project.build.directory}"/>
-                                        </taskdef>
-                                        <jacoco:report>
-                                            <executiondata>
-                                                <file file="${project.build.directory}/jacoco.exec"/>
-                                            </executiondata>
-                                            <structure name="Carbon Security OSGi Tests">
-                                                <classfiles>
-                                                    <fileset
-                                                            dir="../../components/org.wso2.carbon.identity.meta.claim.mgt/target/classes"/>
-                                                </classfiles>
-                                                <sourcefiles encoding="UTF-8">
-                                                    <fileset dir="../../components/org.wso2.carbon.identity.meta.claim.mgt/src"/>
-                                                </sourcefiles>
-                                            </structure>
-                                            <html destdir="${project.build.directory}/site/jacoco"/>
-                                        </jacoco:report>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.jacoco</groupId>
-                                <artifactId>org.jacoco.ant</artifactId>
-                                <version>${org.jacoco.ant.version}</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.ops4j.pax.exam</groupId>
-                        <artifactId>maven-paxexam-plugin</artifactId>
-                        <version>${maven.paxexam.plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>generate-config</id>
-                                <goals>
-                                    <goal>generate-depends-file</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>sql-maven-plugin</artifactId>
-                        <dependencies>
-                            <dependency>
-                                <groupId>com.h2database</groupId>
-                                <artifactId>h2</artifactId>
-                                <version>1.4.191</version>
-                            </dependency>
-                        </dependencies>
-                        <configuration>
-                            <url>jdbc:h2:file:${basedir}/target/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;MV_STORE=FALSE</url>
-                            <username>wso2carbon</username>
-                            <password>wso2carbon</password>
-                            <driver>org.h2.Driver</driver>
-                        </configuration>
-                        <executions>
-                            <!--Create the database-->
-                            <!--<execution>-->
-                                <!--<id>create-database</id>-->
-                                <!--<phase>generate-resources</phase>-->
-                                <!--<goals>-->
-                                    <!--<goal>execute</goal>-->
-                                <!--</goals>-->
-                                <!--<configuration>-->
-                                    <!--<autocommit>true</autocommit>-->
-                                    <!--<srcFiles>-->
-                                        <!--<srcFile>${basedir}/target/wso2carbon-kernel-${project.version}/dbscripts/identity-mgt/h2.sql</srcFile>-->
-                                    <!--</srcFiles>-->
-                                    <!--<onError>abort</onError>-->
-                                <!--</configuration>-->
-                            <!--</execution>-->
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

@@ -15,11 +15,10 @@
 ###############################################################################
 ---
 # Configurations related to claim mappings
-#Configure claim dialect for applications
-applications:
+#Configure claim dialects
+claimMappings:
  -
   dialectURI: "http://application1.com/"
-  name: "Application1"
   mappings:
    name: "http://wso2.org/claims/username"
    role: "http://wso2.org/claims/role"
@@ -27,37 +26,28 @@ applications:
    email: "http://wso2.org/claims/email"
  -
   dialectURI: "http://application2.com"
-  name: "Application2"
   mappings:
    sp1name: "http://wso2.org/claims/username"
    sp1role: "http://wso2.org/claims/role"
    sp1mobile: "http://wso2.org/claims/mobile"
    sp1email: "http://wso2.org/claims/email"
-
-#Configure claim dialect for identity providers
-identityProviders:
  -
   dialectURI: "http://identityprovider1.com"
-  name: "IDP1"
   mappings:
-   idp-name: "http://wso2.org/claims/username"
-   idp-role: "http://wso2.org/claims/role"
-   idp-mobile: "http://wso2.org/claims/mobile"
-   idp-email: "http://wso2.org/claims/email"
+   idpname: "http://wso2.org/claims/username"
+   idprole: "http://wso2.org/claims/role"
+   idpmobile: "http://wso2.org/claims/mobile"
+   idpemail: "http://wso2.org/claims/email"
  -
   dialectURI: "http://identityprovider2.com"
-  name: "IDP2"
   mappings:
-   idp-name: "http://wso2.org/claims/username"
-   idp-role: "http://wso2.org/claims/role"
-   idp-mobile: "http://wso2.org/claims/mobile"
-   idp-email: "http://wso2.org/claims/email"
-
-#Configure claim dialect for other standards like SCIM, OIDC
-standards:
+   idpname: "http://wso2.org/claims/username"
+   idprole: "http://wso2.org/claims/role"
+   idpmobile: "http://wso2.org/claims/mobile"
+   idpemail: "http://wso2.org/claims/email"
  -
+ # what if there are more standards without a dialect
   dialectURI: ""
-  name: "SCIM"
   mappings:
    username: "http://wso2.org/claims/username"
    role: "http://wso2.org/claims/role"

@@ -18,7 +18,9 @@ package org.wso2.carbon.identity.meta.claim.mgt.internal;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.meta.claim.mgt.service.ClaimResolvingService;
@@ -31,34 +33,56 @@ import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
  * @since 1.0.0
  */
 @Component(
-        name = "org.wso2.carbon.identity.mgt.internal.IdentityClaimMgtComponent",
+        name = "org.wso2.carbon.identity.meta.claim.mgt.internal.IdentityClaimMgtComponent",
         immediate = true,
         property = {
-                "componentName=wso2-carbon-identity-claim-mgt"
+                "componentName=wso2-carbon-identity-meta-claim-mgt"
         })
 public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
 
     private static final Logger log = LoggerFactory.getLogger(IdentityClaimMgtComponent.class);
 
+    private BundleContext bundleContext;
+
     private ServiceRegistration<ClaimResolvingService> claimResolvingServiceRegistration;
+
+    @Activate
+    public void registerClaimResolvingService(BundleContext bundleContext) {
+
+        this.bundleContext = bundleContext;
+
+        // Register Default Unique Id Resolver
+        IdentityClaimMgtDataHolder.getInstance().setClaimResolvingService(new ClaimResolvingServiceImpl());
+    }
+
+    @Deactivate
+    public void unregisterClaimResolvingService(BundleContext bundleContext) {
+
+        try {
+            if (claimResolvingServiceRegistration != null) {
+                bundleContext.ungetService(claimResolvingServiceRegistration.getReference());
+            }
+        } catch (Exception e) {
+            log.error("Error occurred in un getting service", e);
+        }
+
+        log.info("Carbon-Claim-Resolving bundle deactivated successfully.");
+    }
 
     @Override
     public void onAllRequiredCapabilitiesAvailable() {
 
         IdentityClaimMgtDataHolder identityClaimMgtDataHolder = IdentityClaimMgtDataHolder.getInstance();
-        BundleContext bundleContext = identityClaimMgtDataHolder.getBundleContext();
 
+        // Register the claim resolving service.
+        ClaimResolvingServiceImpl claimResolvingService = new ClaimResolvingServiceImpl();
+        identityClaimMgtDataHolder.setClaimResolvingService(claimResolvingService);
 
-            // Register the claim resolving service.
-            ClaimResolvingServiceImpl claimResolvingService = new ClaimResolvingServiceImpl();
-            identityClaimMgtDataHolder.setClaimResolvingService(claimResolvingService);
+        claimResolvingServiceRegistration = bundleContext
+                .registerService(ClaimResolvingService.class, claimResolvingService, null);
+        log.info("Claim resolving service registered successfully.");
 
-            claimResolvingServiceRegistration = bundleContext
-                    .registerService(ClaimResolvingService.class, claimResolvingService, null);
-            log.info("Claim resolving service registered successfully.");
-
-            log.info("Carbon-Identity-Claim-Mgt bundle activated successfully.");
-
+        log.info("Carbon-Identity-Claim-Mgt bundle activated successfully.");
 
     }
 }

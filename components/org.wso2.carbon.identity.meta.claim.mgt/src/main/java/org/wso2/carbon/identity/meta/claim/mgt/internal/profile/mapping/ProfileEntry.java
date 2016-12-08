@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping;
+package org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Claim Mapping Entry.
  */
-public class ClaimMappingEntry {
+public class ProfileEntry {
 
-    private String dialectURI;
+    private String profileName;
 
-    private Map<String, String> mappings;
+    private List<ClaimConfigEntry> claims;
 
-    public String getMappingDialectURI() {
-        return dialectURI;
+    public String getProfileName() {
+        return profileName;
     }
 
-    public void setMappingDialectURI(String dialectURI) {
-        this.dialectURI = dialectURI;
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
     }
 
-    public Map<String, String> getMappings() {
-        return mappings;
+    public List<ClaimConfigEntry> getClaims() {
+        return claims;
     }
 
-    public void setMappings(Map<String, String> mappings) {
-        this.mappings = mappings;
+    public void setClaims(List<ClaimConfigEntry> claims) {
+        this.claims = claims;
     }
 }
