@@ -37,6 +37,7 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
     private Map<String, List<String>> readOnlyClaims = new HashMap<>();
     private Map<String, List<String>> verifyingClaims = new HashMap<>();
     private Map<String, List<String>> validatingClaims = new HashMap<>();
+    private Map<String, List<String>> transformingClaims = new HashMap<>();
 
     private Map<String, ProfileEntry> buildProfileMappings() throws ProfileReaderException {
         if (profiles == null) {
@@ -47,6 +48,7 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
                 ArrayList<String> readOnlyList = new ArrayList<String>();
                 ArrayList<String> verifyingList = new ArrayList<String>();
                 ArrayList<String> validatingList = new ArrayList<String>();
+                ArrayList<String> transformingList = new ArrayList<String>();
                 profileEntry.getClaims().stream().forEach(claimConfigEntry -> {
 
                     if (Boolean.parseBoolean(claimConfigEntry.getRequired())) {
@@ -61,11 +63,15 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
                     if (!StringUtils.isNullOrEmptyAfterTrim(claimConfigEntry.getVerifier())) {
                         verifyingList.add(claimConfigEntry.getClaimURI());
                     }
+                    if (!StringUtils.isNullOrEmptyAfterTrim(claimConfigEntry.getTransformer())) {
+                        transformingList.add(claimConfigEntry.getTransformer());
+                    }
                 });
                 requiredClaims.put(profileName, requiredList);
                 readOnlyClaims.put(profileName, readOnlyList);
                 verifyingClaims.put(profileName, verifyingList);
                 validatingClaims.put(profileName, validatingList);
+                transformingClaims.put(profileName, transformingList);
             }));
         }
         return profiles;
@@ -96,20 +102,33 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
      */
     @Override
     public ProfileEntry getProfile(String profileName) throws ProfileMgtServiceException {
-        return null;
+        try {
+            return buildProfileMappings().get(profileName);
+        } catch (ProfileReaderException e) {
+            throw new ProfileMgtServiceException(
+                    String.format("Error in getting the profile configuration for profile: %s", profileName), e);
+        }
     }
 
     /**
      * Get the properties of a particular claim of a profile.
      *
      * @param profileName : Uniquely identifying name of the profile.
-     * @param claim       : Root claim URI for the properties to be retrieved.
+     * @param claimURI    : Root claim URI for the properties to be retrieved.
      * @return Map(Property Key : Property Value)
      * @throws ProfileMgtServiceException : Error in getting the properties of a claim.
      */
     @Override
-    public ClaimConfigEntry getClaimProperties(String profileName, String claim) throws ProfileMgtServiceException {
-        return null;
+    public ClaimConfigEntry getClaimProperties(String profileName, String claimURI) throws ProfileMgtServiceException {
+        try {
+            return buildProfileMappings().get(profileName).getClaims().stream()
+                    .filter(claimConfigEntry -> claimConfigEntry.getClaimURI().equalsIgnoreCase(claimURI)).findFirst()
+                    .get();
+        } catch (ProfileReaderException e) {
+            throw new ProfileMgtServiceException(
+                    String.format("Error in getting the claim details for profile: %s and claim: %s", profileName,
+                            claimURI), e);
+        }
     }
 
     /**
@@ -121,7 +140,7 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
      */
     @Override
     public List<String> getRequiredProperties(String profileName) throws ProfileMgtServiceException {
-        return null;
+        return requiredClaims.get(profileName);
     }
 
     /**
@@ -133,7 +152,7 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
      */
     @Override
     public List<String> getReadOnlyProperties(String profileName) throws ProfileMgtServiceException {
-        return null;
+        return readOnlyClaims.get(profileName);
     }
 
     /**
@@ -145,6 +164,7 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
      */
     @Override
     public List<String> getUniqueProperties(String profileName) throws ProfileMgtServiceException {
+        //ToDO call underneath connector layer and return this.
         return null;
     }
 
@@ -157,7 +177,7 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
      */
     @Override
     public List<String> getVerifyingProperties(String profileName) throws ProfileMgtServiceException {
-        return null;
+        return verifyingClaims.get(profileName);
     }
 
     /**
@@ -168,8 +188,8 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
      * @throws ProfileMgtServiceException : Error in getting the claims with verifying mechanism.
      */
     @Override
-    public Map<String, String> getValidating(String profileName) throws ProfileMgtServiceException {
-        return null;
+    public List<String> getValidating(String profileName) throws ProfileMgtServiceException {
+        return validatingClaims.get(profileName);
     }
 
     /**
@@ -180,7 +200,7 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
      * @throws ProfileMgtServiceException : Error in getting the claims with regex validations.
      */
     @Override
-    public Map<String, String> getRegexedProperties(String profileName) throws ProfileMgtServiceException {
-        return null;
+    public List<String> getTransformingProperties(String profileName) throws ProfileMgtServiceException {
+        return transformingClaims.get(profileName);
     }
 }

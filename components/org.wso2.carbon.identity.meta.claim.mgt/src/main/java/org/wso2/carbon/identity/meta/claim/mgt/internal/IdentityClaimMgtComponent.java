@@ -24,7 +24,9 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.meta.claim.mgt.service.ClaimResolvingService;
+import org.wso2.carbon.identity.meta.claim.mgt.service.ProfileMgtService;
 import org.wso2.carbon.identity.meta.claim.mgt.service.impl.ClaimResolvingServiceImpl;
+import org.wso2.carbon.identity.meta.claim.mgt.service.impl.ProfileMgtServiceImpl;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 
 /**
@@ -45,6 +47,7 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
     private BundleContext bundleContext;
 
     private ServiceRegistration<ClaimResolvingService> claimResolvingServiceRegistration;
+    private ServiceRegistration<ProfileMgtService> profileMgtServiceServiceRegistration;
 
     @Activate
     public void registerClaimResolvingService(BundleContext bundleContext) {
@@ -69,6 +72,29 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
         log.info("Carbon-Claim-Resolving bundle deactivated successfully.");
     }
 
+    @Activate
+    public void registerProfileMgtService(BundleContext bundleContext) {
+
+        this.bundleContext = bundleContext;
+
+        // Register Default Unique Id Resolver
+        IdentityClaimMgtDataHolder.getInstance().setClaimResolvingService(new ClaimResolvingServiceImpl());
+    }
+
+    @Deactivate
+    public void unregisterProfileMgtService(BundleContext bundleContext) {
+
+        try {
+            if (claimResolvingServiceRegistration != null) {
+                bundleContext.ungetService(profileMgtServiceServiceRegistration.getReference());
+            }
+        } catch (Exception e) {
+            log.error("Error occurred in un getting service", e);
+        }
+
+        log.info("Carbon-Claim-Resolving bundle deactivated successfully.");
+    }
+
     @Override
     public void onAllRequiredCapabilitiesAvailable() {
 
@@ -78,9 +104,16 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
         ClaimResolvingServiceImpl claimResolvingService = new ClaimResolvingServiceImpl();
         identityClaimMgtDataHolder.setClaimResolvingService(claimResolvingService);
 
+        // Register the claim resolving service.
+        ProfileMgtService profileMgtService = new ProfileMgtServiceImpl();
+        identityClaimMgtDataHolder.setProfileMgtService(profileMgtService);
+
         claimResolvingServiceRegistration = bundleContext
                 .registerService(ClaimResolvingService.class, claimResolvingService, null);
         log.info("Claim resolving service registered successfully.");
+        profileMgtServiceServiceRegistration = bundleContext
+                .registerService(ProfileMgtService.class, profileMgtService, null);
+        log.info("Profile Mgt service registered successfully.");
 
         log.info("Carbon-Identity-Claim-Mgt bundle activated successfully.");
 

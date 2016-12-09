@@ -98,7 +98,7 @@ public interface ProfileMgtService {
      * @return Map(Claim : Verifying mechanism)
      * @throws ProfileMgtServiceException : Error in getting the claims with verifying mechanism.
      */
-    Map<String, String> getValidating(String profileName) throws ProfileMgtServiceException;
+    List<String> getValidating(String profileName) throws ProfileMgtServiceException;
 
     /**
      * Get the claims marked for regex validations.
@@ -107,5 +107,5 @@ public interface ProfileMgtService {
      * @return Map(Claim : Regex)
      * @throws ProfileMgtServiceException : Error in getting the claims with regex validations.
      */
-    Map<String, String> getRegexedProperties(String profileName) throws ProfileMgtServiceException;
+    List<String> getTransformingProperties(String profileName) throws ProfileMgtServiceException;
 }

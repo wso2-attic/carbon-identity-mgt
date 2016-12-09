@@ -46,7 +46,7 @@ public class ProfileMappingReader {
         try {
             profileMappingFile = FileUtil.readConfigFile(file, ProfileMappingFile.class);
         } catch (CarbonIdentityMgtConfigException e) {
-            throw new ProfileReaderException("Couldn't read the profile-mapping.yml file successfully.", e);
+            throw new ProfileReaderException("Couldn't read the profile-mapping.yaml file successfully.", e);
         }
 
         return profileMappingFile;

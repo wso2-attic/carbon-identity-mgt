@@ -19,7 +19,7 @@ package org.wso2.carbon.identity.meta.claim.mgt.util;
  *
  */
 public class ProfileMgtConstants {
-    public static final String PROFILE_MAPPING_FILE = "profile-mapping.yml";
+    public static final String PROFILE_MAPPING_FILE = "profile-mapping.yaml";
     public static final String REQUIRED = "required";
     public static final String READ_ONLY = "readonly";
     public static final String VERIFIER = "verifier";
