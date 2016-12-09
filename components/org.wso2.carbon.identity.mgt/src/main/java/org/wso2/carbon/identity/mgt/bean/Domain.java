@@ -778,7 +778,7 @@ public class Domain {
         String userUniqueId = IdentityUserMgtUtil.generateUUID();
         try {
             String receivedUserUniqueId = uniqueIdResolver.addUser(new DomainUser(userUniqueId, userPartitions),
-                    this.name, this.id);
+                    this.id);
 
             if (isNullOrEmpty(receivedUserUniqueId)) {
                 return receivedUserUniqueId;
@@ -875,7 +875,7 @@ public class Domain {
                 .collect(Collectors.toList());
 
         try {
-            List<String> domainUserIds = uniqueIdResolver.addUsers(domainUsers, this.name, this.id);
+            List<String> domainUserIds = uniqueIdResolver.addUsers(domainUsers, this.id);
             if (domainUserIds != null && !domainUserIds.isEmpty()) {
                 return domainUserIds;
             }
@@ -1133,7 +1133,7 @@ public class Domain {
         String groupUniqueId = IdentityUserMgtUtil.generateUUID();
         try {
             String receivedGroupUniqueId = uniqueIdResolver.addGroup(new DomainGroup(groupUniqueId, groupPartitions),
-                    this.getName(), this.id);
+                    this.id);
             if (!isNullOrEmpty(receivedGroupUniqueId)) {
                 return receivedGroupUniqueId;
             }
@@ -1196,7 +1196,7 @@ public class Domain {
 
         try {
 
-            List<String> domainGroupIds = uniqueIdResolver.addGroups(domainGroups, this.name, this.id);
+            List<String> domainGroupIds = uniqueIdResolver.addGroups(domainGroups, this.id);
             if (domainGroupIds != null && !domainGroupIds.isEmpty()) {
                 return domainGroupIds;
             }
