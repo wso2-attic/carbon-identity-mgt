@@ -84,7 +84,7 @@ public class Domain {
     /**
      * Mapping between IdentityStoreConnector ID and MetaClaimMapping
      */
-    private Map<String, List<MetaClaimMapping>> connectorIdToMetaClaimMappings = new HashMap<>();
+    private Map<String, List<MetaClaimMapping>> metaClaimMappingsMap = new HashMap<>();
 
     private List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
 
@@ -160,17 +160,6 @@ public class Domain {
     }
 
     /**
-     * Get IdentityStoreConnector from identity store connector id.
-     *
-     * @param identityStoreConnectorId identity store connector id.
-     * @return IdentityStoreConnector instance.
-     */
-    public IdentityStoreConnector getIdentityStoreConnectorFromId(String identityStoreConnectorId) {
-
-        return identityStoreConnectorsMap.get(identityStoreConnectorId);
-    }
-
-    /**
      * Add an credential store connector to the map.
      *
      * @param credentialStoreConnector Credential Store connector
@@ -184,17 +173,6 @@ public class Domain {
     }
 
     /**
-     * Get CredentialStoreConnector from credential store connector id.
-     *
-     * @param credentialStoreConnectorId String - CredentialStoreConnector ID
-     * @return credentialStoreConnector
-     */
-    public CredentialStoreConnector getCredentialStoreConnectorFromId(String credentialStoreConnectorId) {
-
-        return credentialStoreConnectorsMap.get(credentialStoreConnectorId);
-    }
-
-    /**
      * Checks weather a certain claim URI exists in the domain claim mappings.
      *
      * @param claimURI Claim
@@ -202,7 +180,7 @@ public class Domain {
      */
     public boolean isClaimSupported(String claimURI) {
 
-        return connectorIdToMetaClaimMappings.values().stream()
+        return metaClaimMappingsMap.values().stream()
                 .anyMatch(list -> list.stream().filter(metaClaimMapping ->
                         claimURI.equals(metaClaimMapping.getMetaClaim().getClaimUri()))
                         .findFirst().isPresent());
@@ -286,10 +264,6 @@ public class Domain {
 
         MetaClaimMapping metaClaimMapping = claimUriToMetaClaimMappings.get(claim.getClaimUri());
 
-        if (!metaClaimMapping.isUnique()) {
-            throw new DomainClientException("Provided claim is not unique.");
-        }
-
         IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap
                 .get(metaClaimMapping.getIdentityStoreConnectorId());
 
@@ -328,10 +302,6 @@ public class Domain {
             throws DomainException {
 
         MetaClaimMapping metaClaimMapping = claimUriToMetaClaimMappings.get(metaClaim.getClaimUri());
-
-        if (!metaClaimMapping.isUnique()) {
-            throw new DomainException("Provided claim is not unique.");
-        }
 
         IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap
                 .get(metaClaimMapping.getIdentityStoreConnectorId());
@@ -648,7 +618,7 @@ public class Domain {
             return Collections.emptyList();
         }
 
-        Map<String, List<String>> attributeNamesMap = getConnectorIdToAttributeNameMap(metaClaimMappings, metaClaims);
+        Map<String, List<String>> attributeNamesMap = getConnectorIdToAttributeNameMap(metaClaims);
 
         Map<String, List<Attribute>> attributesMap = new HashMap<>();
         for (UserPartition userPartition : userPartitions) {
@@ -738,7 +708,7 @@ public class Domain {
             return Collections.emptyList();
         }
 
-        Map<String, List<String>> attributeNamesMap = getConnectorIdToAttributeNameMap(metaClaimMappings, metaClaims);
+        Map<String, List<String>> attributeNamesMap = getConnectorIdToAttributeNameMap(metaClaims);
 
         Map<String, List<Attribute>> attributesMap = new HashMap<>();
         for (GroupPartition groupPartition : groupPartitions) {
@@ -747,7 +717,7 @@ public class Domain {
                     .getConnectorId());
             if (attributeNames != null) {
                 try {
-                    List<Attribute> attributes = identityStoreConnector.getUserAttributeValues(groupPartition
+                    List<Attribute> attributes = identityStoreConnector.getGroupAttributeValues(groupPartition
                             .getConnectorGroupId(), attributeNames);
                     attributesMap.put(groupPartition.getConnectorId(), attributes);
                 } catch (IdentityStoreConnectorException e) {
@@ -1493,9 +1463,9 @@ public class Domain {
      *
      * @return Map of connector Id to List of MetaClaimMapping
      */
-    public Map<String, List<MetaClaimMapping>> getConnectorIdToMetaClaimMappings() {
+    public Map<String, List<MetaClaimMapping>> getMetaClaimMappingsMap() {
 
-        return connectorIdToMetaClaimMappings;
+        return metaClaimMappingsMap;
     }
 
     public MetaClaimMapping getMetaClaimMapping(String claimURI) throws DomainException {
@@ -1530,50 +1500,6 @@ public class Domain {
                         metaClaimMapping -> metaClaimMapping));
     }
 
-    /**
-     * Set claim mappings for an identity store id.
-     *
-     * @param connectorIdToMetaClaimMappings Map&lt;String, List&lt;MetaClaimMapping&gt;&gt; claim mappings
-     */
-    public void setConnectorIdToMetaClaimMappings(Map<String, List<MetaClaimMapping>> connectorIdToMetaClaimMappings) {
-
-        this.connectorIdToMetaClaimMappings = connectorIdToMetaClaimMappings;
-    }
-
-    /**
-     * Get set of IdentityStoreConnectors for this domain sorted by their priority.
-     *
-     * @return Sorted IdentityStoreConnectors set
-     */
-    public List<IdentityStoreConnector> getIdentityStoreConnectors() {
-
-        if (identityStoreConnectors == null) {
-            return Collections.emptyList();
-        }
-        return identityStoreConnectors;
-    }
-
-    /**
-     * Get set of CredentialStoreConnectors for this domain sorted by their priority.
-     *
-     * @return Sorted CredentialStoreConnectors set
-     */
-    public List<CredentialStoreConnector> getCredentialStoreConnectors() {
-
-        if (credentialStoreConnectors == null) {
-            return Collections.emptyList();
-        }
-        return credentialStoreConnectors;
-    }
-
-    public UniqueIdResolver getUniqueIdResolver() {
-        return uniqueIdResolver;
-    }
-
-    public void setUniqueIdResolver(UniqueIdResolver uniqueIdResolver) {
-        this.uniqueIdResolver = uniqueIdResolver;
-    }
-
     private List<Claim> buildClaims(Map<String, List<Attribute>> connectorIdToAttributesMap) {
 
         List<Claim> claims = new ArrayList<>();
@@ -1605,8 +1531,7 @@ public class Domain {
         return claims;
     }
 
-    private Map<String, List<String>> getConnectorIdToAttributeNameMap(List<MetaClaimMapping> metaClaimMappings,
-                                                                       List<MetaClaim> metaClaims) {
+    private Map<String, List<String>> getConnectorIdToAttributeNameMap(List<MetaClaim> metaClaims) {
 
         Map<String, List<String>> connectorIdToAttributeNameMap = new HashMap<>();
 
