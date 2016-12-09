@@ -270,17 +270,10 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     public String updateUserAttributes(String userIdentifier, List<Attribute> attributesToAdd, List<Attribute>
             attributesToRemove) throws IdentityStoreConnectorException {
 
-//        if ((attributesToAdd.isEmpty() && attributesToRemove.isEmpty()) || userStoreMap.get(userIdentifier) == null) {
-//            return userIdentifier;
-//        }
-//
-//        List<Attribute> attributes = userStoreMap.get(userIdentifier);
-//
-//        if (attributesToAdd.isEmpty()) {
-//            attributes.addAll(attributes.stream())
-//        }
-//
-        return null;
+        List<Attribute> attributes = userStoreMap.get(userIdentifier);
+        attributes = getAttributes(attributesToAdd, attributesToRemove, attributes);
+        userStoreMap.put(userIdentifier, attributes);
+        return userIdentifier;
     }
 
     @Override
@@ -325,13 +318,39 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public String updateGroupAttributes(String groupIdentifier, List<Attribute> attributes) throws
             IdentityStoreConnectorException {
-        return null;
+
+        groupStoreMap.put(groupIdentifier, attributes);
+        return groupIdentifier;
     }
 
     @Override
     public String updateGroupAttributes(String groupIdentifier, List<Attribute> attributesToAdd, List<Attribute>
             attributesToRemove) throws IdentityStoreConnectorException {
-        return null;
+
+        List<Attribute> attributes = groupStoreMap.get(groupIdentifier);
+        attributes = getAttributes(attributesToAdd, attributesToRemove, attributes);
+        userStoreMap.put(groupIdentifier, attributes);
+        return groupIdentifier;
+    }
+
+    private List<Attribute> getAttributes(List<Attribute> attributesToAdd, List<Attribute> attributesToRemove,
+                                          List<Attribute> attributes) {
+        Map<String, Attribute> attributeMap = new HashMap<>();
+        if (!attributes.isEmpty()) {
+            attributeMap = attributes.stream()
+                    .collect(Collectors.toMap(Attribute::getAttributeName, attribute -> attribute));
+        }
+        if (!attributesToAdd.isEmpty()) {
+            attributeMap.putAll(attributesToAdd.stream()
+                    .collect(Collectors.toMap(Attribute::getAttributeName, attribute -> attribute)));
+        }
+        if (!attributesToRemove.isEmpty()) {
+            for (Attribute attribute : attributesToRemove) {
+                attributeMap.remove(attribute.getAttributeName());
+            }
+        }
+        attributes = attributeMap.values().stream().collect(Collectors.toList());
+        return attributes;
     }
 
     @Override
