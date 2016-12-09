@@ -46,7 +46,7 @@ public class ClaimMappingReader {
         try {
             claimConfig = FileUtil.readConfigFile(file, ClaimMappingFile.class);
         } catch (CarbonIdentityMgtConfigException e) {
-            throw new ClaimMappingReaderException("Couldn't read the claim-mapping.yml file successfully.", e);
+            throw new ClaimMappingReaderException("Couldn't read the claim-mapping.yaml file successfully.", e);
         }
 
         return claimConfig;
