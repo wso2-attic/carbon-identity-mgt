@@ -17,10 +17,12 @@ package org.wso2.carbon.identity.meta.claim.mgt.service.impl;
 
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimMappingReaderException;
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimResolvingServiceException;
+import org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping.ClaimMappingEntry;
 import org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping.ClaimMappingReader;
 import org.wso2.carbon.identity.meta.claim.mgt.service.ClaimResolvingService;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -28,9 +30,27 @@ import java.util.Map;
 public class ClaimResolvingServiceImpl implements ClaimResolvingService {
     Map<String, Map<String, String>> claimMappings = null;
 
+    private static Map<String, String> getMappings(ClaimMappingEntry claimMappingEntry) {
+        return claimMappingEntry.getMappings().entrySet().stream().collect(Collectors
+                .toMap(p -> appendDialect(claimMappingEntry.getMappingDialectURI(), p.getKey()), Map.Entry::getValue));
+
+    }
+
+    private static String appendDialect(String dialect, String claim) {
+        if (dialect.isEmpty()) {
+            return claim;
+        }
+        //In case claim dialect in not followed by '/', add it.
+        if (!dialect.endsWith("/")) {
+            dialect = dialect + "/";
+        }
+        return dialect + claim;
+    }
+
     private Map<String, Map<String, String>> buildClaimMappings() throws ClaimMappingReaderException {
         if (claimMappings == null) {
-            claimMappings = ClaimMappingReader.getClaimMappings();
+            claimMappings = ClaimMappingReader.getClaimMappings().entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> getMappings(entry.getValue())));
         }
         return claimMappings;
     }

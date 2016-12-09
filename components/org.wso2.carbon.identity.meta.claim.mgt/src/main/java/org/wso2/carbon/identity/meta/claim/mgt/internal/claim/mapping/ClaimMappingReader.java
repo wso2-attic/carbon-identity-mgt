@@ -57,31 +57,14 @@ public class ClaimMappingReader {
      *
      * @return Map(application claim : root claim URI)
      */
-    public static Map<String, Map<String, String>> getClaimMappings() throws ClaimMappingReaderException {
+    public static Map<String, ClaimMappingEntry> getClaimMappings() throws ClaimMappingReaderException {
         ClaimMappingFile claimMappingFile = buildClaimMappings();
         List<ClaimMappingEntry> claimMappingEntryList = claimMappingFile.getClaimMapping();
         return claimMappingEntryList.stream().filter(Objects::nonNull)
                 .filter(claimMappingEntry -> !claimMappingEntry.getMappings().isEmpty()).collect(Collectors
                         .toMap(claimMappingEntry -> claimMappingEntry.getMappingDialectURI(),
-                                claimMappingEntry -> getMappings(claimMappingEntry)));
+                                claimMappingEntry -> claimMappingEntry));
 
-    }
-
-    private static Map<String, String> getMappings(ClaimMappingEntry claimMappingEntry) {
-        return claimMappingEntry.getMappings().entrySet().stream().collect(Collectors
-                .toMap(p -> appendDialect(claimMappingEntry.getMappingDialectURI(), p.getKey()), Map.Entry::getValue));
-
-    }
-
-    private static String appendDialect(String dialect, String claim) {
-        if (dialect.isEmpty()) {
-            return claim;
-        }
-        //In case claim dialect in not followed by '/', add it.
-        if (!dialect.endsWith("/")) {
-            dialect = dialect + "/";
-        }
-        return dialect + claim;
     }
 
 }

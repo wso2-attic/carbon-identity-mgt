@@ -25,6 +25,7 @@ Profiles:
     readonly: "true"
     verifier: "claim verifying extension"
     validator: "claim validating extension"
+    transformer: "transform extension"
     regex: "*"
     defaultValue: "user1"
     dataType: "text"

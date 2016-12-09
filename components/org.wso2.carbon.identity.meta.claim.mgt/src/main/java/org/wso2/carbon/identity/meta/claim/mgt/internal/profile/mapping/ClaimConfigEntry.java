@@ -26,6 +26,7 @@ public class ClaimConfigEntry {
     private String readonly;
     private String verifier;
     private String validator;
+    private String transformer;
     private String defaultValue;
     private String dataType;
     private String regex;
@@ -101,5 +102,13 @@ public class ClaimConfigEntry {
 
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+    public String getTransformer() {
+        return transformer;
+    }
+
+    public void setTransformer(String transformer) {
+        this.transformer = transformer;
     }
 }

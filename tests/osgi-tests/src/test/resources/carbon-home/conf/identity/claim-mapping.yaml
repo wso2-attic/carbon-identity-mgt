@@ -45,6 +45,16 @@ claimMappings:
    idprole: "http://wso2.org/claims/role"
    idpmobile: "http://wso2.org/claims/mobile"
    idpemail: "http://wso2.org/claims/email"
+
+ -
+  dialectURI: "http://facebook.com"
+  inherits:
+   - "http://identityprovider2.com"
+   - "http://identityprovider1.com"
+  overrideDialectURI: "true"
+  mappings:
+   childdob: "http://wso2.org/claims/dob"
+
  -
  # what if there are more standards without a dialect
   dialectURI: ""
