@@ -166,19 +166,19 @@ public interface UniqueIdResolver {
      * Add user.
      *
      * @param domainUser Globally unique user.
-     * @param domainName Domain name.
+     * @param domainId Domain identifier.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    String addUser(DomainUser domainUser, String domainName, int domainId) throws UniqueIdResolverException;
+    String addUser(DomainUser domainUser, int domainId) throws UniqueIdResolverException;
 
     /**
      * Add users.
      *
      * @param domainUsers Globally unique users.
-     * @param domainName Domain name.
+     * @param domainId Domain identifier.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    List<String> addUsers(List<DomainUser> domainUsers, String domainName, int domainId) throws
+    List<String> addUsers(List<DomainUser> domainUsers, int domainId) throws
             UniqueIdResolverException;
 
     /**
@@ -203,19 +203,19 @@ public interface UniqueIdResolver {
      * Add group.
      *
      * @param domainGroup Globally unique group.
-     * @param domainName Domain name.
+     * @param domainId Domain identifier.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    String addGroup(DomainGroup domainGroup, String domainName, int domainId) throws UniqueIdResolverException;
+    String addGroup(DomainGroup domainGroup, int domainId) throws UniqueIdResolverException;
 
     /**
      * Add groups.
      *
      * @param domainGroups Globally unique groups.
-     * @param domainName Domain name.
+     * @param domainId Domain identifier.
      * @throws UniqueIdResolverException Unique Id Resolver Exception
      */
-    List<String> addGroups(List<DomainGroup> domainGroups, String domainName, int domainId) throws
+    List<String> addGroups(List<DomainGroup> domainGroups, int domainId) throws
             UniqueIdResolverException;
 
     /**
