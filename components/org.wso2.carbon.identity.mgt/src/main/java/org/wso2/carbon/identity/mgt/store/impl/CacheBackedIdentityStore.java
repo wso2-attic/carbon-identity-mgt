@@ -62,30 +62,24 @@ public class CacheBackedIdentityStore implements IdentityStore {
 
     private static final String UNIQUE_GROUP_CACHE = "uniqueGroupCache";
 
-    private IdentityStore identityStore = new IdentityStoreImpl();
+    private IdentityStore identityStore;
 
     private Map<String, Boolean> cacheStatus = new HashMap<>();
 
     private CacheManager cacheManager;
 
-    private Map<String, CacheConfig> cacheConfigs;
 
-    public CacheBackedIdentityStore(Map<String, CacheConfig> cacheConfigs) {
-        this.cacheConfigs = cacheConfigs;
-    }
-
-    @Override
-    public void init(List<Domain> domains) throws IdentityStoreException {
+    public CacheBackedIdentityStore(Map<String, CacheConfig> cacheConfigs, List<Domain> domains)
+            throws IdentityStoreException {
 
         CarbonCachingService carbonCachingService;
-
         try {
             carbonCachingService = IdentityMgtDataHolder.getInstance().getCarbonCachingService();
         } catch (CarbonSecurityDataHolderException e) {
             throw new IdentityStoreException("Caching service is not available.", e);
         }
 
-        identityStore.init(domains);
+        identityStore = new IdentityStoreImpl(domains);
 
         cacheManager = carbonCachingService.getCachingProvider().getCacheManager();
 
@@ -108,22 +102,6 @@ public class CacheBackedIdentityStore implements IdentityStore {
 
         if (cacheStatus.get(UNIQUE_USER_CACHE) && isNullOrEmpty(uniqueUserId)) {
             return doGetUser(uniqueUserId, identityStore.getPrimaryDomainName());
-        }
-
-        User user = identityStore.getUser(uniqueUserId);
-        user.setIdentityStore(this);
-        return user;
-    }
-
-    @Override
-    public User getUser(String uniqueUserId, String domainName) throws IdentityStoreException, UserNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            return getUser(uniqueUserId);
-        }
-
-        if (cacheStatus.get(UNIQUE_USER_CACHE) && isNullOrEmpty(uniqueUserId)) {
-            return doGetUser(uniqueUserId, domainName);
         }
 
         User user = identityStore.getUser(uniqueUserId);
@@ -194,23 +172,6 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public Group getGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
-            GroupNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            return getGroup(uniqueGroupId);
-        }
-
-        if (cacheStatus.get(UNIQUE_GROUP_CACHE) && isNullOrEmpty(uniqueGroupId)) {
-            return doGetGroup(uniqueGroupId, domainName);
-        }
-
-        Group group = identityStore.getGroup(uniqueGroupId);
-        group.setIdentityStore(this);
-        return group;
-    }
-
-    @Override
     public Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
 
         return identityStore.getGroup(claim);
@@ -268,50 +229,22 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<Group> getGroupsOfUser(String uniqueUserId, String domainName) throws IdentityStoreException,
-            UserNotFoundException {
-
-        return identityStore.getGroupsOfUser(uniqueUserId, domainName);
-    }
-
-    @Override
     public List<User> getUsersOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
         return identityStore.getUsersOfGroup(uniqueGroupId);
     }
 
     @Override
-    public List<User> getUsersOfGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
-            GroupNotFoundException {
-
-        return identityStore.getUsersOfGroup(uniqueGroupId, domainName);
-    }
-
-    @Override
     public boolean isUserInGroup(String uniqueUserId, String uniqueGroupId) throws IdentityStoreException,
-            UserNotFoundException {
+            UserNotFoundException, GroupNotFoundException {
 
         return identityStore.isUserInGroup(uniqueUserId, uniqueGroupId);
-    }
-
-    @Override
-    public boolean isUserInGroup(String uniqueUserId, String uniqueGroupId, String domainName) throws
-            IdentityStoreException, UserNotFoundException {
-
-        return identityStore.isUserInGroup(uniqueUserId, uniqueGroupId, domainName);
     }
 
     @Override
     public List<Claim> getClaimsOfUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
         return identityStore.getClaimsOfUser(uniqueUserId);
-    }
-
-    @Override
-    public List<Claim> getClaimsOfUser(String uniqueUserId, String domainName) throws IdentityStoreException,
-            UserNotFoundException {
-
-        return identityStore.getClaimsOfUser(uniqueUserId, domainName);
     }
 
     @Override
@@ -322,23 +255,9 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public List<Claim> getClaimsOfUser(String uniqueUserId, List<MetaClaim> metaClaims, String domainName) throws
-            IdentityStoreException, UserNotFoundException {
-
-        return identityStore.getClaimsOfUser(uniqueUserId, metaClaims, domainName);
-    }
-
-    @Override
     public List<Claim> getClaimsOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
         return identityStore.getClaimsOfGroup(uniqueGroupId);
-    }
-
-    @Override
-    public List<Claim> getClaimsOfGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
-            GroupNotFoundException {
-
-        return identityStore.getClaimsOfGroup(uniqueGroupId, domainName);
     }
 
     @Override
@@ -346,13 +265,6 @@ public class CacheBackedIdentityStore implements IdentityStore {
             IdentityStoreException, GroupNotFoundException {
 
         return identityStore.getClaimsOfGroup(uniqueGroupId, metaClaims);
-    }
-
-    @Override
-    public List<Claim> getClaimsOfGroup(String uniqueGroupId, List<MetaClaim> metaClaims, String domainName) throws
-            IdentityStoreException, GroupNotFoundException {
-
-        return identityStore.getClaimsOfGroup(uniqueGroupId, metaClaims, domainName);
     }
 
     @Override
@@ -387,13 +299,6 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void updateUserClaims(String uniqueUserId, List<Claim> claims, String domainName) throws
-            IdentityStoreException, UserNotFoundException {
-
-        identityStore.updateUserClaims(uniqueUserId, claims, domainName);
-    }
-
-    @Override
     public void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
             IdentityStoreException, UserNotFoundException {
 
@@ -401,10 +306,10 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove, String
-            domainName) throws IdentityStoreException, UserNotFoundException {
+    public void updateUserCredentials(String uniqueUserId, List<Callback> callbacks) throws IdentityStoreException,
+            UserNotFoundException {
 
-        identityStore.updateUserClaims(uniqueUserId, claimsToAdd, claimsToRemove, domainName);
+        identityStore.updateUserCredentials(uniqueUserId, callbacks);
     }
 
     @Override
@@ -416,29 +321,9 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void deleteUser(String uniqueUserId, String domainName) throws IdentityStoreException,
-            UserNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            deleteUser(uniqueUserId);
-            return;
-        }
-
-        identityStore.deleteUser(uniqueUserId, domainName);
-        doDeleteUser(uniqueUserId, domainName);
-    }
-
-    @Override
     public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds) throws IdentityStoreException {
 
         identityStore.updateGroupsOfUser(uniqueUserId, uniqueGroupIds);
-    }
-
-    @Override
-    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds, String domainName) throws
-            IdentityStoreException {
-
-        identityStore.updateGroupsOfUser(uniqueUserId, uniqueGroupIds, domainName);
     }
 
     @Override
@@ -446,13 +331,6 @@ public class CacheBackedIdentityStore implements IdentityStore {
             uniqueGroupIdsToRemove) throws IdentityStoreException {
 
         identityStore.updateGroupsOfUser(uniqueUserId, uniqueGroupIdsToAdd, uniqueGroupIdsToRemove);
-    }
-
-    @Override
-    public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd, List<String>
-            uniqueGroupIdsToRemove, String domainName) throws IdentityStoreException {
-
-        identityStore.updateGroupsOfUser(uniqueUserId, uniqueGroupIdsToAdd, uniqueGroupIdsToRemove, domainName);
     }
 
     @Override
@@ -487,24 +365,10 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void updateGroupClaims(String uniqueGroupId, List<Claim> claims, String domainName) throws
-            IdentityStoreException, GroupNotFoundException {
-
-        identityStore.updateGroupClaims(uniqueGroupId, claims, domainName);
-    }
-
-    @Override
     public void updateGroupClaims(String uniqueGroupId, List<Claim> claimsToAdd, List<Claim> claimsToRemove) throws
             IdentityStoreException, GroupNotFoundException {
 
         identityStore.updateGroupClaims(uniqueGroupId, claimsToAdd, claimsToRemove);
-    }
-
-    @Override
-    public void updateGroupClaims(String uniqueGroupId, List<Claim> claimsToAdd, List<Claim> claimsToRemove, String
-            domainName) throws IdentityStoreException, GroupNotFoundException {
-
-        identityStore.updateGroupClaims(uniqueGroupId, claimsToAdd, claimsToRemove, domainName);
     }
 
     @Override
@@ -516,30 +380,9 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void deleteGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
-            GroupNotFoundException {
-
-        if (isNullOrEmpty(domainName)) {
-            deleteGroup(uniqueGroupId);
-            return;
-        }
-
-        identityStore.deleteGroup(uniqueGroupId, domainName);
-
-        doDeleteGroup(uniqueGroupId, domainName);
-    }
-
-    @Override
     public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds) throws IdentityStoreException {
 
         identityStore.updateUsersOfGroup(uniqueGroupId, uniqueUserIds);
-    }
-
-    @Override
-    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds, String domainName) throws
-            IdentityStoreException {
-
-        identityStore.updateUsersOfGroup(uniqueGroupId, uniqueUserIds, domainName);
     }
 
     @Override
@@ -550,15 +393,8 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd, List<String>
-            uniqueUserIdsToRemove, String domainName) throws IdentityStoreException {
-
-        identityStore.updateUsersOfGroup(uniqueGroupId, uniqueUserIdsToAdd, uniqueUserIdsToRemove);
-    }
-
-    @Override
     public AuthenticationContext authenticate(Claim claim, Callback[] credentials, String domainName) throws
-            AuthenticationFailure {
+            AuthenticationFailure, IdentityStoreException {
 
         return identityStore.authenticate(claim, credentials, domainName);
     }

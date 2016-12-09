@@ -25,28 +25,28 @@ import java.util.List;
 /**
  * Unique User.
  */
-public class UniqueUser {
+public class DomainUser {
 
-    private String uniqueUserId;
+    private String domainUserId;
 
     private List<UserPartition> userPartitions;
 
-    public UniqueUser(String uniqueUserId, List<UserPartition> userPartitions) {
+    public DomainUser(String domainUserId, List<UserPartition> userPartitions) {
 
-        this.uniqueUserId = uniqueUserId;
+        this.domainUserId = domainUserId;
         this.userPartitions = userPartitions;
     }
 
-    public UniqueUser() {
+    public DomainUser() {
 
     }
 
-    public String getUniqueUserId() {
-        return uniqueUserId;
+    public String getDomainUserId() {
+        return domainUserId;
     }
 
-    public void setUniqueUserId(String uniqueUserId) {
-        this.uniqueUserId = uniqueUserId;
+    public void setDomainUserId(String domainUserId) {
+        this.domainUserId = domainUserId;
     }
 
     public List<UserPartition> getUserPartitions() {
@@ -59,13 +59,6 @@ public class UniqueUser {
 
     public void setUserPartitions(List<UserPartition> userPartitions) {
         this.userPartitions = userPartitions;
-    }
-
-    public void addUserPartitions(List<UserPartition> userPartitions) {
-        if (this.userPartitions == null) {
-            this.userPartitions = new ArrayList<>();
-        }
-        this.userPartitions.addAll(userPartitions);
     }
 
     public void addUserPartition(UserPartition userPartition) {

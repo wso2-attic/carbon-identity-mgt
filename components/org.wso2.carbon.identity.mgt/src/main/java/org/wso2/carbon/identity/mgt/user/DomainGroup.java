@@ -23,28 +23,28 @@ import java.util.List;
 /**
  * Unique Group.
  */
-public class UniqueGroup {
+public class DomainGroup {
 
-    private String uniqueGroupId;
+    private String domainGroupId;
 
     private List<GroupPartition> groupPartitions;
 
-    public UniqueGroup(String uniqueGroupId, List<GroupPartition> groupPartitions) {
+    public DomainGroup(String domainGroupId, List<GroupPartition> groupPartitions) {
 
-        this.uniqueGroupId = uniqueGroupId;
+        this.domainGroupId = domainGroupId;
         this.groupPartitions = groupPartitions;
     }
 
-    public UniqueGroup() {
+    public DomainGroup() {
 
     }
 
-    public String getUniqueGroupId() {
-        return uniqueGroupId;
+    public String getDomainGroupId() {
+        return domainGroupId;
     }
 
-    public void setUniqueGroupId(String uniqueGroupId) {
-        this.uniqueGroupId = uniqueGroupId;
+    public void setDomainGroupId(String domainGroupId) {
+        this.domainGroupId = domainGroupId;
     }
 
     public List<GroupPartition> getGroupPartitions() {
