@@ -15,14 +15,14 @@
 ###############################################################################
 ---
 # Configurations related to profile claim mappings
-Profiles:
+profiles:
  -
   profileName: "registration"
   claims:
    -
     claimURI: "http://wso2.org/claims/username"
-    required: "true"
-    readonly: "true"
+    required: true
+    readonly: true
     verifier: "claim verifying extension"
     validator: "claim validating extension"
     transformer: "transform extension"
@@ -31,116 +31,20 @@ Profiles:
     dataType: "text"
     properties:
      customproperty: "custom value"
-  -
-    claimURI: "http://wso2.org/claims/email"
-    properties:
-     required: "true"
-     readonly: "true"
-     defaultValue: "user@domain.com"
-     verifier: "claim verifying extension"
-     validator: "claim validating extension"
-     regex: "*"
-     properties:
-      customproperty: "custom value"
-
- -
-  profileName: "employee"
-   claims:
    -
     claimURI: "http://wso2.org/claims/employeeNumber"
-     properties:
-      required: "true"
-      readonly: "true"
-      verify: "false"
-      regex: "*"
-      properties:
-       customproperty: "custom value"
-   -
-     claimURI: "http://wso2.org/claims/mobile"
-     properties:
-      required: "true"
-      readonly: "true"
-      verifier: "claim verifying extension"
-      validator: "claim validating extension"
-      regex: "*"
-      properties:
-       customproperty: "custom value"
- -
-  profileName: "travelocity-A"
-  claims:
-   -
-    claimURI: "http://wso2.org/claims/role"
-    required: "true"
-    readonly: "true"
-    verifier: "claim verifying extension"
-    validator: "claim validating extension"
-    defaultValue: "everyone"
-    dataType: "enum"
+    required: true
+    readonly: true
     regex: "*"
     properties:
      customproperty: "custom value"
-  -
-    claimURI: "http://wso2.org/claims/email"
-    properties:
-     required: "true"
-     readonly: "true"
-     regex: "*"
-     properties:
-      customproperty: "custom value"
  -
-  profileName: "travelocity-B"
-   claims:
-   -
-    claimURI: "http://wso2.org/claims/username"
-     properties:
-      required: "true"
-      readonly: "true"
-      regex: "*"
-      properties:
-       customproperty: "custom value"
-   -
-     claimURI: "http://wso2.org/claims/mobile"
-     properties:
-      required: "true"
-      readonly: "true"
-      regex: "*"
-      properties:
-       customproperty: "custom value"
-  -
-  profileName: "Google-user"
+  profileName: "employee"
   claims:
    -
-    claimURI: "http://wso2.org/claims/username"
-     properties:
-     required: "true"
-     readonly: "true"
-     regex: "*"
-     properties:
-      customproperty: "custom value"
-  -
-    claimURI: "http://wso2.org/claims/email"
-    properties:
-     required: "true"
-     readonly: "true"
-     regex: "*"
-     properties:
-      customproperty: "custom value"
- -
-  profileName: "Google-employee"
-   claims:
-   -
     claimURI: "http://wso2.org/claims/employeeNumber"
-     properties:
-      required: "true"
-      readonly: "true"
-      regex: "*"
-      properties:
-       customproperty: "custom value"
-   -
-     claimURI: "http://wso2.org/claims/dob"
-     properties:
-      required: "true"
-      readonly: "true"
-      regex: "*"
-      properties:
-       customproperty: "custom value"
+    required: true
+    readonly: true
+    regex: "*"
+    properties:
+     customproperty: "custom value"
