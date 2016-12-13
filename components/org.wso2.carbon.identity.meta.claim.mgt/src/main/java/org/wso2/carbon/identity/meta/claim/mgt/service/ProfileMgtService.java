@@ -53,7 +53,7 @@ public interface ProfileMgtService {
      * @return Map(Property Key : Property Value)
      * @throws ProfileMgtServiceException : Error in getting the properties of a claim.
      */
-    ClaimConfigEntry getClaimProperties(String profileName, String claim) throws ProfileMgtServiceException;
+    ClaimConfigEntry getClaimAttributes(String profileName, String claim) throws ProfileMgtServiceException;
 
     /**
      * Get the claims marked as required for a particular profile.
@@ -62,7 +62,7 @@ public interface ProfileMgtService {
      * @return List(Root claim URIs)
      * @throws ProfileMgtServiceException : Error in getting the claims with required property.
      */
-    List<String> getRequiredProperties(String profileName) throws ProfileMgtServiceException;
+    List<String> getRequiredClaims(String profileName) throws ProfileMgtServiceException;
 
     /**
      * Get the claims marked as read-only for a particular profile.
@@ -71,7 +71,7 @@ public interface ProfileMgtService {
      * @return List(Root claim URIs)
      * @throws ProfileMgtServiceException : Error in getting the claims with read-only property.
      */
-    List<String> getReadOnlyProperties(String profileName) throws ProfileMgtServiceException;
+    List<String> getReadOnlyClaims(String profileName) throws ProfileMgtServiceException;
 
     /**
      * Get the claims marked as unique for a particular profile.
@@ -80,7 +80,7 @@ public interface ProfileMgtService {
      * @return List(Root claim URIs)
      * @throws ProfileMgtServiceException : Error in getting the claims with unique property.
      */
-    List<String> getUniqueProperties(String profileName) throws ProfileMgtServiceException;
+    List<String> getUniqueClaims(String profileName) throws ProfileMgtServiceException;
 
     /**
      * Get the claims marked as verify for a particular profile.
@@ -89,7 +89,7 @@ public interface ProfileMgtService {
      * @return List(Root claim URIs)
      * @throws ProfileMgtServiceException : Error in getting the claims with 'verify' property.
      */
-    List<String> getVerifyingProperties(String profileName) throws ProfileMgtServiceException;
+    List<String> getVerifyingClaims(String profileName) throws ProfileMgtServiceException;
 
     /**
      * Get the claims marked as verify with the verifying mechanism for a particular profile.
@@ -98,7 +98,7 @@ public interface ProfileMgtService {
      * @return Map(Claim : Verifying mechanism)
      * @throws ProfileMgtServiceException : Error in getting the claims with verifying mechanism.
      */
-    List<String> getValidating(String profileName) throws ProfileMgtServiceException;
+    List<String> getValidatingClaims(String profileName) throws ProfileMgtServiceException;
 
     /**
      * Get the claims marked for regex validations.
@@ -107,5 +107,5 @@ public interface ProfileMgtService {
      * @return Map(Claim : Regex)
      * @throws ProfileMgtServiceException : Error in getting the claims with regex validations.
      */
-    List<String> getTransformingProperties(String profileName) throws ProfileMgtServiceException;
+    List<String> getTransformingClaims(String profileName) throws ProfileMgtServiceException;
 }

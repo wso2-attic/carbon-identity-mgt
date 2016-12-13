@@ -186,9 +186,9 @@
             javax.xml.*,
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
             net.minidev.asm.*;version="${asm.package.version.range}",
-            org.wso2.carbon.kernel.*,
-            org.wso2.carbon.identity.mgt.exception.*,
-            org.wso2.carbon.identity.mgt.util.*,
+            org.wso2.carbon.kernel.*;version="${carbon.kernel.version}",
+            org.wso2.carbon.identity.mgt.exception.*;version="${carbon.identity.mgt.version}",
+            org.wso2.carbon.identity.mgt.util.*;version="${carbon.identity.mgt.version}",
             org.wso2.carbon.identity.mgt.user.*;version="${carbon.identity.mgt.version}",
         </import.package>
 

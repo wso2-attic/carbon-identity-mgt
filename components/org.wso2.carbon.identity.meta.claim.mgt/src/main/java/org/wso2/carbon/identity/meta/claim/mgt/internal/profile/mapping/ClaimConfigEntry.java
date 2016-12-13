@@ -22,8 +22,8 @@ import java.util.Map;
  */
 public class ClaimConfigEntry {
     private String claimURI;
-    private String required;
-    private String readonly;
+    private Boolean required;
+    private Boolean readonly;
     private String verifier;
     private String validator;
     private String transformer;
@@ -40,19 +40,19 @@ public class ClaimConfigEntry {
         this.claimURI = claimURI;
     }
 
-    public String getRequired() {
+    public Boolean getRequired() {
         return required;
     }
 
-    public void setRequired(String required) {
+    public void setRequired(Boolean required) {
         this.required = required;
     }
 
-    public String getReadonly() {
+    public Boolean getReadonly() {
         return readonly;
     }
 
-    public void setReadonly(String readonly) {
+    public void setReadonly(Boolean readonly) {
         this.readonly = readonly;
     }
 
