@@ -51,7 +51,7 @@ public interface IdentityStoreConnector {
      * @param attributeName  Name of the attribute.
      * @param attributeValue Value of the attribute.
      * @return Connector user id.
-     * @throws UserNotFoundException  User not found exception.
+     * @throws UserNotFoundException           User not found exception.
      * @throws IdentityStoreConnectorException Identity Store Connector Exception.
      */
     String getConnectorUserId(String attributeName, String attributeValue) throws UserNotFoundException,
@@ -125,7 +125,7 @@ public interface IdentityStoreConnector {
      * @param attributeName  Name of the attribute.
      * @param attributeValue Value of the attribute.
      * @return Connector group id.
-     * @throws GroupNotFoundException Group not found exception.
+     * @throws GroupNotFoundException          Group not found exception.
      * @throws IdentityStoreConnectorException Identity Store Connector Exception.
      */
     String getConnectorGroupId(String attributeName, String attributeValue) throws GroupNotFoundException,

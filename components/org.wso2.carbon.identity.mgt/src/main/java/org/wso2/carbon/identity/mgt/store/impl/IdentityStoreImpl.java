@@ -992,9 +992,49 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public void updateUserCredentials(String uniqueUserId, List<Callback> callbacks) throws IdentityStoreException,
+    public void updateUserCredentials(String uniqueUserId, List<Callback> credentials) throws IdentityStoreException,
             UserNotFoundException {
 
+        if (isNullOrEmpty(uniqueUserId)) {
+            throw new IdentityStoreClientException("Invalid user unique id.");
+        }
+
+        SimpleEntry<Integer, String> decodedUniqueUserId = getDecodedUniqueEntityId(uniqueUserId);
+
+        Domain domain = domains.get(decodedUniqueUserId.getKey());
+
+        try {
+            domain.updateUserCredentials(decodedUniqueUserId.getValue(), credentials);
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException(String.format("Failed to update credentials of user - %s",
+                    uniqueUserId));
+        }
+
+    }
+
+    @Override
+    public void updateUserCredentials(String uniqueUserId, List<Callback> credentialsToAdd, List<Callback>
+            credentialsToRemove) throws IdentityStoreException, UserNotFoundException {
+
+        if (isNullOrEmpty(uniqueUserId)) {
+            throw new IdentityStoreClientException("Invalid user unique id.");
+        }
+
+        if ((credentialsToAdd == null || credentialsToAdd.isEmpty()) && (credentialsToRemove == null ||
+                credentialsToRemove.isEmpty())) {
+            return;
+        }
+
+        SimpleEntry<Integer, String> decodedUniqueUserId = getDecodedUniqueEntityId(uniqueUserId);
+
+        Domain domain = domains.get(decodedUniqueUserId.getKey());
+
+        try {
+            domain.updateUserCredentials(decodedUniqueUserId.getValue(), credentialsToAdd, credentialsToRemove);
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException(String.format("Failed to update credentials of user - %s",
+                    uniqueUserId));
+        }
     }
 
     @Override

@@ -381,12 +381,24 @@ public interface IdentityStore {
      * Update user credentials by user id.
      *
      * @param uniqueUserId User unique id.
-     * @param callbacks    Credentials.
+     * @param credentials  Credentials.
      * @throws IdentityStoreException Identity store exception.
      * @throws UserNotFoundException  User Not Found Exception
      */
-    void updateUserCredentials(String uniqueUserId, List<Callback> callbacks) throws IdentityStoreException,
+    void updateUserCredentials(String uniqueUserId, List<Callback> credentials) throws IdentityStoreException,
             UserNotFoundException;
+
+    /**
+     * Update user credentials.
+     *
+     * @param uniqueUserId        User unique id.
+     * @param credentialsToAdd    Credentials to add.
+     * @param credentialsToRemove Credentials to remove.
+     * @throws IdentityStoreException Identity store exception.
+     * @throws UserNotFoundException  User Not Found Exception.
+     */
+    void updateUserCredentials(String uniqueUserId, List<Callback> credentialsToAdd, List<Callback>
+            credentialsToRemove) throws IdentityStoreException, UserNotFoundException;
 
     /**
      * Delete a user by user id.
