@@ -20,27 +20,30 @@ import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimResolvingServiceEx
 import org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping.ClaimMappingEntry;
 import org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping.ClaimMappingReader;
 import org.wso2.carbon.identity.meta.claim.mgt.service.ClaimResolvingService;
+import org.wso2.carbon.kernel.utils.StringUtils;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  *
  */
 public class ClaimResolvingServiceImpl implements ClaimResolvingService {
+    //Map(dialectURI, Map(external claim URI: root claim URI))
     Map<String, Map<String, String>> claimMappings = null;
 
-    private static Map<String, String> getMappings(ClaimMappingEntry claimMappingEntry) {
+    private Map<String, String> getMappings(ClaimMappingEntry claimMappingEntry) {
         return claimMappingEntry.getMappings().entrySet().stream().collect(Collectors
                 .toMap(p -> appendDialect(claimMappingEntry.getMappingDialectURI(), p.getKey()), Map.Entry::getValue));
 
     }
 
-    private static String appendDialect(String dialect, String claim) {
+    private String appendDialect(String dialect, String claim) {
         if (dialect.isEmpty()) {
             return claim;
         }
-        //In case claim dialect in not followed by '/', add it.
+        //In case claim dialect is not followed by '/', add it.
         if (!dialect.endsWith("/")) {
             dialect = dialect + "/";
         }
@@ -49,10 +52,37 @@ public class ClaimResolvingServiceImpl implements ClaimResolvingService {
 
     private Map<String, Map<String, String>> buildClaimMappings() throws ClaimMappingReaderException {
         if (claimMappings == null) {
-            claimMappings = ClaimMappingReader.getClaimMappings().entrySet().stream()
+            Set<Map.Entry<String, ClaimMappingEntry>> claimEntrySet = ClaimMappingReader.getClaimMappings().entrySet();
+            Map<String, Map<String, String>> initialMappings = claimEntrySet.stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, entry -> getMappings(entry.getValue())));
+            claimMappings = claimEntrySet.stream().collect(Collectors
+                    .toMap(Map.Entry::getKey, entry -> resolveInheritingDialects(initialMappings, entry.getValue())));
+
         }
         return claimMappings;
+    }
+
+    private Map<String, String> resolveInheritingDialects(Map<String, Map<String, String>> initialMappings,
+            ClaimMappingEntry claimMappingEntry) {
+
+        Map<String, String> ownClaims = initialMappings.get(claimMappingEntry.getMappingDialectURI());
+
+        if (!StringUtils.isNullOrEmptyAfterTrim(claimMappingEntry.getInherits())) {
+            Map<String, String> inheritingMap = initialMappings.get(claimMappingEntry.getInherits());
+            if (claimMappingEntry.isOverridingInheritingDialectURI()) {
+                inheritingMap = inheritingMap.entrySet().stream().collect(Collectors
+                        .toMap(p -> appendDialect(claimMappingEntry.getMappingDialectURI(),
+                                p.getKey().replaceFirst(claimMappingEntry.getInherits(), "")), Map.Entry::getValue));
+                ownClaims.putAll(inheritingMap);
+                return ownClaims;
+            } else {
+                ownClaims.putAll(inheritingMap);
+                //ToDO address if both the dialects have mappings for same. No inheriting chains supported yet.
+                return ownClaims;
+            }
+        } else {
+            return ownClaims;
+        }
     }
 
     /**
@@ -62,7 +92,7 @@ public class ClaimResolvingServiceImpl implements ClaimResolvingService {
      * @throws ClaimResolvingServiceException : Error in getting the claim mapping for application.
      */
     @Override
-    public Map<String, Map<String, String>> getClaimMapping() throws ClaimResolvingServiceException {
+    public Map<String, Map<String, String>> getClaimMappings() throws ClaimResolvingServiceException {
         try {
 
             return buildClaimMappings();
