@@ -66,7 +66,7 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
     }
 
     @Override
-    public String addCredential(Callback[] callbacks) throws CredentialStoreConnectorException {
+    public String addCredential(List<Callback> callbacks) throws CredentialStoreConnectorException {
         return null;
     }
 
@@ -76,21 +76,20 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
         return null;
     }
 
-    @Override
-    public void updateCredential(Callback[] callbacks) throws CredentialStoreConnectorException {
+    public void updateCredentials(Callback[] callbacks) throws CredentialStoreConnectorException {
 
     }
 
     @Override
-    public void updateCredential(String username, Callback[] credentialCallbacks) throws
+    public String updateCredentials(String username, List<Callback> credentialCallbacks) throws
             CredentialStoreConnectorException {
-
+        return null;
     }
 
     @Override
-    public void addCredential(String username, Callback[] credentialCallbacks) throws
-            CredentialStoreConnectorException {
-
+    public String updateCredentials(String userIdentifier, List<Callback> credentialsToAdd, List<Callback>
+            credentialsToRemove) throws CredentialStoreConnectorException {
+        return null;
     }
 
     @Override

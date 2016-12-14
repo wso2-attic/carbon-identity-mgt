@@ -755,13 +755,12 @@ public class Domain {
         }
 
         if (!userModel.getCredentials().isEmpty()) {
-            Map<String, List<Callback>> credentialsMap = getConnectorIdToCredentialsMap(userModel.getCredentials());
+            Map<String, List<Callback>> credentialsMap = getCredentialMap(userModel.getCredentials());
             for (Map.Entry<String, List<Callback>> entry : credentialsMap.entrySet()) {
                 CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorsMap.get(entry.getKey());
                 String connectorUserId;
                 try {
-                    connectorUserId = credentialStoreConnector.addCredential(entry.getValue().toArray(new
-                            Callback[entry.getValue().size()]));
+                    connectorUserId = credentialStoreConnector.addCredential(entry.getValue());
                 } catch (CredentialStoreConnectorException e) {
                     // Recover from the inconsistent state in the connectors
                     if (userPartitions.size() > 0) {
@@ -924,7 +923,7 @@ public class Domain {
                     updatedConnectorUserId = identityStoreConnector.updateUserAttributes(entry.getValue(),
                             new ArrayList<>());
                 } catch (IdentityStoreConnectorException e) {
-                    throw new DomainException("Failed to update connector user id", e);
+                    throw new DomainException("Failed to update attributes of user.", e);
                 }
                 updatedConnectorUserIdMap.put(entry.getKey(), updatedConnectorUserId);
             }
@@ -1030,7 +1029,158 @@ public class Domain {
                 }
                 updatedConnectorUserIds.put(connectorId, updatedConnectorUserId);
             }
+        }
 
+        if (!connectorUserIdMap.equals(updatedConnectorUserIds)) {
+            try {
+                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIds, this.id);
+            } catch (UniqueIdResolverException e) {
+                throw new DomainException("Failed to update user connector ids.", e);
+            }
+        }
+    }
+
+    public void updateUserCredentials(String domainUserId, List<Callback> callbacks) throws DomainException,
+            UserNotFoundException {
+
+        DomainUser domainUser;
+        try {
+            domainUser = uniqueIdResolver.getUser(domainUserId, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException(String.format("Failed to retrieve unique user - %s.", domainUserId), e);
+        }
+
+        if (domainUser == null) {
+            throw new UserNotFoundException("Invalid unique user id.");
+        }
+
+        Map<String, String> connectorUserIdMap = new HashMap<>();
+
+        if (!domainUser.getUserPartitions().isEmpty()) {
+            connectorUserIdMap.putAll(domainUser.getUserPartitions().stream()
+                    .filter(userPartition -> !userPartition.isIdentityStore())
+                    .collect(Collectors.toMap(UserPartition::getConnectorId, UserPartition::getConnectorUserId)));
+        }
+
+        Map<String, String> updatedConnectorUserIdMap = new HashMap<>();
+
+        if ((callbacks == null || callbacks.isEmpty()) && !connectorUserIdMap.isEmpty()) {
+            for (Map.Entry<String, String> entry : connectorUserIdMap.entrySet()) {
+                CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorsMap.get(entry.getKey());
+                String updatedConnectorUserId;
+                try {
+                    updatedConnectorUserId = credentialStoreConnector.updateCredentials(entry.getValue(),
+                            new ArrayList<>());
+                } catch (CredentialStoreConnectorException e) {
+                    throw new DomainException("Failed to update credentials of user.", e);
+                }
+                updatedConnectorUserIdMap.put(entry.getKey(), updatedConnectorUserId);
+            }
+        } else {
+
+            Map<String, List<Callback>> credentialMap = getCredentialMap(callbacks);
+
+            Map<String, String> tempConnectorUserIdMap = credentialMap.keySet().stream()
+                    .collect(Collectors.toMap(connectorId -> connectorId, connectorId -> ""));
+
+            tempConnectorUserIdMap.putAll(connectorUserIdMap);
+
+            for (Map.Entry<String, String> entry : tempConnectorUserIdMap.entrySet()) {
+
+                CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorsMap.get(entry.getKey());
+                String updatedConnectorUserId;
+                if (isNullOrEmpty(entry.getValue())) {
+                    try {
+                        updatedConnectorUserId = credentialStoreConnector.addCredential(credentialMap.get(entry
+                                .getKey()));
+                    } catch (CredentialStoreConnectorException e) {
+                        throw new DomainException("Credential store connector failed to add user " +
+                                "credentials.", e);
+                    }
+                } else {
+                    try {
+                        updatedConnectorUserId = credentialStoreConnector.updateCredentials(entry.getValue(),
+                                credentialMap.get(entry.getKey()));
+                    } catch (CredentialStoreConnectorException e) {
+                        throw new DomainException("Failed to update user credentials.", e);
+                    }
+                }
+                updatedConnectorUserIdMap.put(entry.getKey(), updatedConnectorUserId);
+            }
+        }
+
+        if (!connectorUserIdMap.equals(updatedConnectorUserIdMap)) {
+            try {
+                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIdMap, this.id);
+            } catch (UniqueIdResolverException e) {
+                throw new DomainException("Failed to update user connector ids.", e);
+            }
+        }
+    }
+
+    public void updateUserCredentials(String domainUserId, List<Callback> credentialsToUpdate,
+                                      List<Callback> credentialsToRemove) throws DomainException,
+            UserNotFoundException {
+
+        DomainUser domainUser;
+        try {
+            domainUser = uniqueIdResolver.getUser(domainUserId, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException(String.format("Failed to retrieve unique user - %s.", domainUserId), e);
+        }
+
+        if (domainUser == null) {
+            throw new UserNotFoundException("Invalid unique user id.");
+        }
+
+        Map<String, String> connectorUserIdMap = new HashMap<>();
+
+        if (!domainUser.getUserPartitions().isEmpty()) {
+            connectorUserIdMap.putAll(domainUser.getUserPartitions().stream()
+                    .filter(userPartition -> !userPartition.isIdentityStore())
+                    .collect(Collectors.toMap(UserPartition::getConnectorId, UserPartition::getConnectorUserId)));
+        }
+
+        Map<String, List<Callback>> credentialMapToUpdate = getCredentialMap(credentialsToUpdate);
+        Map<String, List<Callback>> credentialMapToRemove = getCredentialMap(credentialsToRemove);
+
+        Set<String> connectorIds = new HashSet<>();
+
+        if (!credentialMapToUpdate.isEmpty()) {
+            connectorIds.addAll(credentialMapToUpdate.keySet());
+        }
+
+        if (!credentialMapToRemove.isEmpty()) {
+            connectorIds.addAll(credentialMapToRemove.keySet());
+        }
+
+        Map<String, String> updatedConnectorUserIds = new HashMap<>();
+
+        for (String connectorId : connectorIds) {
+            CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorsMap.get(connectorId);
+            String updatedConnectorUserId;
+            if (isNullOrEmpty(connectorUserIdMap.get(connectorId))) {
+                if (credentialMapToUpdate.get(connectorId) != null) {
+                    try {
+                        updatedConnectorUserId = credentialStoreConnector.addCredential(credentialMapToUpdate
+                                .get(connectorId));
+                    } catch (CredentialStoreConnectorException e) {
+                        throw new DomainException("Credential store connector failed to add user " +
+                                "credentials.", e);
+                    }
+                    updatedConnectorUserIds.put(connectorId, updatedConnectorUserId);
+                }
+            } else {
+                try {
+                    updatedConnectorUserId = credentialStoreConnector.updateCredentials(
+                            connectorUserIdMap.get(connectorId),
+                            credentialMapToUpdate.get(connectorId),
+                            credentialMapToRemove.get(connectorId));
+                } catch (CredentialStoreConnectorException e) {
+                    throw new DomainException("Failed to update user credentials", e);
+                }
+                updatedConnectorUserIds.put(connectorId, updatedConnectorUserId);
+            }
         }
 
         if (!connectorUserIdMap.equals(updatedConnectorUserIds)) {
@@ -1608,7 +1758,7 @@ public class Domain {
         }
     }
 
-    private Map<String, List<Callback>> getConnectorIdToCredentialsMap(List<Callback> credentials) {
+    private Map<String, List<Callback>> getCredentialMap(List<Callback> credentials) {
 
         Map<String, List<Callback>> connectorIdToCredentialsMap = new HashMap<>();
 
@@ -1675,7 +1825,7 @@ public class Domain {
         if (!userModelMap.entrySet().isEmpty()) {
             userModelMap.entrySet().stream()
                     .forEach(userModelEntry -> {
-                        Map<String, List<Callback>> connectorIdToCredentialsMap = getConnectorIdToCredentialsMap
+                        Map<String, List<Callback>> connectorIdToCredentialsMap = getCredentialMap
                                 (userModelEntry.getValue().getCredentials());
 
                         if (!connectorIdToCredentialsMap.isEmpty()) {

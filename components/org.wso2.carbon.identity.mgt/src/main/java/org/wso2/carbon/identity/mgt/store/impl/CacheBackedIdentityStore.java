@@ -306,10 +306,17 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public void updateUserCredentials(String uniqueUserId, List<Callback> callbacks) throws IdentityStoreException,
+    public void updateUserCredentials(String uniqueUserId, List<Callback> credentials) throws IdentityStoreException,
             UserNotFoundException {
 
-        identityStore.updateUserCredentials(uniqueUserId, callbacks);
+        identityStore.updateUserCredentials(uniqueUserId, credentials);
+    }
+
+    @Override
+    public void updateUserCredentials(String uniqueUserId, List<Callback> credentialsToAdd, List<Callback>
+            credentialsToRemove) throws IdentityStoreException, UserNotFoundException {
+
+        identityStore.updateUserCredentials(uniqueUserId, credentialsToAdd, credentialsToRemove);
     }
 
     @Override
