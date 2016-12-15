@@ -22,14 +22,13 @@ import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory;
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.identity.mgt.impl.JDBCUniqueIdResolverFactory;
-import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverFactory;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import javax.sql.DataSource;
 
 import static org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants.UNIQUE_ID_RESOLVER_TYPE;
@@ -47,28 +46,21 @@ public class IdentityMgtDataHolder {
 
     private AuthorizationStore authorizationStore;
 
+    private CarbonCachingService carbonCachingService;
+
+    private DataSourceService dataSourceService;
+
     private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
 
     private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
 
     private Map<String, UniqueIdResolverFactory> uniqueIdResolverFactoryMap = new HashMap<>();
 
-    private CarbonCachingService carbonCachingService;
-
-    private UniqueIdResolver uniqueIdResolver;
-
-    private DataSourceService dataSourceService;
-
     private IdentityMgtDataHolder() {
 
         uniqueIdResolverFactoryMap.put(UNIQUE_ID_RESOLVER_TYPE, new JDBCUniqueIdResolverFactory());
     }
 
-    /**
-     * Get the instance of this class.
-     *
-     * @return IdentityMgtDataHolder.
-     */
     public static IdentityMgtDataHolder getInstance() {
         return instance;
     }
@@ -85,45 +77,9 @@ public class IdentityMgtDataHolder {
         return realmService;
     }
 
-    /**
-     * Register authorization store.
-     *
-     * @param authorizationStore authorization store.
-     */
     void registerAuthorizationStore(AuthorizationStore authorizationStore) {
 
         this.authorizationStore = authorizationStore;
-    }
-
-    /**
-     * Register credential store connector factory.
-     *
-     * @param key                             Id of the factory.
-     * @param credentialStoreConnectorFactory CredentialStoreConnectorFactory.
-     */
-    void registerCredentialStoreConnectorFactory(String key,
-                                                 CredentialStoreConnectorFactory credentialStoreConnectorFactory) {
-        credentialStoreConnectorFactoryMap.put(key, credentialStoreConnectorFactory);
-    }
-
-    /**
-     * Register identity store connector factory.
-     *
-     * @param key                           Id of the factory.
-     * @param identityStoreConnectorFactory IdentityStoreConnectorFactory.
-     */
-    void registerIdentityStoreConnectorFactory(String key,
-                                               IdentityStoreConnectorFactory identityStoreConnectorFactory) {
-        identityStoreConnectorFactoryMap.put(key, identityStoreConnectorFactory);
-    }
-
-    void unregisterIdentityStoreConnectorFactory(IdentityStoreConnectorFactory identityStoreConnectorFactory) {
-
-       // identityStoreConnectorFactoryMap.r(key, identityStoreConnectorFactory);
-    }
-
-    public void registerUniqueIdResolverFactory(String key, UniqueIdResolverFactory uniqueIdResolverFactory) {
-        this.uniqueIdResolverFactoryMap.put(key, uniqueIdResolverFactory);
     }
 
     public AuthorizationStore getAuthorizationStore() {
@@ -132,44 +88,21 @@ public class IdentityMgtDataHolder {
         return authorizationStore;
     }
 
-    public Map<String, CredentialStoreConnectorFactory> getCredentialStoreConnectorFactoryMap() {
-        return credentialStoreConnectorFactoryMap;
-    }
-
-    public Map<String, IdentityStoreConnectorFactory> getIdentityStoreConnectorFactoryMap() {
-        return identityStoreConnectorFactoryMap;
-    }
-
-    public Map<String, UniqueIdResolverFactory> getUniqueIdResolverFactoryMap() {
-        return uniqueIdResolverFactoryMap;
-    }
-
-    void registerCacheService(CarbonCachingService carbonCachingService) {
-        this.carbonCachingService = carbonCachingService;
-    }
-
-    public CarbonCachingService getCarbonCachingService() throws CarbonSecurityDataHolderException {
+    public CarbonCachingService getCarbonCachingService() {
 
         if (carbonCachingService == null) {
-            throw new CarbonSecurityDataHolderException("Carbon caching service is null");
+            throw new IllegalStateException("Carbon caching service is null");
         }
 
         return carbonCachingService;
     }
 
-    public UniqueIdResolver getUniqueIdResolver() {
-        return uniqueIdResolver;
-    }
-
-    public void setUniqueIdResolver(UniqueIdResolver uniqueIdResolver) {
-        this.uniqueIdResolver = uniqueIdResolver;
-    }
-
     public DataSource getDataSource(String dataSourceName) throws DataSourceException {
 
         if (dataSourceService == null) {
-            throw new RuntimeException("Datasource service is null. Cannot retrieve data source");
+            throw new IllegalStateException("Datasource service is null.");
         }
+
         return (DataSource) dataSourceService.getDataSource(dataSourceName);
     }
 
@@ -177,12 +110,77 @@ public class IdentityMgtDataHolder {
         this.dataSourceService = dataSourceService;
     }
 
+    void registerCredentialStoreConnectorFactory(String key,
+                                                 CredentialStoreConnectorFactory credentialStoreConnectorFactory) {
+
+        credentialStoreConnectorFactoryMap.put(key, credentialStoreConnectorFactory);
+    }
+
+    public Map<String, CredentialStoreConnectorFactory> getCredentialStoreConnectorFactoryMap() {
+
+        return credentialStoreConnectorFactoryMap;
+    }
+
     public void unregisterCredentialStoreConnectorFactory(CredentialStoreConnectorFactory
                                                                   credentialStoreConnectorFactory) {
 
+        if (credentialStoreConnectorFactory != null && !credentialStoreConnectorFactoryMap.isEmpty()) {
+            Optional<String> connectorId = credentialStoreConnectorFactoryMap.entrySet().stream()
+                    .filter(t -> t.getValue().equals(credentialStoreConnectorFactory))
+                    .map(Map.Entry::getKey)
+                    .findFirst();
+            if (connectorId.isPresent()) {
+                credentialStoreConnectorFactoryMap.remove(connectorId.get());
+            }
+        }
+    }
+
+    void registerIdentityStoreConnectorFactory(String key,
+                                               IdentityStoreConnectorFactory identityStoreConnectorFactory) {
+        identityStoreConnectorFactoryMap.put(key, identityStoreConnectorFactory);
+    }
+
+    public Map<String, IdentityStoreConnectorFactory> getIdentityStoreConnectorFactoryMap() {
+
+        return identityStoreConnectorFactoryMap;
+    }
+
+    void unregisterIdentityStoreConnectorFactory(IdentityStoreConnectorFactory identityStoreConnectorFactory) {
+
+        if (identityStoreConnectorFactory != null && !identityStoreConnectorFactoryMap.isEmpty()) {
+            Optional<String> connectorId = identityStoreConnectorFactoryMap.entrySet().stream()
+                    .filter(t -> t.getValue().equals(identityStoreConnectorFactory))
+                    .map(Map.Entry::getKey)
+                    .findFirst();
+            if (connectorId.isPresent()) {
+                identityStoreConnectorFactoryMap.remove(connectorId.get());
+            }
+        }
+    }
+
+    void registerUniqueIdResolverFactory(String key, UniqueIdResolverFactory uniqueIdResolverFactory) {
+
+        this.uniqueIdResolverFactoryMap.put(key, uniqueIdResolverFactory);
+    }
+
+    public Map<String, UniqueIdResolverFactory> getUniqueIdResolverFactoryMap() {
+        return uniqueIdResolverFactoryMap;
     }
 
     public void unregisterUniqueIdResolverFactory(UniqueIdResolverFactory uniqueIdResolverFactory) {
 
+        if (uniqueIdResolverFactory != null && !uniqueIdResolverFactoryMap.isEmpty()) {
+            Optional<String> resolverId = uniqueIdResolverFactoryMap.entrySet().stream()
+                    .filter(t -> t.getValue().equals(uniqueIdResolverFactory))
+                    .map(Map.Entry::getKey)
+                    .findFirst();
+            if (resolverId.isPresent()) {
+                uniqueIdResolverFactoryMap.remove(resolverId.get());
+            }
+        }
+    }
+
+    void registerCacheService(CarbonCachingService carbonCachingService) {
+        this.carbonCachingService = carbonCachingService;
     }
 }

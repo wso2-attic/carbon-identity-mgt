@@ -28,7 +28,6 @@ import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
-import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
@@ -71,12 +70,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     public CacheBackedIdentityStore(Map<String, CacheConfig> cacheConfigs, List<Domain> domains)
             throws IdentityStoreException {
 
-        CarbonCachingService carbonCachingService;
-        try {
-            carbonCachingService = IdentityMgtDataHolder.getInstance().getCarbonCachingService();
-        } catch (CarbonSecurityDataHolderException e) {
-            throw new IdentityStoreException("Caching service is not available.", e);
-        }
+        CarbonCachingService carbonCachingService = IdentityMgtDataHolder.getInstance().getCarbonCachingService();
 
         identityStore = new IdentityStoreImpl(domains);
 
