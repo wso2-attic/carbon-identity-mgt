@@ -18,6 +18,8 @@ package org.wso2.carbon.identity.mgt.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.identity.mgt.bean.GroupBean;
+import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
@@ -33,12 +35,10 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.impl.util.IdentityUserMgtUtil;
-import org.wso2.carbon.identity.mgt.bean.GroupBean;
-import org.wso2.carbon.identity.mgt.bean.UserBean;
-import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.resolver.DomainGroup;
 import org.wso2.carbon.identity.mgt.resolver.DomainUser;
 import org.wso2.carbon.identity.mgt.resolver.GroupPartition;
+import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.resolver.UserPartition;
 
 import java.util.ArrayList;

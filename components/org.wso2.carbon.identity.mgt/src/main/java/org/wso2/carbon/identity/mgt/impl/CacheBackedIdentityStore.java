@@ -23,6 +23,8 @@ import org.wso2.carbon.identity.mgt.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.Group;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.User;
+import org.wso2.carbon.identity.mgt.bean.GroupBean;
+import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
@@ -35,8 +37,6 @@ import org.wso2.carbon.identity.mgt.impl.cache.CachedGroup;
 import org.wso2.carbon.identity.mgt.impl.cache.CachedUser;
 import org.wso2.carbon.identity.mgt.impl.config.CacheConfig;
 import org.wso2.carbon.identity.mgt.impl.internal.IdentityMgtDataHolder;
-import org.wso2.carbon.identity.mgt.bean.GroupBean;
-import org.wso2.carbon.identity.mgt.bean.UserBean;
 
 import java.util.HashMap;
 import java.util.List;

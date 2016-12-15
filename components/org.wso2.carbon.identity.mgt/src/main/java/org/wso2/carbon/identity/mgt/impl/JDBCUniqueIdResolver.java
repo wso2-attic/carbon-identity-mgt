@@ -26,11 +26,11 @@ import org.wso2.carbon.identity.mgt.impl.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.impl.util.NamedPreparedStatement;
 import org.wso2.carbon.identity.mgt.impl.util.UniqueIdResolverConstants;
 import org.wso2.carbon.identity.mgt.impl.util.UnitOfWork;
-import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
-import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverConfig;
 import org.wso2.carbon.identity.mgt.resolver.DomainGroup;
 import org.wso2.carbon.identity.mgt.resolver.DomainUser;
 import org.wso2.carbon.identity.mgt.resolver.GroupPartition;
+import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
+import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverConfig;
 import org.wso2.carbon.identity.mgt.resolver.UserPartition;
 
 import java.sql.ResultSet;

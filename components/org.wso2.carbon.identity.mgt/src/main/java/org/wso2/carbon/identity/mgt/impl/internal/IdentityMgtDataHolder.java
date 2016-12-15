@@ -24,6 +24,7 @@ import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.exception.CarbonSecurityDataHolderException;
+import org.wso2.carbon.identity.mgt.impl.JDBCUniqueIdResolverFactory;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverFactory;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
@@ -31,6 +32,8 @@ import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 import java.util.HashMap;
 import java.util.Map;
 import javax.sql.DataSource;
+
+import static org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants.UNIQUE_ID_RESOLVER_TYPE;
 
 /**
  * Carbon security data holder.
@@ -58,6 +61,8 @@ public class IdentityMgtDataHolder {
     private DataSourceService dataSourceService;
 
     private IdentityMgtDataHolder() {
+
+        uniqueIdResolverFactoryMap.put(UNIQUE_ID_RESOLVER_TYPE, new JDBCUniqueIdResolverFactory());
     }
 
     /**
@@ -111,6 +116,11 @@ public class IdentityMgtDataHolder {
     void registerIdentityStoreConnectorFactory(String key,
                                                IdentityStoreConnectorFactory identityStoreConnectorFactory) {
         identityStoreConnectorFactoryMap.put(key, identityStoreConnectorFactory);
+    }
+
+    void unregisterIdentityStoreConnectorFactory(IdentityStoreConnectorFactory identityStoreConnectorFactory) {
+
+       // identityStoreConnectorFactoryMap.r(key, identityStoreConnectorFactory);
     }
 
     public void registerUniqueIdResolverFactory(String key, UniqueIdResolverFactory uniqueIdResolverFactory) {
@@ -168,4 +178,11 @@ public class IdentityMgtDataHolder {
         this.dataSourceService = dataSourceService;
     }
 
+    public void unregisterCredentialStoreConnectorFactory(CredentialStoreConnectorFactory credentialStoreConnectorFactory) {
+
+    }
+
+    public void unRegisterUniqueIdResolverFactory(UniqueIdResolverFactory uniqueIdResolverFactory) {
+
+    }
 }

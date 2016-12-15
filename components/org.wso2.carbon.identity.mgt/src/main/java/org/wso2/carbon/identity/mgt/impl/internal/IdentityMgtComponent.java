@@ -56,8 +56,8 @@ import org.wso2.carbon.identity.mgt.impl.internal.config.connector.ConnectorConf
 import org.wso2.carbon.identity.mgt.impl.internal.config.domain.DomainConfigReader;
 import org.wso2.carbon.identity.mgt.impl.internal.config.store.IdentityStoreConfigReader;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
-import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverFactory;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverConfig;
+import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverFactory;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
@@ -85,7 +85,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
     private static final Logger log = LoggerFactory.getLogger(IdentityMgtComponent.class);
 
-    private ServiceRegistration realmServiceRegistration;
+    private ServiceRegistration<RealmService> realmServiceRegistration;
 
     private BundleContext bundleContext;
 
@@ -93,24 +93,12 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     public void registerCarbonIdentityMgtProvider(BundleContext bundleContext) {
 
         this.bundleContext = bundleContext;
-
-        // Register Default Unique Id Resolver
-        IdentityMgtDataHolder.getInstance().registerUniqueIdResolverFactory(UNIQUE_ID_RESOLVER_TYPE,
-                new JDBCUniqueIdResolverFactory());
     }
 
     @Deactivate
     public void unregisterCarbonIdentityMgtProvider(BundleContext bundleContext) {
 
-        try {
-            if (realmServiceRegistration != null) {
-                bundleContext.ungetService(realmServiceRegistration.getReference());
-            }
-        } catch (Exception e) {
-            log.error("Error occurred in un getting service", e);
-        }
-
-        log.info("Carbon-Security bundle deactivated successfully.");
+        bundleContext.ungetService(realmServiceRegistration.getReference());
     }
 
     @Reference(
@@ -121,7 +109,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             unbind = "unregisterIdentityStoreConnectorFactory"
     )
     protected void registerIdentityStoreConnectorFactory(IdentityStoreConnectorFactory identityStoreConnectorFactory,
-            Map<String, String> properties) {
+                                                         Map<String, String> properties) {
 
         String connectorId = properties.get("connector-type");
         IdentityMgtDataHolder.getInstance().registerIdentityStoreConnectorFactory(connectorId,
@@ -129,8 +117,9 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     }
 
     protected void unregisterIdentityStoreConnectorFactory(IdentityStoreConnectorFactory
-            identityStoreConnectorFactory) {
+                                                                   identityStoreConnectorFactory) {
 
+        IdentityMgtDataHolder.getInstance().unregisterIdentityStoreConnectorFactory(identityStoreConnectorFactory);
     }
 
     @Reference(
@@ -149,25 +138,9 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     }
 
     protected void unregisterCredentialStoreConnectorFactory(CredentialStoreConnectorFactory
-            credentialStoreConnectorFactory) {
-    }
+                                                                     credentialStoreConnectorFactory) {
 
-    //TODO make this MANDATORY in M3 release
-    @Reference(
-            name = "AuthorizationStore",
-            service = AuthorizationStore.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterAuthorizationStore"
-    )
-    protected void registerAuthorizationStore(AuthorizationStore authorizationStore, Map<String, String> properties) {
-
-        IdentityMgtDataHolder.getInstance().registerAuthorizationStore(authorizationStore);
-    }
-
-    protected void unregisterAuthorizationStore(AuthorizationStore authorizationStore) {
-
-        IdentityMgtDataHolder.getInstance().registerAuthorizationStore(null);
+        IdentityMgtDataHolder.getInstance().unregisterCredentialStoreConnectorFactory(credentialStoreConnectorFactory);
     }
 
     @Reference(
@@ -187,7 +160,26 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
     protected void unregisterUniqueIdResolverFactory(UniqueIdResolverFactory uniqueIdResolverFactory) {
 
+        IdentityMgtDataHolder.getInstance().unRegisterUniqueIdResolverFactory(uniqueIdResolverFactory);
     }
+
+    //TODO make this MANDATORY in M3 release
+//    @Reference(
+//            name = "AuthorizationStore",
+//            service = AuthorizationStore.class,
+//            cardinality = ReferenceCardinality.OPTIONAL,
+//            policy = ReferencePolicy.DYNAMIC,
+//            unbind = "unregisterAuthorizationStore"
+//    )
+//    protected void registerAuthorizationStore(AuthorizationStore authorizationStore, Map<String, String> properties) {
+//
+//        IdentityMgtDataHolder.getInstance().registerAuthorizationStore(authorizationStore);
+//    }
+//
+//    protected void unregisterAuthorizationStore(AuthorizationStore authorizationStore) {
+//
+//        IdentityMgtDataHolder.getInstance().registerAuthorizationStore(null);
+//    }
 
     @Reference(
             name = "org.wso2.carbon.datasource.DataSourceService",
