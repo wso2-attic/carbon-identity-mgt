@@ -118,9 +118,9 @@
     </dependencies>
 
     <properties>
-        <private.package>org.wso2.carbon.identity.mgt.internal</private.package>
+        <private.package>org.wso2.carbon.identity.mgt.impl.internal</private.package>
         <export.package>
-            !org.wso2.carbon.identity.mgt.internal,
+            !org.wso2.carbon.identity.mgt.impl.internal,
             org.wso2.carbon.identity.mgt.*;version="${project.version}"
         </export.package>
         <import.package>
@@ -150,8 +150,8 @@
             startup.listener;
             componentName="wso2-carbon-identity-mgt";
             requiredService="
-            org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory,
-            org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory"
+            org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory,
+            org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory"
         </carbon.component>
 
         <!-- OSGi API version range-->

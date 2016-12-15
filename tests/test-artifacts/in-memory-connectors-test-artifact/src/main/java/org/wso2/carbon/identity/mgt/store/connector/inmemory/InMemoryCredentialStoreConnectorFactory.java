@@ -16,8 +16,8 @@
 
 package org.wso2.carbon.identity.mgt.store.connector.inmemory;
 
-import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnector;
-import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory;
+import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnector;
+import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
 
 /**
  * InMemory Credential Store Connector Factory.
