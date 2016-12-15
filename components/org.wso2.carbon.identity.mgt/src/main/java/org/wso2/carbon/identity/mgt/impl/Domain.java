@@ -36,10 +36,10 @@ import org.wso2.carbon.identity.mgt.impl.util.IdentityUserMgtUtil;
 import org.wso2.carbon.identity.mgt.bean.GroupBean;
 import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
-import org.wso2.carbon.identity.mgt.resolver.user.DomainGroup;
-import org.wso2.carbon.identity.mgt.resolver.user.DomainUser;
-import org.wso2.carbon.identity.mgt.resolver.user.GroupPartition;
-import org.wso2.carbon.identity.mgt.resolver.user.UserPartition;
+import org.wso2.carbon.identity.mgt.resolver.DomainGroup;
+import org.wso2.carbon.identity.mgt.resolver.DomainUser;
+import org.wso2.carbon.identity.mgt.resolver.GroupPartition;
+import org.wso2.carbon.identity.mgt.resolver.UserPartition;
 
 import java.util.ArrayList;
 import java.util.Collections;

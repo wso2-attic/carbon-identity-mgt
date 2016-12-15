@@ -19,7 +19,7 @@ package org.wso2.carbon.identity.mgt.impl.config;
 import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
 import org.wso2.carbon.identity.mgt.connector.config.CredentialStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.connector.config.IdentityStoreConnectorConfig;
-import org.wso2.carbon.identity.mgt.resolver.config.UniqueIdResolverConfig;
+import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverConfig;
 
 import java.util.Collections;
 import java.util.List;

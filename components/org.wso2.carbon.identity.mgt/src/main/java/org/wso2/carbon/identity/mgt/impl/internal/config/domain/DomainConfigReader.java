@@ -25,7 +25,7 @@ import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.wso2.carbon.identity.mgt.impl.config.DomainConfig;
 import org.wso2.carbon.identity.mgt.impl.util.FileUtil;
 import org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants;
-import org.wso2.carbon.identity.mgt.resolver.config.UniqueIdResolverConfig;
+import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverConfig;
 import org.wso2.carbon.kernel.utils.StringUtils;
 
 import java.nio.file.Path;

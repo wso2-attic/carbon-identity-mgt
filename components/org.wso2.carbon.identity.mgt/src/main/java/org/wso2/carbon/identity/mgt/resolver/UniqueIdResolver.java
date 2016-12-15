@@ -19,9 +19,6 @@ package org.wso2.carbon.identity.mgt.resolver;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.resolver.config.UniqueIdResolverConfig;
-import org.wso2.carbon.identity.mgt.resolver.user.DomainGroup;
-import org.wso2.carbon.identity.mgt.resolver.user.DomainUser;
 
 import java.util.List;
 import java.util.Map;

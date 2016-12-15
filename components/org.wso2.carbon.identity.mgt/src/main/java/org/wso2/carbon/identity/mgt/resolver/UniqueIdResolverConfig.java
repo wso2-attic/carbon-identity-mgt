@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.resolver.config;
+package org.wso2.carbon.identity.mgt.resolver;
 
 import java.util.Map;
 

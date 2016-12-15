@@ -57,7 +57,7 @@ import org.wso2.carbon.identity.mgt.impl.internal.config.domain.DomainConfigRead
 import org.wso2.carbon.identity.mgt.impl.internal.config.store.IdentityStoreConfigReader;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverFactory;
-import org.wso2.carbon.identity.mgt.resolver.config.UniqueIdResolverConfig;
+import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverConfig;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
