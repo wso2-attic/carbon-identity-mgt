@@ -48,7 +48,6 @@ import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.impl.CacheBackedIdentityStore;
 import org.wso2.carbon.identity.mgt.impl.Domain;
 import org.wso2.carbon.identity.mgt.impl.IdentityStoreImpl;
-import org.wso2.carbon.identity.mgt.impl.JDBCUniqueIdResolverFactory;
 import org.wso2.carbon.identity.mgt.impl.RealmServiceImpl;
 import org.wso2.carbon.identity.mgt.impl.config.DomainConfig;
 import org.wso2.carbon.identity.mgt.impl.config.StoreConfig;
@@ -67,8 +66,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants.UNIQUE_ID_RESOLVER_TYPE;
-
 /**
  * OSGi service component which handle identity management.
  *
@@ -83,6 +80,7 @@ import static org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants.UNIQUE
 )
 public class IdentityMgtComponent implements RequiredCapabilityListener {
 
+    public static final String CONNECTOR_TYPE = "connector-type";
     private static final Logger log = LoggerFactory.getLogger(IdentityMgtComponent.class);
 
     private ServiceRegistration<RealmService> realmServiceRegistration;
@@ -111,7 +109,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     protected void registerIdentityStoreConnectorFactory(IdentityStoreConnectorFactory identityStoreConnectorFactory,
                                                          Map<String, String> properties) {
 
-        String connectorId = properties.get("connector-type");
+        String connectorId = properties.get(CONNECTOR_TYPE);
         IdentityMgtDataHolder.getInstance().registerIdentityStoreConnectorFactory(connectorId,
                 identityStoreConnectorFactory);
     }
@@ -132,7 +130,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     protected void registerCredentialStoreConnectorFactory(
             CredentialStoreConnectorFactory credentialStoreConnectorFactory, Map<String, String> properties) {
 
-        String connectorId = properties.get("connector-type");
+        String connectorId = properties.get(CONNECTOR_TYPE);
         IdentityMgtDataHolder.getInstance().registerCredentialStoreConnectorFactory(connectorId,
                 credentialStoreConnectorFactory);
     }
@@ -153,7 +151,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     protected void registerUniqueIdResolverFactory(
             UniqueIdResolverFactory uniqueIdResolverFactory, Map<String, String> properties) {
 
-        String connectorId = properties.get("connector-type");
+        String connectorId = properties.get(CONNECTOR_TYPE);
         IdentityMgtDataHolder.getInstance().registerUniqueIdResolverFactory(connectorId,
                 uniqueIdResolverFactory);
     }
@@ -229,6 +227,11 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
     @Override
     public void onAllRequiredCapabilitiesAvailable() {
+
+        constructRealmService();
+    }
+
+    private void constructRealmService() {
 
         IdentityMgtDataHolder identityMgtDataHolder = IdentityMgtDataHolder.getInstance();
 
