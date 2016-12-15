@@ -19,9 +19,9 @@ package org.wso2.carbon.identity.mgt.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.mgt.AuthenticationContext;
+import org.wso2.carbon.identity.mgt.Group;
 import org.wso2.carbon.identity.mgt.IdentityStore;
-import org.wso2.carbon.identity.mgt.bean.Group;
-import org.wso2.carbon.identity.mgt.bean.User;
+import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
@@ -32,8 +32,8 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreServerException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.impl.internal.IdentityMgtDataHolder;
-import org.wso2.carbon.identity.mgt.model.GroupModel;
-import org.wso2.carbon.identity.mgt.model.UserModel;
+import org.wso2.carbon.identity.mgt.bean.GroupBean;
+import org.wso2.carbon.identity.mgt.bean.UserBean;
 
 import java.io.UnsupportedEncodingException;
 import java.util.AbstractMap.SimpleEntry;
@@ -795,13 +795,13 @@ public class IdentityStoreImpl implements IdentityStore {
      */
 
     @Override
-    public User addUser(UserModel userModel) throws IdentityStoreException {
+    public User addUser(UserBean userBean) throws IdentityStoreException {
 
-        if (userModel == null || (userModel.getClaims().isEmpty() && userModel.getCredentials().isEmpty())) {
+        if (userBean == null || (userBean.getClaims().isEmpty() && userBean.getCredentials().isEmpty())) {
             throw new IdentityStoreClientException("Invalid user.");
         }
 
-        if (!userModel.getClaims().isEmpty() && !isUsernamePresent(userModel)) {
+        if (!userBean.getClaims().isEmpty() && !isUsernamePresent(userBean)) {
             throw new IdentityStoreClientException("Valid username claim must be present.");
         }
 
@@ -814,7 +814,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         String domainUserId;
         try {
-            domainUserId = domain.addUser(userModel);
+            domainUserId = domain.addUser(userBean);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist user.", e);
         }
@@ -828,17 +828,17 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public User addUser(UserModel userModel, String domainName) throws IdentityStoreException {
+    public User addUser(UserBean userBean, String domainName) throws IdentityStoreException {
 
         if (isNullOrEmpty(domainName)) {
-            return addUser(userModel);
+            return addUser(userBean);
         }
 
-        if (userModel == null || (userModel.getClaims().isEmpty() && userModel.getCredentials().isEmpty())) {
+        if (userBean == null || (userBean.getClaims().isEmpty() && userBean.getCredentials().isEmpty())) {
             throw new IdentityStoreClientException("Invalid user.");
         }
 
-        if (!userModel.getClaims().isEmpty() && !isUsernamePresent(userModel)) {
+        if (!userBean.getClaims().isEmpty() && !isUsernamePresent(userBean)) {
             throw new IdentityStoreClientException("Valid username claim must be present.");
         }
 
@@ -852,7 +852,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         String domainUserId;
         try {
-            domainUserId = domain.addUser(userModel);
+            domainUserId = domain.addUser(userBean);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist user.", e);
         }
@@ -866,9 +866,9 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<User> addUsers(List<UserModel> userModels) throws IdentityStoreException {
+    public List<User> addUsers(List<UserBean> userBeen) throws IdentityStoreException {
 
-        if (userModels == null || userModels.isEmpty()) {
+        if (userBeen == null || userBeen.isEmpty()) {
             throw new IdentityStoreClientException("Invalid user list.");
         }
 
@@ -881,7 +881,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<String> domainUserIds;
         try {
-            domainUserIds = domain.addUsers(userModels);
+            domainUserIds = domain.addUsers(userBeen);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist user.", e);
         }
@@ -905,13 +905,13 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<User> addUsers(List<UserModel> userModels, String domainName) throws IdentityStoreException {
+    public List<User> addUsers(List<UserBean> userBeen, String domainName) throws IdentityStoreException {
 
         if (isNullOrEmpty(domainName)) {
-            return addUsers(userModels);
+            return addUsers(userBeen);
         }
 
-        if (userModels == null || userModels.isEmpty()) {
+        if (userBeen == null || userBeen.isEmpty()) {
             throw new IdentityStoreClientException("Invalid user list.");
         }
 
@@ -925,7 +925,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<String> domainUserIds;
         try {
-            domainUserIds = domain.addUsers(userModels);
+            domainUserIds = domain.addUsers(userBeen);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist user.", e);
         }
@@ -1108,9 +1108,9 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public Group addGroup(GroupModel groupModel) throws IdentityStoreException {
+    public Group addGroup(GroupBean groupBean) throws IdentityStoreException {
 
-        if (groupModel == null || groupModel.getClaims().isEmpty()) {
+        if (groupBean == null || groupBean.getClaims().isEmpty()) {
             throw new IdentityStoreClientException("Invalid group.");
         }
 
@@ -1123,7 +1123,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         String domainGroupId;
         try {
-            domainGroupId = domain.addGroup(groupModel);
+            domainGroupId = domain.addGroup(groupBean);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist group.", e);
         }
@@ -1137,13 +1137,13 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public Group addGroup(GroupModel groupModel, String domainName) throws IdentityStoreException {
+    public Group addGroup(GroupBean groupBean, String domainName) throws IdentityStoreException {
 
         if (isNullOrEmpty(domainName)) {
-            return addGroup(groupModel);
+            return addGroup(groupBean);
         }
 
-        if (groupModel == null || groupModel.getClaims().isEmpty()) {
+        if (groupBean == null || groupBean.getClaims().isEmpty()) {
             throw new IdentityStoreClientException("Invalid group.");
         }
 
@@ -1157,7 +1157,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         String domainGroupId;
         try {
-            domainGroupId = domain.addGroup(groupModel);
+            domainGroupId = domain.addGroup(groupBean);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist group.", e);
         }
@@ -1171,9 +1171,9 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<Group> addGroups(List<GroupModel> groupModels) throws IdentityStoreException {
+    public List<Group> addGroups(List<GroupBean> groupBeen) throws IdentityStoreException {
 
-        if (groupModels == null || groupModels.isEmpty()) {
+        if (groupBeen == null || groupBeen.isEmpty()) {
             throw new IdentityStoreClientException("Invalid group list. Group list is null or empty.");
         }
 
@@ -1186,7 +1186,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<String> domainGroupIds;
         try {
-            domainGroupIds = domain.addGroups(groupModels);
+            domainGroupIds = domain.addGroups(groupBeen);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist user.", e);
         }
@@ -1210,13 +1210,13 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<Group> addGroups(List<GroupModel> groupModels, String domainName) throws IdentityStoreException {
+    public List<Group> addGroups(List<GroupBean> groupBeen, String domainName) throws IdentityStoreException {
 
         if (isNullOrEmpty(domainName)) {
-            return addGroups(groupModels);
+            return addGroups(groupBeen);
         }
 
-        if (groupModels == null || groupModels.isEmpty()) {
+        if (groupBeen == null || groupBeen.isEmpty()) {
             throw new IdentityStoreClientException("Invalid group list. Group list is null or empty.");
         }
 
@@ -1230,7 +1230,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         List<String> domainGroupIds;
         try {
-            domainGroupIds = domain.addGroups(groupModels);
+            domainGroupIds = domain.addGroups(groupBeen);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist user.", e);
         }
@@ -1763,9 +1763,9 @@ public class IdentityStoreImpl implements IdentityStore {
         return domain;
     }
 
-    private boolean isUsernamePresent(UserModel userModel) {
+    private boolean isUsernamePresent(UserBean userBean) {
 
-        return userModel.getClaims().stream()
+        return userBean.getClaims().stream()
                 .filter(claim -> USERNAME_CLAIM.equals(claim.getClaimUri()) && !isNullOrEmpty(claim.getValue()))
                 .findAny()
                 .isPresent();

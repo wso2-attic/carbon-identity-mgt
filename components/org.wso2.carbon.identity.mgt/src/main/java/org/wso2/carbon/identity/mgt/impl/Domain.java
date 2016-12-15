@@ -33,8 +33,8 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.impl.util.IdentityUserMgtUtil;
-import org.wso2.carbon.identity.mgt.model.GroupModel;
-import org.wso2.carbon.identity.mgt.model.UserModel;
+import org.wso2.carbon.identity.mgt.bean.GroupBean;
+import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.resolver.user.DomainGroup;
 import org.wso2.carbon.identity.mgt.resolver.user.DomainUser;
@@ -730,13 +730,13 @@ public class Domain {
         return buildClaims(attributesMap);
     }
 
-    public String addUser(UserModel userModel) throws DomainException {
+    public String addUser(UserBean userBean) throws DomainException {
 
         List<UserPartition> userPartitions = new ArrayList<>();
 
-        if (!userModel.getClaims().isEmpty()) {
+        if (!userBean.getClaims().isEmpty()) {
 
-            Map<String, List<Attribute>> attributesMap = getAttributesMap(userModel.getClaims());
+            Map<String, List<Attribute>> attributesMap = getAttributesMap(userBean.getClaims());
 
             for (Map.Entry<String, List<Attribute>> entry : attributesMap.entrySet()) {
                 IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
@@ -755,8 +755,8 @@ public class Domain {
             }
         }
 
-        if (!userModel.getCredentials().isEmpty()) {
-            Map<String, List<Callback>> credentialsMap = getCredentialMap(userModel.getCredentials());
+        if (!userBean.getCredentials().isEmpty()) {
+            Map<String, List<Callback>> credentialsMap = getCredentialMap(userBean.getCredentials());
             for (Map.Entry<String, List<Callback>> entry : credentialsMap.entrySet()) {
                 CredentialStoreConnector credentialStoreConnector = credentialStoreConnectorsMap.get(entry.getKey());
                 String connectorUserId;
@@ -792,10 +792,10 @@ public class Domain {
         return userUniqueId;
     }
 
-    public List<String> addUsers(List<UserModel> userModels) throws DomainException {
+    public List<String> addUsers(List<UserBean> userBeen) throws DomainException {
 
-        // Assign unique user id for each user model
-        Map<String, UserModel> userModelMap = userModels.stream()
+        // Assign unique user id for each user bean
+        Map<String, UserBean> userModelMap = userBeen.stream()
                 .filter(Objects::nonNull)
                 .filter(userModel -> !userModel.getClaims().isEmpty() || !userModel.getCredentials().isEmpty())
                 .collect(Collectors.toMap(userModel -> IdentityUserMgtUtil.generateUUID(), userModel -> userModel));
@@ -1258,9 +1258,9 @@ public class Domain {
         }
     }
 
-    public String addGroup(GroupModel groupModel) throws DomainException {
+    public String addGroup(GroupBean groupBean) throws DomainException {
 
-        Map<String, List<Attribute>> attributesMap = getAttributesMap(groupModel.getClaims());
+        Map<String, List<Attribute>> attributesMap = getAttributesMap(groupBean.getClaims());
 
         List<GroupPartition> groupPartitions = new ArrayList<>();
 
@@ -1297,9 +1297,9 @@ public class Domain {
         return groupUniqueId;
     }
 
-    public List<String> addGroups(List<GroupModel> groupModels) throws DomainException {
+    public List<String> addGroups(List<GroupBean> groupBeen) throws DomainException {
 
-        Map<String, GroupModel> groupModelMap = groupModels.stream()
+        Map<String, GroupBean> groupModelMap = groupBeen.stream()
                 .filter(Objects::nonNull)
                 .filter(groupModel -> !groupModel.getClaims().isEmpty())
                 .collect(Collectors.toMap(groupModel -> IdentityUserMgtUtil.generateUUID(), groupModel -> groupModel));
@@ -1787,7 +1787,7 @@ public class Domain {
         return connectorIdToCredentialsMap;
     }
 
-    private Map<String, Map<String, List<Attribute>>> getAttributesMapOfUsers(Map<String, UserModel> userModelMap) {
+    private Map<String, Map<String, List<Attribute>>> getAttributesMapOfUsers(Map<String, UserBean> userModelMap) {
 
         Map<String, Map<String, List<Attribute>>> attributesMap = new HashMap<>();
 
@@ -1819,7 +1819,7 @@ public class Domain {
         return attributesMap;
     }
 
-    private Map<String, Map<String, List<Callback>>> getCredentialsMapOfUsers(Map<String, UserModel> userModelMap) {
+    private Map<String, Map<String, List<Callback>>> getCredentialsMapOfUsers(Map<String, UserBean> userModelMap) {
 
         Map<String, Map<String, List<Callback>>> credentialMap = new HashMap<>();
 
@@ -1865,7 +1865,7 @@ public class Domain {
         }
     }
 
-    private Map<String, Map<String, List<Attribute>>> getAttributesMapOfGroups(Map<String, GroupModel> groupModelMap) {
+    private Map<String, Map<String, List<Attribute>>> getAttributesMapOfGroups(Map<String, GroupBean> groupModelMap) {
 
         Map<String, Map<String, List<Attribute>>> attributesMap = new HashMap<>();
 

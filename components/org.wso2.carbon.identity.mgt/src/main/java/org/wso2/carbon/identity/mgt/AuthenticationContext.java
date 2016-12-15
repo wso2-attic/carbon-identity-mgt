@@ -16,8 +16,6 @@
 
 package org.wso2.carbon.identity.mgt;
 
-import org.wso2.carbon.identity.mgt.bean.User;
-
 /**
  * This class represents AuthenticationContext which holds the information related to the authenticated user.
  */

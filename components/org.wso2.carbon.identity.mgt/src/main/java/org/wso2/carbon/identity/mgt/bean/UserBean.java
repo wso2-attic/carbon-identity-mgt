@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.identity.mgt.model;
+package org.wso2.carbon.identity.mgt.bean;
 
 import org.wso2.carbon.identity.mgt.claim.Claim;
 
@@ -28,7 +28,7 @@ import javax.security.auth.callback.Callback;
 /**
  * Model for User
  */
-public class UserModel {
+public class UserBean {
 
     private List<Claim> claims = new ArrayList<>();
 

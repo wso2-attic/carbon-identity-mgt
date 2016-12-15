@@ -20,9 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.identity.mgt.AuthenticationContext;
+import org.wso2.carbon.identity.mgt.Group;
 import org.wso2.carbon.identity.mgt.IdentityStore;
-import org.wso2.carbon.identity.mgt.bean.Group;
-import org.wso2.carbon.identity.mgt.bean.User;
+import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
@@ -35,8 +35,8 @@ import org.wso2.carbon.identity.mgt.impl.cache.CachedGroup;
 import org.wso2.carbon.identity.mgt.impl.cache.CachedUser;
 import org.wso2.carbon.identity.mgt.impl.config.CacheConfig;
 import org.wso2.carbon.identity.mgt.impl.internal.IdentityMgtDataHolder;
-import org.wso2.carbon.identity.mgt.model.GroupModel;
-import org.wso2.carbon.identity.mgt.model.UserModel;
+import org.wso2.carbon.identity.mgt.bean.GroupBean;
+import org.wso2.carbon.identity.mgt.bean.UserBean;
 
 import java.util.HashMap;
 import java.util.List;
@@ -267,27 +267,27 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public User addUser(UserModel userModel) throws IdentityStoreException {
+    public User addUser(UserBean userBean) throws IdentityStoreException {
 
-        return identityStore.addUser(userModel);
+        return identityStore.addUser(userBean);
     }
 
     @Override
-    public User addUser(UserModel userModel, String domainName) throws IdentityStoreException {
+    public User addUser(UserBean userBean, String domainName) throws IdentityStoreException {
 
-        return identityStore.addUser(userModel, domainName);
+        return identityStore.addUser(userBean, domainName);
     }
 
     @Override
-    public List<User> addUsers(List<UserModel> userModels) throws IdentityStoreException {
+    public List<User> addUsers(List<UserBean> userBeen) throws IdentityStoreException {
 
-        return identityStore.addUsers(userModels);
+        return identityStore.addUsers(userBeen);
     }
 
     @Override
-    public List<User> addUsers(List<UserModel> userModels, String domainName) throws IdentityStoreException {
+    public List<User> addUsers(List<UserBean> userBeen, String domainName) throws IdentityStoreException {
 
-        return identityStore.addUsers(userModels, domainName);
+        return identityStore.addUsers(userBeen, domainName);
     }
 
     @Override
@@ -340,27 +340,27 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public Group addGroup(GroupModel groupModel) throws IdentityStoreException {
+    public Group addGroup(GroupBean groupBean) throws IdentityStoreException {
 
-        return identityStore.addGroup(groupModel);
+        return identityStore.addGroup(groupBean);
     }
 
     @Override
-    public Group addGroup(GroupModel groupModel, String domainName) throws IdentityStoreException {
+    public Group addGroup(GroupBean groupBean, String domainName) throws IdentityStoreException {
 
-        return identityStore.addGroup(groupModel, domainName);
+        return identityStore.addGroup(groupBean, domainName);
     }
 
     @Override
-    public List<Group> addGroups(List<GroupModel> groupModels) throws IdentityStoreException {
+    public List<Group> addGroups(List<GroupBean> groupBeen) throws IdentityStoreException {
 
-        return identityStore.addGroups(groupModels);
+        return identityStore.addGroups(groupBeen);
     }
 
     @Override
-    public List<Group> addGroups(List<GroupModel> groupModels, String domainName) throws IdentityStoreException {
+    public List<Group> addGroups(List<GroupBean> groupBeen, String domainName) throws IdentityStoreException {
 
-        return identityStore.addGroups(groupModels, domainName);
+        return identityStore.addGroups(groupBeen, domainName);
     }
 
     @Override

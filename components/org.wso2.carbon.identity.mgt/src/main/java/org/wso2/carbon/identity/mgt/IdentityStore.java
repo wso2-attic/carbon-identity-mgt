@@ -16,16 +16,14 @@
 
 package org.wso2.carbon.identity.mgt;
 
-import org.wso2.carbon.identity.mgt.bean.Group;
-import org.wso2.carbon.identity.mgt.bean.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.model.GroupModel;
-import org.wso2.carbon.identity.mgt.model.UserModel;
+import org.wso2.carbon.identity.mgt.bean.GroupBean;
+import org.wso2.carbon.identity.mgt.bean.UserBean;
 
 import java.util.List;
 import java.util.Set;
@@ -319,21 +317,21 @@ public interface IdentityStore {
     /**
      * Add new user to the default domain.
      *
-     * @param user User model.
+     * @param user User bean.
      * @return Created user.
      * @throws IdentityStoreException Identity store exception.
      */
-    User addUser(UserModel user) throws IdentityStoreException;
+    User addUser(UserBean user) throws IdentityStoreException;
 
     /**
      * Add new user to a specific domain.
      *
-     * @param user       User model.
+     * @param user       User bean.
      * @param domainName User domain.
      * @return Created user.
      * @throws IdentityStoreException Identity store exception.
      */
-    User addUser(UserModel user, String domainName) throws IdentityStoreException;
+    User addUser(UserBean user, String domainName) throws IdentityStoreException;
 
     /**
      * Add new users to the default domain.
@@ -342,7 +340,7 @@ public interface IdentityStore {
      * @return Created users.
      * @throws IdentityStoreException Identity store exception.
      */
-    List<User> addUsers(List<UserModel> users) throws IdentityStoreException;
+    List<User> addUsers(List<UserBean> users) throws IdentityStoreException;
 
     /**
      * Add new users to a specific domain.
@@ -352,7 +350,7 @@ public interface IdentityStore {
      * @return Created users.
      * @throws IdentityStoreException Identity store exception.
      */
-    List<User> addUsers(List<UserModel> users, String domainName) throws IdentityStoreException;
+    List<User> addUsers(List<UserBean> users, String domainName) throws IdentityStoreException;
 
     /**
      * Update user claims by user id.
@@ -431,21 +429,21 @@ public interface IdentityStore {
     /**
      * Add new group to the default domain.
      *
-     * @param groupModel Group model.
+     * @param groupBean Group bean.
      * @return Created group.
      * @throws IdentityStoreException Identity store exception.
      */
-    Group addGroup(GroupModel groupModel) throws IdentityStoreException;
+    Group addGroup(GroupBean groupBean) throws IdentityStoreException;
 
     /**
      * Add new group to the specific domain.
      *
-     * @param groupModel Group model.
+     * @param groupBean Group bean.
      * @param domainName Group damian.
      * @return Created group.
      * @throws IdentityStoreException Identity store exception.
      */
-    Group addGroup(GroupModel groupModel, String domainName) throws IdentityStoreException;
+    Group addGroup(GroupBean groupBean, String domainName) throws IdentityStoreException;
 
     /**
      * Add new groups to the default domain.
@@ -454,7 +452,7 @@ public interface IdentityStore {
      * @return Created groups.
      * @throws IdentityStoreException Identity store exception.
      */
-    List<Group> addGroups(List<GroupModel> groups) throws IdentityStoreException;
+    List<Group> addGroups(List<GroupBean> groups) throws IdentityStoreException;
 
     /**
      * Add new groups to the specific domain.
@@ -464,7 +462,7 @@ public interface IdentityStore {
      * @return Created groups.
      * @throws IdentityStoreException Identity store exception.
      */
-    List<Group> addGroups(List<GroupModel> groups, String domainName) throws IdentityStoreException;
+    List<Group> addGroups(List<GroupBean> groups, String domainName) throws IdentityStoreException;
 
     /**
      * Update group claims by group id.

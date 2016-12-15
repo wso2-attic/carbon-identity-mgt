@@ -28,15 +28,15 @@ import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.mgt.RealmService;
-import org.wso2.carbon.identity.mgt.bean.Group;
-import org.wso2.carbon.identity.mgt.bean.User;
+import org.wso2.carbon.identity.mgt.Group;
+import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.model.GroupModel;
-import org.wso2.carbon.identity.mgt.model.UserModel;
+import org.wso2.carbon.identity.mgt.bean.GroupBean;
+import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
@@ -86,14 +86,14 @@ public class IdentityStoreTest {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
-        UserModel userModel = new UserModel();
+        UserBean userBean = new UserBean();
         List<Claim> claims = Arrays
                 .asList(new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "lucifer"),
                         new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Lucifer"),
                         new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Morningstar"),
                         new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "lucifer@wso2.com"));
-        userModel.setClaims(claims);
-        User user = realmService.getIdentityStore().addUser(userModel);
+        userBean.setClaims(claims);
+        User user = realmService.getIdentityStore().addUser(userBean);
 
         Assert.assertNotNull(user, "Failed to receive the user.");
         Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
@@ -107,14 +107,14 @@ public class IdentityStoreTest {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
-        UserModel userModel = new UserModel();
+        UserBean userBean = new UserBean();
         List<Claim> claims = Arrays.asList(
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "chloe"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Chloe"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Decker"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "chloe@wso2.com"));
-        userModel.setClaims(claims);
-        User user = realmService.getIdentityStore().addUser(userModel, "PRIMARY");
+        userBean.setClaims(claims);
+        User user = realmService.getIdentityStore().addUser(userBean, "PRIMARY");
 
         Assert.assertNotNull(user, "Failed to receive the user.");
         Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
@@ -128,23 +128,23 @@ public class IdentityStoreTest {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
-        UserModel userModel1 = new UserModel();
+        UserBean userBean1 = new UserBean();
         List<Claim> claims1 = Arrays.asList(
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "dan"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Dan"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Espinoza"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "dan@wso2.com"));
-        userModel1.setClaims(claims1);
+        userBean1.setClaims(claims1);
 
-        UserModel userModel2 = new UserModel();
+        UserBean userBean2 = new UserBean();
         List<Claim> claims2 = Arrays.asList(
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "linda"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Linda"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Martin"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "linda@wso2.com"));
-        userModel2.setClaims(claims2);
+        userBean2.setClaims(claims2);
 
-        List<User> addedUsers = realmService.getIdentityStore().addUsers(Arrays.asList(userModel1, userModel2));
+        List<User> addedUsers = realmService.getIdentityStore().addUsers(Arrays.asList(userBean1, userBean2));
 
         Assert.assertNotNull(addedUsers, "Failed to receive the users.");
         Assert.assertTrue(!addedUsers.isEmpty() && addedUsers.size() == 2, "Number of users received in the response " +
@@ -159,23 +159,23 @@ public class IdentityStoreTest {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
-        UserModel userModel1 = new UserModel();
+        UserBean userBean1 = new UserBean();
         List<Claim> claims1 = Arrays.asList(
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "ella"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Ella"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Lopez"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "ella@wso2.com"));
-        userModel1.setClaims(claims1);
+        userBean1.setClaims(claims1);
 
-        UserModel userModel2 = new UserModel();
+        UserBean userBean2 = new UserBean();
         List<Claim> claims2 = Arrays.asList(
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "trixie"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Trixie"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Decker"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "trixie@wso2.com"));
-        userModel2.setClaims(claims2);
+        userBean2.setClaims(claims2);
 
-        List<User> addedUsers = realmService.getIdentityStore().addUsers(Arrays.asList(userModel1, userModel2),
+        List<User> addedUsers = realmService.getIdentityStore().addUsers(Arrays.asList(userBean1, userBean2),
                 "PRIMARY");
 
         Assert.assertNotNull(addedUsers, "Failed to receive the users.");
@@ -312,12 +312,12 @@ public class IdentityStoreTest {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
-        GroupModel groupModel = new GroupModel();
+        GroupBean groupBean = new GroupBean();
         List<Claim> claims = Arrays.asList(
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "Angels"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Heaven"));
-        groupModel.setClaims(claims);
-        Group group = realmService.getIdentityStore().addGroup(groupModel);
+        groupBean.setClaims(claims);
+        Group group = realmService.getIdentityStore().addGroup(groupBean);
 
         Assert.assertNotNull(group, "Failed to receive the group.");
         Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
@@ -331,12 +331,12 @@ public class IdentityStoreTest {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
-        GroupModel groupModel = new GroupModel();
+        GroupBean groupBean = new GroupBean();
         List<Claim> claims = Arrays.asList(
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "Demons"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Hell"));
-        groupModel.setClaims(claims);
-        Group group = realmService.getIdentityStore().addGroup(groupModel, "PRIMARY");
+        groupBean.setClaims(claims);
+        Group group = realmService.getIdentityStore().addGroup(groupBean, "PRIMARY");
 
         Assert.assertNotNull(group, "Failed to receive the group.");
         Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
@@ -350,19 +350,19 @@ public class IdentityStoreTest {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
-        GroupModel groupModel1 = new GroupModel();
+        GroupBean groupBean1 = new GroupBean();
         List<Claim> claims1 = Arrays.asList(
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "humans"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Society"));
-        groupModel1.setClaims(claims1);
+        groupBean1.setClaims(claims1);
 
-        GroupModel groupModel2 = new GroupModel();
+        GroupBean groupBean2 = new GroupBean();
         List<Claim> claims2 = Arrays.asList(
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "children"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Society"));
-        groupModel2.setClaims(claims2);
+        groupBean2.setClaims(claims2);
 
-        List<Group> addedGroups = realmService.getIdentityStore().addGroups(Arrays.asList(groupModel1, groupModel2));
+        List<Group> addedGroups = realmService.getIdentityStore().addGroups(Arrays.asList(groupBean1, groupBean2));
 
         Assert.assertNotNull(addedGroups, "Failed to receive the groups.");
         Assert.assertTrue(!addedGroups.isEmpty() && addedGroups.size() == 2, "Number of groups received in the " +
@@ -377,19 +377,19 @@ public class IdentityStoreTest {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
-        GroupModel groupModel1 = new GroupModel();
+        GroupBean groupBean1 = new GroupBean();
         List<Claim> claims1 = Arrays.asList(
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "SuperAngels"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "SuperHeaven"));
-        groupModel1.setClaims(claims1);
+        groupBean1.setClaims(claims1);
 
-        GroupModel groupModel2 = new GroupModel();
+        GroupBean groupBean2 = new GroupBean();
         List<Claim> claims2 = Arrays.asList(
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/groupName", "SuperDemons"),
                 new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "SupperHell"));
-        groupModel2.setClaims(claims2);
+        groupBean2.setClaims(claims2);
 
-        List<Group> addedGroups = realmService.getIdentityStore().addGroups(Arrays.asList(groupModel1, groupModel2),
+        List<Group> addedGroups = realmService.getIdentityStore().addGroups(Arrays.asList(groupBean1, groupBean2),
                 "PRIMARY");
 
         Assert.assertNotNull(addedGroups, "Failed to receive the groups.");

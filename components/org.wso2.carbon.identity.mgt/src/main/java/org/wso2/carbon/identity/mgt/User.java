@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.bean;
+package org.wso2.carbon.identity.mgt;
 
-import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
