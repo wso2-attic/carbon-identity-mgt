@@ -27,6 +27,9 @@ import java.util.Map;
  * UniqueIdResolver interface.
  * <p>
  * The implementation of this interface is responsible for handling the globally unique user Id.
+ *
+ *
+ * TODO - what this do, who have access, when this get invoked
  */
 public interface UniqueIdResolver {
 

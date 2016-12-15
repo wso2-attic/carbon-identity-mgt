@@ -58,7 +58,6 @@ import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverConfig;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverFactory;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
-import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -158,7 +157,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
     protected void unregisterUniqueIdResolverFactory(UniqueIdResolverFactory uniqueIdResolverFactory) {
 
-        IdentityMgtDataHolder.getInstance().unRegisterUniqueIdResolverFactory(uniqueIdResolverFactory);
+        IdentityMgtDataHolder.getInstance().unregisterUniqueIdResolverFactory(uniqueIdResolverFactory);
     }
 
     //TODO make this MANDATORY in M3 release
@@ -251,9 +250,6 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             // Get the store configurations
             StoreConfig storeConfig = IdentityStoreConfigReader.getStoreConfig();
 
-            //TODO
-            AuthorizationStore authorizationStore = identityMgtDataHolder.getAuthorizationStore();
-
             IdentityStore identityStore;
             if (storeConfig.isEnableCache() && storeConfig.isEnableIdentityStoreCache()) {
                 identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap(), domains);
@@ -262,7 +258,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             }
 
             // Register the realm service.
-            RealmService<IdentityStore> realmService = new RealmServiceImpl<>(identityStore, authorizationStore);
+            RealmService realmService = new RealmServiceImpl(identityStore);
             identityMgtDataHolder.registerRealmService(realmService);
 
             realmServiceRegistration = bundleContext.registerService(RealmService.class, realmService, null);

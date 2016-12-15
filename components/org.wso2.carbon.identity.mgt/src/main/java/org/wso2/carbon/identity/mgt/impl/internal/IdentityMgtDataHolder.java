@@ -19,7 +19,6 @@ package org.wso2.carbon.identity.mgt.impl.internal;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
-import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory;
@@ -44,7 +43,7 @@ public class IdentityMgtDataHolder {
 
     private static IdentityMgtDataHolder instance = new IdentityMgtDataHolder();
 
-    private RealmService<IdentityStore> realmService;
+    private RealmService realmService;
 
     private AuthorizationStore authorizationStore;
 
@@ -74,11 +73,11 @@ public class IdentityMgtDataHolder {
         return instance;
     }
 
-    void registerRealmService(RealmService<IdentityStore> realmService) {
+    void registerRealmService(RealmService realmService) {
         this.realmService = realmService;
     }
 
-    public RealmService<IdentityStore> getRealmService() {
+    public RealmService getRealmService() {
 
         if (realmService == null) {
             throw new IllegalStateException("Carbon Realm Service is null.");
@@ -178,11 +177,12 @@ public class IdentityMgtDataHolder {
         this.dataSourceService = dataSourceService;
     }
 
-    public void unregisterCredentialStoreConnectorFactory(CredentialStoreConnectorFactory credentialStoreConnectorFactory) {
+    public void unregisterCredentialStoreConnectorFactory(CredentialStoreConnectorFactory
+                                                                  credentialStoreConnectorFactory) {
 
     }
 
-    public void unRegisterUniqueIdResolverFactory(UniqueIdResolverFactory uniqueIdResolverFactory) {
+    public void unregisterUniqueIdResolverFactory(UniqueIdResolverFactory uniqueIdResolverFactory) {
 
     }
 }

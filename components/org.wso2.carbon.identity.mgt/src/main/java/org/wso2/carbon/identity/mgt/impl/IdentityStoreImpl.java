@@ -58,6 +58,8 @@ import static org.wso2.carbon.kernel.utils.StringUtils.isNullOrEmpty;
  * Represents a virtual identity store to abstract the underlying stores.
  *
  * @since 1.0.0
+ *
+ * TODO Add logic - uuid
  */
 public class IdentityStoreImpl implements IdentityStore {
 

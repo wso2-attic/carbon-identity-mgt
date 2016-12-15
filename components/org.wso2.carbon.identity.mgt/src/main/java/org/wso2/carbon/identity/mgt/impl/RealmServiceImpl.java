@@ -18,38 +18,24 @@ package org.wso2.carbon.identity.mgt.impl;
 
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
-import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
 /**
  * Basic user realm service.
- *
- * @param <T1> IdentityStore
  */
-public class RealmServiceImpl<T1 extends IdentityStore> implements RealmService<T1> {
-
-    /**
-     * Authorization store in the realm service.
-     */
-    private AuthorizationStore authorizationStore;
+public class RealmServiceImpl implements RealmService {
 
     /**
      * Credential store instance in the realm service.
      */
-    private T1 identityStore;
+    private IdentityStore identityStore;
 
-    public RealmServiceImpl(T1 identityStore, AuthorizationStore authorizationStore) {
+    public RealmServiceImpl(IdentityStore identityStore) {
 
         this.identityStore = identityStore;
-        this.authorizationStore = authorizationStore;
     }
 
     @Override
-    public AuthorizationStore getAuthorizationStore() {
-        return authorizationStore;
-    }
-
-    @Override
-    public T1 getIdentityStore() {
+    public IdentityStore getIdentityStore() {
         return this.identityStore;
     }
 }

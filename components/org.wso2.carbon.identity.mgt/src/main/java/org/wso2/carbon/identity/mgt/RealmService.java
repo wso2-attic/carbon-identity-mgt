@@ -16,26 +16,15 @@
 
 package org.wso2.carbon.identity.mgt;
 
-import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
-
 /**
  * User realm service.
- *
- * @param <T1>
  */
-public interface RealmService<T1 extends IdentityStore> {
-
-    /**
-     * Get the Virtual authorization store.
-     *
-     * @return AuthorizationStoreConnector
-     */
-    AuthorizationStore getAuthorizationStore();
+public interface RealmService {
 
     /**
      * Get the identity store instance.
      *
      * @return Identity Store
      */
-    T1 getIdentityStore();
+    IdentityStore getIdentityStore();
 }
