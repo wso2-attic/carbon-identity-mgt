@@ -246,7 +246,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
                     (storeConnectorConfigs);
 
             // Build Domains
-            List<Domain> domains = buildDomains(domainConfigs);
+            List<Domain> domains = constructDomains(domainConfigs);
 
             // Get the store configurations
             StoreConfig storeConfig = IdentityStoreConfigReader.getStoreConfig();
@@ -268,7 +268,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             realmServiceRegistration = bundleContext.registerService(RealmService.class, realmService, null);
             log.info("Realm service registered successfully.");
 
-            log.info("Carbon-Security bundle activated successfully.");
+            log.info("Carbon-Identity-Mgt bundle activated successfully.");
 
         } catch (CredentialStoreConnectorException | IdentityStoreException e) {
             log.error("Error occurred in initialising store", e);
@@ -285,12 +285,12 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
         }
     }
 
-    private List<Domain> buildDomains(List<DomainConfig> domainConfigs)
+    private List<Domain> constructDomains(List<DomainConfig> domainConfigs)
             throws DomainException, DomainConfigException, MetaClaimStoreException, UniqueIdResolverException,
             IdentityStoreException, CredentialStoreConnectorException, IdentityStoreConnectorException {
 
         if (domainConfigs.isEmpty()) {
-            throw new DomainConfigException("Invalid domain configuration found.");
+            throw new DomainConfigException("No domain found. At least one domain should be available in the system.");
         }
 
         List<Domain> domains = new ArrayList<>();
