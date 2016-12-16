@@ -16,12 +16,12 @@
 
 package org.wso2.carbon.identity.mgt.store.connector.inmemory;
 
-import org.wso2.carbon.identity.mgt.bean.Attribute;
-import org.wso2.carbon.identity.mgt.config.IdentityStoreConnectorConfig;
+import org.wso2.carbon.identity.mgt.connector.Attribute;
+import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnector;
+import org.wso2.carbon.identity.mgt.connector.config.IdentityStoreConnectorConfig;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnector;
 
 import java.util.Collections;
 import java.util.HashMap;

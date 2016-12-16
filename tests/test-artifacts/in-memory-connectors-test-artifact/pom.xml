@@ -49,17 +49,14 @@
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             javax.security.auth.*,
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
-            org.wso2.carbon.identity.mgt.config.*;version="${org.wso2.carbon.identity.mgt.version.range}",
-            org.wso2.carbon.identity.mgt.exception.*;version="${org.wso2.carbon.identity.mgt.version.range}",
-            org.wso2.carbon.identity.mgt.store.connector.*;version="${org.wso2.carbon.identity.mgt.version.range}",
-            org.wso2.carbon.identity.mgt.bean.*;version="${org.wso2.carbon.identity.mgt.version.range}",
+            org.wso2.carbon.identity.mgt.*;version="${org.wso2.carbon.identity.mgt.version.range}"
         </import.package>
 
         <carbon.component>
             osgi.service;
-            objectClass="org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory",
+            objectClass="org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory",
             osgi.service;
-            objectClass="org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory"
+            objectClass="org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory"
         </carbon.component>
 
         <dsannotations>*</dsannotations>

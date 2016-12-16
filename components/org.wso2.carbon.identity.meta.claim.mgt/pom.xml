@@ -188,8 +188,8 @@
             net.minidev.asm.*;version="${asm.package.version.range}",
             org.wso2.carbon.kernel.*;version="${carbon.kernel.version}",
             org.wso2.carbon.identity.mgt.exception.*;version="${carbon.identity.mgt.version}",
-            org.wso2.carbon.identity.mgt.util.*;version="${carbon.identity.mgt.version}",
-            org.wso2.carbon.identity.mgt.user.*;version="${carbon.identity.mgt.version}",
+            org.wso2.carbon.identity.mgt.impl.util.*;version="${carbon.identity.mgt.version}",
+            org.wso2.carbon.identity.mgt.resolver.user.*;version="${carbon.identity.mgt.version}",
         </import.package>
 
         <carbon.component>

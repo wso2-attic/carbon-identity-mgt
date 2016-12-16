@@ -21,8 +21,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.identity.mgt.store.connector.CredentialStoreConnectorFactory;
-import org.wso2.carbon.identity.mgt.store.connector.IdentityStoreConnectorFactory;
+import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
+import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.inmemory.InMemoryCredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.inmemory.InMemoryIdentityStoreConnectorFactory;
 

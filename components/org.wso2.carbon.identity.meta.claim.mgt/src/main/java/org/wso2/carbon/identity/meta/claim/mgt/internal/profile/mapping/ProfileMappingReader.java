@@ -19,8 +19,8 @@ package org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping;
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ProfileReaderException;
 import org.wso2.carbon.identity.meta.claim.mgt.util.ProfileMgtConstants;
 import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
-import org.wso2.carbon.identity.mgt.util.FileUtil;
-import org.wso2.carbon.identity.mgt.util.IdentityMgtConstants;
+import org.wso2.carbon.identity.mgt.impl.util.FileUtil;
+import org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
