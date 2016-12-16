@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.impl.cache;
+package org.wso2.carbon.identity.mgt.impl.util;
 
 import org.wso2.carbon.identity.mgt.impl.config.CacheConfig;
 

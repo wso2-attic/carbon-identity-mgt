@@ -31,11 +31,9 @@ import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.impl.cache.CacheHelper;
-import org.wso2.carbon.identity.mgt.impl.cache.CachedGroup;
-import org.wso2.carbon.identity.mgt.impl.cache.CachedUser;
 import org.wso2.carbon.identity.mgt.impl.config.CacheConfig;
 import org.wso2.carbon.identity.mgt.impl.internal.IdentityMgtDataHolder;
+import org.wso2.carbon.identity.mgt.impl.util.CacheHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -78,7 +76,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
 
         // Initialize all caches.
         if (CacheHelper.isCacheEnabled(cacheConfigs, UNIQUE_USER_CACHE)) {
-            CacheHelper.createCache(UNIQUE_USER_CACHE, String.class, CachedUser.class, CacheHelper.MEDIUM_EXPIRE_TIME,
+            CacheHelper.createCache(UNIQUE_USER_CACHE, String.class, User.class, CacheHelper.MEDIUM_EXPIRE_TIME,
                     cacheConfigs, cacheManager);
             cacheStatus.put(UNIQUE_USER_CACHE, true);
         } else {
@@ -414,58 +412,46 @@ public class CacheBackedIdentityStore implements IdentityStore {
     private User doGetUser(String uniqueUserId, String domainName) throws IdentityStoreException,
             UserNotFoundException {
 
-        Cache<String, CachedUser> userCache = cacheManager.getCache(UNIQUE_USER_CACHE, String.class, CachedUser.class);
-        CachedUser cachedUser = userCache.get(uniqueUserId.hashCode() + ":" + domainName.hashCode());
+        Cache<String, User> userCache = cacheManager.getCache(UNIQUE_USER_CACHE, String.class, User.class);
+        User user = userCache.get(uniqueUserId.hashCode() + ":" + domainName.hashCode());
 
-        if (cachedUser == null) {
-            User user = identityStore.getUser(uniqueUserId);
-            userCache.put(user.getUniqueUserId().hashCode() + ":" + user.getDomainName().hashCode(),
-                    new CachedUser(user.getUniqueUserId(), user.getDomainName()));
+        if (user == null) {
+            user = identityStore.getUser(uniqueUserId);
+            userCache.put(user.getUniqueUserId().hashCode() + ":" + user.getDomainName().hashCode(), user);
             user.setIdentityStore(this);
             return user;
         }
 
-        return new User.UserBuilder()
-                .setUserId(cachedUser.getUniqueUserId())
-                .setDomainName(cachedUser.getDomainName())
-                .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
-                .build();
+        user.setIdentityStore(this);
+        return user;
     }
 
     private Group doGetGroup(String uniqueGroupId, String domainName) throws IdentityStoreException,
             GroupNotFoundException {
 
-        Cache<String, CachedGroup> groupCache = cacheManager.getCache(UNIQUE_GROUP_CACHE, String.class, CachedGroup
-                .class);
-        CachedGroup cachedGroup = groupCache.get(uniqueGroupId.hashCode() + ":" + domainName.hashCode());
+        Cache<String, Group> groupCache = cacheManager.getCache(UNIQUE_GROUP_CACHE, String.class, Group.class);
+        Group group = groupCache.get(uniqueGroupId.hashCode() + ":" + domainName.hashCode());
 
-        if (cachedGroup == null) {
-            Group group = identityStore.getGroup(uniqueGroupId);
-            groupCache.put(group.getUniqueGroupId().hashCode() + ":" + group.getDomainName().hashCode(),
-                    new CachedGroup(group.getUniqueGroupId(), group.getDomainName()));
+        if (group == null) {
+            group = identityStore.getGroup(uniqueGroupId);
+            groupCache.put(group.getUniqueGroupId().hashCode() + ":" + group.getDomainName().hashCode(), group);
             group.setIdentityStore(this);
             return group;
         }
 
-        return new Group.GroupBuilder()
-                .setGroupId(cachedGroup.getUniqueGroupId())
-                .setDomainName(cachedGroup.getDomainName())
-                .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
-                .build();
+        group.setIdentityStore(this);
+        return group;
     }
 
     private void doDeleteUser(String uniqueUserId, String domainName) {
 
-        Cache<String, CachedUser> userCache = cacheManager.getCache(UNIQUE_USER_CACHE, String.class, CachedUser.class);
+        Cache<String, User> userCache = cacheManager.getCache(UNIQUE_USER_CACHE, String.class, User.class);
         userCache.remove(uniqueUserId.hashCode() + ":" + domainName.hashCode());
     }
 
     private void doDeleteGroup(String uniqueGroupId, String domainName) {
 
-        Cache<String, CachedGroup> groupCache = cacheManager.getCache(UNIQUE_GROUP_CACHE, String.class,
-                CachedGroup.class);
+        Cache<String, Group> groupCache = cacheManager.getCache(UNIQUE_GROUP_CACHE, String.class, Group.class);
         groupCache.remove(uniqueGroupId.hashCode() + ":" + domainName.hashCode());
     }
 }

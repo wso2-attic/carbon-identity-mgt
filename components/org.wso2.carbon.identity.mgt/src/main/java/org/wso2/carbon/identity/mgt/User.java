@@ -22,20 +22,18 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.StoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.security.caas.user.core.bean.Action;
-import org.wso2.carbon.security.caas.user.core.bean.Permission;
-import org.wso2.carbon.security.caas.user.core.bean.Resource;
-import org.wso2.carbon.security.caas.user.core.bean.Role;
-import org.wso2.carbon.security.caas.user.core.exception.AuthorizationStoreException;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Represents a user in the user core. All of the user related identity operations can be
  * done through this class.
  */
-public class User {
+public class User implements Serializable {
+
+    private static final long serialVersionUID = 21578845544565554L;
 
     /**
      * The globally unique uniqueUserId of the user.
@@ -50,20 +48,12 @@ public class User {
     /**
      * The IdentityStore this user originates from.
      */
-    private IdentityStore identityStore;
+    private transient IdentityStore identityStore;
 
-    /**
-     * The AuthorizationStore that manages permissions of this user.
-     */
-    private AuthorizationStore authorizationStore;
-
-    private User(String uniqueUserId, String domainName, IdentityStore identityStore, AuthorizationStore
-            authorizationStore) {
+    private User(String uniqueUserId, String domainName) {
 
         this.uniqueUserId = uniqueUserId;
         this.domainName = domainName;
-        this.identityStore = identityStore;
-        this.authorizationStore = authorizationStore;
     }
 
     /**
@@ -91,6 +81,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Claim> getClaims() throws IdentityStoreException, UserNotFoundException {
+
         return identityStore.getClaimsOfUser(this.uniqueUserId);
     }
 
@@ -102,6 +93,7 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Claim> getClaims(List<MetaClaim> metaClaims) throws IdentityStoreException, UserNotFoundException {
+
         return identityStore.getClaimsOfUser(uniqueUserId, metaClaims);
     }
 
@@ -112,66 +104,8 @@ public class User {
      * @throws IdentityStoreException Identity store exception.
      */
     public List<Group> getGroups() throws IdentityStoreException, GroupNotFoundException, UserNotFoundException {
+
         return identityStore.getGroupsOfUser(uniqueUserId);
-    }
-
-    /**
-     * Get the roles assigned to this user.
-     *
-     * @return List of Roles assigned to this user.
-     * @throws AuthorizationStoreException Authorization store exception,
-     */
-    public List<Role> getRoles() throws AuthorizationStoreException {
-        //return authorizationStore.getRolesOfUser(uniqueUserId, domainName);
-        return null;
-    }
-
-    /**
-     * Get permissions filtered from the given resource.
-     *
-     * @param resource Resource to filter.
-     * @return List of permissions.
-     * @throws AuthorizationStoreException authorization store exception.
-     */
-    public List<Permission> getPermissions(Resource resource) throws AuthorizationStoreException {
-        //return authorizationStore.getPermissionsOfUser(uniqueUserId, domainName, resource);
-        return null;
-    }
-
-    /**
-     * Get permissions filtered from the given action.
-     *
-     * @param action Action to filter.
-     * @return List of permissions.
-     * @throws AuthorizationStoreException Authorization store exception.
-     */
-    public List<Permission> getPermissions(Action action) throws AuthorizationStoreException {
-        //return authorizationStore.getPermissionsOfUser(uniqueUserId, domainName, action);
-        return null;
-    }
-
-    /**
-     * Checks whether this user is authorized for given Permission.
-     *
-     * @param permission Permission that should check on this user.
-     * @return True if authorized.
-     * @throws AuthorizationStoreException Authorization store exception.
-     * @throws IdentityStoreException      Identity store exception.
-     */
-    public boolean isAuthorized(Permission permission) throws AuthorizationStoreException, IdentityStoreException {
-        //return authorizationStore.isUserAuthorized(uniqueUserId, permission, domainName);
-        return false;
-    }
-
-    /**
-     * Checks whether this User is in the given Role.
-     *
-     * @param roleName Name of the Role.
-     * @return True if this user is in the Role.
-     * @throws AuthorizationStoreException Authorization store exception.
-     */
-    public boolean isInRole(String roleName) throws AuthorizationStoreException {
-        return authorizationStore.isUserInRole(uniqueUserId, roleName);
     }
 
     /**
@@ -183,38 +117,93 @@ public class User {
      */
     public boolean isInGroup(String groupName) throws IdentityStoreException, UserNotFoundException,
             GroupNotFoundException {
+
         return identityStore.isUserInGroup(uniqueUserId, groupName);
     }
 
-    /**
-     * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
-     *
-     * @param newRolesList List of Roles needs to be assigned to this User.
-     * @throws AuthorizationStoreException Authorization store exception,
-     * @throws IdentityStoreException      Identity store exception.
-     */
-    public void updateRoles(List<Role> newRolesList) throws AuthorizationStoreException, IdentityStoreException {
-        //authorizationStore.updateRolesInUser(uniqueUserId, domainName, newRolesList);
-    }
-
-    /**
-     * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
-     *
-     * @param assignList   List to be added to the new list.
-     * @param unAssignList List to be removed from the existing list.
-     * @throws AuthorizationStoreException Authorization Store Exception.
-     */
-    public void updateRoles(List<Role> assignList, List<Role> unAssignList) throws AuthorizationStoreException {
-        //authorizationStore.updateRolesInUser(uniqueUserId, domainName, assignList, unAssignList);
-    }
-
-    /**
-     * Change the identity store
-     * @param identityStore identity store instance
-     */
     public void setIdentityStore(IdentityStore identityStore) {
         this.identityStore = identityStore;
     }
+
+//    /**
+//     * Get the roles assigned to this user.
+//     *
+//     * @return List of Roles assigned to this user.
+//     * @throws AuthorizationStoreException Authorization store exception,
+//     */
+//    public List<Role> getRoles() throws AuthorizationStoreException {
+//        //return authorizationStore.getRolesOfUser(uniqueUserId, domainName);
+//        return null;
+//    }
+
+//    /**
+//     * Get permissions filtered from the given resource.
+//     *
+//     * @param resource Resource to filter.
+//     * @return List of permissions.
+//     * @throws AuthorizationStoreException authorization store exception.
+//     */
+//    public List<Permission> getPermissions(Resource resource) throws AuthorizationStoreException {
+//        //return authorizationStore.getPermissionsOfUser(uniqueUserId, domainName, resource);
+//        return null;
+//    }
+
+//    /**
+//     * Get permissions filtered from the given action.
+//     *
+//     * @param action Action to filter.
+//     * @return List of permissions.
+//     * @throws AuthorizationStoreException Authorization store exception.
+//     */
+//    public List<Permission> getPermissions(Action action) throws AuthorizationStoreException {
+//        //return authorizationStore.getPermissionsOfUser(uniqueUserId, domainName, action);
+//        return null;
+//    }
+
+//    /**
+//     * Checks whether this user is authorized for given Permission.
+//     *
+//     * @param permission Permission that should check on this user.
+//     * @return True if authorized.
+//     * @throws AuthorizationStoreException Authorization store exception.
+//     * @throws IdentityStoreException      Identity store exception.
+//     */
+//    public boolean isAuthorized(Permission permission) throws AuthorizationStoreException, IdentityStoreException {
+//        return authorizationStore.isUserAuthorized(uniqueUserId, permission, domainName);
+//    }
+
+//    /**
+//     * Checks whether this User is in the given Role.
+//     *
+//     * @param roleName Name of the Role.
+//     * @return True if this user is in the Role.
+//     * @throws AuthorizationStoreException Authorization store exception.
+//     */
+//    public boolean isInRole(String roleName) throws AuthorizationStoreException {
+//        return authorizationStore.isUserInRole(uniqueUserId, roleName);
+//    }
+
+//    /**
+//     * Add a new Role list by <b>replacing</b> the existing Role list. (PUT)
+//     *
+//     * @param newRolesList List of Roles needs to be assigned to this User.
+//     * @throws AuthorizationStoreException Authorization store exception,
+//     * @throws IdentityStoreException      Identity store exception.
+//     */
+//    public void updateRoles(List<Role> newRolesList) throws AuthorizationStoreException, IdentityStoreException {
+//        authorizationStore.updateRolesInUser(uniqueUserId, domainName, newRolesList);
+//    }
+
+//    /**
+//     * Assign a new list of Roles to existing list and/or un-assign Roles from existing list. (PATCH)
+//     *
+//     * @param assignList   List to be added to the new list.
+//     * @param unAssignList List to be removed from the existing list.
+//     * @throws AuthorizationStoreException Authorization Store Exception.
+//     */
+//    public void updateRoles(List<Role> assignList, List<Role> unAssignList) throws AuthorizationStoreException {
+//        authorizationStore.updateRolesInUser(uniqueUserId, domainName, assignList, unAssignList);
+//    }
 
     /**
      * Builder for the user bean.
@@ -263,12 +252,14 @@ public class User {
 
         public User build() {
 
-            //TODO add authorizationStore == null
+            //TODO Add authorizationStore with M3
             if (userId == null || identityStore == null || domainName == null) {
                 throw new StoreException("Required data missing for building user.");
             }
 
-            return new User(userId, domainName, identityStore, authorizationStore);
+            User user = new User(userId, domainName);
+            user.setIdentityStore(identityStore);
+            return user;
         }
     }
 }
