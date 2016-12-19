@@ -20,12 +20,14 @@ import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 
 /**
- * Basic user realm service.
+ * Implementation of the Realm Service {@link RealmService}.
+ *
+ * @since 1.0.0
  */
 public class RealmServiceImpl implements RealmService {
 
     /**
-     * Credential store instance in the realm service.
+     * The identity store instance.
      */
     private IdentityStore identityStore;
 

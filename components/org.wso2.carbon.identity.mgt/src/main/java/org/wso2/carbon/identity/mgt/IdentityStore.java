@@ -31,6 +31,10 @@ import javax.security.auth.callback.Callback;
 
 /**
  * Represents a virtual identity store to abstract the underlying stores.
+ * <p>
+ * Contain identity management, credential management and authentication related operations.
+ * Also Supports for multiple domains.
+ * </p>
  *
  * @since 1.0.0
  */
@@ -38,43 +42,43 @@ import javax.security.auth.callback.Callback;
 public interface IdentityStore {
 
     /**
-     * Retrieve a user by global unique Id.
+     * Retrieve a user by unique user Id.
      *
-     * @param uniqueUserId Global Unique Id
+     * @param uniqueUserId Unique user Id
      * @return User object
-     * @throws IdentityStoreException IdentityStore Exception
-     * @throws UserNotFoundException  when trying to get user with incorrect unique user id
+     * @throws IdentityStoreException if there is a server error
+     * @throws UserNotFoundException  if the provided unique user id is invalid
      */
     User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException;
 
     /**
-     * Retrieve a user by claim.
+     * Retrieve a user by a claim from the primary domain.
      *
-     * @param claim Populated claim
+     * @param claim Unique claim
      * @return User object
-     * @throws IdentityStoreException IdentityStore Exception
-     * @throws UserNotFoundException  when trying to get user with incorrect unique user id
+     * @throws IdentityStoreException if there is a server error
+     * @throws UserNotFoundException  if the provided claim is invalid
      */
     User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException;
 
     /**
-     * Retrieve a user by claim from a specific domain.
+     * Retrieve a user by a claim from a specific domain.
      *
-     * @param claim      Populated claim
-     * @param domainName Domain name to retrieve user from
+     * @param claim      Unique claim
+     * @param domainName Domain name
      * @return User object
-     * @throws IdentityStoreException IdentityStore Exception
-     * @throws UserNotFoundException  when trying to get user with incorrect unique user id
+     * @throws IdentityStoreException if there is a server error
+     * @throws UserNotFoundException  if the provided claim is invalid
      */
     User getUser(Claim claim, String domainName) throws IdentityStoreException, UserNotFoundException;
 
     /**
-     * List a set of users selected from the given range.
+     * List set of users selected from the given range from the primary domain.
      *
      * @param offset Start position
      * @param length Number of users to retrieve
-     * @return A list of users within given range
-     * @throws IdentityStoreException IdentityStore Exception
+     * @return A list of users within the given range
+     * @throws IdentityStoreException if there is a server error
      */
     List<User> listUsers(int offset, int length) throws IdentityStoreException;
 
@@ -438,7 +442,7 @@ public interface IdentityStore {
     /**
      * Add new group to the specific domain.
      *
-     * @param groupBean Group bean.
+     * @param groupBean  Group bean.
      * @param domainName Group damian.
      * @return Created group.
      * @throws IdentityStoreException Identity store exception.

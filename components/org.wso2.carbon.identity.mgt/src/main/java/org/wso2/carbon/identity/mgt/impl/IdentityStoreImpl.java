@@ -58,7 +58,7 @@ import static org.wso2.carbon.kernel.utils.StringUtils.isNullOrEmpty;
  * Represents a virtual identity store to abstract the underlying stores.
  *
  * @since 1.0.0
- *
+ * <p>
  * TODO Add logic - uuid
  */
 public class IdentityStoreImpl implements IdentityStore {
@@ -108,7 +108,7 @@ public class IdentityStoreImpl implements IdentityStore {
     public User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
         if (isNullOrEmpty(uniqueUserId)) {
-            throw new IdentityStoreClientException("Invalid unique user id.");
+            throw new UserNotFoundException("Invalid unique user id.");
         }
 
         SimpleEntry<Integer, String> decodedUniqueUserId = getDecodedUniqueEntityId(uniqueUserId);
@@ -119,7 +119,7 @@ public class IdentityStoreImpl implements IdentityStore {
         try {
             userExists = domain.isUserExists(decodedUniqueUserId.getValue());
         } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Failed to check existence of unique user - " +
+            throw new IdentityStoreServerException(String.format("Failed to check the existence of the unique user - " +
                     "%s.", uniqueUserId), e);
         }
 
@@ -139,7 +139,7 @@ public class IdentityStoreImpl implements IdentityStore {
     public User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
 
         if (claim == null || isNullOrEmpty(claim.getValue())) {
-            throw new IdentityStoreClientException("Invalid claim.");
+            throw new IdentityStoreClientException("Provided claim is invalid.");
         }
 
         Domain domain;
