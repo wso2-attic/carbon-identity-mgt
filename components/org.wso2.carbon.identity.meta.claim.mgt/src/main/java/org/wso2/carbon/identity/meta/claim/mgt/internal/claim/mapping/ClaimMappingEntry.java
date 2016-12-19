@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,8 +24,8 @@ import java.util.Map;
 public class ClaimMappingEntry {
 
     private String dialectURI;
-    private List<String> inherits;
-    private Boolean overrideDialectURI;
+    private String inherits;
+    private Boolean overrideDialect;
     private Map<String, String> mappings;
 
     public String getMappingDialectURI() {
@@ -45,19 +44,19 @@ public class ClaimMappingEntry {
         this.mappings = mappings;
     }
 
-    public List<String> getInherits() {
+    public String getInherits() {
         return inherits;
     }
 
-    public void setInherits(List<String> inherits) {
+    public void setInherits(String inherits) {
         this.inherits = inherits;
     }
 
-    public Boolean getOverrideDialectURI() {
-        return overrideDialectURI;
+    public Boolean isOverridingInheritingDialectURI() {
+        return overrideDialect;
     }
 
-    public void setOverrideDialectURI(Boolean overrideDialectURI) {
-        this.overrideDialectURI = overrideDialectURI;
+    public void setOverrideDialect(Boolean overrideDialect) {
+        this.overrideDialect = overrideDialect;
     }
 }

@@ -26,6 +26,9 @@ claimMappings:
    email: "http://wso2.org/claims/email"
  -
   dialectURI: "http://application2.com"
+  #only one dialect can be inherited.
+  inherits: "http://application1.com/"
+  overrideDialect: true
   mappings:
    sp1name: "http://wso2.org/claims/username"
    sp1role: "http://wso2.org/claims/role"
@@ -49,9 +52,8 @@ claimMappings:
  -
   dialectURI: "http://facebook.com"
   inherits:
-   - "http://identityprovider2.com"
    - "http://identityprovider1.com"
-  overrideDialectURI: "true"
+  overrideDialect: false
   mappings:
    childdob: "http://wso2.org/claims/dob"
 
