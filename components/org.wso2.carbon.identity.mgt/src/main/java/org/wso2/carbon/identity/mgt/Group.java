@@ -121,7 +121,15 @@ public class Group {
         this.identityStore = identityStore;
     }
 
-//    /**
+    @Override
+    public String toString() {
+        return "Group{" +
+                "uniqueGroupId='" + uniqueGroupId + '\'' +
+                ", domainName='" + domainName + '\'' +
+                '}';
+    }
+
+    //    /**
 //     * Get Roles assigned to this Group.
 //     *
 //     * @return List of Roles.

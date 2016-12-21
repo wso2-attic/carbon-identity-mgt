@@ -125,7 +125,15 @@ public class User implements Serializable {
         this.identityStore = identityStore;
     }
 
-//    /**
+    @Override
+    public String toString() {
+        return "User{" +
+                "uniqueUserId='" + uniqueUserId + '\'' +
+                ", domainName='" + domainName + '\'' +
+                '}';
+    }
+
+    //    /**
 //     * Get the roles assigned to this user.
 //     *
 //     * @return List of Roles assigned to this user.

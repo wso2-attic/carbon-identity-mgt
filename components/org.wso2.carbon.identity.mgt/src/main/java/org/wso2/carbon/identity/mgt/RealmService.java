@@ -17,7 +17,9 @@
 package org.wso2.carbon.identity.mgt;
 
 /**
- * User realm service.
+ * This interface is designed to provide the access to the Identity Store {@link IdentityStore}
+ *
+ * @since 1.0.0
  */
 public interface RealmService {
 
