@@ -17,9 +17,9 @@ package org.wso2.carbon.identity.meta.claim.mgt.service.impl;
 
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ProfileMgtServiceException;
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ProfileReaderException;
-import org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping.ClaimConfigEntry;
-import org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping.ProfileEntry;
-import org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping.ProfileMappingReader;
+import org.wso2.carbon.identity.meta.claim.mgt.mapping.profile.ClaimConfigEntry;
+import org.wso2.carbon.identity.meta.claim.mgt.mapping.profile.ProfileEntry;
+import org.wso2.carbon.identity.meta.claim.mgt.mapping.profile.ProfileMappingReader;
 import org.wso2.carbon.identity.meta.claim.mgt.service.ProfileMgtService;
 import org.wso2.carbon.kernel.utils.StringUtils;
 
