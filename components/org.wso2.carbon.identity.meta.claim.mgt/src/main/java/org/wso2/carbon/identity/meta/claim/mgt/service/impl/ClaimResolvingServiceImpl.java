@@ -17,8 +17,8 @@ package org.wso2.carbon.identity.meta.claim.mgt.service.impl;
 
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimMappingReaderException;
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimResolvingServiceException;
-import org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping.ClaimMappingEntry;
-import org.wso2.carbon.identity.meta.claim.mgt.internal.claim.mapping.ClaimMappingReader;
+import org.wso2.carbon.identity.meta.claim.mgt.mapping.claim.ClaimMappingEntry;
+import org.wso2.carbon.identity.meta.claim.mgt.mapping.claim.ClaimMappingReader;
 import org.wso2.carbon.identity.meta.claim.mgt.service.ClaimResolvingService;
 import org.wso2.carbon.kernel.utils.StringUtils;
 
