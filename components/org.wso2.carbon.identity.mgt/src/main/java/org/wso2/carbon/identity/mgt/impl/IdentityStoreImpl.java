@@ -35,10 +35,8 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreServerException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.impl.internal.IdentityMgtDataHolder;
 
-import java.io.UnsupportedEncodingException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -1490,18 +1488,12 @@ public class IdentityStoreImpl implements IdentityStore {
      *
      * @param domainId       domain id.
      * @param domainEntityId domain entity id.
-     * @return encoded unique entity id.
+     * @return unique entity id.
      * @throws IdentityStoreServerException Identity Store Exception.
      */
     private String getEncodedUniqueEntityId(int domainId, String domainEntityId) throws IdentityStoreException {
 
-        String uniqueEntityId = domainId + "." + domainEntityId;
-
-        try {
-            return Base64.getEncoder().encodeToString(uniqueEntityId.getBytes("utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new IdentityStoreServerException("Failed to encode the unique entity id");
-        }
+        return domainId + "." + domainEntityId;
     }
 
     /**
@@ -1514,15 +1506,7 @@ public class IdentityStoreImpl implements IdentityStore {
     private SimpleEntry<Integer, String> getDecodedUniqueEntityId(String uniqueEntityId) throws
             IdentityStoreException {
 
-        byte[] bytes = Base64.getDecoder().decode(uniqueEntityId);
-        String decodedUniqueEntityId;
-        try {
-            decodedUniqueEntityId = new String(bytes, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IdentityStoreServerException("Failed to decode the unique entity id");
-        }
-
-        String[] decodedUniqueEntityIdParts = decodedUniqueEntityId.split("\\.", 2);
+        String[] decodedUniqueEntityIdParts = uniqueEntityId.split("\\.", 2);
         if (decodedUniqueEntityIdParts.length != 2 || isNullOrEmpty(decodedUniqueEntityIdParts[0]) ||
                 isNullOrEmpty(decodedUniqueEntityIdParts[1])) {
             throw new IdentityStoreClientException("invalid unique entity id.");
