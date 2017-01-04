@@ -93,6 +93,9 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
         }
     }
 
+
+    //profile names
+
     /**
      * Get the claims set of a profile.
      *
@@ -121,9 +124,14 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
     @Override
     public ClaimConfigEntry getClaimAttributes(String profileName, String claimURI) throws ProfileMgtServiceException {
         try {
-            return buildProfileMappings().get(profileName).getClaims().stream()
-                    .filter(claimConfigEntry -> claimConfigEntry.getClaimURI().equalsIgnoreCase(claimURI)).findFirst()
-                    .get();
+            if (buildProfileMappings().get(profileName) != null) {
+                return buildProfileMappings().get(profileName).getClaims().stream()
+                        .filter(claimConfigEntry -> claimConfigEntry.getClaimURI().equalsIgnoreCase(claimURI))
+                        .findFirst().get();
+            } else {
+                throw new ProfileMgtServiceException(String.format("No profile found with the name: %s", profileName));
+            }
+
         } catch (ProfileReaderException e) {
             throw new ProfileMgtServiceException(
                     String.format("Error in getting the claim details for profile: %s and claim: %s", profileName,

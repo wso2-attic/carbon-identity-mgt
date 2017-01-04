@@ -25,7 +25,6 @@ public class ClaimMappingEntry {
 
     private String dialectURI;
     private String inherits;
-    private Boolean overrideDialect;
     private Map<String, String> mappings;
 
     public String getMappingDialectURI() {
@@ -52,11 +51,4 @@ public class ClaimMappingEntry {
         this.inherits = inherits;
     }
 
-    public Boolean isOverridingInheritingDialectURI() {
-        return overrideDialect;
-    }
-
-    public void setOverrideDialect(Boolean overrideDialect) {
-        this.overrideDialect = overrideDialect;
-    }
 }
