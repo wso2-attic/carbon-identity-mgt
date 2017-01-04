@@ -16,8 +16,8 @@
 package org.wso2.carbon.identity.meta.claim.mgt.service;
 
 import org.wso2.carbon.identity.meta.claim.mgt.exception.ProfileMgtServiceException;
-import org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping.ClaimConfigEntry;
-import org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping.ProfileEntry;
+import org.wso2.carbon.identity.meta.claim.mgt.mapping.profile.ClaimConfigEntry;
+import org.wso2.carbon.identity.meta.claim.mgt.mapping.profile.ProfileEntry;
 
 import java.util.List;
 import java.util.Map;

@@ -36,9 +36,9 @@ public interface ClaimResolvingService {
     /**
      * Provides all the claim mappings.
      *
-     * @return Map(application claims : root claim)
+     * @return Map(dialectURI(Map(application claims : root claim))
      * @throws ClaimResolvingServiceException : Error in getting the claim mappings.
      */
-    public Map<String, Map<String, String>> getClaimMapping() throws ClaimResolvingServiceException;
+    public Map<String, Map<String, String>> getClaimMappings() throws ClaimResolvingServiceException;
 
 }

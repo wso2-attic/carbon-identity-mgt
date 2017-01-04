@@ -63,4 +63,24 @@ public class ClaimResolvingServiceTest {
 
     }
 
+
+    @Test
+    public void testDialectInheritance() throws ClaimResolvingServiceException {
+        Map<String, String> applicationMappings = new HashMap<>();
+
+        applicationMappings.put("http://identityprovider1.com/idpname", "http://wso2.org/claims/username");
+        applicationMappings.put("http://identityprovider1.com/idprole", "http://wso2.org/claims/role");
+        applicationMappings.put("http://identityprovider1.com/idpmobile", "http://wso2.org/claims/mobile");
+        applicationMappings.put("http://identityprovider1.com/idpemail", "http://wso2.org/claims/email");
+        applicationMappings.put("http://facebook.com/childdob", "http://wso2.org/claims/dob");
+
+        ClaimResolvingService claimResolvingService = bundleContext
+                .getService(bundleContext.getServiceReference(ClaimResolvingService.class));
+        Assert.assertNotNull(claimResolvingService, "Failed to get claim resolving service instance");
+
+        Assert.assertEquals(applicationMappings, claimResolvingService.getClaimMapping("http://facebook.com"),
+                "Claim mappings not read correctly with inheriting dialect and overriding claims.");
+
+    }
+
 }

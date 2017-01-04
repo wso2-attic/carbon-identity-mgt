@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.meta.claim.mgt.internal.profile.mapping;
+package org.wso2.carbon.identity.meta.claim.mgt.mapping.profile;
 
 import java.util.Collections;
 import java.util.List;
