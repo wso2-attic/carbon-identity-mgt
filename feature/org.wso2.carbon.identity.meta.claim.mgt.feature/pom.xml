@@ -32,7 +32,7 @@
     <artifactId>org.wso2.carbon.identity.meta.claim.mgt.feature</artifactId>
 
     <packaging>carbon-feature</packaging>
-    <name>WSO2 Carbon Identity Meta Claim Management - Feature</name>
+    <name>WSO2 Carbon Identity Management - Meta Claim Mgt - Feature</name>
     <url>http://wso2.org</url>
     <description>This feature contains the core bundles required by the Carbon Identity Meta Claim Management feature
     </description>
@@ -67,6 +67,8 @@
                                 <resource>
                                     <directory>resources</directory>
                                     <includes>
+                                        <include>conf/claim-mapping.yaml</include>
+                                        <include>conf/profile-mapping.yaml</include>
                                         <include>p2.inf</include>
                                         <include>build.properties</include>
                                     </includes>
@@ -107,12 +109,8 @@
                             </bundles>
                             <importFeatures>
                                 <feature>
-                                    <id>org.wso2.carbon.caching.feature</id>
-                                    <version>${org.wso2.carbon.caching.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.security.caas</id>
-                                    <version>${org.wso2.carbon.security.caas.version}</version>
+                                    <id>org.wso2.carbon.identity.mgt.feature</id>
+                                    <version>${carbon.identity.mgt.version}</version>
                                 </feature>
                             </importFeatures>
                         </configuration>
