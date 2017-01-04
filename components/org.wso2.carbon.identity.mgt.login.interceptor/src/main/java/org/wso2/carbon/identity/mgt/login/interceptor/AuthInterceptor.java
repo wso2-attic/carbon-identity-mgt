@@ -60,7 +60,7 @@ public class AuthInterceptor implements Interceptor {
     @Override
     public boolean preCall(Request request, Response response, ServiceMethodInfo serviceMethodInfo) throws Exception {
 
-        if (request.getUri().startsWith("/scim/v2")){
+        if (request.getUri().startsWith("/scim/v2")) {
             if (("/scim/v2/Me".equals(request.getUri()) && HttpMethod.POST.equals(request.getHttpMethod()))
                     || "/scim/v2/ServiceProviderConfig".equals(request.getUri())
                     || "/scim/v2/ResourceType".equals(request.getUri())) {
@@ -93,12 +93,12 @@ public class AuthInterceptor implements Interceptor {
                         passwordCallback.setPassword(password);
                         Callback[] callbacks = {passwordCallback};
 
-                        Claim claim = new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, IdentityMgtConstants.USERNAME_CLAIM,
-                                username);
+                        Claim claim = new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, IdentityMgtConstants
+                                .USERNAME_CLAIM, username);
 
                         try {
-                            AuthenticationContext authenticateContext = realmService.getIdentityStore().authenticate(claim,
-                                    callbacks, domain);
+                            AuthenticationContext authenticateContext = realmService.getIdentityStore().authenticate
+                                    (claim, callbacks, domain);
                             request.setProperty("authzUser", authenticateContext.getUser().getUniqueUserId());
                             return true;
                         } catch (AuthenticationFailure authenticationFailure) {
