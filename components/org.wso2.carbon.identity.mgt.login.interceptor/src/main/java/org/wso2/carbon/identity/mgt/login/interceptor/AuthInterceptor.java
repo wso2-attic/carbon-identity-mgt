@@ -60,61 +60,58 @@ public class AuthInterceptor implements Interceptor {
     @Override
     public boolean preCall(Request request, Response response, ServiceMethodInfo serviceMethodInfo) throws Exception {
 
-        if (request == null) {
-            sendUnauthorized(response);
-            return false;
-        }
-
-        if (("/scim/v2/Me".equals(request.getUri()) && HttpMethod.POST.equals(request.getHttpMethod()))
-                || "/scim/v2/ServiceProviderConfig".equals(request.getUri())
-                || "/scim/v2/ResourceType".equals(request.getUri())
-                || request.getUri().startsWith("/user-portal")) {
-            return true;
-        }
-
-        if (request.getHeader("Authorization") == null) {
-            sendUnauthorized(response);
-            return false;
-        }
-
-        String authorizationHeader = request.getHeader("Authorization").trim();
-
-        if (authorizationHeader.startsWith(CarbonSecurityConstants.HTTP_AUTHORIZATION_PREFIX_BASIC)) {
-
-            String credentials = authorizationHeader.split("\\s+")[1];
-            byte[] decodedByte = credentials.getBytes(Charset.forName(StandardCharsets.UTF_8.name()));
-            String authDecoded = new String(Base64.getDecoder().decode(decodedByte),
-                    Charset.forName(StandardCharsets.UTF_8.name()));
-            String[] authParts = authDecoded.split(":");
-            if (authParts.length == 2) {
-                String domain = null;
-                String username = authParts[0];
-                if (username.contains("/")) {
-                    domain = username.substring(0, username.indexOf("/"));
-                    username = username.substring(username.indexOf("/") + 1);
-                }
-                char[] password = authParts[1].toCharArray();
-
-                PasswordCallback passwordCallback = new PasswordCallback("password", false);
-                passwordCallback.setPassword(password);
-                Callback[] callbacks = {passwordCallback};
-
-                Claim claim = new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, IdentityMgtConstants.USERNAME_CLAIM,
-                        username);
-
-                try {
-                    AuthenticationContext authenticateContext = realmService.getIdentityStore().authenticate(claim,
-                            callbacks, domain);
-                    request.setProperty("authzUser", authenticateContext.getUser().getUniqueUserId());
-                    return true;
-                } catch (AuthenticationFailure authenticationFailure) {
+        if (request.getUri().startsWith("/scim/v2")){
+            if (("/scim/v2/Me".equals(request.getUri()) && HttpMethod.POST.equals(request.getHttpMethod()))
+                    || "/scim/v2/ServiceProviderConfig".equals(request.getUri())
+                    || "/scim/v2/ResourceType".equals(request.getUri())) {
+                return true;
+            } else {
+                if (request.getHeader("Authorization") == null) {
                     sendUnauthorized(response);
                     return false;
                 }
+
+                String authorizationHeader = request.getHeader("Authorization").trim();
+
+                if (authorizationHeader.startsWith(CarbonSecurityConstants.HTTP_AUTHORIZATION_PREFIX_BASIC)) {
+
+                    String credentials = authorizationHeader.split("\\s+")[1];
+                    byte[] decodedByte = credentials.getBytes(Charset.forName(StandardCharsets.UTF_8.name()));
+                    String authDecoded = new String(Base64.getDecoder().decode(decodedByte),
+                            Charset.forName(StandardCharsets.UTF_8.name()));
+                    String[] authParts = authDecoded.split(":");
+                    if (authParts.length == 2) {
+                        String domain = null;
+                        String username = authParts[0];
+                        if (username.contains("/")) {
+                            domain = username.substring(0, username.indexOf("/"));
+                            username = username.substring(username.indexOf("/") + 1);
+                        }
+                        char[] password = authParts[1].toCharArray();
+
+                        PasswordCallback passwordCallback = new PasswordCallback("password", false);
+                        passwordCallback.setPassword(password);
+                        Callback[] callbacks = {passwordCallback};
+
+                        Claim claim = new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, IdentityMgtConstants.USERNAME_CLAIM,
+                                username);
+
+                        try {
+                            AuthenticationContext authenticateContext = realmService.getIdentityStore().authenticate(claim,
+                                    callbacks, domain);
+                            request.setProperty("authzUser", authenticateContext.getUser().getUniqueUserId());
+                            return true;
+                        } catch (AuthenticationFailure authenticationFailure) {
+                            sendUnauthorized(response);
+                            return false;
+                        }
+                    }
+                }
+                sendUnauthorized(response);
+                return false;
             }
         }
-        sendUnauthorized(response);
-        return false;
+        return true;
     }
 
     @Override
