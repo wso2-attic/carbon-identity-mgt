@@ -21,6 +21,7 @@ import org.wso2.carbon.identity.meta.claim.mgt.mapping.profile.ProfileEntry;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -35,6 +36,13 @@ public interface ProfileMgtService {
      * @throws ProfileMgtServiceException : Error in getting the profiles.
      */
     Map<String, ProfileEntry> getProfiles() throws ProfileMgtServiceException;
+
+    /**
+     * Get the names of available profiles.
+     * @return a set with all the available profile names.
+     * @throws ProfileMgtServiceException
+     */
+    Set<String> getProfileNames() throws ProfileMgtServiceException;
 
     /**
      * Get the claims set of a profile.
