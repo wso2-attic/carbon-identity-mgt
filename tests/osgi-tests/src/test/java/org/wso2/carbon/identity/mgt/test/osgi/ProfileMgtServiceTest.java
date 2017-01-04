@@ -31,44 +31,46 @@ import javax.inject.Inject;
 public class ProfileMgtServiceTest {
 
     private List<ClaimConfigEntry> claimConfigEntriesRegistration = new ArrayList<>();
-    ClaimConfigEntry claimConfigEntryUserName = new ClaimConfigEntry();
-    ClaimConfigEntry claimConfigEntryEmployeeNumber = new ClaimConfigEntry();
-    Map<String, String> properties = new HashMap<>();
+    private ClaimConfigEntry claimConfigEntryUserName = new ClaimConfigEntry();
+    private ClaimConfigEntry claimConfigEntryEmployeeNumber = new ClaimConfigEntry();
+    private Map<String, String> properties = new HashMap<>();
 
-    private static final String REGISTRATION = "registration";
+    private static final String DEFAULT = "default";
     private static final String EMPLOYEE = "employee";
 
-    //        profileName: "registration"
-    //        claims:
-    //        -
-    //                claimURI: "http://wso2.org/claims/username"
-    //        required: true
-    //        readonly: true
-    //        verifier: "claim verifying extension"
-    //        validator: "claim validating extension"
-    //        transformer: "transform extension"
-    //        regex: "*"
-    //        defaultValue: "user1"
-    //        dataType: "text"
-    //        properties:
-    //        customproperty: "custom value"
-    //                -
-    //                claimURI: "http://wso2.org/claims/employeeNumber"
-    //        required: true
-    //        readonly: true
-    //        regex: "*"
-    //        properties:
-    //        customproperty: "custom value"
-    //                -
-    //                profileName: "employee"
-    //        claims:
-    //        -
-    //                claimURI: "http://wso2.org/claims/employeeNumber"
-    //        required: true
-    //        readonly: true
-    //        regex: "*"
-    //        properties:
-    //        customproperty: "custom value"
+//    profileName: "default"
+//    claims:
+//            -
+//    claimURI: "http://wso2.org/claims/username"
+//    displayName: "User Name"
+//    required: true
+//    readonly: true
+//    verifier: "claim verifying extension"
+//    validator: "claim validating extension"
+//    transformer: "transform extension"
+//    regex: "*"
+//    defaultValue: "user1"
+//    dataType: "text"
+//    properties:
+//    customproperty: "custom value"
+//            -
+//    claimURI: "http://wso2.org/claims/email"
+//    displayName: "Email"
+//    required: true
+//    readonly: true
+//    regex: "*"
+//            -
+//    claimURI: "http://wso2.org/claims/mobile"
+//    displayName: "Mobile"
+//    required: true
+//    readonly: true
+//    regex: "*"
+//            -
+//    claimURI: "http://wso2.org/claims/organization"
+//    displayName: "Organization"
+//    required: true
+//    readonly: true
+//    regex: "*"
 
     @Inject
     private BundleContext bundleContext;
@@ -95,11 +97,11 @@ public class ProfileMgtServiceTest {
                 .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
-        Assert.assertNotNull(profileMgtService.getProfiles().get(REGISTRATION),
+        Assert.assertNotNull(profileMgtService.getProfiles().get(DEFAULT),
                 "Registration profile mappings not read correctly.");
         Assert.assertNotNull(profileMgtService.getProfiles().get(EMPLOYEE),
                 "Employee profile mappings not read correctly");
-        Assert.assertEquals(REGISTRATION, profileMgtService.getProfile(REGISTRATION).getProfileName(),
+        Assert.assertEquals(DEFAULT, profileMgtService.getProfile(DEFAULT).getProfileName(),
                 "Registration profile mappings not read correctly.");
         Assert.assertNotNull(profileMgtService.getProfiles().get(EMPLOYEE).getClaims(),
                 "Claims are not read correctly from profile");
@@ -112,7 +114,7 @@ public class ProfileMgtServiceTest {
                 .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
-        Assert.assertNotNull(profileMgtService.getProfile(REGISTRATION),
+        Assert.assertNotNull(profileMgtService.getProfile(DEFAULT),
                 "Registration profile mappings not read correctly.");
         Assert.assertNotNull(profileMgtService.getProfile(EMPLOYEE), "Employee profile mappings not read correctly.");
 
@@ -128,7 +130,7 @@ public class ProfileMgtServiceTest {
                 .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
-        Assert.assertTrue(profileMgtService.getRequiredClaims(REGISTRATION).contains("http://wso2.org/claims/username"),
+        Assert.assertTrue(profileMgtService.getRequiredClaims(DEFAULT).contains("http://wso2.org/claims/username"),
                 "Required claim not read correctly");
     }
 
@@ -139,7 +141,7 @@ public class ProfileMgtServiceTest {
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertTrue(
-                profileMgtService.getReadOnlyClaims(REGISTRATION).contains("http://wso2.org/claims/employeeNumber"),
+                profileMgtService.getReadOnlyClaims(DEFAULT).contains("http://wso2.org/claims/email"),
                 "ReadOnly claim not read correctly");
     }
 
@@ -150,7 +152,7 @@ public class ProfileMgtServiceTest {
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertTrue(
-                profileMgtService.getTransformingClaims(REGISTRATION).contains("http://wso2.org/claims/username"),
+                profileMgtService.getTransformingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
                 "Transforming claims not read correctly");
         Assert.assertFalse(
                 profileMgtService.getTransformingClaims(EMPLOYEE).contains("http://wso2.org/claims/username"),
@@ -164,7 +166,7 @@ public class ProfileMgtServiceTest {
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertTrue(
-                profileMgtService.getValidatingClaims(REGISTRATION).contains("http://wso2.org/claims/username"),
+                profileMgtService.getValidatingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
                 "Transforming claims not read correctly");
         Assert.assertFalse(profileMgtService.getValidatingClaims(EMPLOYEE).contains("http://wso2.org/claims/username"),
                 "Transforming claims not read correctly");
@@ -177,7 +179,7 @@ public class ProfileMgtServiceTest {
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertTrue(
-                profileMgtService.getVerifyingClaims(REGISTRATION).contains("http://wso2.org/claims/username"),
+                profileMgtService.getVerifyingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
                 "Transforming claims not read correctly");
         Assert.assertFalse(profileMgtService.getVerifyingClaims(EMPLOYEE).contains("http://wso2.org/claims/username"),
                 "Transforming claims not read correctly");
@@ -213,7 +215,7 @@ public class ProfileMgtServiceTest {
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertEquals(claimConfigEntryUserName.getTransformer(),
-                profileMgtService.getClaimAttributes(REGISTRATION, "http://wso2.org/claims/username").getTransformer(),
+                profileMgtService.getClaimAttributes(DEFAULT, "http://wso2.org/claims/username").getTransformer(),
                 "Failed to get claim attributes.");
         Assert.assertEquals(claimConfigEntryEmployeeNumber.getProperties(),
                 profileMgtService.getClaimAttributes(EMPLOYEE, "http://wso2.org/claims/employeeNumber").getProperties(),

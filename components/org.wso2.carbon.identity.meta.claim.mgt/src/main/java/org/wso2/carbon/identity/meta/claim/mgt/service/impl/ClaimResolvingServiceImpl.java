@@ -69,17 +69,8 @@ public class ClaimResolvingServiceImpl implements ClaimResolvingService {
 
         if (!StringUtils.isNullOrEmptyAfterTrim(claimMappingEntry.getInherits())) {
             Map<String, String> inheritingMap = initialMappings.get(claimMappingEntry.getInherits());
-            if (claimMappingEntry.isOverridingInheritingDialectURI()) {
-                inheritingMap = inheritingMap.entrySet().stream().collect(Collectors
-                        .toMap(p -> appendDialect(claimMappingEntry.getMappingDialectURI(),
-                                p.getKey().replaceFirst(claimMappingEntry.getInherits(), "")), Map.Entry::getValue));
-                ownClaims.putAll(inheritingMap);
-                return ownClaims;
-            } else {
-                ownClaims.putAll(inheritingMap);
-                //ToDO address if both the dialects have mappings for same. No inheriting chains supported yet.
-                return ownClaims;
-            }
+            ownClaims.putAll(inheritingMap);
+            return ownClaims;
         } else {
             return ownClaims;
         }
@@ -88,11 +79,12 @@ public class ClaimResolvingServiceImpl implements ClaimResolvingService {
     /**
      * Provides claim mappings for applications.
      *
-     * @return Map(application claims : root claim)
+     * @return Map(Map(application claims : root claim))
      * @throws ClaimResolvingServiceException : Error in getting the claim mapping for application.
      */
     @Override
     public Map<String, Map<String, String>> getClaimMappings() throws ClaimResolvingServiceException {
+        //ToDo use an object
         try {
 
             return buildClaimMappings();

@@ -54,7 +54,7 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
 
         this.bundleContext = bundleContext;
 
-        // Register Default Unique Id Resolver
+        // Register Default Claim Resolving Service
         IdentityClaimMgtDataHolder.getInstance().setClaimResolvingService(new ClaimResolvingServiceImpl());
     }
 
@@ -77,7 +77,7 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
 
         this.bundleContext = bundleContext;
 
-        // Register Default Unique Id Resolver
+        // Register Default Profile Mgt Service
         IdentityClaimMgtDataHolder.getInstance().setClaimResolvingService(new ClaimResolvingServiceImpl());
     }
 
@@ -92,7 +92,7 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
             log.error("Error occurred in un getting service", e);
         }
 
-        log.info("Carbon-Claim-Resolving bundle deactivated successfully.");
+        log.info("Carbon-Profile-Mgt bundle deactivated successfully.");
     }
 
     @Override
@@ -104,7 +104,7 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
         ClaimResolvingServiceImpl claimResolvingService = new ClaimResolvingServiceImpl();
         identityClaimMgtDataHolder.setClaimResolvingService(claimResolvingService);
 
-        // Register the claim resolving service.
+        // Register the profile mgt service.
         ProfileMgtService profileMgtService = new ProfileMgtServiceImpl();
         identityClaimMgtDataHolder.setProfileMgtService(profileMgtService);
 

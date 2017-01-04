@@ -22,6 +22,7 @@ import java.util.Map;
  */
 public class ClaimConfigEntry {
     private String claimURI;
+    private String displayName;
     private Boolean required;
     private Boolean readonly;
     private String verifier;
@@ -38,6 +39,14 @@ public class ClaimConfigEntry {
 
     public void setClaimURI(String claimURI) {
         this.claimURI = claimURI;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public Boolean getRequired() {
