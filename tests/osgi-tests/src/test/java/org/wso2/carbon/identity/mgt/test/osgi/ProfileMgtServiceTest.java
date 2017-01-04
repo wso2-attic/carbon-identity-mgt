@@ -19,8 +19,10 @@ import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Inject;
 
 /**
@@ -33,44 +35,43 @@ public class ProfileMgtServiceTest {
     private List<ClaimConfigEntry> claimConfigEntriesRegistration = new ArrayList<>();
     private ClaimConfigEntry claimConfigEntryUserName = new ClaimConfigEntry();
     private ClaimConfigEntry claimConfigEntryEmployeeNumber = new ClaimConfigEntry();
-    private Map<String, String> properties = new HashMap<>();
 
     private static final String DEFAULT = "default";
     private static final String EMPLOYEE = "employee";
 
-//    profileName: "default"
-//    claims:
-//            -
-//    claimURI: "http://wso2.org/claims/username"
-//    displayName: "User Name"
-//    required: true
-//    readonly: true
-//    verifier: "claim verifying extension"
-//    validator: "claim validating extension"
-//    transformer: "transform extension"
-//    regex: "*"
-//    defaultValue: "user1"
-//    dataType: "text"
-//    properties:
-//    customproperty: "custom value"
-//            -
-//    claimURI: "http://wso2.org/claims/email"
-//    displayName: "Email"
-//    required: true
-//    readonly: true
-//    regex: "*"
-//            -
-//    claimURI: "http://wso2.org/claims/mobile"
-//    displayName: "Mobile"
-//    required: true
-//    readonly: true
-//    regex: "*"
-//            -
-//    claimURI: "http://wso2.org/claims/organization"
-//    displayName: "Organization"
-//    required: true
-//    readonly: true
-//    regex: "*"
+    //    profileName: "default"
+    //    claims:
+    //            -
+    //    claimURI: "http://wso2.org/claims/username"
+    //    displayName: "User Name"
+    //    required: true
+    //    readonly: true
+    //    verifier: "claim verifying extension"
+    //    validator: "claim validating extension"
+    //    transformer: "transform extension"
+    //    regex: "*"
+    //    defaultValue: "user1"
+    //    dataType: "text"
+    //    properties:
+    //    customproperty: "custom value"
+    //            -
+    //    claimURI: "http://wso2.org/claims/email"
+    //    displayName: "Email"
+    //    required: true
+    //    readonly: true
+    //    regex: "*"
+    //            -
+    //    claimURI: "http://wso2.org/claims/mobile"
+    //    displayName: "Mobile"
+    //    required: true
+    //    readonly: true
+    //    regex: "*"
+    //            -
+    //    claimURI: "http://wso2.org/claims/organization"
+    //    displayName: "Organization"
+    //    required: true
+    //    readonly: true
+    //    regex: "*"
 
     @Inject
     private BundleContext bundleContext;
@@ -140,8 +141,7 @@ public class ProfileMgtServiceTest {
                 .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
-        Assert.assertTrue(
-                profileMgtService.getReadOnlyClaims(DEFAULT).contains("http://wso2.org/claims/email"),
+        Assert.assertTrue(profileMgtService.getReadOnlyClaims(DEFAULT).contains("http://wso2.org/claims/email"),
                 "ReadOnly claim not read correctly");
     }
 
@@ -151,8 +151,7 @@ public class ProfileMgtServiceTest {
                 .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
-        Assert.assertTrue(
-                profileMgtService.getTransformingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
+        Assert.assertTrue(profileMgtService.getTransformingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
                 "Transforming claims not read correctly");
         Assert.assertFalse(
                 profileMgtService.getTransformingClaims(EMPLOYEE).contains("http://wso2.org/claims/username"),
@@ -165,8 +164,7 @@ public class ProfileMgtServiceTest {
                 .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
-        Assert.assertTrue(
-                profileMgtService.getValidatingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
+        Assert.assertTrue(profileMgtService.getValidatingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
                 "Transforming claims not read correctly");
         Assert.assertFalse(profileMgtService.getValidatingClaims(EMPLOYEE).contains("http://wso2.org/claims/username"),
                 "Transforming claims not read correctly");
@@ -178,8 +176,7 @@ public class ProfileMgtServiceTest {
                 .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
-        Assert.assertTrue(
-                profileMgtService.getVerifyingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
+        Assert.assertTrue(profileMgtService.getVerifyingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
                 "Transforming claims not read correctly");
         Assert.assertFalse(profileMgtService.getVerifyingClaims(EMPLOYEE).contains("http://wso2.org/claims/username"),
                 "Transforming claims not read correctly");
@@ -187,6 +184,7 @@ public class ProfileMgtServiceTest {
 
     @Test
     public void testGetClaimAttributes() throws ProfileMgtServiceException {
+        Map<String, String> properties = new HashMap<>();
 
         properties.put("customproperty", "custom value");
 
@@ -220,6 +218,19 @@ public class ProfileMgtServiceTest {
         Assert.assertEquals(claimConfigEntryEmployeeNumber.getProperties(),
                 profileMgtService.getClaimAttributes(EMPLOYEE, "http://wso2.org/claims/employeeNumber").getProperties(),
                 "Failed to get claim attributes.");
+    }
+
+    @Test
+    public void testGetProfileNames() throws ProfileMgtServiceException {
+        Set<String> profileNames = new HashSet<>();
+        profileNames.add(DEFAULT);
+        profileNames.add(EMPLOYEE);
+
+        ProfileMgtService profileMgtService = bundleContext
+                .getService(bundleContext.getServiceReference(ProfileMgtService.class));
+        Assert.assertEquals(profileNames, profileMgtService.getProfileNames(),
+                "Error reading the available profile names");
+
     }
 
 }

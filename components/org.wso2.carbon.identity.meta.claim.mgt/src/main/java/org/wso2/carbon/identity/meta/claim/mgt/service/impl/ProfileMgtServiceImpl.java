@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Service implementation to retrieve claims attached with profiles.
@@ -88,6 +89,21 @@ public class ProfileMgtServiceImpl implements ProfileMgtService {
     public Map<String, ProfileEntry> getProfiles() throws ProfileMgtServiceException {
         try {
             return buildProfileMappings();
+        } catch (ProfileReaderException e) {
+            throw new ProfileMgtServiceException("Error in getting the profile configuration details.", e);
+        }
+    }
+
+    /**
+     * Get the names of available profiles.
+     *
+     * @return a set with all the available profile names.
+     * @throws ProfileMgtServiceException
+     */
+    @Override
+    public Set<String> getProfileNames() throws ProfileMgtServiceException {
+        try {
+            return buildProfileMappings().keySet();
         } catch (ProfileReaderException e) {
             throw new ProfileMgtServiceException("Error in getting the profile configuration details.", e);
         }
