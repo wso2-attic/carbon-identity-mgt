@@ -30,7 +30,7 @@ import javax.inject.Inject;
  */
 @Listeners(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
-public class ProfileMgtServiceTest {
+    public class ProfileMgtServiceTest {
 
     private List<ClaimConfigEntry> claimConfigEntriesRegistration = new ArrayList<>();
     private ClaimConfigEntry claimConfigEntryUserName = new ClaimConfigEntry();

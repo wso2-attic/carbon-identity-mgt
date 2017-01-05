@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.identity.meta.claim.mgt.mapping.profile;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,7 +37,7 @@ public class ProfileEntry {
     }
 
     public List<ClaimConfigEntry> getClaims() {
-        return claims;
+        return (claims == null) ? Collections.emptyList() : claims;
     }
 
     public void setClaims(List<ClaimConfigEntry> claims) {
