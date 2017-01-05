@@ -82,11 +82,6 @@ public class Domain {
      */
     private List<CredentialStoreConnector> credentialStoreConnectors = new ArrayList<>();
 
-    /**
-     * Mapping between IdentityStoreConnector ID and MetaClaimMapping
-     */
-    private Map<String, List<MetaClaimMapping>> metaClaimMappingsMap = new HashMap<>();
-
     private List<MetaClaimMapping> metaClaimMappings = new ArrayList<>();
 
     private Map<String, MetaClaimMapping> claimUriToMetaClaimMappings = new HashMap<>();
@@ -181,10 +176,7 @@ public class Domain {
      */
     public boolean isClaimSupported(String claimURI) {
 
-        return metaClaimMappingsMap.values().stream()
-                .anyMatch(list -> list.stream().filter(metaClaimMapping ->
-                        claimURI.equals(metaClaimMapping.getMetaClaim().getClaimUri()))
-                        .findFirst().isPresent());
+        return claimUriToMetaClaimMappings.keySet().contains(claimURI);
     }
 
     /**
@@ -1607,16 +1599,6 @@ public class Domain {
         }
 
         throw new AuthenticationFailure("Failed to authenticate user.");
-    }
-
-    /**
-     * Get claim mappings for an identity store id.
-     *
-     * @return Map of connector Id to List of MetaClaimMapping
-     */
-    public Map<String, List<MetaClaimMapping>> getMetaClaimMappingsMap() {
-
-        return metaClaimMappingsMap;
     }
 
     public MetaClaimMapping getMetaClaimMapping(String claimURI) throws DomainException {
