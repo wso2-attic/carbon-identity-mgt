@@ -15,6 +15,7 @@
  */
 package org.wso2.carbon.identity.meta.claim.mgt.mapping.profile;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -106,7 +107,11 @@ public class ClaimConfigEntry {
     }
 
     public Map<String, String> getProperties() {
-        return properties;
+        if (properties == null) {
+            return Collections.emptyMap();
+        } else {
+            return properties;
+        }
     }
 
     public void setProperties(Map<String, String> properties) {

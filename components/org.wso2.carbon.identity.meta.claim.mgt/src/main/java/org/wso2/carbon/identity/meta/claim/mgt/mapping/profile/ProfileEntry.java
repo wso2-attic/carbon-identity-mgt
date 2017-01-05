@@ -37,7 +37,11 @@ public class ProfileEntry {
     }
 
     public List<ClaimConfigEntry> getClaims() {
-        return (claims == null) ? Collections.emptyList() : claims;
+        if (claims == null) {
+            return Collections.emptyList();
+        } else {
+            return claims;
+        }
     }
 
     public void setClaims(List<ClaimConfigEntry> claims) {
