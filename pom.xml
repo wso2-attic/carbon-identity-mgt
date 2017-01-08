@@ -320,7 +320,7 @@
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <org.wso2.carbon.messaging.version>1.0.3</org.wso2.carbon.messaging.version>
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
-        <org.wso2.carbon.security.caas.version>1.0.0-SNAPSHOT</org.wso2.carbon.security.caas.version>
+        <org.wso2.carbon.security.caas.version>1.0.0-m2</org.wso2.carbon.security.caas.version>
         <carbon.datasources.version>1.0.0</carbon.datasources.version>
 
         <!-- Equinox dependency versions -->
