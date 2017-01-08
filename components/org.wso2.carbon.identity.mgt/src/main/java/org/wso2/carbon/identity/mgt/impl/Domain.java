@@ -1015,8 +1015,10 @@ public class Domain {
                 try {
                     updatedConnectorUserId = identityStoreConnector.updateUserAttributes(
                             connectorUserIdMap.get(connectorId),
-                            attributesMapToUpdate.get(connectorId),
-                            attributeMapToRemove.get(connectorId));
+                            attributesMapToUpdate.get(connectorId) != null ? attributesMapToUpdate.get(connectorId) :
+                                    Collections.emptyList(),
+                            attributeMapToRemove.get(connectorId) != null ? attributeMapToRemove.get(connectorId) :
+                                    Collections.emptyList());
                 } catch (IdentityStoreConnectorException e) {
                     throw new DomainException("Failed to update user attributes", e);
                 }
