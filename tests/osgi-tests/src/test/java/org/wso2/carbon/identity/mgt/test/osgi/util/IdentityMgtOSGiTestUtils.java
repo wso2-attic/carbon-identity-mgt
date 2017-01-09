@@ -82,10 +82,6 @@ public class IdentityMgtOSGiTestUtils {
                 .artifactId("org.wso2.carbon.security.caas")
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.security.caas")
-                .artifactId("org.wso2.carbon.security.caas.userstore.filebased")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
                 .groupId("org.wso2.carbon.identity.mgt")
                 .artifactId("org.wso2.carbon.identity.mgt")
                 .versionAsInProject());

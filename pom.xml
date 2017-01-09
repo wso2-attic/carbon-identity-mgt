@@ -146,6 +146,11 @@
                 <version>${org.wso2.carbon.security.caas.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.security.caas</groupId>
+                <artifactId>org.wso2.carbon.security.caas.boot</artifactId>
+                <version>${org.wso2.carbon.security.caas.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon.identity.mgt</groupId>
                 <artifactId>org.wso2.carbon.identity.mgt</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
@@ -159,6 +164,26 @@
                 <groupId>org.wso2.carbon.datasources</groupId>
                 <artifactId>org.wso2.carbon.datasource.core</artifactId>
                 <version>${carbon.datasources.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.jndi</groupId>
+                <artifactId>org.wso2.carbon.jndi</artifactId>
+                <version>${carbon.jndi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zaxxer</groupId>
+                <artifactId>HikariCP</artifactId>
+                <version>${HikariCP.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity.mgt</groupId>
+                <artifactId>in-memory-connectors-test-artifact</artifactId>
+                <version>${carbon.identity.mgt.version}</version>
             </dependency>
             <!-- Unit Tests -->
 
@@ -322,6 +347,7 @@
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
         <org.wso2.carbon.security.caas.version>1.0.0-m2</org.wso2.carbon.security.caas.version>
         <carbon.datasources.version>1.0.0</carbon.datasources.version>
+        <carbon.jndi.version>1.0.0</carbon.jndi.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>
@@ -377,6 +403,8 @@
         <javax.inject.version>1</javax.inject.version>
         <jacoco.version>0.7.5.201505241946</jacoco.version>
         <commons-io.version>2.4.0.wso2v1</commons-io.version>
+        <HikariCP.version>2.4.1</HikariCP.version>
+        <h2.version>1.4.191</h2.version>
 
         <project.scm.id>my-scm-server</project.scm.id>
 
