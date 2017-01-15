@@ -10,9 +10,9 @@ import org.osgi.framework.BundleContext;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-import org.wso2.carbon.identity.meta.claim.mgt.exception.ProfileMgtServiceException;
-import org.wso2.carbon.identity.meta.claim.mgt.mapping.profile.ClaimConfigEntry;
-import org.wso2.carbon.identity.meta.claim.mgt.service.ProfileMgtService;
+import org.wso2.carbon.identity.claim.ProfileMgtService;
+import org.wso2.carbon.identity.claim.exception.ProfileMgtServiceException;
+import org.wso2.carbon.identity.claim.impl.internal.config.profile.ClaimConfigEntry;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
@@ -30,7 +30,7 @@ import javax.inject.Inject;
  */
 @Listeners(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
-    public class ProfileMgtServiceTest {
+public class ProfileMgtServiceTest {
 
     private List<ClaimConfigEntry> claimConfigEntriesRegistration = new ArrayList<>();
     private ClaimConfigEntry claimConfigEntryUserName = new ClaimConfigEntry();
