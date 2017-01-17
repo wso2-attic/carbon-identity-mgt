@@ -25,6 +25,7 @@ import java.util.List;
 public class ProfileEntry {
 
     private String profileName;
+    private boolean isAdminProfile;
 
     private List<ClaimConfigEntry> claims;
 
@@ -46,5 +47,13 @@ public class ProfileEntry {
 
     public void setClaims(List<ClaimConfigEntry> claims) {
         this.claims = claims;
+    }
+
+    public boolean isAdminProfile() {
+        return isAdminProfile;
+    }
+
+    public void setAdminProfile(boolean adminProfile) {
+        isAdminProfile = adminProfile;
     }
 }
