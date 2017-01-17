@@ -18,6 +18,7 @@
 profiles:
  -
   profileName: "default"
+  isAdminProfile: false
   claims:
   -
    claimURI: "http://wso2.org/claims/username"
@@ -52,6 +53,7 @@ profiles:
    regex: "*"
  -
   profileName: "employee"
+  isAdminProfile: false
   claims:
   -
    claimURI: "http://wso2.org/claims/employeeNumber"

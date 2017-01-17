@@ -104,6 +104,8 @@ import javax.inject.Inject;
                 "Employee profile mappings not read correctly");
         Assert.assertEquals(DEFAULT, profileMgtService.getProfile(DEFAULT).getProfileName(),
                 "Registration profile mappings not read correctly.");
+        Assert.assertEquals(false, profileMgtService.getProfile(DEFAULT).isAdminProfile(),
+                            "Default profile is not an admin profile");
         Assert.assertNotNull(profileMgtService.getProfiles().get(EMPLOYEE).getClaims(),
                 "Claims are not read correctly from profile");
 
