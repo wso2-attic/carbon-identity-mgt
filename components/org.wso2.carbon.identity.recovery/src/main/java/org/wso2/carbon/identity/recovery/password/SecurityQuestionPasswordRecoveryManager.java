@@ -47,11 +47,9 @@ import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
 import org.wso2.carbon.identity.recovery.util.Utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 /**
  * Security Question Password Recovery Manager.
@@ -60,11 +58,11 @@ public class SecurityQuestionPasswordRecoveryManager {
 
     private static final Log log = LogFactory.getLog(SecurityQuestionPasswordRecoveryManager.class);
 
-    private static final String PROPERTY_ACCOUNT_LOCK_ON_FAILURE =
-            "account.lock.org.wso2.carbon.identity.recovery.handler.enable";
-
-    private static final String PROPERTY_ACCOUNT_LOCK_ON_FAILURE_MAX =
-            "account.lock.org.wso2.carbon.identity.recovery.handler.On.Failure.Max.Attempts";
+//    private static final String PROPERTY_ACCOUNT_LOCK_ON_FAILURE =
+//            "account.lock.org.wso2.carbon.identity.recovery.handler.enable";
+//
+//    private static final String PROPERTY_ACCOUNT_LOCK_ON_FAILURE_MAX =
+//            "account.lock.org.wso2.carbon.identity.recovery.handler.On.Failure.Max.Attempts";
 
     private static SecurityQuestionPasswordRecoveryManager instance = new SecurityQuestionPasswordRecoveryManager();
 
@@ -85,15 +83,15 @@ public class SecurityQuestionPasswordRecoveryManager {
         }
 
 
-        boolean isNotificationInternallyManaged = Boolean.parseBoolean(
-                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.NOTIFICATION_INTERNALLY_MANAGE));
-
-        boolean isRecoveryEnable = Boolean.parseBoolean(
-                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.QUESTION_BASED_PW_RECOVERY));
-        if (!isRecoveryEnable) {
-            throw Utils.handleClientException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_QUESTION_BASED_RECOVERY_NOT_ENABLE, null);
-        }
+//        boolean isNotificationInternallyManaged = Boolean.parseBoolean(
+//                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.NOTIFICATION_INTERNALLY_MANAGE));
+//
+//        boolean isRecoveryEnable = Boolean.parseBoolean(
+//                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.QUESTION_BASED_PW_RECOVERY));
+//        if (!isRecoveryEnable) {
+//            throw Utils.handleClientException(
+//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_QUESTION_BASED_RECOVERY_NOT_ENABLE, null);
+//        }
 
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         userRecoveryDataStore.invalidate(user);
@@ -125,22 +123,22 @@ public class SecurityQuestionPasswordRecoveryManager {
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_LOCKED_ACCOUNT, user.getUniqueUserId());
         }
 
-        boolean isNotificationSendWhenInitiatingPWRecovery = Boolean.parseBoolean(
-                Utils.getRecoveryConfigs(
-                        IdentityRecoveryConstants.ConnectorConfig.NOTIFICATION_SEND_RECOVERY_SECURITY_START));
-
-        if (isNotificationInternallyManaged && isNotificationSendWhenInitiatingPWRecovery) {
+//        boolean isNotificationSendWhenInitiatingPWRecovery = Boolean.parseBoolean(
+//                Utils.getRecoveryConfigs(
+//                        IdentityRecoveryConstants.ConnectorConfig.NOTIFICATION_SEND_RECOVERY_SECURITY_START));
+//
+//        if (isNotificationInternallyManaged && isNotificationSendWhenInitiatingPWRecovery) {
             try {
                 triggerNotification(user, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET_INITIATE, null);
             } catch (IdentityRecoveryException e) {
                 log.warn("Error while sending password reset initiating notification to user :"
                          + user.getUniqueUserId());
             }
-        }
+//        }
 
 
-        int minNoOfQuestionsToAnswer = Integer.parseInt(
-                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.QUESTION_MIN_NO_ANSWER));
+//        int minNoOfQuestionsToAnswer = Integer.parseInt(
+//                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.QUESTION_MIN_NO_ANSWER));
 
         ChallengeQuestionManager challengeQuestionManager = ChallengeQuestionManager.getInstance();
         String[] ids = challengeQuestionManager.getUserChallengeQuestionIds(user);
@@ -151,10 +149,10 @@ public class SecurityQuestionPasswordRecoveryManager {
                     user.getUniqueUserId());
         }
 
-
-        if (ids.length > minNoOfQuestionsToAnswer) {
-            ids = getRandomQuestionIds(ids, minNoOfQuestionsToAnswer);
-        }
+//
+//        if (ids.length > minNoOfQuestionsToAnswer) {
+//            ids = getRandomQuestionIds(ids, minNoOfQuestionsToAnswer);
+//        }
 
         String metaData = null;
 
@@ -200,16 +198,16 @@ public class SecurityQuestionPasswordRecoveryManager {
                                                                             " store domain is not in the request"));
         }
 
-        boolean isRecoveryEnable = Boolean.parseBoolean(
-                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.QUESTION_BASED_PW_RECOVERY));
-        if (!isRecoveryEnable) {
-            throw Utils.handleClientException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_QUESTION_BASED_RECOVERY_NOT_ENABLE, null);
-        }
-
-
-        boolean isNotificationInternallyManaged = Boolean.parseBoolean(
-                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.NOTIFICATION_INTERNALLY_MANAGE));
+//        boolean isRecoveryEnable = Boolean.parseBoolean(
+//                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.QUESTION_BASED_PW_RECOVERY));
+//        if (!isRecoveryEnable) {
+//            throw Utils.handleClientException(
+//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_QUESTION_BASED_RECOVERY_NOT_ENABLE, null);
+//        }
+//
+//
+//        boolean isNotificationInternallyManaged = Boolean.parseBoolean(
+//                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.NOTIFICATION_INTERNALLY_MANAGE));
 
 
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
@@ -235,21 +233,21 @@ public class SecurityQuestionPasswordRecoveryManager {
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_LOCKED_ACCOUNT, null);
         }
 
-        boolean isNotificationSendWhenInitiatingPWRecovery = Boolean.parseBoolean(
-                Utils.getRecoveryConfigs(
-                        IdentityRecoveryConstants.ConnectorConfig.NOTIFICATION_SEND_RECOVERY_SECURITY_START));
-
-        if (isNotificationInternallyManaged && isNotificationSendWhenInitiatingPWRecovery) {
+//        boolean isNotificationSendWhenInitiatingPWRecovery = Boolean.parseBoolean(
+//                Utils.getRecoveryConfigs(
+//                        IdentityRecoveryConstants.ConnectorConfig.NOTIFICATION_SEND_RECOVERY_SECURITY_START));
+//
+//        if (isNotificationInternallyManaged && isNotificationSendWhenInitiatingPWRecovery) {
             try {
                 triggerNotification(user, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET_INITIATE, null);
             } catch (IdentityRecoveryException e) {
                 log.warn("Error while sending password reset initiating notification to user :"
                          + user.getUniqueUserId());
             }
-        }
+//        }
 
-        int minNoOfQuestionsToAnswer = Integer.parseInt(
-                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.QUESTION_MIN_NO_ANSWER));
+//        int minNoOfQuestionsToAnswer = Integer.parseInt(
+//                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.QUESTION_MIN_NO_ANSWER));
 
         ChallengeQuestionManager challengeQuestionManager = ChallengeQuestionManager.getInstance();
         String[] ids = challengeQuestionManager.getUserChallengeQuestionIds(user);
@@ -261,9 +259,9 @@ public class SecurityQuestionPasswordRecoveryManager {
         }
 
 
-        if (ids.length > minNoOfQuestionsToAnswer) {
-            ids = getRandomQuestionIds(ids, minNoOfQuestionsToAnswer);
-        }
+//        if (ids.length > minNoOfQuestionsToAnswer) {
+//            ids = getRandomQuestionIds(ids, minNoOfQuestionsToAnswer);
+//        }
 
         ChallengeQuestion questions[] = new ChallengeQuestion[ids.length];
 
@@ -299,12 +297,12 @@ public class SecurityQuestionPasswordRecoveryManager {
         //if return data from load, it means the code is validated. Otherwise it returns exceptions.
 
         try {
-            boolean isRecoveryEnable = Boolean.parseBoolean(
-                    Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.QUESTION_BASED_PW_RECOVERY));
-            if (!isRecoveryEnable) {
-                throw Utils.handleClientException(
-                        IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_QUESTION_BASED_RECOVERY_NOT_ENABLE, null);
-            }
+//            boolean isRecoveryEnable = Boolean.parseBoolean(
+//                    Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.QUESTION_BASED_PW_RECOVERY));
+//            if (!isRecoveryEnable) {
+//                throw Utils.handleClientException(
+//                        IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_QUESTION_BASED_RECOVERY_NOT_ENABLE, null);
+//            }
 
             if (userChallengeAnswer == null) {
                 throw Utils.handleClientException(
@@ -444,18 +442,18 @@ public class SecurityQuestionPasswordRecoveryManager {
         }
     }
 
-
-    private static String[] getRandomQuestionIds(String[] allQuesitons, int minNoOfQuestionsToAnswser) {
-        ArrayList remainingQuestions = new ArrayList(Arrays.asList(allQuesitons));
-        ArrayList selectedQuestions = new ArrayList();
-
-        for (int i = 0; i < minNoOfQuestionsToAnswser; i++) {
-            int random = new Random().nextInt(remainingQuestions.size());
-            selectedQuestions.add(i, remainingQuestions.get(random));
-            remainingQuestions.remove(random);
-        }
-        return (String[]) selectedQuestions.toArray(new String[selectedQuestions.size()]);
-    }
+//
+//    private static String[] getRandomQuestionIds(String[] allQuesitons, int minNoOfQuestionsToAnswser) {
+//        ArrayList remainingQuestions = new ArrayList(Arrays.asList(allQuesitons));
+//        ArrayList selectedQuestions = new ArrayList();
+//
+//        for (int i = 0; i < minNoOfQuestionsToAnswser; i++) {
+//            int random = new Random().nextInt(remainingQuestions.size());
+//            selectedQuestions.add(i, remainingQuestions.get(random));
+//            remainingQuestions.remove(random);
+//        }
+//        return (String[]) selectedQuestions.toArray(new String[selectedQuestions.size()]);
+//    }
 
     private void triggerNotification(User user, String type, String code) throws IdentityRecoveryException {
 

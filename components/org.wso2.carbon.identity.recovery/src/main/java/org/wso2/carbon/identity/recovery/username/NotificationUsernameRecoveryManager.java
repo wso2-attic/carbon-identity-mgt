@@ -22,9 +22,6 @@ package org.wso2.carbon.identity.recovery.username;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.event.EventConstants;
-import org.wso2.carbon.identity.event.EventException;
-import org.wso2.carbon.identity.event.model.Event;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
@@ -38,7 +35,6 @@ import org.wso2.carbon.identity.recovery.util.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -62,52 +58,54 @@ public class NotificationUsernameRecoveryManager {
             IdentityRecoveryException {
 
 
-        boolean isRecoveryEnable = Boolean.parseBoolean(
-                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.USERNAME_RECOVERY_ENABLE));
-        if (!isRecoveryEnable) {
-            throw Utils.handleClientException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_USERNAME_RECOVERY_NOT_ENABLE, null);
-        }
+//        boolean isRecoveryEnable = Boolean.parseBoolean(
+//                Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.USERNAME_RECOVERY_ENABLE));
+//        if (!isRecoveryEnable) {
+//            throw Utils.handleClientException(
+//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_USERNAME_RECOVERY_NOT_ENABLE, null);
+//        }
 
-        boolean isNotificationInternallyManaged;
-        if (notify == null) {
-            isNotificationInternallyManaged = Boolean.parseBoolean(
-                    Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.NOTIFICATION_INTERNALLY_MANAGE));
-        } else {
-            isNotificationInternallyManaged = notify.booleanValue();
-        }
+//        boolean isNotificationInternallyManaged;
+//        if (notify == null) {
+//            isNotificationInternallyManaged = Boolean.parseBoolean(
+//                    Utils.getRecoveryConfigs(IdentityRecoveryConstants.ConnectorConfig.
+        // NOTIFICATION_INTERNALLY_MANAGE));
+//        } else {
+//            isNotificationInternallyManaged = notify.booleanValue();
+//        }
 
         User user = getUserByClaims(claims);
 
         if (user != null) {
-            if (isNotificationInternallyManaged) {
-                triggerNotification(user, IdentityRecoveryConstants.NOTIFICATION_ACCOUNT_ID_RECOVERY);
-                return null;
-            } else {
+//            if (isNotificationInternallyManaged) {
+//                triggerNotification(user, IdentityRecoveryConstants.NOTIFICATION_ACCOUNT_ID_RECOVERY);
+//                return null;
+//            } else {
                 return user.getUniqueUserId();
-            }
+//            }
         }
         throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_NO_VALID_USERNAME, null);
     }
 
-
-    private void triggerNotification(User user, String type) throws IdentityRecoveryException {
-
-        String eventName = EventConstants.Event.TRIGGER_NOTIFICATION;
-
-        HashMap<String, Object> properties = new HashMap<>();
-        properties.put(EventConstants.EventProperty.USER_NAME, user.getUniqueUserId());
-        properties.put(EventConstants.EventProperty.USER_STORE_DOMAIN, user.getUniqueUserId());
-
-        properties.put(IdentityRecoveryConstants.TEMPLATE_TYPE, type);
-        Event identityMgtEvent = new Event(eventName, properties);
-        try {
-            IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().handleEvent(identityMgtEvent);
-        } catch (EventException e) {
-            throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION, user.getUniqueUserId(), e);
-        }
-    }
+//
+//    private void triggerNotification(User user, String type) throws IdentityRecoveryException {
+//
+//        String eventName = EventConstants.Event.TRIGGER_NOTIFICATION;
+//
+//        HashMap<String, Object> properties = new HashMap<>();
+//        properties.put(EventConstants.EventProperty.USER_NAME, user.getUniqueUserId());
+//        properties.put(EventConstants.EventProperty.USER_STORE_DOMAIN, user.getUniqueUserId());
+//
+//        properties.put(IdentityRecoveryConstants.TEMPLATE_TYPE, type);
+//        Event identityMgtEvent = new Event(eventName, properties);
+//        try {
+//            IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().handleEvent(identityMgtEvent);
+//        } catch (EventException e) {
+//            throw Utils.handleServerException(
+//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION,
+    // user.getUniqueUserId(), e);
+//        }
+//    }
 
     private User getUserByClaims(UserClaim[] claims)
             throws IdentityRecoveryException {
