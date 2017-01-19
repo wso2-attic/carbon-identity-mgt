@@ -26,6 +26,7 @@ import org.wso2.carbon.identity.recovery.IdentityRecoveryClientException;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.model.ChallengeQuestion;
 import org.wso2.carbon.identity.recovery.model.UserChallengeAnswer;
+import org.wso2.carbon.identity.recovery.util.Utils;
 
 import java.util.List;
 
@@ -193,6 +194,16 @@ public class ChallengeQuestionManagementAdminService {
             log.error(msg, e);
             throw new IdentityRecoveryException(msg, e);
         }
+    }
+
+    /**
+     * Get Minimum no of challenge questions user has to answer.
+     *
+     * @return No of questions needs to answer.
+     * @throws IdentityRecoveryException
+     */
+    public int getMinimumNoOfChallengeQuestionsToAnswer() throws IdentityRecoveryException {
+        return Utils.getRecoveryConfigs().getSecurityQuestion().getPassword().getMinAnswers();
     }
 
 }
