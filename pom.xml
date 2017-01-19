@@ -185,6 +185,35 @@
                 <artifactId>in-memory-connectors-test-artifact</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
             </dependency>
+
+            <!-- Identity Recovery -->
+            <dependency>
+                <groupId>org.wso2.carbon.identity.commons</groupId>
+                <artifactId>org.wso2.carbon.identity.event</artifactId>
+                <version>${carbon.identity.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity.commons</groupId>
+                <artifactId>org.wso2.carbon.identity.commons</artifactId>
+                <version>${carbon.identity.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons.lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.msf4j</groupId>
+                <artifactId>msf4j-core</artifactId>
+                <version>${msf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.commons.axiom.wso2</groupId>
+                <artifactId>axiom</artifactId>
+                <version>${axiom.wso2.version}</version>
+            </dependency>
+            <!-- END -->
+
             <!-- Unit Tests -->
 
             <dependency>
@@ -327,14 +356,20 @@
         <module>components/org.wso2.carbon.identity.mgt</module>
         <module>components/org.wso2.carbon.identity.meta.claim.mgt</module>
         <module>components/org.wso2.carbon.identity.mgt.login.interceptor</module>
+        <module>components/org.wso2.carbon.identity.recovery</module>
         <module>feature/org.wso2.carbon.identity.mgt.feature</module>
         <module>feature/org.wso2.carbon.identity.meta.claim.mgt.feature</module>
         <module>feature/org.wso2.carbon.identity.mgt.login.feature</module>
+        <module>feature/org.wso2.carbon.identity.recovery.server.feature</module>
         <module>tests</module>
     </modules>
 
     <properties>
         <carbon.identity.mgt.version>1.0.0-SNAPSHOT</carbon.identity.mgt.version>
+
+        <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
+        <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
+        <carbon.p2.plugin.version>1.5.3</carbon.p2.plugin.version>
 
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.kernel.version>5.1.0</carbon.kernel.version>
@@ -348,6 +383,10 @@
         <org.wso2.carbon.security.caas.version>1.0.0-m2</org.wso2.carbon.security.caas.version>
         <carbon.datasources.version>1.0.0</carbon.datasources.version>
         <carbon.jndi.version>1.0.0</carbon.jndi.version>
+        <carbon.identity.commons.version>6.0.0-SNAPSHOT</carbon.identity.commons.version>
+        <commons.lang.version>3.4</commons.lang.version>
+        <jackson.version>1.8.6</jackson.version>
+        <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>
