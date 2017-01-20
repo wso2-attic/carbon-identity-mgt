@@ -146,6 +146,27 @@
                 <version>${org.wso2.carbon.security.caas.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.identity.commons</groupId>
+                <artifactId>org.wso2.carbon.identity.event</artifactId>
+                <version>${identity.event.package.export.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity.commons</groupId>
+                <artifactId>org.wso2.carbon.identity.commons</artifactId>
+                <version>${identity.event.package.export.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>3.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.msf4j</groupId>
+                <artifactId>msf4j-core</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.wso2.carbon.security.caas</groupId>
                 <artifactId>org.wso2.carbon.security.caas.boot</artifactId>
                 <version>${org.wso2.carbon.security.caas.version}</version>
@@ -375,6 +396,9 @@
         <carbon.kernel.version>5.1.0</carbon.kernel.version>
         <carbon.launcher.version>5.1.0</carbon.launcher.version>
         <carbon.core.version>5.1.0</carbon.core.version>
+        <identity.event.package.export.version.range>[6.0.0, 7.0.0)</identity.event.package.export.version.range>
+        <identity.event.package.export.version>6.0.0-SNAPSHOT</identity.event.package.export.version>
+        <identity.event.handler.account.lock.exp.pkg.version></identity.event.handler.account.lock.exp.pkg.version>
         <carbon.osgi.test.util.version>5.1.0</carbon.osgi.test.util.version>
         <msf4j.version>2.0.0</msf4j.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
