@@ -17,8 +17,8 @@
 package org.wso2.carbon.identity.recovery.services;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
@@ -34,7 +34,7 @@ import java.util.List;
  */
 public class ChallengeQuestionManagementAdminService {
 
-    private static Log log = LogFactory.getLog(ChallengeQuestionManagementAdminService.class);
+    private static Logger log = LoggerFactory.getLogger(ChallengeQuestionManagementAdminService.class);
     private ChallengeQuestionManager questionManager = ChallengeQuestionManager.getInstance();
 
     /**

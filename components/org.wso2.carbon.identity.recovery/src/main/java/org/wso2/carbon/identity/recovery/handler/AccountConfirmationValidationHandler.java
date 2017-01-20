@@ -16,8 +16,8 @@
 
 package org.wso2.carbon.identity.recovery.handler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.base.exception.IdentityRuntimeException;
 import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class AccountConfirmationValidationHandler extends AbstractEventHandler {
 
-    private static final Log log = LogFactory.getLog(AccountConfirmationValidationHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(AccountConfirmationValidationHandler.class);
 
     public static final String ACCOUNT_LOCKED_CLAIM = "http://wso2.org/claims/identity/accountLocked";
 

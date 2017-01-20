@@ -16,13 +16,13 @@
 
 package org.wso2.carbon.identity.recovery.internal;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.password.NotificationPasswordRecoveryManager;
@@ -52,7 +52,7 @@ import org.wso2.carbon.identity.recovery.username.NotificationUsernameRecoveryMa
 )
 public class IdentityRecoveryServiceComponent {
 
-    private static Log log = LogFactory.getLog(IdentityRecoveryServiceComponent.class);
+    private static Logger log = LoggerFactory.getLogger(IdentityRecoveryServiceComponent.class);
     private IdentityRecoveryServiceDataHolder dataHolder = IdentityRecoveryServiceDataHolder.getInstance();
 
     @Activate

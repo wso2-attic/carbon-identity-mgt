@@ -21,8 +21,8 @@ package org.wso2.carbon.identity.recovery.password;
 
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.event.EventConstants;
 import org.wso2.carbon.identity.event.EventException;
 import org.wso2.carbon.identity.event.model.Event;
@@ -58,7 +58,7 @@ import java.util.Random;
  */
 public class SecurityQuestionPasswordRecoveryManager {
 
-    private static final Log log = LogFactory.getLog(SecurityQuestionPasswordRecoveryManager.class);
+    private static final Logger log = LoggerFactory.getLogger(SecurityQuestionPasswordRecoveryManager.class);
 
     private static final String PROPERTY_ACCOUNT_LOCK_ON_FAILURE =
             "account.lock.org.wso2.carbon.identity.recovery.handler.enable";

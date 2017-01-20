@@ -21,8 +21,8 @@ package org.wso2.carbon.identity.recovery.util;
 import org.apache.axiom.om.util.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.event.EventException;
 import org.wso2.carbon.identity.mgt.IdentityStore;
@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
  * Utility to provide recovery functionality.
  */
 public class Utils {
-    private static final Log log = LogFactory.getLog(Utils.class);
+    private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
     //This is used to pass the arbitrary properties from self user manager to self handler
     private static ThreadLocal<org.wso2.carbon.identity.recovery.model.Property[]> arbitraryProperties = new

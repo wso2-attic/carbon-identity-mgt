@@ -20,8 +20,8 @@
 package org.wso2.carbon.identity.recovery.username;
 
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.event.EventConstants;
 import org.wso2.carbon.identity.event.EventException;
 import org.wso2.carbon.identity.event.model.Event;
@@ -46,7 +46,7 @@ import java.util.List;
  */
 public class NotificationUsernameRecoveryManager {
 
-    private static final Log log = LogFactory.getLog(NotificationUsernameRecoveryManager.class);
+    private static final Logger log = LoggerFactory.getLogger(NotificationUsernameRecoveryManager.class);
 
     private static NotificationUsernameRecoveryManager instance = new NotificationUsernameRecoveryManager();
 

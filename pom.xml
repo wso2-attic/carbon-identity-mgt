@@ -449,6 +449,9 @@
 
         <io.swagger.annotations.version>1.5.10</io.swagger.annotations.version>
         <io.swagger.jaxrs.version>1.5.10</io.swagger.jaxrs.version>
+
+        <!--Logging API version range-->
+        <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
     </properties>
 
 </project>

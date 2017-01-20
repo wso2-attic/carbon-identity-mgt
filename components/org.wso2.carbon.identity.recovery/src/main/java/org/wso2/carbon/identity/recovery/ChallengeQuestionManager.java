@@ -21,8 +21,8 @@ package org.wso2.carbon.identity.recovery;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
@@ -45,7 +45,7 @@ import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.LOCALE
  */
 public class ChallengeQuestionManager {
 
-    private static final Log log = LogFactory.getLog(ChallengeQuestionManager.class);
+    private static final Logger log = LoggerFactory.getLogger(ChallengeQuestionManager.class);
     private static ChallengeQuestionManager instance = new ChallengeQuestionManager();
 
     private ChallengeQuestionManager() {
