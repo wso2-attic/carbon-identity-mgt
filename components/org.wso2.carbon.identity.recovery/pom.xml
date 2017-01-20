@@ -29,6 +29,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon.identity.commons</groupId>
             <artifactId>org.wso2.carbon.identity.event</artifactId>
         </dependency>
@@ -66,7 +70,7 @@
         </export.package>
         <import.package>
             org.apache.commons.lang3; version="3.4.0",
-            org.apache.commons.logging; version="1.2.0",
+            org.slf4j; version="${slf4j.logging.package.import.version.range}",
             org.apache.commons.io; version="2.4.0",
 
             org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",

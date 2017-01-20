@@ -17,8 +17,8 @@
 package org.wso2.carbon.identity.recovery.handler;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.base.exception.IdentityRuntimeException;
 import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
@@ -50,7 +50,7 @@ import java.util.Map;
  */
 public class UserSelfRegistrationHandler extends AbstractEventHandler {
 
-    private static final Log log = LogFactory.getLog(UserSelfRegistrationHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(UserSelfRegistrationHandler.class);
 
     public String getName() {
         return "userSelfRegistration";
