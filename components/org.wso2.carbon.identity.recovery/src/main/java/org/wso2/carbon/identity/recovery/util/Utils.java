@@ -37,6 +37,7 @@ import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryServerException;
 import org.wso2.carbon.identity.recovery.internal.IdentityRecoveryServiceDataHolder;
 import org.wso2.carbon.identity.recovery.mapping.ChallengeQuestionsFile;
+import org.wso2.carbon.identity.recovery.mapping.RecoveryFile;
 import org.wso2.carbon.identity.recovery.model.ChallengeQuestion;
 
 import java.io.File;
@@ -64,9 +65,11 @@ public class Utils {
 
     //This is used to pass the verifyEmail or askPassword claim from preAddUser to postAddUser
     private static ThreadLocal<Claim> emailVerifyTemporaryClaim = new ThreadLocal<>();
-    public static final String CHALLANGE_QUESTIONS_FOLDER_PATH = System.getProperties()
-            .getProperty(IdentityRecoveryConstants.CARBON_HOME) +
+    private static final String CHALLENGE_QUESTIONS_FOLDER_PATH =
+            System.getProperty(IdentityRecoveryConstants.CARBON_HOME) +
             IdentityRecoveryConstants.CHALLAENGE_QUESTION_FOLDER_LOCATION;
+    private static final String RECOVERY_CONFIG_LOCATION = System.getProperty(IdentityRecoveryConstants.CARBON_HOME) +
+                                                           IdentityRecoveryConstants.RECOVERY_CONFIG_LOCATION;
 
     /**
      * @return
@@ -245,24 +248,14 @@ public class Utils {
     }
 
 
-    public static String getRecoveryConfigs(String key) throws IdentityRecoveryServerException {
-//        try {
-//            Property[] connectorConfigs;
-//            IdentityGovernanceService identityGovernanceService = IdentityRecoveryServiceDataHolder.getInstance()
-//                    .getIdentityGovernanceService();
-//            connectorConfigs = identityGovernanceService.getConfiguration(new String[]{key}, "");
-//            for (Property connectorConfig : connectorConfigs) {
-//                if (key.equals(connectorConfig.getName())) {
-//                    return connectorConfig.getValue();
-//                }
-//            }
-//            throw Utils.handleServerException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_ISSUE_IN_LOADING_RECOVERY_CONFIGS, null);
-//        } catch (IdentityGovernanceException e) {
-//            throw Utils.handleServerException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_ISSUE_IN_LOADING_RECOVERY_CONFIGS, null, e);
-//        }
-        return null;
+    public static RecoveryFile getRecoveryConfigs() throws IdentityRecoveryServerException {
+
+        try {
+            return FileUtil.readConfigFile(RECOVERY_CONFIG_LOCATION, RecoveryFile.class);
+        } catch (IdentityRecoveryException e) {
+            throw Utils.handleServerException(
+                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_ISSUE_IN_LOADING_RECOVERY_CONFIGS, null, e);
+            }
     }
 
     public static String getSignUpConfigs(String key) throws IdentityRecoveryServerException {
@@ -379,7 +372,7 @@ public class Utils {
         ChallengeQuestionsFile challengeQuestionFile = new ChallengeQuestionsFile();
         challengeQuestionFile.setChallengeQuestions(challengeQuestions);
 
-        FileUtil.writeConfigFiles(Paths.get(CHALLANGE_QUESTIONS_FOLDER_PATH + File.separator + locale + ".yaml"),
+        FileUtil.writeConfigFiles(Paths.get(CHALLENGE_QUESTIONS_FOLDER_PATH + File.separator + locale + ".yaml"),
                                   challengeQuestionFile);
 
     }
@@ -389,7 +382,7 @@ public class Utils {
         List<ChallengeQuestion> challengeQuestionsInAllLocales = new ArrayList<>();
         final boolean[] error = { false };
         try {
-            Files.list(Paths.get(CHALLANGE_QUESTIONS_FOLDER_PATH))
+            Files.list(Paths.get(CHALLENGE_QUESTIONS_FOLDER_PATH))
                  .forEach((path) -> {
                      try {
                          String locale = FilenameUtils.removeExtension(path.toAbsolutePath().toString());
@@ -419,7 +412,7 @@ public class Utils {
             throws IdentityRecoveryException {
 
         ChallengeQuestionsFile challengeQuestionFile =
-                FileUtil.readConfigFile(Paths.get(CHALLANGE_QUESTIONS_FOLDER_PATH + File.separator + locale + ".yaml"),
+                FileUtil.readConfigFile(Paths.get(CHALLENGE_QUESTIONS_FOLDER_PATH + File.separator + locale + ".yaml"),
                                         ChallengeQuestionsFile.class);
         challengeQuestionFile.getChallengeQuestions().forEach(challengeQuestion -> {
             challengeQuestion.setLocale(locale);
