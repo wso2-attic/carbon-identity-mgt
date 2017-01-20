@@ -21,7 +21,7 @@ package org.wso2.carbon.identity.mgt.exception;
  *
  * @since 1.0.0
  */
-public class AuthenticationFailure extends Throwable {
+public class AuthenticationFailure extends Exception {
 
     public AuthenticationFailure(Throwable t) {
         super(t);
