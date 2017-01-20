@@ -65,10 +65,10 @@ public class Utils {
 
     //This is used to pass the verifyEmail or askPassword claim from preAddUser to postAddUser
     private static ThreadLocal<Claim> emailVerifyTemporaryClaim = new ThreadLocal<>();
-    private static final String CHALLENGE_QUESTIONS_FOLDER_PATH = System.getenv(IdentityRecoveryConstants.CARBON_HOME) +
-                                                                  IdentityRecoveryConstants.
-                                                                          CHALLAENGE_QUESTION_FOLDER_LOCATION;
-    private static final String RECOVERY_CONFIG_LOCATION = System.getenv(IdentityRecoveryConstants.CARBON_HOME) +
+    private static final String CHALLENGE_QUESTIONS_FOLDER_PATH =
+            System.getProperty(IdentityRecoveryConstants.CARBON_HOME) +
+            IdentityRecoveryConstants.CHALLAENGE_QUESTION_FOLDER_LOCATION;
+    private static final String RECOVERY_CONFIG_LOCATION = System.getProperty(IdentityRecoveryConstants.CARBON_HOME) +
                                                            IdentityRecoveryConstants.RECOVERY_CONFIG_LOCATION;
 
     /**
