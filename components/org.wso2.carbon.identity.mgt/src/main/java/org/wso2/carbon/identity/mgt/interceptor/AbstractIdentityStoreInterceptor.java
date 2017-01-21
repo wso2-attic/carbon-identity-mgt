@@ -343,7 +343,7 @@ public class AbstractIdentityStoreInterceptor implements IdentityStoreIntercepto
     }
 
     @Override
-    public void doPreAddUsers(List<UserBean> users) throws IdentityStoreException {
+    public void doPreAddUsers(List<UserBean> usersBeans) throws IdentityStoreException {
 
     }
 
@@ -353,7 +353,7 @@ public class AbstractIdentityStoreInterceptor implements IdentityStoreIntercepto
     }
 
     @Override
-    public void doPreAddUsers(List<UserBean> users, String domainName) throws IdentityStoreException {
+    public void doPreAddUsers(List<UserBean> userBeans, String domainName) throws IdentityStoreException {
 
     }
 
@@ -483,7 +483,7 @@ public class AbstractIdentityStoreInterceptor implements IdentityStoreIntercepto
     }
 
     @Override
-    public void doPostAddGroups(List<GroupBean> groupsBeans, String domainName, List<Group> groups)
+    public void doPostAddGroups(List<GroupBean> groupBeans, String domainName, List<Group> groups)
             throws IdentityStoreException {
 
     }
