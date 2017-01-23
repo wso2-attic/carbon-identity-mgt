@@ -23,10 +23,13 @@ import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.impl.JDBCUniqueIdResolverFactory;
+import org.wso2.carbon.identity.mgt.interceptor.IdentityStoreInterceptor;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverFactory;
 import org.wso2.carbon.security.caas.user.core.store.AuthorizationStore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -55,6 +58,9 @@ public class IdentityMgtDataHolder {
     private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
 
     private Map<String, UniqueIdResolverFactory> uniqueIdResolverFactoryMap = new HashMap<>();
+
+    private List<IdentityStoreInterceptor> identityStoreInterceptors = new ArrayList<>();
+
 
     private IdentityMgtDataHolder() {
 
@@ -182,5 +188,31 @@ public class IdentityMgtDataHolder {
 
     void registerCacheService(CarbonCachingService carbonCachingService) {
         this.carbonCachingService = carbonCachingService;
+    }
+
+    /**
+     * Retrieve a sorted list of IdentityStoreListeners.
+     *
+     * @return List of sorted IdentityStoreListeners.
+     */
+    public List<IdentityStoreInterceptor> getIdentityStoreInterceptors() {
+        return identityStoreInterceptors;
+    }
+
+    /**
+     * Adds a IdentityStoreInterceptor to the interceptor list.
+     * The function will sort the interceptor list when adding a interceptor.
+     *
+     * @param identityStoreInterceptor IdentityStoreInterceptor.
+     */
+    public void registerIdentityStoreInterceptor(IdentityStoreInterceptor identityStoreInterceptor) {
+
+        if (identityStoreInterceptor.isEnabled()) {
+            identityStoreInterceptors.add(identityStoreInterceptor);
+            identityStoreInterceptors.sort((identityStoreInterceptor1, identityStoreInterceptor2) ->
+                                                   identityStoreInterceptor1.getExecutionOrderId() -
+                                                   identityStoreInterceptor2.getExecutionOrderId());
+
+        }
     }
 }

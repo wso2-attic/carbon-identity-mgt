@@ -45,15 +45,15 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.MetaClaimStoreException;
 import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
-import org.wso2.carbon.identity.mgt.impl.CacheBackedIdentityStore;
 import org.wso2.carbon.identity.mgt.impl.Domain;
-import org.wso2.carbon.identity.mgt.impl.IdentityStoreImpl;
+import org.wso2.carbon.identity.mgt.impl.InterceptingIdentityStore;
 import org.wso2.carbon.identity.mgt.impl.RealmServiceImpl;
 import org.wso2.carbon.identity.mgt.impl.config.DomainConfig;
 import org.wso2.carbon.identity.mgt.impl.config.StoreConfig;
 import org.wso2.carbon.identity.mgt.impl.internal.config.connector.ConnectorConfigReader;
 import org.wso2.carbon.identity.mgt.impl.internal.config.domain.DomainConfigReader;
 import org.wso2.carbon.identity.mgt.impl.internal.config.store.IdentityStoreConfigReader;
+import org.wso2.carbon.identity.mgt.interceptor.IdentityStoreInterceptor;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverConfig;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverFactory;
@@ -224,6 +224,21 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
         IdentityMgtDataHolder.getInstance().registerCacheService(null);
     }
 
+    @Reference(
+            name = "IdentityStoreInterceptor",
+            service = IdentityStoreInterceptor.class,
+            cardinality = ReferenceCardinality.MULTIPLE,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterIdentityStoreInterceptor"
+    )
+    protected void registerIdentityStoreInterceptor(IdentityStoreInterceptor identityStoreInterceptor) {
+        IdentityMgtDataHolder.getInstance().registerIdentityStoreInterceptor(identityStoreInterceptor);
+    }
+
+    protected void unregisterIdentityStoreInterceptor(IdentityStoreInterceptor identityStoreInterceptor) {
+        //TODO
+    }
+
     @Override
     public void onAllRequiredCapabilitiesAvailable() {
 
@@ -250,12 +265,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             // Get the store configurations
             StoreConfig storeConfig = IdentityStoreConfigReader.getStoreConfig();
 
-            IdentityStore identityStore;
-            if (storeConfig.isEnableCache() && storeConfig.isEnableIdentityStoreCache()) {
-                identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap(), domains);
-            } else {
-                identityStore = new IdentityStoreImpl(domains);
-            }
+            IdentityStore identityStore = new InterceptingIdentityStore(storeConfig, domains);
 
             // Register the realm service.
             RealmService realmService = new RealmServiceImpl(identityStore);
