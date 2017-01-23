@@ -87,7 +87,7 @@ public class IdentityMgtOSGiTestUtils {
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                 .groupId("org.wso2.carbon.identity.mgt")
-                .artifactId("org.wso2.carbon.identity.meta.claim.mgt")
+                .artifactId("org.wso2.carbon.identity.claim")
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                 .groupId("org.wso2.carbon.identity.mgt")

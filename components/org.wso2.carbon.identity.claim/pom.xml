@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.wso2.carbon.identity.mgt</groupId>
+        <artifactId>org.wso2.carbon.identity.mgt.parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>org.wso2.carbon.identity.claim</artifactId>
+    <packaging>bundle</packaging>
+    <name>WSO2 Carbon Identity Management - Claim - services Bundle</name>
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>${maven.wagon.ssh.version}</version>
+            </extension>
+        </extensions>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9.1</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/gen/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi.services</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.caching</groupId>
+            <artifactId>org.wso2.carbon.caching</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-jaxrs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.msf4j</groupId>
+            <artifactId>msf4j-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>${javax.jsp-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.mgt</groupId>
+            <artifactId>org.wso2.carbon.identity.mgt</artifactId>
+        </dependency>
+
+        <!-- Pax Exam Dependencies-->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-container-native</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-link-mvn</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-aether</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>osgi-test-util</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.spec.ee</groupId>
+            <artifactId>ow2-jta-1.1-spec</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <private.package>org.wso2.carbon.identity.claim.internal</private.package>
+        <export.package>
+            !org.wso2.carbon.identity.claim.internal,
+            org.wso2.carbon.identity.claim.*;version="${project.version}"
+        </export.package>
+        <import.package>
+            org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",
+            org.osgi.service.permissionadmin.*;version="${org.osgi.service.permissionadmin.import.version.range}",
+            org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
+            org.wso2.carbon.context.api.*;version="${org.wso2.carbon.context.import.version.range}",
+            org.yaml.snakeyaml.*;version="${org.snakeyaml.package.import.version.range}",
+            javax.naming.*,
+            javax.xml.*,
+            org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
+            net.minidev.asm.*;version="${asm.package.version.range}",
+            org.wso2.carbon.kernel.*;version="${carbon.kernel.version}",
+            org.wso2.carbon.identity.mgt.exception.*;version="${carbon.identity.mgt.version}",
+            org.wso2.carbon.identity.mgt.impl.util.*;version="${carbon.identity.mgt.version}",
+            org.wso2.carbon.identity.mgt.resolver.user.*;version="${carbon.identity.mgt.version}",
+        </import.package>
+
+        <carbon.component>
+            startup.listener;
+            componentName="wso2-carbon-identity-claim";
+            requiredService="org.wso2.carbon.identity.mgt.service.RealmService"
+        </carbon.component>
+
+        <dsannotations>*</dsannotations>
+
+        <!-- OSGi API version range-->
+        <osgi.framework.package.import.version.range>[1.8.0, 2.0.0)</osgi.framework.package.import.version.range>
+        <org.osgi.service.permissionadmin.import.version.range>[1.2.0, 1.3.0)
+        </org.osgi.service.permissionadmin.import.version.range>
+        <org.osgi.service.component.annotations.version.range>[1.2.0, 1.3.0)
+        </org.osgi.service.component.annotations.version.range>
+        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+        <javax.jsp-api.version>2.0</javax.jsp-api.version>
+
+        <!-- Dependency package version ranges -->
+        <asm.package.version.range>[1.0.2, 2.0.0)</asm.package.version.range>
+        <org.wso2.carbon.security.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.security.version.range>
+
+        <!--Logging API version range-->
+        <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
+
+        <org.wso2.carbon.context.import.version.range>[5.0.0, 5.1.0)</org.wso2.carbon.context.import.version.range>
+        <org.snakeyaml.package.import.version.range>[1.16.0, 2.0.0)</org.snakeyaml.package.import.version.range>
+        <!-- Dependency package version ranges -->
+        <com.nimbusds.package.import.version.range>[2.26.1, 2.27)</com.nimbusds.package.import.version.range>
+    </properties>
+
+</project>
