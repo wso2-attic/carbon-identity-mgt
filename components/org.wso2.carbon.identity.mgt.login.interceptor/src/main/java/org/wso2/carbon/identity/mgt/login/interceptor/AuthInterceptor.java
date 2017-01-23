@@ -29,7 +29,6 @@ import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants;
-import org.wso2.carbon.security.caas.api.util.CarbonSecurityConstants;
 import org.wso2.msf4j.Interceptor;
 import org.wso2.msf4j.Request;
 import org.wso2.msf4j.Response;
@@ -73,7 +72,7 @@ public class AuthInterceptor implements Interceptor {
 
                 String authorizationHeader = request.getHeader("Authorization").trim();
 
-                if (authorizationHeader.startsWith(CarbonSecurityConstants.HTTP_AUTHORIZATION_PREFIX_BASIC)) {
+                if (authorizationHeader.startsWith(IdentityMgtConstants.HTTP_AUTHORIZATION_PREFIX_BASIC)) {
 
                     String credentials = authorizationHeader.split("\\s+")[1];
                     byte[] decodedByte = credentials.getBytes(Charset.forName(StandardCharsets.UTF_8.name()));
@@ -97,8 +96,8 @@ public class AuthInterceptor implements Interceptor {
                                 .USERNAME_CLAIM, username);
 
                         try {
-                            AuthenticationContext authenticateContext = realmService.getIdentityStore().authenticate
-                                    (claim, callbacks, domain);
+                            AuthenticationContext authenticateContext =
+                                    realmService.getIdentityStore().authenticate(claim, callbacks, domain);
                             request.setProperty("authzUser", authenticateContext.getUser().getUniqueUserId());
                             return true;
                         } catch (AuthenticationFailure authenticationFailure) {

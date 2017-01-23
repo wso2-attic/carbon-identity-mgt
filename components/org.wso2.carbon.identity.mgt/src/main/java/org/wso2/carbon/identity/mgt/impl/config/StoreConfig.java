@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.identity.mgt.impl.config;
 
+import org.wso2.carbon.identity.mgt.connector.config.AuthorizationStoreConnectorConfig;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +37,8 @@ public class StoreConfig {
     private Map<String, CacheConfig> identityStoreCacheConfigMap = new HashMap<>();
 
     private Map<String, CacheConfig> credentialStoreCacheConfigMap = new HashMap<>();
+
+    private Map<String, AuthorizationStoreConnectorConfig> authorizationConnectorConfigMap = new HashMap<>();
 
     public StoreConfig() {
 
@@ -86,5 +90,14 @@ public class StoreConfig {
 
     public void setCredentialStoreCacheConfigMap(Map<String, CacheConfig> cradentialStoreCacheConfigMap) {
         this.credentialStoreCacheConfigMap = cradentialStoreCacheConfigMap;
+    }
+
+    public Map<String, AuthorizationStoreConnectorConfig> getAuthorizationConnectorConfigMap() {
+        return authorizationConnectorConfigMap;
+    }
+
+    public void setAuthorizationConnectorConfigMap(
+            Map<String, AuthorizationStoreConnectorConfig> authorizationConnectorConfigMap) {
+        this.authorizationConnectorConfigMap = authorizationConnectorConfigMap;
     }
 }

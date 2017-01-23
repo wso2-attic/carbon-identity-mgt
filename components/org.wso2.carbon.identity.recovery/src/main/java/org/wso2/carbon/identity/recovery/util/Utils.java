@@ -24,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.base.exception.IdentityException;
-import org.wso2.carbon.identity.event.EventException;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
@@ -256,33 +255,6 @@ public class Utils {
             throw Utils.handleServerException(
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_ISSUE_IN_LOADING_RECOVERY_CONFIGS, null, e);
             }
-    }
-
-    public static String getSignUpConfigs(String key) throws IdentityRecoveryServerException {
-//        try {
-//            Property[] connectorConfigs;
-//            IdentityGovernanceService identityGovernanceService = IdentityRecoveryServiceDataHolder.getInstance()
-//                    .getIdentityGovernanceService();
-//            connectorConfigs = identityGovernanceService.getConfiguration(new String[]{key} , "");
-//            return connectorConfigs[0].getValue();
-//        } catch (IdentityGovernanceException e) {
-//            throw Utils.handleServerException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_ISSUE_IN_LOADING_SIGNUP_CONFIGS, null, e);
-//        }
-        return null;
-    }
-
-    public static String getConnectorConfig(String key) throws EventException {
-//        try {
-//            Property[] connectorConfigs;
-//            IdentityGovernanceService identityGovernanceService = IdentityRecoveryServiceDataHolder.getInstance()
-//                    .getIdentityGovernanceService();
-//            connectorConfigs = identityGovernanceService.getConfiguration(new String[]{key} , "");
-//            return connectorConfigs[0].getValue();
-//        } catch (IdentityGovernanceException e) {
-//            throw new EventException("Error while getting connector configurations", e);
-//        }
-        return null;
     }
 
     public static ChallengeQuestion[] getDefaultChallengeQuestions() {
