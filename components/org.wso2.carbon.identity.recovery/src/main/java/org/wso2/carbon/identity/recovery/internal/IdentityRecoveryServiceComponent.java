@@ -81,7 +81,7 @@ public class IdentityRecoveryServiceComponent {
             log.debug("Identity Management bundle is de-activated");
         }
     }
-    
+
     @Reference(
             name = "realmService",
             service = RealmService.class,
