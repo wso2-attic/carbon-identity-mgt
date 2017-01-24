@@ -207,11 +207,11 @@
                 <artifactId>msf4j-core</artifactId>
                 <version>${msf4j.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.ws.commons.axiom.wso2</groupId>
-                <artifactId>axiom</artifactId>
-                <version>${axiom.wso2.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.apache.ws.commons.axiom.wso2</groupId>-->
+                <!--<artifactId>axiom</artifactId>-->
+                <!--<version>${axiom.wso2.version}</version>-->
+            <!--</dependency>-->
             <!-- END -->
 
             <!-- Unit Tests -->
@@ -386,7 +386,6 @@
         <carbon.identity.commons.version>6.0.0-SNAPSHOT</carbon.identity.commons.version>
         <commons.lang.version>3.4</commons.lang.version>
         <jackson.version>1.8.6</jackson.version>
-        <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>
