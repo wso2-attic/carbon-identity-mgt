@@ -21,8 +21,12 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.password.NotificationPasswordRecoveryManager;
@@ -108,17 +112,23 @@ public class IdentityRecoveryServiceComponent {
         }
     }
 
-//    protected void setRealmService(RealmService realmService) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("Setting the Realm Service");
-//        }
-//        dataHolder.setRealmService(realmService);
-//    }
-//
-//    protected void unsetRealmService(RealmService realmService) {
-//        log.debug("UnSetting the Realm Service");
-//        dataHolder.setRealmService(null);
-//    }
+    @Reference(
+            name = "realmService",
+            service = RealmService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetRealmService")
+    protected void setRealmService(RealmService realmService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting the Realm Service");
+        }
+        dataHolder.setRealmService(realmService);
+    }
+
+    protected void unsetRealmService(RealmService realmService) {
+        log.debug("UnSetting the Realm Service");
+        dataHolder.setRealmService(null);
+    }
 //
 //    protected void unsetIdentityEventService(EventService identityEventService) {
 //        IdentityRecoveryServiceDataHolder.getInstance().setIdentityEventService(null);
