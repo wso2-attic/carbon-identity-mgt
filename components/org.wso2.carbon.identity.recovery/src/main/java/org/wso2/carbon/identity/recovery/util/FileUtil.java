@@ -50,20 +50,14 @@ public class FileUtil {
 
     public static <T> T readConfigFile(Path file, Class<T> classType) throws IdentityRecoveryException {
 
-        if (Files.exists(file, new LinkOption[0])) {
-            try {
-                InputStreamReader inputStreamReader =
-                        new InputStreamReader(Files.newInputStream(file, new OpenOption[0]), StandardCharsets.UTF_8);
-                Yaml yaml = new Yaml();
-                yaml.setBeanAccess(BeanAccess.FIELD);
-                return yaml.loadAs(inputStreamReader, classType);
-            } catch (IOException e) {
-                throw new IdentityRecoveryException(
-                        String.format("Error in reading file %s", new Object[]{file.toString()}), e);
-            }
-        } else {
+        try (InputStreamReader inputStreamReader =
+                     new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
+            Yaml yaml = new Yaml();
+            yaml.setBeanAccess(BeanAccess.FIELD);
+            return yaml.loadAs(inputStreamReader, classType);
+        } catch (IOException e) {
             throw new IdentityRecoveryException(
-                    String.format("Configuration file %s is not available.", new Object[]{file.toString()}));
+                    String.format("Error in reading file %s", file.toString()), e);
         }
     }
 

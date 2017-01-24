@@ -18,7 +18,6 @@
 
 package org.wso2.carbon.identity.recovery.util;
 
-import org.apache.axiom.om.util.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,6 +46,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -211,7 +211,7 @@ public class Utils {
         String digsestFunction = "SHA-256";
         MessageDigest dgst = MessageDigest.getInstance(digsestFunction);
         byte[] byteValue = dgst.digest(value.getBytes(StandardCharsets.UTF_8));
-        return Base64.encode(byteValue);
+        return new String(Base64.getEncoder().encode(byteValue), StandardCharsets.UTF_8);
     }
 
     /**
