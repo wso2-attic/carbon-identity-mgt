@@ -25,10 +25,19 @@ public class IdentityRecoveryServiceDataHolder {
 
     private static IdentityRecoveryServiceDataHolder instance = new IdentityRecoveryServiceDataHolder();
     private RealmService realmService;
+//    private EventService identityEventService;
 
     public static IdentityRecoveryServiceDataHolder getInstance() {
         return instance;
     }
+
+//    public EventService getIdentityEventService() {
+//        return identityEventService;
+//    }
+//
+//    public void setIdentityEventService(EventService identityEventService) {
+//        this.identityEventService = identityEventService;
+//    }
 
     public RealmService getRealmService() {
         return realmService;

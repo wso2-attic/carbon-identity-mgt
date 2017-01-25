@@ -37,6 +37,9 @@ import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
  * @scr.reference name="IdentityGovernanceService"
  * interface="org.wso2.carbon.identity.governance.IdentityGovernanceService" cardinality="1..1"
  * policy="dynamic" bind="setIdentityGovernanceService" unbind="unsetIdentityGovernanceService"
+ * @scr.reference name="IdentityEventService"
+ * interface="org.wso2.carbon.identity.event.services.IdentityEventService" cardinality="1..1"
+ * policy="dynamic" bind="setIdentityEventService" unbind="unsetIdentityEventService"
  */
 
 /**
@@ -56,8 +59,30 @@ public class IdentityRecoveryServiceComponent {
     protected void activate(BundleContext bundleContext) {
 
         try {
+//            bundleContext.registerService(NotificationPasswordRecoveryManager.class.getName(),
+//                    NotificationPasswordRecoveryManager.getInstance(), null);
+//            bundleContext.registerService(SecurityQuestionPasswordRecoveryManager.class.getName(),
+//                    SecurityQuestionPasswordRecoveryManager.getInstance(), null);
+//            bundleContext.registerService(NotificationUsernameRecoveryManager.class.getName(),
+//                    NotificationUsernameRecoveryManager.getInstance(), null);
+//            bundleContext.registerService(UserSelfRegistrationManager.class.getName(),
+//                    UserSelfRegistrationManager.getInstance(), null);
             bundleContext.registerService(ChallengeQuestionManager.class.getName(),
                     ChallengeQuestionManager.getInstance(), null);
+//            bundleContext.registerService(AbstractEventHandler.class.getName(),
+//                    new AccountConfirmationValidationHandler(), null);
+//            bundleContext.registerService(AbstractEventHandler.class.getName(),
+//                    new UserSelfRegistrationHandler(), null);
+//            bundleContext.registerService(AbstractEventHandler.class.getName(),
+//                    new UserEmailVerificationHandler(), null);
+//            bundleContext.registerService(AbstractEventHandler.class.getName(),
+//                    new AdminForcedPasswordResetHandler(), null);
+//            bundleContext.registerService(IdentityConnectorConfig.class.getName(),
+//                    new SelfRegistrationConfigImpl(), null);
+//            bundleContext.registerService(IdentityConnectorConfig.class.getName(),
+//                    new UserEmailVerificationConfigImpl(), null);
+//            bundleContext.registerService(IdentityConnectorConfig.class.getName(),
+//                    new AdminForcedPasswordResetConfigImpl(), null);
 
 
         } catch (Exception e) {
@@ -70,6 +95,7 @@ public class IdentityRecoveryServiceComponent {
                 log.debug("Loading default challenge questions for super tenant.");
             }
             loadDefaultChallengeQuestions();
+            //   new ChallengeQuestionManager().getAllChallengeQuestions("carbon.super", "lk_LK");
         } catch (IdentityRecoveryException e) {
             log.error("Error persisting challenge question for super tenant.", e);
         }
@@ -99,6 +125,15 @@ public class IdentityRecoveryServiceComponent {
         log.debug("UnSetting the Realm Service");
         dataHolder.setRealmService(null);
     }
+//
+//    protected void unsetIdentityEventService(EventService identityEventService) {
+//        IdentityRecoveryServiceDataHolder.getInstance().setIdentityEventService(null);
+//    }
+//
+//    protected void setIdentityEventService(EventService identityEventService) {
+//        IdentityRecoveryServiceDataHolder.getInstance().setIdentityEventService(identityEventService);
+//    }
+//
 
     private void loadDefaultChallengeQuestions() throws IdentityRecoveryException {
         ChallengeQuestionManager.getInstance().setDefaultChallengeQuestions();
