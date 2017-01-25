@@ -33,6 +33,7 @@
         <module>test-artifacts</module>
         <module>distribution</module>
         <module>osgi-tests</module>
+        <module>coverage-report</module>
     </modules>
 
 </project>
