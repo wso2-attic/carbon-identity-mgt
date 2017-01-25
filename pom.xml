@@ -157,7 +157,7 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.mgt</groupId>
-                <artifactId>org.wso2.carbon.identity.meta.claim.mgt</artifactId>
+                <artifactId>org.wso2.carbon.identity.claim</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
             </dependency>
             <dependency>
@@ -207,11 +207,11 @@
                 <artifactId>msf4j-core</artifactId>
                 <version>${msf4j.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.ws.commons.axiom.wso2</groupId>
-                <artifactId>axiom</artifactId>
-                <version>${axiom.wso2.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.apache.ws.commons.axiom.wso2</groupId>-->
+                <!--<artifactId>axiom</artifactId>-->
+                <!--<version>${axiom.wso2.version}</version>-->
+            <!--</dependency>-->
             <!-- END -->
 
             <!-- Unit Tests -->
@@ -354,11 +354,11 @@
 
     <modules>
         <module>components/org.wso2.carbon.identity.mgt</module>
-        <module>components/org.wso2.carbon.identity.meta.claim.mgt</module>
+        <module>components/org.wso2.carbon.identity.claim</module>
         <module>components/org.wso2.carbon.identity.mgt.login.interceptor</module>
         <module>components/org.wso2.carbon.identity.recovery</module>
         <module>feature/org.wso2.carbon.identity.mgt.feature</module>
-        <module>feature/org.wso2.carbon.identity.meta.claim.mgt.feature</module>
+        <module>feature/org.wso2.carbon.identity.claim.feature</module>
         <module>feature/org.wso2.carbon.identity.mgt.login.feature</module>
         <module>feature/org.wso2.carbon.identity.recovery.server.feature</module>
         <module>tests</module>
@@ -386,7 +386,6 @@
         <carbon.identity.commons.version>6.0.0-SNAPSHOT</carbon.identity.commons.version>
         <commons.lang.version>3.4</commons.lang.version>
         <jackson.version>1.8.6</jackson.version>
-        <axiom.wso2.version>1.2.11.wso2v10</axiom.wso2.version>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>
