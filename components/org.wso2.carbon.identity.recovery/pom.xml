@@ -34,10 +34,6 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity.commons</groupId>
-            <artifactId>org.wso2.carbon.identity.event</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.identity.commons</groupId>
             <artifactId>org.wso2.carbon.identity.commons</artifactId>
         </dependency>
         <dependency>

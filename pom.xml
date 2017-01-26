@@ -121,6 +121,11 @@
                 <version>${equinox.osgi.services.version}</version>
             </dependency>
             <dependency>
+                <groupId>net.minidev</groupId>
+                <artifactId>asm</artifactId>
+                <version>${net.minidev.asm.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.orbit.org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${org.snakeyaml.version}</version>
@@ -139,16 +144,6 @@
                 <groupId>org.wso2.carbon.caching</groupId>
                 <artifactId>org.wso2.carbon.caching</artifactId>
                 <version>${org.wso2.carbon.caching.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.security.caas</groupId>
-                <artifactId>org.wso2.carbon.security.caas</artifactId>
-                <version>${org.wso2.carbon.security.caas.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.security.caas</groupId>
-                <artifactId>org.wso2.carbon.security.caas.boot</artifactId>
-                <version>${org.wso2.carbon.security.caas.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.mgt</groupId>
@@ -383,7 +378,7 @@
         <org.wso2.carbon.security.caas.version>1.0.0-m2</org.wso2.carbon.security.caas.version>
         <carbon.datasources.version>1.0.0</carbon.datasources.version>
         <carbon.jndi.version>1.0.0</carbon.jndi.version>
-        <carbon.identity.commons.version>6.0.0-SNAPSHOT</carbon.identity.commons.version>
+        <carbon.identity.commons.version>1.0.0-SNAPSHOT</carbon.identity.commons.version>
         <commons.lang.version>3.4</commons.lang.version>
         <jackson.version>1.8.6</jackson.version>
 

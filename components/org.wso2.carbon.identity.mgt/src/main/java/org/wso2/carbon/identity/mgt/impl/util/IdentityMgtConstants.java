@@ -45,6 +45,18 @@ public class IdentityMgtConstants {
 
     public static final String USERNAME_CLAIM = "http://wso2.org/claims/username";
 
+    public static final String HTTP_AUTHORIZATION_PREFIX_BEARER = "Bearer";
+    public static final String HTTP_AUTHORIZATION_PREFIX_BASIC = "Basic";
+    public static final String USERNAME_PASSWORD_LOGIN_MODULE = "USERNAME_PASSWORD_LM";
+    public static final String JWT_LOGIN_MODULE = "JWT_LM";
+    public static final String SAML_LOGIN_MODULE = "SAML_LM";
+    public static final String CREDENTIAL_STORE = "credentialStore";
+    public static final String IDENTITY_STORE = "identityStore";
+    public static final String AUTHORIZATION_STORE = "authorizationStore";
+    public static final String STORE_CONNECTORS = "storeConnectors";
+    public static final String PERMISSION_CONFIG_FILE = "permissions.yml";
+    public static final String CLAIM_CONFIG_FILE = "claim-config.yml";
+
     public static Path getCarbonHomeDirectory() {
         return Paths.get(System.getProperty(CARBON_HOME));
     }
