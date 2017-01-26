@@ -34,10 +34,6 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity.commons</groupId>
-            <artifactId>org.wso2.carbon.identity.event</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.identity.commons</groupId>
             <artifactId>org.wso2.carbon.identity.commons</artifactId>
         </dependency>
         <dependency>
@@ -50,15 +46,11 @@
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity.mgt</groupId>
-            <artifactId>org.wso2.carbon.identity.meta.claim.mgt</artifactId>
+            <artifactId>org.wso2.carbon.identity.claim</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
-            <artifactId>axiom</artifactId>
         </dependency>
     </dependencies>
 
@@ -69,8 +61,8 @@
             org.wso2.carbon.identity.recovery.*;version="${project.version}"
         </export.package>
         <import.package>
-            org.apache.commons.lang3; version="3.4.0",
             org.slf4j; version="${slf4j.logging.package.import.version.range}",
+            org.apache.commons.lang3; version="3.4.0",
             org.apache.commons.io; version="2.4.0",
 
             org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",

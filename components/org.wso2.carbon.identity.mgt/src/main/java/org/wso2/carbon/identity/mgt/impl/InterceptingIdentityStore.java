@@ -362,12 +362,12 @@ public class InterceptingIdentityStore implements IdentityStore {
             throws IdentityStoreException, UserNotFoundException, GroupNotFoundException {
 
         identityStoreInterceptors.forEach(LambdaExceptionUtils.rethrowConsumer(
-                identityStoreInterceptor -> identityStoreInterceptor.doPreIsUserInGroup(uniqueGroupId, uniqueGroupId)));
+                identityStoreInterceptor -> identityStoreInterceptor.doPreIsUserInGroup(uniqueUserId, uniqueGroupId)));
 
-        Boolean isUserInGroup = identityStore.isUserInGroup(uniqueGroupId, uniqueGroupId);
+        Boolean isUserInGroup = identityStore.isUserInGroup(uniqueUserId, uniqueGroupId);
 
         identityStoreInterceptors.forEach(LambdaExceptionUtils.rethrowConsumer(
-                identityStoreInterceptor -> identityStoreInterceptor.doPostIsUserInGroup(uniqueGroupId,
+                identityStoreInterceptor -> identityStoreInterceptor.doPostIsUserInGroup(uniqueUserId,
                                                                                      uniqueGroupId, isUserInGroup)));
         return isUserInGroup;
     }
@@ -393,7 +393,7 @@ public class InterceptingIdentityStore implements IdentityStore {
         identityStoreInterceptors.forEach(LambdaExceptionUtils.rethrowConsumer(
                 identityStoreInterceptor -> identityStoreInterceptor.doPreGetClaimsOfUser(uniqueUserId, metaClaims)));
 
-        List<Claim> claims = identityStore.getClaimsOfUser(uniqueUserId);
+        List<Claim> claims = identityStore.getClaimsOfUser(uniqueUserId, metaClaims);
 
         identityStoreInterceptors.forEach(LambdaExceptionUtils.rethrowConsumer(
                 identityStoreInterceptor -> identityStoreInterceptor.doPostGetClaimsOfUser(uniqueUserId, metaClaims,

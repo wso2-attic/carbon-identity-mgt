@@ -66,10 +66,6 @@
             <artifactId>org.eclipse.osgi.services</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.security.caas</groupId>
-            <artifactId>org.wso2.carbon.security.caas</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon.identity.mgt</groupId>
             <artifactId>org.wso2.carbon.identity.mgt</artifactId>
         </dependency>
@@ -99,7 +95,6 @@
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             <!--org.wso2.msf4j.*;version="${org.wso2.msf4j.version.range}",-->
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
-            org.wso2.carbon.security.caas.api.*;version="${org.wso2.carbon.security.caas.version.range}",
             org.wso2.carbon.messaging.*;version="${org.wso2.carbon.messaging.version.range}",
             javax.security.auth.*
         </import.package>
@@ -121,7 +116,6 @@
         <!-- Dependency package version ranges -->
         <com.nimbusds.package.import.version.range>[2.26.1, 2.27)</com.nimbusds.package.import.version.range>
         <asm.package.version.range>[1.0.2, 2.0.0)</asm.package.version.range>
-        <org.wso2.carbon.security.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.security.version.range>
         <org.wso2.carbon.datasource.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.datasource.version.range>
 
         <!--Logging API version range-->

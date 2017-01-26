@@ -10,8 +10,8 @@ import org.osgi.framework.BundleContext;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-import org.wso2.carbon.identity.meta.claim.mgt.exception.ClaimResolvingServiceException;
-import org.wso2.carbon.identity.meta.claim.mgt.service.ClaimResolvingService;
+import org.wso2.carbon.identity.claim.exception.ClaimResolvingServiceException;
+import org.wso2.carbon.identity.claim.service.ClaimResolvingService;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 

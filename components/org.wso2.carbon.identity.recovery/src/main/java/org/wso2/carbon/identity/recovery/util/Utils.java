@@ -18,13 +18,11 @@
 
 package org.wso2.carbon.identity.recovery.util;
 
-import org.apache.axiom.om.util.Base64;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.base.exception.IdentityException;
-import org.wso2.carbon.identity.event.EventException;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
@@ -48,6 +46,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -212,7 +211,7 @@ public class Utils {
         String digsestFunction = "SHA-256";
         MessageDigest dgst = MessageDigest.getInstance(digsestFunction);
         byte[] byteValue = dgst.digest(value.getBytes(StandardCharsets.UTF_8));
-        return Base64.encode(byteValue);
+        return new String(Base64.getEncoder().encode(byteValue), StandardCharsets.UTF_8);
     }
 
     /**
@@ -258,32 +257,32 @@ public class Utils {
             }
     }
 
-    public static String getSignUpConfigs(String key) throws IdentityRecoveryServerException {
-//        try {
-//            Property[] connectorConfigs;
-//            IdentityGovernanceService identityGovernanceService = IdentityRecoveryServiceDataHolder.getInstance()
-//                    .getIdentityGovernanceService();
-//            connectorConfigs = identityGovernanceService.getConfiguration(new String[]{key} , "");
-//            return connectorConfigs[0].getValue();
-//        } catch (IdentityGovernanceException e) {
-//            throw Utils.handleServerException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_ISSUE_IN_LOADING_SIGNUP_CONFIGS, null, e);
-//        }
-        return null;
-    }
-
-    public static String getConnectorConfig(String key) throws EventException {
-//        try {
-//            Property[] connectorConfigs;
-//            IdentityGovernanceService identityGovernanceService = IdentityRecoveryServiceDataHolder.getInstance()
-//                    .getIdentityGovernanceService();
-//            connectorConfigs = identityGovernanceService.getConfiguration(new String[]{key} , "");
-//            return connectorConfigs[0].getValue();
-//        } catch (IdentityGovernanceException e) {
-//            throw new EventException("Error while getting connector configurations", e);
-//        }
-        return null;
-    }
+//    public static String getSignUpConfigs(String key) throws IdentityRecoveryServerException {
+////        try {
+////            Property[] connectorConfigs;
+////            IdentityGovernanceService identityGovernanceService = IdentityRecoveryServiceDataHolder.getInstance()
+////                    .getIdentityGovernanceService();
+////            connectorConfigs = identityGovernanceService.getConfiguration(new String[]{key} , "");
+////            return connectorConfigs[0].getValue();
+////        } catch (IdentityGovernanceException e) {
+////            throw Utils.handleServerException(
+////                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_ISSUE_IN_LOADING_SIGNUP_CONFIGS, null, e);
+////        }
+//        return null;
+//    }
+//
+//    public static String getConnectorConfig(String key) throws EventException {
+////        try {
+////            Property[] connectorConfigs;
+////            IdentityGovernanceService identityGovernanceService = IdentityRecoveryServiceDataHolder.getInstance()
+////                    .getIdentityGovernanceService();
+////            connectorConfigs = identityGovernanceService.getConfiguration(new String[]{key} , "");
+////            return connectorConfigs[0].getValue();
+////        } catch (IdentityGovernanceException e) {
+////            throw new EventException("Error while getting connector configurations", e);
+////        }
+//        return null;
+//    }
 
     public static ChallengeQuestion[] getDefaultChallengeQuestions() {
         List<ChallengeQuestion> challengeQuestions = new ArrayList<>();
@@ -307,34 +306,34 @@ public class Utils {
         return challengeQuestions.toArray(new ChallengeQuestion[challengeQuestions.size()]);
     }
 
-    public static boolean isAccountLocked(User user) throws IdentityRecoveryException {
+//    public static boolean isAccountLocked(User user) throws IdentityRecoveryException {
+//
+//        try {
+//            return Boolean.parseBoolean(
+//                    getClaimFromIdentityStore(user, IdentityRecoveryConstants.ACCOUNT_LOCKED_CLAIM));
+//        } catch (IdentityStoreException e) {
+//            throw Utils.handleServerException(
+//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
+//        } catch (UserNotFoundException e) {
+//            throw Utils.handleServerException(
+//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
+//        }
+//    }
 
-        try {
-            return Boolean.parseBoolean(
-                    getClaimFromIdentityStore(user, IdentityRecoveryConstants.ACCOUNT_LOCKED_CLAIM));
-        } catch (IdentityStoreException e) {
-            throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
-        } catch (UserNotFoundException e) {
-            throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
-        }
-    }
 
-
-    public static boolean isAccountDisabled(User user) throws IdentityRecoveryException {
-
-        try {
-            return Boolean.parseBoolean(
-                    getClaimFromIdentityStore(user, IdentityRecoveryConstants.ACCOUNT_DISABLED_CLAIM));
-        } catch (IdentityStoreException e) {
-            throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
-        } catch (UserNotFoundException e) {
-            throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
-        }
-    }
+//    public static boolean isAccountDisabled(User user) throws IdentityRecoveryException {
+//
+//        try {
+//            return Boolean.parseBoolean(
+//                    getClaimFromIdentityStore(user, IdentityRecoveryConstants.ACCOUNT_DISABLED_CLAIM));
+//        } catch (IdentityStoreException e) {
+//            throw Utils.handleServerException(
+//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
+//        } catch (UserNotFoundException e) {
+//            throw Utils.handleServerException(
+//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
+//        }
+//    }
 
     public static String generateUUID() {
         return UUID.randomUUID().toString();
