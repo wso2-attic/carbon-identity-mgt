@@ -28,7 +28,7 @@ import java.util.List;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 /**
- * This class contains the utility methods for carbon-security-caas OSGI tests.
+ * This class contains the utility methods for identity management OSGI tests.
  */
 public class IdentityMgtOSGiTestUtils {
 
@@ -72,14 +72,6 @@ public class IdentityMgtOSGiTestUtils {
         defaultOptionList.add(mavenBundle()
                 .groupId("org.wso2.carbon.caching")
                 .artifactId("org.wso2.carbon.caching")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.security.caas")
-                .artifactId("org.wso2.carbon.security.caas.boot")
-                .versionAsInProject().noStart());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.security.caas")
-                .artifactId("org.wso2.carbon.security.caas")
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                 .groupId("org.wso2.carbon.identity.mgt")

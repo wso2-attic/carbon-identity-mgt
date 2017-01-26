@@ -203,7 +203,6 @@
 
         <!-- Dependency package version ranges -->
         <asm.package.version.range>[1.0.2, 2.0.0)</asm.package.version.range>
-        <org.wso2.carbon.security.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.security.version.range>
 
         <!--Logging API version range-->
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
