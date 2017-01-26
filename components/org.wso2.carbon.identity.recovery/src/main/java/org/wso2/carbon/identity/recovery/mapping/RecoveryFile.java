@@ -20,14 +20,14 @@ package org.wso2.carbon.identity.recovery.mapping;
  */
 public class RecoveryFile {
 
-    private SecurityQuestionsConfig securityQuestion;
+    private PasswordConfig password;
 
-    public SecurityQuestionsConfig getSecurityQuestion() {
-        return securityQuestion;
+    public PasswordConfig getPassword() {
+        return password;
     }
 
-    public void setSecurityQuestion(SecurityQuestionsConfig securityQuestion) {
-        this.securityQuestion = securityQuestion;
+    public void setPassword(PasswordConfig password) {
+        this.password = password;
     }
 
 }
