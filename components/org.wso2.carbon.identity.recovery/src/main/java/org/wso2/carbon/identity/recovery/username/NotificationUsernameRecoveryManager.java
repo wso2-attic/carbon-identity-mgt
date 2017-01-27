@@ -66,7 +66,8 @@ public class NotificationUsernameRecoveryManager {
         }
         boolean isNotificationInternallyManaged;
         if (notify == null) {
-            isNotificationInternallyManaged = Utils.getRecoveryConfigs().getUsername().getNotification().getInternalyManage().isEnable();
+            isNotificationInternallyManaged = Utils.getRecoveryConfigs().getUsername().getNotification()
+                    .getInternalyManage().isEnable();
         } else {
             isNotificationInternallyManaged = notify.booleanValue();
         }
@@ -86,7 +87,7 @@ public class NotificationUsernameRecoveryManager {
 
     private void triggerNotification(User user) {
 
-        log.debug("The user's name is "+ user.getDomainName());
+        log.debug("The user's name is " + user.getDomainName());
     }
 //    private void triggerNotification(User user, String type) throws IdentityRecoveryException {
 //
