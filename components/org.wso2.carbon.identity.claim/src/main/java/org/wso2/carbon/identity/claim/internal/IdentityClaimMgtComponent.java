@@ -68,8 +68,9 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
         } catch (Exception e) {
             log.error("Error occurred in un getting service", e);
         }
-
-        log.info("Carbon-Claim-Resolving bundle deactivated successfully.");
+        if (log.isDebugEnabled()) {
+            log.debug("Carbon-Claim-Resolving bundle deactivated successfully.");
+        }
     }
 
     @Activate
@@ -91,8 +92,9 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
         } catch (Exception e) {
             log.error("Error occurred in un getting service", e);
         }
-
-        log.info("Carbon-Profile-Mgt bundle deactivated successfully.");
+        if (log.isDebugEnabled()) {
+            log.debug("Carbon-Profile-Mgt bundle deactivated successfully.");
+        }
     }
 
     @Override
@@ -110,12 +112,17 @@ public class IdentityClaimMgtComponent implements RequiredCapabilityListener {
 
         claimResolvingServiceRegistration = bundleContext
                 .registerService(ClaimResolvingService.class, claimResolvingService, null);
-        log.info("Claim resolving service registered successfully.");
+        if (log.isDebugEnabled()) {
+            log.debug("Claim resolving service registered successfully.");
+        }
         profileMgtServiceServiceRegistration = bundleContext
                 .registerService(ProfileMgtService.class, profileMgtService, null);
-        log.info("Profile Mgt service registered successfully.");
-
-        log.info("Carbon-Identity-Claim-Mgt bundle activated successfully.");
+        if (log.isDebugEnabled()) {
+            log.debug("Profile Mgt service registered successfully.");
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Carbon-Identity-Claim-Mgt bundle activated successfully.");
+        }
 
     }
 }

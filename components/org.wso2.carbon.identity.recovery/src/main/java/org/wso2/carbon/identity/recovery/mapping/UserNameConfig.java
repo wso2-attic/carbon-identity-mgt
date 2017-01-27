@@ -16,29 +16,27 @@
 package org.wso2.carbon.identity.recovery.mapping;
 
 /**
- * Class to represent account recovery configuration
+ * Class to represent username recovery
  */
-public class RecoveryFile {
+public class UserNameConfig {
 
-    private SecurityQuestionsConfig securityQuestion;
-    private UserNameConfig  username;
+    private NotificationConfig notification;
+    private boolean enable;
 
-    public SecurityQuestionsConfig getSecurityQuestion() {
-        return securityQuestion;
+    public boolean isEnable() {
+        return enable;
     }
 
-    public void setSecurityQuestion(SecurityQuestionsConfig securityQuestion) {
-        this.securityQuestion = securityQuestion;
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 
-    public UserNameConfig getUsername() {
-        return username;
+    public NotificationConfig getNotification() {
+        return notification;
     }
 
-    public void setUsername(UserNameConfig username) {
-        this.username = username;
+    public void setNotification(NotificationConfig notification) {
+        this.notification = notification;
     }
-
-
 
 }

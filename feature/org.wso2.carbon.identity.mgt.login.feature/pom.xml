@@ -42,7 +42,6 @@
         <dependency>
             <groupId>org.wso2.carbon.identity.mgt</groupId>
             <artifactId>org.wso2.carbon.identity.mgt.login.interceptor</artifactId>
-            <version>${carbon.identity.mgt.version}</version>
         </dependency>
     </dependencies>
 
