@@ -25,7 +25,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.wso2.carbon.identity.mgt.AuthorizationStore;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
@@ -45,8 +44,8 @@ public class IdentityStoreTests {
     @Mock
     private RealmService realmService;
 
-    @Mock
-    private AuthorizationStore authorizationStore;
+//    @Mock
+//    private AuthorizationStore authorizationStore;
 
     @Mock
     private IdentityMgtDataHolder identityMgtDataHolder;
@@ -71,7 +70,7 @@ public class IdentityStoreTests {
     public void resetMocks() {
 
         Mockito.reset(realmService);
-        Mockito.reset(authorizationStore);
+//        Mockito.reset(authorizationStore);
         Mockito.reset(identityMgtDataHolder);
     }
 
