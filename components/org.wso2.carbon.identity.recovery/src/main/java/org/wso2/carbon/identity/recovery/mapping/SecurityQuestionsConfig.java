@@ -20,41 +20,14 @@ package org.wso2.carbon.identity.recovery.mapping;
  */
 public class SecurityQuestionsConfig {
 
-    private boolean enable;
-    private boolean notifyStart;
-    private String separator;
-    private int minAnswers;
+    private PasswordConfig password;
 
-    public boolean isEnable() {
-        return enable;
+    public PasswordConfig getPassword() {
+        return password;
     }
 
-    public void setEnable(boolean enable) {
-        this.enable = enable;
-    }
-
-    public boolean isNotifyStart() {
-        return notifyStart;
-    }
-
-    public void setNotifyStart(boolean notifyStart) {
-        this.notifyStart = notifyStart;
-    }
-
-    public String getSeparator() {
-        return separator;
-    }
-
-    public void setSeparator(String separator) {
-        this.separator = separator;
-    }
-
-    public int getMinAnswers() {
-        return minAnswers;
-    }
-
-    public void setMinAnswers(int minAnswers) {
-        this.minAnswers = minAnswers;
+    public void setPassword(PasswordConfig password) {
+        this.password = password;
     }
 
 }

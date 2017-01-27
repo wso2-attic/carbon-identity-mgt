@@ -203,7 +203,7 @@ public class ChallengeQuestionManagementAdminService {
      * @throws IdentityRecoveryException
      */
     public int getMinimumNoOfChallengeQuestionsToAnswer() throws IdentityRecoveryException {
-        return Utils.getRecoveryConfigs().getPassword().getSecurityQuestion().getMinAnswers();
+        return Utils.getRecoveryConfigs().getSecurityQuestion().getPassword().getMinAnswers();
     }
 
 }
