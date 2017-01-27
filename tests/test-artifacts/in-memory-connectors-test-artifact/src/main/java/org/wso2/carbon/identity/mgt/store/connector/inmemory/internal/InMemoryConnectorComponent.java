@@ -21,10 +21,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.identity.mgt.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory;
-import org.wso2.carbon.identity.mgt.store.connector.inmemory.InMemoryAuthorizationStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.inmemory.InMemoryCredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.store.connector.inmemory.InMemoryIdentityStoreConnectorFactory;
 
@@ -63,10 +61,10 @@ public class InMemoryConnectorComponent {
         bundleContext.registerService(CredentialStoreConnectorFactory.class,
                 new InMemoryCredentialStoreConnectorFactory(), connectorProperties);
 
-        connectorProperties = new Hashtable<>();
-        connectorProperties.put("connector-type", "InMemoryAuthorizationStore");
-        bundleContext.registerService(AuthorizationStoreConnectorFactory.class,
-                new InMemoryAuthorizationStoreConnectorFactory(), connectorProperties);
+//        connectorProperties = new Hashtable<>();
+//        connectorProperties.put("connector-type", "InMemoryAuthorizationStore");
+//        bundleContext.registerService(AuthorizationStoreConnectorFactory.class,
+//                new InMemoryAuthorizationStoreConnectorFactory(), connectorProperties);
 
         if (log.isDebugEnabled()) {
             log.debug("InMemory identity mgt connectors registered as services successfully.");

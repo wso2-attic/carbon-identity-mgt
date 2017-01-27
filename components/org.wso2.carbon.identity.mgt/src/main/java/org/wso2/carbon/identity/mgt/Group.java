@@ -194,7 +194,7 @@ public class Group {
 
         private IdentityStore identityStore;
 
-        private AuthorizationStore authorizationStore;
+//        private AuthorizationStore authorizationStore;
 
         public String getGroupId() {
             return groupId;
@@ -208,9 +208,9 @@ public class Group {
             return identityStore;
         }
 
-        public AuthorizationStore getAuthorizationStore() {
-            return authorizationStore;
-        }
+//        public AuthorizationStore getAuthorizationStore() {
+//            return authorizationStore;
+//        }
 
         public GroupBuilder setGroupId(String groupId) {
             this.groupId = groupId;
@@ -227,10 +227,10 @@ public class Group {
             return this;
         }
 
-        public GroupBuilder setAuthorizationStore(AuthorizationStore authorizationStore) {
-            this.authorizationStore = authorizationStore;
-            return this;
-        }
+//        public GroupBuilder setAuthorizationStore(AuthorizationStore authorizationStore) {
+//            this.authorizationStore = authorizationStore;
+//            return this;
+//        }
 
         public Group build() {
 
