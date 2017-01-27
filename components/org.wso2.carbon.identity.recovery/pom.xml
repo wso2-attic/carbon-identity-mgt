@@ -73,7 +73,7 @@
 
             org.wso2.carbon.identity.common.*;version="${carbon.identity.commons.version}",
             org.wso2.carbon.identity.event.*;version="${carbon.identity.commons.version}",
-            org.wso2.carbon.identity.mgt.*; version="1.0.0.SNAPSHOT"
+            org.wso2.carbon.identity.mgt.*; version="${carbon.identity.mgt.version}"
         </import.package>
     </properties>
 </project>
