@@ -13,32 +13,22 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+
 package org.wso2.carbon.identity.recovery.mapping;
 
 /**
- * Class to represent account recovery configuration
+ * Class to represent notification internally managed.
  */
-public class RecoveryFile {
+public class InternallyMangedConfig {
 
-    private SecurityQuestionsConfig securityQuestion;
-    private UserNameConfig  username;
+    private boolean enable;
 
-    public SecurityQuestionsConfig getSecurityQuestion() {
-        return securityQuestion;
+    public boolean isEnable() {
+        return enable;
     }
 
-    public void setSecurityQuestion(SecurityQuestionsConfig securityQuestion) {
-        this.securityQuestion = securityQuestion;
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
-
-    public UserNameConfig getUsername() {
-        return username;
-    }
-
-    public void setUsername(UserNameConfig username) {
-        this.username = username;
-    }
-
-
 
 }

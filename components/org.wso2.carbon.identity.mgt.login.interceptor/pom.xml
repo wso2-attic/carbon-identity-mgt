@@ -72,7 +72,6 @@
         <dependency>
             <groupId>org.wso2.msf4j</groupId>
             <artifactId>msf4j-core</artifactId>
-            <version>${msf4j-core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.messaging</groupId>
@@ -127,7 +126,6 @@
         <msf4j-core.version>2.1.0</msf4j-core.version>
         <org.wso2.msf4j.version.range>[2.0.0, 3.0.0)</org.wso2.msf4j.version.range>
         <org.wso2.carbon.messaging.version.range>[1.0.0, 2.0.0)</org.wso2.carbon.messaging.version.range>
-        <org.wso2.carbon.security.caas.version.range>[1.0.0, 2.0.0)</org.wso2.carbon.security.caas.version.range>
 
     </properties>
 
