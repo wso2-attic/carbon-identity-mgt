@@ -180,6 +180,11 @@
                 <artifactId>in-memory-connectors-test-artifact</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity.mgt</groupId>
+                <artifactId>identity-store-interceptor-test-artifact</artifactId>
+                <version>${carbon.identity.mgt.version}</version>
+            </dependency>
 
             <!-- Identity Recovery -->
             <dependency>
