@@ -27,35 +27,29 @@ package org.wso2.carbon.identity.handler.event.account.lock;
 //import org.wso2.carbon.identity.core.util.IdentityCoreConstants;
 //import org.wso2.carbon.identity.core.util.IdentityUtil;
 //import org.wso2.carbon.identity.event.IdentityEventConstants;
-import org.wso2.carbon.identity.event.EventException;
+
 import org.wso2.carbon.identity.common.base.message.MessageContext;
-//import org.wso2.carbon.identity.event.event.Event;
+import org.wso2.carbon.identity.event.AbstractEventHandler;
+import org.wso2.carbon.identity.event.EventException;
 import org.wso2.carbon.identity.event.model.Event;
+
+//import org.wso2.carbon.identity.event.event.Event;
 //import org.wso2.carbon.identity.event.handler.AbstractEventHandler;
-import org.wso2.carbon.identity.handler.event.account.lock.constants.AccountConstants;
-import org.wso2.carbon.identity.handler.event.account.lock.exception.AccountLockException;
-import org.wso2.carbon.identity.handler.event.account.lock.internal.AccountServiceDataHolder;
-import org.wso2.carbon.identity.handler.event.account.lock.util.AccountUtil;
 //import org.wso2.carbon.user.core.UserCoreConstants;
 //import org.wso2.carbon.user.core.UserStoreException;
 //import org.wso2.carbon.user.core.UserStoreManager;
 //import org.wso2.carbon.user.core.util.UserCoreUtil;
-import org.wso2.carbon.identity.event.AbstractEventHandler;
-import sun.rmi.runtime.Log;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.List;
-import java.util.ArrayList;
-
+/**
+ * AccountLockHandler class
+ */
 public class AccountLockHandler extends AbstractEventHandler {
 
 //    private static final Log log = LogFactory.getLog(AccountLockHandler.class);
 
 //    private static ThreadLocal<String> lockedState = new ThreadLocal<>();
 
-    private enum LockedStates {LOCKED_MODIFIED, UNLOCKED_MODIFIED, LOCKED_UNMODIFIED, UNLOCKED_UNMODIFIED}
+    private enum LockedStates { LOCKED_MODIFIED, UNLOCKED_MODIFIED, LOCKED_UNMODIFIED, UNLOCKED_UNMODIFIED }
 
     public String getName() {
         return "account.lock.handler";
@@ -66,17 +60,30 @@ public class AccountLockHandler extends AbstractEventHandler {
     }
 
 
+    /**
+     * Set the priority of this handler
+     *
+     * @param messageContext : context
+     * @return : priority
+     */
     @Override
     public int getPriority(MessageContext messageContext) {
         return 100;
     }
 
+    /**
+     * Handle the account lock event
+     *
+     * @param event : Event
+     * @throws EventException : event exception
+     */
     @Override
     public void handleEvent(Event event) throws EventException {
-        System.out.println("execute");
+
 //        Map<String, Object> eventProperties = event.getEventProperties();
 //        String userName = (String) eventProperties.get(IdentityEventConstants.EventProperty.USER_NAME);
-//        UserStoreManager userStoreManager = (UserStoreManager) eventProperties.get(IdentityEventConstants.EventProperty.USER_STORE_MANAGER);
+//        UserStoreManager userStoreManager = (UserStoreManager) eventProperties.get(
+// IdentityEventConstants.EventProperty.USER_STORE_MANAGER);
 //        String userStoreDomainName = AccountUtil.getUserStoreDomainName(userStoreManager);
 //        String tenantDomain = (String) eventProperties.get(IdentityEventConstants.EventProperty.TENANT_DOMAIN);
 //
@@ -190,7 +197,8 @@ public class AccountLockHandler extends AbstractEventHandler {
 //                    message = "Account is locked for user " + userName + " in tenant " + tenantDomain + ". Cannot" +
 //                            " login until the account is unlocked.";
 //                }
-//                IdentityErrorMsgContext customErrorMessageContext = new IdentityErrorMsgContext(UserCoreConstants.ErrorCode.USER_IS_LOCKED);
+//                IdentityErrorMsgContext customErrorMessageContext = new IdentityErrorMsgContext(UserCoreConstants.
+// ErrorCode.USER_IS_LOCKED);
 //                IdentityUtil.setIdentityErrorMsg(customErrorMessageContext);
 //                throw new AccountLockException(UserCoreConstants.ErrorCode.USER_IS_LOCKED + " " + message);
 //            }
@@ -272,7 +280,8 @@ public class AccountLockHandler extends AbstractEventHandler {
 //                        UserCoreConstants.ErrorCode.USER_IS_LOCKED);
 //
 //            } else {
-//                IdentityErrorMsgContext customErrorMessageContext = new IdentityErrorMsgContext(UserCoreConstants.ErrorCode.INVALID_CREDENTIAL,
+//                IdentityErrorMsgContext customErrorMessageContext = new IdentityErrorMsgContext(UserCoreConstants.
+// ErrorCode.INVALID_CREDENTIAL,
 //                        currentFailedAttempts, maximumFailedAttempts);
 //                IdentityUtil.setIdentityErrorMsg(customErrorMessageContext);
 //            }
@@ -306,7 +315,8 @@ public class AccountLockHandler extends AbstractEventHandler {
 //            throw new AccountLockException("Error occurred while retrieving " + AccountConstants
 //                    .ACCOUNT_LOCKED_CLAIM + " claim value", e);
 //        }
-//        String newStateString = ((Map<String, String>) event.getEventProperties().get("USER_CLAIMS")).get(AccountConstants.ACCOUNT_LOCKED_CLAIM);
+//        String newStateString = ((Map<String, String>) event.getEventProperties().get("USER_CLAIMS")).
+// get(AccountConstants.ACCOUNT_LOCKED_CLAIM);
 //        if (StringUtils.isNotBlank(newStateString)) {
 //            Boolean newAccountLockedValue = Boolean.parseBoolean(
 //                    ((Map<String, String>) event.getEventProperties().get("USER_CLAIMS"))
@@ -344,10 +354,12 @@ public class AccountLockHandler extends AbstractEventHandler {
 //
 //        try {
 //            if (lockedStates.UNLOCKED_MODIFIED.toString().equals(lockedState.get())) {
-//                triggerNotification(event, userName, userStoreManager, userStoreDomainName, tenantDomain, identityProperties,
+//                triggerNotification(event, userName, userStoreManager, userStoreDomainName, tenantDomain,
+// identityProperties,
 //                        AccountConstants.EMAIL_TEMPLATE_TYPE_ACC_UNLOCKED);
 //            } else if (lockedStates.LOCKED_MODIFIED.toString().equals(lockedState.get())) {
-//                triggerNotification(event, userName, userStoreManager, userStoreDomainName, tenantDomain, identityProperties,
+//                triggerNotification(event, userName, userStoreManager, userStoreDomainName, tenantDomain,
+// identityProperties,
 //                        AccountConstants.EMAIL_TEMPLATE_TYPE_ACC_LOCKED);
 //            }
 //        } finally {

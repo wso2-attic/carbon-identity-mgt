@@ -18,18 +18,23 @@ package org.wso2.carbon.identity.handler.event.account.lock.internal;
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
+
 import org.osgi.service.component.ComponentContext;
-//import org.wso2.carbon.identity.handler.event.account.lock.AccountDisableHandler;
-import org.wso2.carbon.identity.handler.event.account.lock.AccountLockHandler;
-import org.wso2.carbon.identity.event.AbstractEventHandler;
-import org.wso2.carbon.identity.event.EventService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.wso2.carbon.identity.event.AbstractEventHandler;
+import org.wso2.carbon.identity.event.EventService;
+import org.wso2.carbon.identity.handler.event.account.lock.AccountLockHandler;
 
+//import org.wso2.carbon.identity.handler.event.account.lock.AccountDisableHandler;
+
+/**
+ * AccountServiceComponent class
+ */
 @Component(
         name = "org.wso2.carbon.identity.handler.event.account.lock.internal.AccountServiceComponent",
         immediate = true,

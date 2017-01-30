@@ -19,6 +19,9 @@ package org.wso2.carbon.identity.handler.event.account.lock.internal;
 import org.osgi.framework.BundleContext;
 import org.wso2.carbon.identity.event.EventService;
 
+/**
+ * AccountServiceDataHolder class
+ */
 public class AccountServiceDataHolder {
 
     private static volatile AccountServiceDataHolder accountServiceDataHolder = new AccountServiceDataHolder();
@@ -26,15 +29,24 @@ public class AccountServiceDataHolder {
     private BundleContext bundleContext;
     private EventService identityEventService;
 
+
     private AccountServiceDataHolder(){
 
     }
 
+    /**
+     * Get AccountServiceDataHolder instance
+     * @return : AccountServiceDataHolder
+     */
     public static AccountServiceDataHolder getInstance() {
         return accountServiceDataHolder;
     }
 
 
+    /**
+     * get Bundle context
+     * @return : BundleContext
+     */
     public BundleContext getBundleContext() {
         return bundleContext;
     }
@@ -43,10 +55,18 @@ public class AccountServiceDataHolder {
         this.bundleContext = bundleContext;
     }
 
+    /**
+     * Get Identity Event Service
+     * @return : EventService
+     */
     public EventService getIdentityEventService() {
         return identityEventService;
     }
 
+    /**
+     * Set Identity Event Service
+     * @param identityEventService : EventService
+     */
     public void setIdentityEventService(EventService identityEventService) {
         this.identityEventService = identityEventService;
     }

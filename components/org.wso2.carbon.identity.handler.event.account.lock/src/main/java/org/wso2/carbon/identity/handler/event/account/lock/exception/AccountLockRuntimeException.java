@@ -18,20 +18,43 @@ package org.wso2.carbon.identity.handler.event.account.lock.exception;
 
 import org.wso2.carbon.identity.common.base.exception.IdentityRuntimeException;
 
+/**
+ * AccountLockRuntimeException class
+ */
 public class AccountLockRuntimeException extends IdentityRuntimeException {
 
+    /**
+     * AccountLockRuntimeException
+     * @param errorDescription : Error Description
+     */
     protected AccountLockRuntimeException(String errorDescription) {
         super(errorDescription);
     }
 
+    /**
+     * AccountLockRuntimeException
+     * @param errorDescription : Error Description
+     * @param cause : Error cause
+     */
     protected AccountLockRuntimeException(String errorDescription, Throwable cause) {
         super(errorDescription, cause);
     }
 
+    /**
+     * AccountLockRuntimeException
+     * @param errorDescription : Error Description
+     * @return : AccountLockRuntimeException
+     */
     public static AccountLockRuntimeException error(String errorDescription) {
         return new AccountLockRuntimeException(errorDescription);
     }
 
+    /**
+     * AccountLockRuntimeException
+     * @param errorDescription : Error Description
+     * @param cause : Error cause
+     * @return : AccountLockRuntimeException
+     */
     public static AccountLockRuntimeException error(String errorDescription, Throwable cause) {
         return new AccountLockRuntimeException(errorDescription, cause);
     }

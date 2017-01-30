@@ -16,6 +16,9 @@
 
 package org.wso2.carbon.identity.handler.event.account.lock.util;
 
+/**
+ * AccountUtil class
+ */
 public class AccountUtil {
 
 //    public static String getUserStoreDomainName(UserStoreManager userStoreManager) {
@@ -30,5 +33,4 @@ public class AccountUtil {
 //        }
 //        return domainNameProperty;
 //    }
-
 }

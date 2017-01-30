@@ -18,12 +18,24 @@ package org.wso2.carbon.identity.handler.event.account.lock.exception;
 
 import org.wso2.carbon.identity.event.EventException;
 
+/**
+ * AccountLockException class
+ */
 public class AccountLockException extends EventException {
 
+    /**
+     * AccountLockException
+     * @param message : error message
+     */
     public AccountLockException(String message) {
         super(message);
     }
 
+    /**
+     * AccountLockException
+     * @param message : error message
+     * @param cause : error cause
+     */
     public AccountLockException(String message, Throwable cause) {
         super(message, cause);
     }
