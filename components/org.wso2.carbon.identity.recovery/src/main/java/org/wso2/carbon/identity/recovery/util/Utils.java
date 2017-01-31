@@ -22,7 +22,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
@@ -155,8 +154,7 @@ public class Utils {
             errorDescription = error.getMessage();
         }
 
-        return IdentityException.error(
-                IdentityRecoveryServerException.class, error.getCode(), errorDescription);
+        return new IdentityRecoveryServerException(error.getCode(), errorDescription);
     }
 
     public static IdentityRecoveryServerException handleServerException(IdentityRecoveryConstants.ErrorMessages
@@ -170,8 +168,7 @@ public class Utils {
             errorDescription = error.getMessage();
         }
 
-        return IdentityException.error(
-                IdentityRecoveryServerException.class, error.getCode(), errorDescription, e);
+        return new IdentityRecoveryServerException(error.getCode(), errorDescription, e);
     }
 
     public static IdentityRecoveryClientException handleClientException(IdentityRecoveryConstants.ErrorMessages error,
@@ -184,7 +181,7 @@ public class Utils {
         } else {
             errorDescription = error.getMessage();
         }
-        return IdentityException.error(IdentityRecoveryClientException.class, error.getCode(), errorDescription);
+        return new IdentityRecoveryClientException(error.getCode(), errorDescription);
     }
 
     public static IdentityRecoveryClientException handleClientException(IdentityRecoveryConstants.ErrorMessages error,
@@ -197,7 +194,7 @@ public class Utils {
         } else {
             errorDescription = error.getMessage();
         }
-        return IdentityException.error(IdentityRecoveryClientException.class, error.getCode(), errorDescription, e);
+        return new IdentityRecoveryClientException(error.getCode(), errorDescription, e);
     }
 
     /**

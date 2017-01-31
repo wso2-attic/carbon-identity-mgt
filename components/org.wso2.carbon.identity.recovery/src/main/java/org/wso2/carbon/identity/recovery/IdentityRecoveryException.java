@@ -30,22 +30,18 @@ public class IdentityRecoveryException extends IdentityException {
 
     public IdentityRecoveryException(String message) {
         super(message);
-        this.setErrorCode(getDefaultErrorCode());
     }
 
     public IdentityRecoveryException(String message, Throwable cause) {
         super(message, cause);
-        this.setErrorCode(getDefaultErrorCode());
     }
 
     public IdentityRecoveryException(String errorCode, String message) {
         super(errorCode, message);
-        this.setErrorCode(errorCode);
     }
 
     public IdentityRecoveryException(String errorCode, String message, Throwable throwable) {
         super(errorCode, message, throwable);
-        this.setErrorCode(errorCode);
     }
     
     public String getErrorDescription() {
@@ -56,14 +52,4 @@ public class IdentityRecoveryException extends IdentityException {
         }
         return errorDescription;
     }
-
-    private String getDefaultErrorCode() {
-
-        String errorCode = super.getErrorCode();
-        if (StringUtils.isEmpty(errorCode)) {
-            errorCode = IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED.getCode();
-        }
-        return errorCode;
-    }
-
 }

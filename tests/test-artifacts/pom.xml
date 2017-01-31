@@ -31,6 +31,7 @@
 
     <modules>
         <module>in-memory-connectors-test-artifact</module>
+        <module>identity-store-interceptor-test-artifact</module>
     </modules>
 
 </project>
