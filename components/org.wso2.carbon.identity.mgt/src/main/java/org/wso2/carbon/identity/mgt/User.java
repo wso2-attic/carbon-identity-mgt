@@ -223,7 +223,7 @@ public class User implements Serializable {
 
         private IdentityStore identityStore;
 
-        private AuthorizationStore authorizationStore;
+//        private AuthorizationStore authorizationStore;
 
         public String getUserId() {
             return userId;
@@ -233,9 +233,9 @@ public class User implements Serializable {
             return identityStore;
         }
 
-        public AuthorizationStore getAuthorizationStore() {
-            return authorizationStore;
-        }
+//        public AuthorizationStore getAuthorizationStore() {
+//            return authorizationStore;
+//        }
 
         public UserBuilder setUserId(String userName) {
             this.userId = userName;
@@ -252,10 +252,10 @@ public class User implements Serializable {
             return this;
         }
 
-        public UserBuilder setAuthorizationStore(AuthorizationStore authorizationStore) {
-            this.authorizationStore = authorizationStore;
-            return this;
-        }
+//        public UserBuilder setAuthorizationStore(AuthorizationStore authorizationStore) {
+//            this.authorizationStore = authorizationStore;
+//            return this;
+//        }
 
         public User build() {
 

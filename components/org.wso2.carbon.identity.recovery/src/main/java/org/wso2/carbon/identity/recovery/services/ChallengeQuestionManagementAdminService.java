@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.identity.recovery.services;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.base.exception.IdentityException;
@@ -150,7 +149,7 @@ public class ChallengeQuestionManagementAdminService {
      * @param userChallengeAnswers
      * @throws IdentityRecoveryException
      */
-    public void setUserChallengeAnswers(User user, UserChallengeAnswer[] userChallengeAnswers)
+    public void setUserChallengeAnswers(User user, List<UserChallengeAnswer> userChallengeAnswers)
             throws IdentityRecoveryException {
         if (user == null) {
             log.error("User object provided is null.");
@@ -158,7 +157,7 @@ public class ChallengeQuestionManagementAdminService {
         }
 
 
-        if (ArrayUtils.isEmpty(userChallengeAnswers)) {
+        if (userChallengeAnswers.isEmpty()) {
             String errorMsg = "No challenge question answers provided by the user " + user.getUniqueUserId();
             log.error(errorMsg);
             throw new IdentityRecoveryClientException(errorMsg);
@@ -181,7 +180,7 @@ public class ChallengeQuestionManagementAdminService {
      * @return
      * @throws IdentityRecoveryException
      */
-    public UserChallengeAnswer[] getUserChallengeAnswers(User user) throws IdentityRecoveryException {
+    public List<UserChallengeAnswer> getUserChallengeAnswers(User user) throws IdentityRecoveryException {
         if (user == null) {
             log.error("User object provided is null.");
             throw new IdentityRecoveryClientException("User object provided is null.");

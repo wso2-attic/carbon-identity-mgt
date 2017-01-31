@@ -32,7 +32,6 @@ import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.common.util.IdentityUtilService;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
-import org.wso2.carbon.identity.mgt.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnector;
@@ -226,25 +225,25 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
         IdentityMgtDataHolder.getInstance().registerCacheService(cachingService);
     }
 
-    @Reference(
-            name = "AuthorizationStoreConnectorFactory",
-            service = AuthorizationStoreConnectorFactory.class,
-            cardinality = ReferenceCardinality.AT_LEAST_ONE,
-            policy = ReferencePolicy.DYNAMIC,
-            unbind = "unregisterAuthorizationStoreConnectorFactory"
-    )
-    protected void registerAuthorizationStoreConnectorFactory(
-            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory, Map<String, String> properties) {
-
-        String connectorId = properties.get("connector-type");
-        IdentityMgtDataHolder.getInstance()
-                                .registerAuthorizationStoreConnectorFactory(connectorId,
-                                                                            authorizationStoreConnectorFactory);
-    }
-
-    protected void unregisterAuthorizationStoreConnectorFactory(
-            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory) {
-    }
+//    @Reference(
+//            name = "AuthorizationStoreConnectorFactory",
+//            service = AuthorizationStoreConnectorFactory.class,
+//            cardinality = ReferenceCardinality.AT_LEAST_ONE,
+//            policy = ReferencePolicy.DYNAMIC,
+//            unbind = "unregisterAuthorizationStoreConnectorFactory"
+//    )
+//    protected void registerAuthorizationStoreConnectorFactory(
+//            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory, Map<String, String> properties) {
+//
+//        String connectorId = properties.get("connector-type");
+//        IdentityMgtDataHolder.getInstance()
+//                                .registerAuthorizationStoreConnectorFactory(connectorId,
+//                                                                            authorizationStoreConnectorFactory);
+//    }
+//
+//    protected void unregisterAuthorizationStoreConnectorFactory(
+//            AuthorizationStoreConnectorFactory authorizationStoreConnectorFactory) {
+//    }
 
     protected void unregisterCachingService(CarbonCachingService carbonCachingService) {
 
