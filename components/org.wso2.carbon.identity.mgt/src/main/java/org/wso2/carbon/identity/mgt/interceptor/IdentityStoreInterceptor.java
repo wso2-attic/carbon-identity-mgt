@@ -47,13 +47,6 @@ public interface IdentityStoreInterceptor {
     int getExecutionOrderId();
 
     /**
-     * Get whether the interceptor is enabled or not.
-     *
-     * @return If interceptor is enables returns true, otherwise false.
-     */
-    boolean isEnabled();
-
-    /**
      * Triggers prior to getting the user from unique user ID.
      *
      * @param uniqueUserId Unique user ID of the user.
@@ -998,7 +991,7 @@ public interface IdentityStoreInterceptor {
      * @param claim User claim.
      * @param credentials Callbacks with credentials.
      * @param domainName The domain name to authenticate the user against.
-     * @throws AuthenticationFailure
+     * @throws AuthenticationFailure Authentication failure.
      * @throws IdentityStoreException Identity store exception.
      */
     void doPreAuthenticate(Claim claim, Callback[] credentials, String domainName) throws AuthenticationFailure,
@@ -1011,7 +1004,7 @@ public interface IdentityStoreInterceptor {
      * @param credentials Callbacks with credentials.
      * @param domainName The domain name to authenticate the user against.
      * @param authenticationContext AuthenticationContext result to be returned from authenticate method.
-     * @throws AuthenticationFailure
+     * @throws AuthenticationFailure Authentication failure.
      * @throws IdentityStoreException Identity store exception.
      */
     void doPostAuthenticate(Claim claim, Callback[] credentials, String domainName, AuthenticationContext

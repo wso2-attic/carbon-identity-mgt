@@ -19,12 +19,14 @@ package org.wso2.carbon.identity.mgt.impl.internal;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
+import org.wso2.carbon.identity.common.util.IdentityUtilService;
 import org.wso2.carbon.identity.mgt.AuthorizationStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.impl.JDBCUniqueIdResolverFactory;
+import org.wso2.carbon.identity.mgt.impl.internal.config.interceptor.InterceptorEntry;
 import org.wso2.carbon.identity.mgt.interceptor.IdentityStoreInterceptor;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverFactory;
 
@@ -54,6 +56,8 @@ public class IdentityMgtDataHolder {
 
     private DataSourceService dataSourceService;
 
+    private IdentityUtilService identityUtilService;
+
     private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
 
     private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
@@ -61,6 +65,8 @@ public class IdentityMgtDataHolder {
     private Map<String, UniqueIdResolverFactory> uniqueIdResolverFactoryMap = new HashMap<>();
 
     private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
+
+    private Map<String, InterceptorEntry> identityStoreInterceptorConfigMap = new HashMap<>();
 
     private List<IdentityStoreInterceptor> identityStoreInterceptors = new ArrayList<>();
 
@@ -224,12 +230,33 @@ public class IdentityMgtDataHolder {
      */
     public void registerIdentityStoreInterceptor(IdentityStoreInterceptor identityStoreInterceptor) {
 
-        if (identityStoreInterceptor.isEnabled()) {
-            identityStoreInterceptors.add(identityStoreInterceptor);
-            identityStoreInterceptors.sort((identityStoreInterceptor1, identityStoreInterceptor2) ->
-                                                   identityStoreInterceptor1.getExecutionOrderId() -
-                                                   identityStoreInterceptor2.getExecutionOrderId());
+        identityStoreInterceptors.add(identityStoreInterceptor);
+    }
 
-        }
+    /**
+     * Register an instance of IdentityUtilService.
+     *
+     * @param identityUtilService IdentityUtilService service instance.
+     */
+    public void registerIdentityUtilService(IdentityUtilService identityUtilService) {
+        this.identityUtilService = identityUtilService;
+    }
+
+    /**
+     * Returns the IdentityUtilService.
+     *
+     * @return IdentityUtilService.
+     */
+    public IdentityUtilService getIdentityUtilService() {
+        return identityUtilService;
+    }
+
+    /**
+     * Returns all identity store interceptor configs.
+     *
+     * @return Map of identity interceptor configs.
+     */
+    public Map<String, InterceptorEntry> getIdentityStoreInterceptorConfigMap() {
+        return identityStoreInterceptorConfigMap;
     }
 }

@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
+import org.wso2.carbon.identity.common.base.exception.IdentityException;
+import org.wso2.carbon.identity.common.util.IdentityUtilService;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.connector.AuthorizationStoreConnectorFactory;
@@ -53,6 +55,8 @@ import org.wso2.carbon.identity.mgt.impl.config.DomainConfig;
 import org.wso2.carbon.identity.mgt.impl.config.StoreConfig;
 import org.wso2.carbon.identity.mgt.impl.internal.config.connector.ConnectorConfigReader;
 import org.wso2.carbon.identity.mgt.impl.internal.config.domain.DomainConfigReader;
+import org.wso2.carbon.identity.mgt.impl.internal.config.interceptor.IdentityStoreInterceptorConfigs;
+import org.wso2.carbon.identity.mgt.impl.internal.config.interceptor.InterceptorEntry;
 import org.wso2.carbon.identity.mgt.impl.internal.config.store.IdentityStoreConfigReader;
 import org.wso2.carbon.identity.mgt.interceptor.IdentityStoreInterceptor;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
@@ -61,7 +65,9 @@ import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverFactory;
 import org.wso2.carbon.kernel.startupresolver.RequiredCapabilityListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -257,13 +263,43 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     }
 
     protected void unregisterIdentityStoreInterceptor(IdentityStoreInterceptor identityStoreInterceptor) {
-        //TODO
+
+        List<IdentityStoreInterceptor> identityStoreInterceptors = IdentityMgtDataHolder.getInstance()
+                                                                                        .getIdentityStoreInterceptors();
+        Iterator<IdentityStoreInterceptor> iterator = identityStoreInterceptors.iterator();
+
+        while (iterator.hasNext()) {
+
+            IdentityStoreInterceptor interceptor = iterator.next();
+
+            if (interceptor.getClass().getCanonicalName().equals(identityStoreInterceptor.getClass()
+                                                                                         .getCanonicalName())) {
+                iterator.remove();
+                break;
+            }
+        }
+    }
+
+    @Reference(
+            name = "IdentityUtil",
+            service = IdentityUtilService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unregisterIdentityUtilService"
+    )
+    protected void registerIdentityUtilService(IdentityUtilService identityUtilService) {
+        IdentityMgtDataHolder.getInstance().registerIdentityUtilService(identityUtilService);
+    }
+
+    protected void unregisterIdentityUtilService(IdentityUtilService identityUtilService) {
+        IdentityMgtDataHolder.getInstance().registerIdentityUtilService(null);
     }
 
     @Override
     public void onAllRequiredCapabilitiesAvailable() {
 
         constructRealmService();
+        configureInterceptors();
     }
 
     private void constructRealmService() {
@@ -405,5 +441,49 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
         }
 
         return domains;
+    }
+
+    private void configureInterceptors() {
+
+        IdentityMgtDataHolder identityMgtDataHolder = IdentityMgtDataHolder.getInstance();
+
+        Map<String, InterceptorEntry> identityStoreInterceptorConfigMap = identityMgtDataHolder
+                .getIdentityStoreInterceptorConfigMap();
+
+        try {
+            IdentityStoreInterceptorConfigs identityStoreInterceptorConfigs = identityMgtDataHolder
+                    .getIdentityUtilService().getIdentityConfigUtils().getConfiguration
+                            ("identityStoreInterceptors", IdentityStoreInterceptorConfigs.class);
+
+            if (identityStoreInterceptorConfigs != null && identityStoreInterceptorConfigs
+                    .getIdentityStoreInterceptors() != null) {
+
+                for (InterceptorEntry entry: identityStoreInterceptorConfigs.getIdentityStoreInterceptors()) {
+                    identityStoreInterceptorConfigMap.put(entry.getName(), entry);
+                }
+            }
+
+            List<IdentityStoreInterceptor> identityStoreInterceptors = identityMgtDataHolder
+                    .getIdentityStoreInterceptors();
+
+            Iterator<IdentityStoreInterceptor> iterator = identityStoreInterceptors.iterator();
+
+            while (iterator.hasNext()) {
+
+                IdentityStoreInterceptor interceptor = iterator.next();
+
+                InterceptorEntry interceptorConfig = identityStoreInterceptorConfigMap.get(interceptor.getClass()
+                                                                                          .getCanonicalName());
+                if (interceptorConfig != null && !interceptorConfig.isEnable()) {
+                    iterator.remove();
+                }
+            }
+
+            identityStoreInterceptors.sort(Comparator.comparingInt(IdentityStoreInterceptor::getExecutionOrderId));
+
+        } catch (IdentityException e) {
+            log.error("Error while obtaining interceptor configs.", e);
+        }
+
     }
 }

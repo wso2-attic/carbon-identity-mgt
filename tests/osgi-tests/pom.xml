@@ -81,6 +81,14 @@
             <artifactId>in-memory-connectors-test-artifact</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.mgt</groupId>
+            <artifactId>identity-store-interceptor-test-artifact</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.commons</groupId>
+            <artifactId>org.wso2.carbon.identity.commons</artifactId>
+        </dependency>
 
         <!-- Pax Exam Dependencies-->
         <dependency>

@@ -72,6 +72,12 @@
             <version>${carbon.datasources.version}</version>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.commons</groupId>
+            <artifactId>org.wso2.carbon.identity.common.feature</artifactId>
+            <version>${carbon.identity.commons.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -137,6 +143,10 @@
                                 <feature>
                                     <id>org.wso2.carbon.datasource.core.feature</id>
                                     <version>${carbon.datasources.version}</version>
+                                </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.identity.common.feature</id>
+                                    <version>${carbon.identity.commons.version}</version>
                                 </feature>
                             </features>
                         </configuration>
