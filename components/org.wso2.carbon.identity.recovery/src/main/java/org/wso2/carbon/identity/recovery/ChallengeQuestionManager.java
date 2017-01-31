@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+import org.wso2.carbon.identity.recovery.mapping.SecurityQuestionsConfig;
 import org.wso2.carbon.identity.recovery.model.ChallengeQuestion;
 import org.wso2.carbon.identity.recovery.model.UserChallengeAnswer;
 import org.wso2.carbon.identity.recovery.util.Utils;
@@ -47,10 +48,17 @@ public class ChallengeQuestionManager {
     private static final Logger log = LoggerFactory.getLogger(ChallengeQuestionManager.class);
     private static ChallengeQuestionManager instance = new ChallengeQuestionManager();
 
+    private static SecurityQuestionsConfig recoveryConfig;
+
     private ChallengeQuestionManager() {
     }
 
     public static ChallengeQuestionManager getInstance() {
+        try {
+            recoveryConfig = Utils.getRecoveryConfigs().getRecovery().getPassword().getSecurityQuestionConfig();
+        } catch (IdentityRecoveryServerException e) {
+            log.error("Error while Loading recovery-config file.", e);
+        }
         return instance;
     }
 
@@ -679,5 +687,25 @@ public class ChallengeQuestionManager {
         }
 
         return locale;
+    }
+
+    /**
+     * Get Minimum no of challenge questions user has to answer.
+     *
+     * @return No of questions needs to answer.
+     * @throws IdentityRecoveryException
+     */
+    public int getMinimumNoOfChallengeQuestionsToAnswer() throws IdentityRecoveryException {
+        return recoveryConfig.getMinAnswers();
+    }
+
+    /**
+     * Check whether security question based password recovery enabled
+     *
+     * @return true if security question based password recovery enabled, false otherwise.
+     * @throws IdentityRecoveryException
+     */
+    public boolean isQuestionBasedPwdRecoveryEnabled() throws IdentityRecoveryException {
+        return recoveryConfig.isEnable();
     }
 }

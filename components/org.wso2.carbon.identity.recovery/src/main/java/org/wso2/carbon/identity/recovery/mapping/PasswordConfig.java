@@ -16,44 +16,27 @@
 package org.wso2.carbon.identity.recovery.mapping;
 
 /**
- * Class to represent security question based password recovery config
+ * Class to represent security questions config
  */
 public class PasswordConfig {
 
-    private boolean enable;
-    private boolean notifyStart;
-    private String separator;
-    private int minAnswers;
+    private NotificationBasedConfig notificationBased;
+    private SecurityQuestionsConfig securityQuestion;
 
-    public boolean isEnable() {
-        return enable;
+    public NotificationBasedConfig getNotificationBased() {
+        return notificationBased;
     }
 
-    public void setEnable(boolean enable) {
-        this.enable = enable;
+    public void setNotificationBased(NotificationBasedConfig notificationBased) {
+        this.notificationBased = notificationBased;
     }
 
-    public boolean isNotifyStart() {
-        return notifyStart;
+    public SecurityQuestionsConfig getSecurityQuestionConfig() {
+        return securityQuestion;
     }
 
-    public void setNotifyStart(boolean notifyStart) {
-        this.notifyStart = notifyStart;
+    public void setSecurityQuestion(SecurityQuestionsConfig securityQuestion) {
+        this.securityQuestion = securityQuestion;
     }
 
-    public String getSeparator() {
-        return separator;
-    }
-
-    public void setSeparator(String separator) {
-        this.separator = separator;
-    }
-
-    public int getMinAnswers() {
-        return minAnswers;
-    }
-
-    public void setMinAnswers(int minAnswers) {
-        this.minAnswers = minAnswers;
-    }
 }
