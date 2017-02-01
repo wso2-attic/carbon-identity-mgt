@@ -33,7 +33,6 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreClientException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreServerException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-import org.wso2.carbon.identity.mgt.impl.internal.IdentityMgtDataHolder;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -129,7 +128,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setUserId(uniqueUserId)
                 .setDomainName(domain.getName())
                 .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
     }
 
@@ -350,7 +349,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setGroupId(uniqueGroupId)
                 .setDomainName(domain.getName())
                 .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
     }
 
@@ -597,7 +596,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setGroupId(uniqueGroupId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -646,7 +645,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setUserId(uniqueUserId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -823,7 +822,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUserId))
                 .setDomainName(domain.getName())
                 .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
     }
 
@@ -861,7 +860,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUserId))
                 .setDomainName(domain.getName())
                 .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
     }
 
@@ -899,7 +898,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setUserId(uniqueUserId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -943,7 +942,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setUserId(uniqueUserId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -1132,7 +1131,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setGroupId(getEncodedUniqueEntityId(domain.getId(), domainGroupId))
                 .setDomainName(domain.getName())
                 .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
     }
 
@@ -1166,7 +1165,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setGroupId(getEncodedUniqueEntityId(domain.getId(), domainGroupId))
                 .setDomainName(domain.getName())
                 .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
     }
 
@@ -1204,7 +1203,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setGroupId(uniqueGroupId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -1248,7 +1247,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setGroupId(uniqueGroupId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -1408,7 +1407,7 @@ public class IdentityStoreImpl implements IdentityStore {
                     new User.UserBuilder()
                             .setUserId(uniqueUserId)
                             .setIdentityStore(this)
-                            .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                            .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                             .setDomainName(domain.getName())
                             .build());
         }
@@ -1428,7 +1427,8 @@ public class IdentityStoreImpl implements IdentityStore {
                             new User.UserBuilder()
                                     .setUserId(uniqueUserId)
                                     .setIdentityStore(this)
-                                    .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                                    .setAuthorizationStore(IdentityMgtDataHolder.getInstance()
+// .getAuthorizationStore())
                                     .setDomainName(domain.getName())
                                     .build());
                 } catch (AuthenticationFailure e) {
@@ -1539,7 +1539,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUserId))
                 .setDomainName(domain.getName())
                 .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
     }
 
@@ -1565,7 +1565,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setUserId(uniqueUserId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -1592,7 +1592,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setUserId(uniqueUserId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -1620,7 +1620,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setUserId(uniqueUserId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -1638,7 +1638,7 @@ public class IdentityStoreImpl implements IdentityStore {
                 .setGroupId(getEncodedUniqueEntityId(domain.getId(), domainGroupId))
                 .setDomainName(domain.getName())
                 .setIdentityStore(this)
-                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
     }
 
@@ -1665,7 +1665,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setGroupId(uniqueGroupId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -1693,7 +1693,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setGroupId(uniqueGroupId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -1722,7 +1722,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         .setGroupId(uniqueGroupId)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
-                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
     }

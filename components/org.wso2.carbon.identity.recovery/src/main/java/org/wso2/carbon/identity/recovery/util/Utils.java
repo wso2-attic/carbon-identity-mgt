@@ -224,22 +224,31 @@ public class Utils {
 
         RealmService realmService = IdentityRecoveryServiceDataHolder.getInstance().getRealmService();
         IdentityStore identityStore = realmService.getIdentityStore();
-        String oldValue;
 
-        if (identityStore != null) {
-            List<Claim> claimsList = identityStore.getClaimsOfUser(user.getUniqueUserId());
-            if (claimsList != null && !claimsList.isEmpty()) {
-                for (Claim claim : claimsList) {
-                    if (claim.getClaimUri().equals(claimUri)) {
-                        oldValue = claim.getValue();
-                        if (StringUtils.isEmpty(oldValue) || !oldValue.equals(value)) {
-                            claim.setValue(value);
-                            identityStore.updateUserClaims(user.getUniqueUserId(), claimsList);
-                        }
-                        return;
-                    }
-                }
-            }
+        if (identityStore == null) {
+            // TODO: Throw exception ?
+            return;
+        }
+
+        List<Claim> claimsList = identityStore.getClaimsOfUser(user.getUniqueUserId());
+
+        Claim claim = claimsList
+                .stream()
+                .filter(clm -> StringUtils.equals(clm.getClaimUri(), claimUri))
+                .findFirst()
+                .orElse(new Claim());
+
+        String dialectUri = claimsList.stream()
+                .map(Claim::getDialectUri)
+                .findFirst()
+                .get();
+
+        if (StringUtils.isEmpty(claim.getValue()) || !claim.getValue().equals(value)) {
+            claim.setClaimUri(claimUri);
+            claim.setValue(value);
+            claim.setDialectUri(dialectUri);
+            claimsList.add(claim);
+            identityStore.updateUserClaims(user.getUniqueUserId(), claimsList);
         }
     }
 

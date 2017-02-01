@@ -20,9 +20,7 @@ import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.identity.common.util.IdentityUtilService;
-import org.wso2.carbon.identity.mgt.AuthorizationStore;
 import org.wso2.carbon.identity.mgt.RealmService;
-import org.wso2.carbon.identity.mgt.connector.AuthorizationStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.impl.JDBCUniqueIdResolverFactory;
@@ -50,7 +48,7 @@ public class IdentityMgtDataHolder {
 
     private RealmService realmService;
 
-    private AuthorizationStore authorizationStore;
+//    private AuthorizationStore authorizationStore;
 
     private CarbonCachingService carbonCachingService;
 
@@ -64,7 +62,7 @@ public class IdentityMgtDataHolder {
 
     private Map<String, UniqueIdResolverFactory> uniqueIdResolverFactoryMap = new HashMap<>();
 
-    private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
+//    private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
 
     private Map<String, InterceptorEntry> identityStoreInterceptorConfigMap = new HashMap<>();
 
@@ -92,30 +90,30 @@ public class IdentityMgtDataHolder {
         return realmService;
     }
 
-    /**
-     * Register authorization store connector factory.
-     * @param key Id of the factory.
-     * @param authorizationStoreConnectorFactory AuthorizationStoreConnectorFactory.
-     */
-    void registerAuthorizationStoreConnectorFactory(String key, AuthorizationStoreConnectorFactory
-            authorizationStoreConnectorFactory) {
-        authorizationStoreConnectorFactoryMap.put(key, authorizationStoreConnectorFactory);
-    }
-
-    public Map<String, AuthorizationStoreConnectorFactory> getAuthorizationStoreConnectorFactoryMap() {
-        return authorizationStoreConnectorFactoryMap;
-    }
-
-    void registerAuthorizationStore(AuthorizationStore authorizationStore) {
-
-        this.authorizationStore = authorizationStore;
-    }
-
-    public AuthorizationStore getAuthorizationStore() {
-
-        //TODO throw exception if null
-        return authorizationStore;
-    }
+//    /**
+//     * Register authorization store connector factory.
+//     * @param key Id of the factory.
+//     * @param authorizationStoreConnectorFactory AuthorizationStoreConnectorFactory.
+//     */
+//    void registerAuthorizationStoreConnectorFactory(String key, AuthorizationStoreConnectorFactory
+//            authorizationStoreConnectorFactory) {
+//        authorizationStoreConnectorFactoryMap.put(key, authorizationStoreConnectorFactory);
+//    }
+//
+//    public Map<String, AuthorizationStoreConnectorFactory> getAuthorizationStoreConnectorFactoryMap() {
+//        return authorizationStoreConnectorFactoryMap;
+//    }
+//
+//    void registerAuthorizationStore(AuthorizationStore authorizationStore) {
+//
+//        this.authorizationStore = authorizationStore;
+//    }
+//
+//    public AuthorizationStore getAuthorizationStore() {
+//
+//        //TODO throw exception if null
+//        return authorizationStore;
+//    }
 
     public CarbonCachingService getCarbonCachingService() {
 
