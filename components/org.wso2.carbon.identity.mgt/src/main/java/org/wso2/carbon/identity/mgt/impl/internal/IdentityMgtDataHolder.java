@@ -19,13 +19,18 @@ package org.wso2.carbon.identity.mgt.impl.internal;
 import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
+import org.wso2.carbon.identity.common.util.IdentityUtilService;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.impl.JDBCUniqueIdResolverFactory;
+import org.wso2.carbon.identity.mgt.impl.internal.config.interceptor.InterceptorEntry;
+import org.wso2.carbon.identity.mgt.interceptor.IdentityStoreInterceptor;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolverFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -49,6 +54,8 @@ public class IdentityMgtDataHolder {
 
     private DataSourceService dataSourceService;
 
+    private IdentityUtilService identityUtilService;
+
     private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
 
     private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
@@ -56,6 +63,11 @@ public class IdentityMgtDataHolder {
     private Map<String, UniqueIdResolverFactory> uniqueIdResolverFactoryMap = new HashMap<>();
 
 //    private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
+
+    private Map<String, InterceptorEntry> identityStoreInterceptorConfigMap = new HashMap<>();
+
+    private List<IdentityStoreInterceptor> identityStoreInterceptors = new ArrayList<>();
+
 
     private IdentityMgtDataHolder() {
 
@@ -197,5 +209,52 @@ public class IdentityMgtDataHolder {
 
     void registerCacheService(CarbonCachingService carbonCachingService) {
         this.carbonCachingService = carbonCachingService;
+    }
+
+    /**
+     * Retrieve a sorted list of IdentityStoreListeners.
+     *
+     * @return List of sorted IdentityStoreListeners.
+     */
+    public List<IdentityStoreInterceptor> getIdentityStoreInterceptors() {
+        return identityStoreInterceptors;
+    }
+
+    /**
+     * Adds a IdentityStoreInterceptor to the interceptor list.
+     * The function will sort the interceptor list when adding a interceptor.
+     *
+     * @param identityStoreInterceptor IdentityStoreInterceptor.
+     */
+    public void registerIdentityStoreInterceptor(IdentityStoreInterceptor identityStoreInterceptor) {
+
+        identityStoreInterceptors.add(identityStoreInterceptor);
+    }
+
+    /**
+     * Register an instance of IdentityUtilService.
+     *
+     * @param identityUtilService IdentityUtilService service instance.
+     */
+    public void registerIdentityUtilService(IdentityUtilService identityUtilService) {
+        this.identityUtilService = identityUtilService;
+    }
+
+    /**
+     * Returns the IdentityUtilService.
+     *
+     * @return IdentityUtilService.
+     */
+    public IdentityUtilService getIdentityUtilService() {
+        return identityUtilService;
+    }
+
+    /**
+     * Returns all identity store interceptor configs.
+     *
+     * @return Map of identity interceptor configs.
+     */
+    public Map<String, InterceptorEntry> getIdentityStoreInterceptorConfigMap() {
+        return identityStoreInterceptorConfigMap;
     }
 }

@@ -181,8 +181,19 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.mgt</groupId>
+                <artifactId>identity-store-interceptor-test-artifact</artifactId>
+                <version>${carbon.identity.mgt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity.mgt</groupId>
                 <artifactId>org.wso2.carbon.identity.mgt.login.interceptor</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
+            </dependency>
+            <!-- Identity Recovery -->
+            <dependency>
+                <groupId>org.wso2.carbon.identity.commons</groupId>
+                <artifactId>org.wso2.carbon.identity.event</artifactId>
+                <version>${carbon.identity.commons.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.mgt</groupId>
@@ -190,7 +201,6 @@
                 <version>${carbon.identity.mgt.version}</version>
             </dependency>
 
-            <!-- Identity Recovery -->
             <dependency>
                 <groupId>org.wso2.carbon.identity.commons</groupId>
                 <artifactId>org.wso2.carbon.identity.commons</artifactId>
@@ -414,7 +424,7 @@
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
         <carbon.datasources.version>1.0.0</carbon.datasources.version>
         <carbon.jndi.version>1.0.0</carbon.jndi.version>
-        <carbon.identity.commons.version>0.1.0</carbon.identity.commons.version>
+        <carbon.identity.commons.version>0.1.7-SNAPSHOT</carbon.identity.commons.version>
         <commons.lang.version>3.4</commons.lang.version>
         <jackson.version>1.8.6</jackson.version>
 
