@@ -22,54 +22,77 @@ profiles:
   claims:
   -
    claimURI: "http://wso2.org/claims/username"
-   displayName: "User Name"
+   displayName: "Username"
    required: true
    readonly: true
    verifier: "claim verifying extension"
    validator: "claim validating extension"
    transformer: "transform extension"
-   regex: "*"
+   regex: ".*"
    defaultValue: "user1"
    dataType: "text"
    properties:
     customproperty: "custom value"
   -
+   claimURI: "http://wso2.org/claims/givenname"
+   displayName: "First Name"
+   required: true
+   readonly: false
+   regex: "^[a-zA-Z]*$"
+  -
+   claimURI: "http://wso2.org/claims/lastname"
+   displayName: "Last Name"
+   required: false
+   readonly: false
+   regex: "^[a-zA-Z]*$"
+  -
    claimURI: "http://wso2.org/claims/email"
    displayName: "Email"
    required: true
-   readonly: true
-   regex: "*"
+   readonly: false
+   dataType: "email"
+   regex: ".*"
   -
-   claimURI: "http://wso2.org/claims/mobile"
-   displayName: "Mobile"
-   required: true
-   readonly: true
-   regex: "*"
-  -
-   claimURI: "http://wso2.org/claims/organization"
-   displayName: "Organization"
-   required: true
-   readonly: true
-   regex: "*"
+   claimURI: "http://wso2.org/claims/telephone"
+   displayName: "Telephone"
+   required: false
+   readonly: false
+   regex: "^(?=.*[0-9])[- +()0-9]+$"
+   dataType: "text"
  -
   profileName: "employee"
   isAdminProfile: false
   claims:
   -
-   claimURI: "http://wso2.org/claims/employeeNumber"
-   displayName: "Employee Number"
+   claimURI: "http://wso2.org/claims/username"
+   displayName: "Username"
    required: true
    readonly: true
-   regex: "*"
+   regex: ".*"
+   defaultValue: "user1"
+   dataType: "text"
    properties:
     customproperty: "custom value"
+  -
+   claimURI: "http://wso2.org/claims/givenname"
+   displayName: "Employee Name"
+   required: true
+   readonly: false
+   regex: ".*"
+  -
+   claimURI: "http://wso2.org/claims/email"
+   displayName: "Email"
+   required: true
+   readonly: false
+   dataType: "email"
+   regex: ".*"
  -
   profileName: "self-signUp"
   isAdminProfile: true
   claims:
   -
    claimURI: "http://wso2.org/claims/username"
-   displayName: "User Name"
+   displayName: "Username"
    required: true
    readonly: true
    verifier: "claim verifying extension"
@@ -100,4 +123,4 @@ profiles:
    readonly: false
    dataType: "email"
    regex: "*"
-   defaultValue: "user1@example.com"
+   defaultValue: "user@example.com"
