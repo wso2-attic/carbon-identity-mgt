@@ -102,6 +102,23 @@ public class IdentityStoreImpl implements IdentityStore {
      */
 
     @Override
+    public boolean isUserExist(List<Claim> userClaims, Domain domain) throws IdentityStoreException {
+        boolean userExists = false;
+        try {
+            for (Claim claim : userClaims) {
+                if (domain.isClaimSupported(claim.getClaimUri()) &&
+                        domain.getMetaClaimMapping(claim.getClaimUri()).isUnique()) {
+                    userExists = domain.isUserExists(domain.getDomainUserId(claim));
+                    break;
+                }
+            }
+        } catch (DomainException | UserNotFoundException e) {
+            throw new IdentityStoreServerException("Error while checking whether a user exists.", e);
+        }
+        return userExists;
+    }
+
+    @Override
     public User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
         if (isNullOrEmpty(uniqueUserId)) {

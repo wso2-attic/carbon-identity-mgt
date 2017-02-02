@@ -60,6 +60,11 @@ public class InterceptingIdentityStore implements IdentityStore {
     }
 
     @Override
+    public boolean isUserExist(List<Claim> userClaims, Domain domain) throws IdentityStoreException {
+        return identityStore.isUserExist(userClaims, domain);
+    }
+
+    @Override
     public User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
         identityStoreInterceptors.forEach(LambdaExceptionUtils.rethrowConsumer(

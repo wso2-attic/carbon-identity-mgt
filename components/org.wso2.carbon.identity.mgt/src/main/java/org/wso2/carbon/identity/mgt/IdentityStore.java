@@ -24,6 +24,7 @@ import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+import org.wso2.carbon.identity.mgt.impl.Domain;
 
 import java.util.List;
 import java.util.Set;
@@ -40,6 +41,16 @@ import javax.security.auth.callback.Callback;
  */
 
 public interface IdentityStore {
+
+    /**
+     * Check user existence in a specific domain
+     *
+     * @param userClaims Claims of the user
+     * @param domain Domain of the user
+     * @return True if user exists
+     * @throws IdentityStoreException
+     */
+    boolean isUserExist(List<Claim> userClaims, Domain domain) throws IdentityStoreException;
 
     /**
      * Retrieve a user by unique user Id.
