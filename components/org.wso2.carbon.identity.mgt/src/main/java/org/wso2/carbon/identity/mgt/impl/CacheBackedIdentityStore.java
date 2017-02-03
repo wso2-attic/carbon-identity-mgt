@@ -89,8 +89,8 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public boolean isUserExist(List<Claim> userClaims, Domain domain) throws IdentityStoreException {
-        return identityStore.isUserExist(userClaims, domain);
+    public boolean isUserExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
+        return identityStore.isUserExist(userClaims, domainName);
     }
 
     @Override

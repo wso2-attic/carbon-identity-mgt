@@ -103,9 +103,10 @@ public class IdentityStoreImpl implements IdentityStore {
      */
 
     @Override
-    public boolean isUserExist(List<Claim> userClaims, Domain domain) throws IdentityStoreException {
+    public boolean isUserExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
         boolean userExists = false;
         try {
+            Domain domain = getDomainFromDomainName(domainName);
             for (Claim claim : userClaims) {
                 if (domain.isClaimSupported(claim.getClaimUri()) &&
                         domain.getMetaClaimMapping(claim.getClaimUri()).isUnique()) {
