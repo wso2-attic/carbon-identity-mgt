@@ -34,6 +34,7 @@ import org.wso2.carbon.identity.mgt.interceptor.IdentityStoreInterceptor;
 import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.security.auth.callback.Callback;
 
@@ -62,6 +63,11 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public boolean isUserExist(List<Claim> userClaims, Domain domain) throws IdentityStoreException {
         return identityStore.isUserExist(userClaims, domain);
+    }
+
+    @Override
+    public Map<String, String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
+        return identityStore.isUserExist(userClaims);
     }
 
     @Override

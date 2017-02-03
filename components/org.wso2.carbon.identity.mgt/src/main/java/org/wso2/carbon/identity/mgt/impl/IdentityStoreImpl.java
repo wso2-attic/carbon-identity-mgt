@@ -26,6 +26,7 @@ import org.wso2.carbon.identity.mgt.bean.GroupBean;
 import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
+import org.wso2.carbon.identity.mgt.constant.IdentityMgtConstants;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
@@ -117,6 +118,39 @@ public class IdentityStoreImpl implements IdentityStore {
         }
         return userExists;
     }
+
+    @Override
+    public Map<String, String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
+        Map<String, String> userExistMetaMap = new HashMap<>();
+        boolean userExists = false;
+        int noOfDomains = 0;
+
+        try {
+            Set<String> domainNames = getDomainNames();
+            for (String domainName : domainNames) {
+                for (Claim claim : userClaims) {
+                    Domain domain = getDomainFromDomainName(domainName);
+                    if (domain.isClaimSupported(claim.getClaimUri()) &&
+                            domain.getMetaClaimMapping(claim.getClaimUri()).isUnique()) {
+                        boolean userExistInDomain = domain.isUserExists(domain.getDomainUserId(claim));
+                        if (userExistInDomain && !userExists) {
+                            userExists = true;
+                        }
+                        if (userExistInDomain) {
+                            ++noOfDomains;
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (DomainException | UserNotFoundException e) {
+            throw new IdentityStoreServerException("Error while checking across domains, whether a user exists.", e);
+        }
+        userExistMetaMap.put(IdentityMgtConstants.USER_EXIST, Boolean.toString(userExists));
+        userExistMetaMap.put(IdentityMgtConstants.NO_OF_DOMAINS, Integer.toString(noOfDomains));
+        return userExistMetaMap;
+    }
+
 
     @Override
     public User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {

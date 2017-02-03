@@ -27,6 +27,7 @@ import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.impl.Domain;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.security.auth.callback.Callback;
 
@@ -51,6 +52,15 @@ public interface IdentityStore {
      * @throws IdentityStoreException
      */
     boolean isUserExist(List<Claim> userClaims, Domain domain) throws IdentityStoreException;
+
+    /**
+     * Check user existence across domains
+     *
+     * @param userClaims Claims of the user
+     * @return Meta data of checking user existence across domains
+     * @throws IdentityStoreException
+     */
+    Map<String, String> isUserExist(List<Claim> userClaims) throws IdentityStoreException;
 
     /**
      * Retrieve a user by unique user Id.
