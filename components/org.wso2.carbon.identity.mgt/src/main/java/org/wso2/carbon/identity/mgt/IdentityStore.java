@@ -43,7 +43,7 @@ import javax.security.auth.callback.Callback;
 public interface IdentityStore {
 
     /**
-     * Check user existence in a specific domain
+     * Check user existence in a specific domain.
      *
      * @param userClaims Claims of the user
      * @param domainName Domain name of the user
@@ -53,7 +53,7 @@ public interface IdentityStore {
     boolean isUserExist(List<Claim> userClaims, String domainName) throws IdentityStoreException;
 
     /**
-     * Check user existence across domains
+     * Check user existence across domains.
      *
      * @param userClaims Claims of the user
      * @return Meta data of checking user existence across domains

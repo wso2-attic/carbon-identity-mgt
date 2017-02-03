@@ -119,7 +119,8 @@ public class IdentityStoreImpl implements IdentityStore {
             try {
                 metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
             } catch (DomainException e) {
-                throw new IdentityStoreException("Invalid domain configuration found. No meta claim mappings.");
+                throw new IdentityStoreException(String.format
+                        ("Invalid domain configuration found for %s domain. No meta claim mappings.", domainName));
             }
             if (domain.isClaimSupported(claim.getClaimUri()) &&
                     metaClaimMapping.isUnique()) {
@@ -160,7 +161,8 @@ public class IdentityStoreImpl implements IdentityStore {
                 try {
                     metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
                 } catch (DomainException e) {
-                    throw new IdentityStoreException("Invalid domain configuration found. No meta claim mappings.");
+                    throw new IdentityStoreException(String.format
+                            ("Invalid domain configuration found for %s domain. No meta claim mappings.", domainName));
                 }
                 if (domain.isClaimSupported(claim.getClaimUri()) &&
                         metaClaimMapping.isUnique()) {
