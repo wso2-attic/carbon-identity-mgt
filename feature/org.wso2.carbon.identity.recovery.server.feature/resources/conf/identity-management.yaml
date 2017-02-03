@@ -23,4 +23,8 @@ recovery:
   notificationBased:
     enable: false
  username:
-    enable: false
+  enable: true
+  notificationInternallyManaged:
+    enable: true
+
+
