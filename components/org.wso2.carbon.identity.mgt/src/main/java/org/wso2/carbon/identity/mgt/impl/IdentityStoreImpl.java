@@ -26,13 +26,28 @@ import org.wso2.carbon.identity.mgt.bean.GroupBean;
 import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
+import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
 import org.wso2.carbon.identity.mgt.constant.IdentityMgtConstants;
-import org.wso2.carbon.identity.mgt.exception.*;
+import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
+import org.wso2.carbon.identity.mgt.exception.DomainException;
+import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
+import org.wso2.carbon.identity.mgt.exception.IdentityStoreClientException;
+import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.identity.mgt.exception.IdentityStoreServerException;
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 
-import javax.security.auth.callback.Callback;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
+import javax.security.auth.callback.Callback;
 
 import static org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants.USERNAME_CLAIM;
 import static org.wso2.carbon.kernel.utils.LambdaExceptionUtils.rethrowConsumer;
@@ -91,27 +106,36 @@ public class IdentityStoreImpl implements IdentityStore {
     @Override
     public boolean isUserExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
         boolean userExists = false;
+        Domain domain;
         try {
-            Domain domain = getDomainFromDomainName(domainName);
-            String domainUserId;
-            for (Claim claim : userClaims) {
-                if (domain.isClaimSupported(claim.getClaimUri()) &&
-                        domain.getMetaClaimMapping(claim.getClaimUri()).isUnique()) {
-                    try {
-                        domainUserId = domain.getDomainUserId(claim);
-                        if (domainUserId != null) {
-                            userExists = true;
-                            break;
-                        }
-                    } catch (UserNotFoundException e) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("User is not available in domain: " + domainName);
-                        }
+            domain = getDomainFromDomainName(domainName);
+        } catch (DomainException e) {
+            throw new IdentityStoreException(String.format("Domain %s was not found", domainName));
+        }
+        String domainUserId;
+
+        for (Claim claim : userClaims) {
+            MetaClaimMapping metaClaimMapping;
+            try {
+                metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
+            } catch (DomainException e) {
+                throw new IdentityStoreException("Invalid domain configuration found. No meta claim mappings.");
+            }
+            if (domain.isClaimSupported(claim.getClaimUri()) &&
+                    metaClaimMapping.isUnique()) {
+                try {
+                    domainUserId = domain.getDomainUserId(claim);
+                    if (domainUserId != null) {
+                        userExists = true;
+                        break;
                     }
+                } catch (UserNotFoundException | DomainException e) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("User is not available in domain: " + domainName);
+                    }
+                    break;
                 }
             }
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException("Error while checking whether a user exists.", e);
         }
         return userExists;
     }
@@ -123,33 +147,42 @@ public class IdentityStoreImpl implements IdentityStore {
         String domainUserId;
         int noOfDomains = 0;
 
-        try {
-            Set<String> domainNames = getDomainNames();
-            for (String domainName : domainNames) {
-                for (Claim claim : userClaims) {
-                    Domain domain = getDomainFromDomainName(domainName);
-                    if (domain.isClaimSupported(claim.getClaimUri()) &&
-                            domain.getMetaClaimMapping(claim.getClaimUri()).isUnique()) {
-                        try {
-                            domainUserId = domain.getDomainUserId(claim);
-                            if (domainUserId != null) {
-                                if (!userExists) {
-                                    userExists = true;
-                                }
-                                ++noOfDomains;
-                                break;
+        Set<String> domainNames = getDomainNames();
+        for (String domainName : domainNames) {
+            Domain domain;
+            try {
+                domain = getDomainFromDomainName(domainName);
+            } catch (DomainException e) {
+                throw new IdentityStoreException(String.format("Domain %s was not found", domainName));
+            }
+            for (Claim claim : userClaims) {
+                MetaClaimMapping metaClaimMapping;
+                try {
+                    metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
+                } catch (DomainException e) {
+                    throw new IdentityStoreException("Invalid domain configuration found. No meta claim mappings.");
+                }
+                if (domain.isClaimSupported(claim.getClaimUri()) &&
+                        metaClaimMapping.isUnique()) {
+                    try {
+                        domainUserId = domain.getDomainUserId(claim);
+                        if (domainUserId != null) {
+                            if (!userExists) {
+                                userExists = true;
                             }
-                        } catch (UserNotFoundException e) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("User is not available in domain: " + domainName);
-                            }
+                            ++noOfDomains;
+                            break;
                         }
+                    } catch (UserNotFoundException | DomainException e) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("User is not available in domain: " + domainName);
+                        }
+                        break;
                     }
                 }
             }
-        } catch (DomainException e) {
-            throw new IdentityStoreServerException("Error while checking across domains, whether a user exists.", e);
         }
+
         userExistMetaMap.put(IdentityMgtConstants.USER_EXIST, Boolean.toString(userExists));
         userExistMetaMap.put(IdentityMgtConstants.NO_OF_DOMAINS, Integer.toString(noOfDomains));
         return userExistMetaMap;
