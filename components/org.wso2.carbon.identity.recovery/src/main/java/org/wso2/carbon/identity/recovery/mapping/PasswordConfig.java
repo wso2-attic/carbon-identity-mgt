@@ -16,12 +16,48 @@
 package org.wso2.carbon.identity.recovery.mapping;
 
 /**
- * Class to represent security questions config
+ * Class to represent Password Recovery config
  */
 public class PasswordConfig {
 
-    private NotificationBasedConfig notificationBased;
-    private SecurityQuestionsConfig securityQuestion;
+    private boolean enableAPI = true;
+    private boolean enablePortal = true;
+    private String url = "/user-portal/recovery/password";
+    private NotificationBasedConfig notificationBased = new NotificationBasedConfig();
+    private SecurityQuestionsConfig securityQuestion = new SecurityQuestionsConfig();
+    private ExternalConfig external = new ExternalConfig();
+
+    public void setEnableAPI(boolean enableAPI) {
+        this.enableAPI = enableAPI;
+    }
+
+    public boolean isEnableAPI() {
+        return enableAPI;
+    }
+
+    public boolean isEnablePortal() {
+        return enablePortal;
+    }
+
+    public void setEnablePortal(boolean enablePortal) {
+        this.enablePortal = enablePortal;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public ExternalConfig getExternal() {
+        return external;
+    }
+
+    public void setExternal(ExternalConfig external) {
+        this.external = external;
+    }
 
     public NotificationBasedConfig getNotificationBased() {
         return notificationBased;
@@ -31,7 +67,7 @@ public class PasswordConfig {
         this.notificationBased = notificationBased;
     }
 
-    public SecurityQuestionsConfig getSecurityQuestionConfig() {
+    public SecurityQuestionsConfig getSecurityQuestion() {
         return securityQuestion;
     }
 

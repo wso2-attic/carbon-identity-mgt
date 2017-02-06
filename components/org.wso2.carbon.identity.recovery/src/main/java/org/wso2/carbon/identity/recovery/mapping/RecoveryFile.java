@@ -20,7 +20,7 @@ package org.wso2.carbon.identity.recovery.mapping;
  */
 public class RecoveryFile {
 
-    private RecoveryConfig recovery;
+    private RecoveryConfig recovery = new RecoveryConfig();
 
     public RecoveryConfig getRecovery() {
         return recovery;
