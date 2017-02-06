@@ -195,6 +195,10 @@
                                     <id>org.wso2.carbon.identity.mgt.feature</id>
                                     <version>${carbon.identity.mgt.version}</version>
                                 </feature>
+                                <feature>
+                                    <id>org.wso2.carbon.identity.common.feature</id>
+                                    <version>${carbon.identity.commons.version}</version>
+                                </feature>
                             </features>
                         </configuration>
                     </execution>

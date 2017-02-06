@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-
 /**
  * Tests the ClaimResolvingService.
  */
@@ -40,10 +38,7 @@ public class ClaimResolvingServiceTest {
     public Option[] createConfiguration() {
 
         List<Option> optionList = IdentityMgtOSGiTestUtils.getDefaultSecurityPAXOptions();
-        optionList.add(mavenBundle()
-                               .groupId("org.wso2.carbon.identity.mgt")
-                               .artifactId("identity-store-interceptor-test-artifact")
-                               .versionAsInProject());
+
         optionList.add(CoreOptions.systemProperty("java.security.auth.login.config")
                 .value(Paths.get(IdentityMgtOSGiTestUtils.getCarbonHome(), "conf", "security", "carbon-jaas.config")
                         .toString()));
