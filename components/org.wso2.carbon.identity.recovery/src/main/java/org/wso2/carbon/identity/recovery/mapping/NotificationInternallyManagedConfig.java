@@ -18,13 +18,12 @@
 
 package org.wso2.carbon.identity.recovery.mapping;
 
-
-/**
- * Class to represent username recovery config
+/***
+ *  Config for the Notification Internally Managed
  */
-public class UsernameConfig {
+public class NotificationInternallyManagedConfig {
+
     private boolean enable;
-    private NotificationInternallyManagedConfig notificationInternallyManaged;
 
     public boolean isEnable() {
         return enable;
@@ -32,13 +31,5 @@ public class UsernameConfig {
 
     public void setEnable(boolean enable) {
         this.enable = enable;
-    }
-
-    public NotificationInternallyManagedConfig getNotificationInternallyManaged() {
-        return notificationInternallyManaged;
-    }
-
-    public void setNotificationInternallyManaged(NotificationInternallyManagedConfig notificationInternallyManaged) {
-        this.notificationInternallyManaged = notificationInternallyManaged;
     }
 }

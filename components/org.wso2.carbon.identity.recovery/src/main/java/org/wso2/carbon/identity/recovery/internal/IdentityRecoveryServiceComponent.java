@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
+import org.wso2.carbon.identity.recovery.username.NotificationUsernameRecoveryManager;
 
 /**
  * @scr.reference name="realm.service"
@@ -63,8 +64,8 @@ public class IdentityRecoveryServiceComponent {
 //                    NotificationPasswordRecoveryManager.getInstance(), null);
 //            bundleContext.registerService(SecurityQuestionPasswordRecoveryManager.class.getName(),
 //                    SecurityQuestionPasswordRecoveryManager.getInstance(), null);
-//            bundleContext.registerService(NotificationUsernameRecoveryManager.class.getName(),
-//                    NotificationUsernameRecoveryManager.getInstance(), null);
+            bundleContext.registerService(NotificationUsernameRecoveryManager.class.getName(),
+                    NotificationUsernameRecoveryManager.getInstance(), null);
 //            bundleContext.registerService(UserSelfRegistrationManager.class.getName(),
 //                    UserSelfRegistrationManager.getInstance(), null);
             bundleContext.registerService(ChallengeQuestionManager.class.getName(),
