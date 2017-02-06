@@ -108,6 +108,9 @@ public class IdentityStoreImpl implements IdentityStore {
         boolean userExists = false;
         Domain domain;
         try {
+            if (isNullOrEmpty(domainName)) {
+                domainName = getPrimaryDomainName();
+            }
             domain = getDomainFromDomainName(domainName);
         } catch (DomainException e) {
             throw new IdentityStoreException(String.format("Domain %s was not found", domainName));
