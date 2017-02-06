@@ -15,12 +15,25 @@
 ###############################################################################
 recovery:
  password:
-  securityQuestion:
-   enable: false
-   notifyStart: false
-   separator: "!"
-   minAnswers: 2
-  notificationBased:
-    enable: false
+   enableAPI: true
+   enablePortal: true
+   url: "/user-portal/recovery/password"
+   securityQuestion:
+    enableAPI: true
+    enablePortal: true
+    notifyStart: false
+    minAnswers: 2
+   notificationBased:
+    emailLink:
+        enableAPI: true
+        enablePortal: true
+    recoveryCode:
+        enableAPI: true
+        enablePortal: true
+   external:
+     enablePortal: false
+     url: "https://somewhere.com"
  username:
-    enable: false
+  enableAPI: true
+  enablePortal: true
+  url: "/user-portal/recovery/username"

@@ -23,6 +23,9 @@ package org.wso2.carbon.identity.recovery.mapping;
  */
 public class RecoveryConfig {
 
+    private PasswordConfig password = new PasswordConfig();
+    private UsernameConfig username = new UsernameConfig();
+
     public PasswordConfig getPassword() {
         return password;
     }
@@ -38,9 +41,6 @@ public class RecoveryConfig {
     public void setUsername(UsernameConfig username) {
         this.username = username;
     }
-
-    private PasswordConfig password;
-    private UsernameConfig username;
 
 
 
