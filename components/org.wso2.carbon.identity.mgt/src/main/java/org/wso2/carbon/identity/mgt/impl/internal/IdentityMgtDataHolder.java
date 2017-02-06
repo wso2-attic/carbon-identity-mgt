@@ -20,6 +20,7 @@ import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.identity.common.util.IdentityUtilService;
+import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory;
 import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory;
@@ -56,6 +57,8 @@ public class IdentityMgtDataHolder {
 
     private IdentityUtilService identityUtilService;
 
+    private EventService eventService;
+
     private Map<String, CredentialStoreConnectorFactory> credentialStoreConnectorFactoryMap = new HashMap<>();
 
     private Map<String, IdentityStoreConnectorFactory> identityStoreConnectorFactoryMap = new HashMap<>();
@@ -65,7 +68,6 @@ public class IdentityMgtDataHolder {
 //    private Map<String, AuthorizationStoreConnectorFactory> authorizationStoreConnectorFactoryMap = new HashMap<>();
 
     private Map<String, InterceptorEntry> identityStoreInterceptorConfigMap = new HashMap<>();
-
     private List<IdentityStoreInterceptor> identityStoreInterceptors = new ArrayList<>();
 
 
@@ -257,4 +259,22 @@ public class IdentityMgtDataHolder {
     public Map<String, InterceptorEntry> getIdentityStoreInterceptorConfigMap() {
         return identityStoreInterceptorConfigMap;
     }
+
+    /**
+     * Register an instance of EventService.
+     * @param eventService EventService service instance.
+     */
+    public void registerEventService(EventService eventService) {
+        this.eventService = eventService;
+    }
+
+    /**
+     * Returns the EventService.
+     *
+     * @return EventService.
+     */
+    public EventService getEventService() {
+        return eventService;
+    }
+
 }

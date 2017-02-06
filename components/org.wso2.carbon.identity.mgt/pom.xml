@@ -93,6 +93,10 @@
             <groupId>org.wso2.carbon.identity.commons</groupId>
             <artifactId>org.wso2.carbon.identity.commons</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.commons</groupId>
+            <artifactId>org.wso2.carbon.identity.event</artifactId>
+        </dependency>
         <!-- Dependencies for unit tests -->
         <dependency>
             <groupId>org.testng</groupId>
@@ -141,6 +145,7 @@
             org.wso2.carbon.caching.*,
             org.wso2.carbon.datasource.core.*;version="${org.wso2.carbon.datasource.version.range}",
             org.wso2.carbon.identity.common.*,
+            org.wso2.carbon.identity.event.*,
         </import.package>
 
         <carbon.component>
@@ -149,8 +154,7 @@
             requiredService="
             org.wso2.carbon.identity.mgt.connector.CredentialStoreConnectorFactory,
             org.wso2.carbon.identity.mgt.connector.IdentityStoreConnectorFactory,
-            org.wso2.carbon.identity.common.util.IdentityUtilService,
-            org.wso2.carbon.identity.mgt.interceptor.IdentityStoreInterceptor"
+            org.wso2.carbon.identity.common.util.IdentityUtilService
         </carbon.component>
 
         <!-- OSGi API version range-->

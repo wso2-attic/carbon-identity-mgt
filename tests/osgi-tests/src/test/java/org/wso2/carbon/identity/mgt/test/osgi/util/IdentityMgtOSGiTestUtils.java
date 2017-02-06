@@ -105,6 +105,14 @@ public class IdentityMgtOSGiTestUtils {
                 .groupId("org.wso2.carbon.identity.commons")
                 .artifactId("org.wso2.carbon.identity.commons")
                 .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.identity.commons")
+                .artifactId("org.wso2.carbon.identity.event")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.apache.commons")
+                .artifactId("commons-lang3")
+                .versionAsInProject());
 
         CarbonSysPropConfiguration sysPropConfiguration = new CarbonSysPropConfiguration();
         sysPropConfiguration.setCarbonHome(getCarbonHome());
