@@ -23,13 +23,31 @@ package org.wso2.carbon.identity.recovery.mapping;
  * Class to represent username recovery config
  */
 public class UsernameConfig {
-    private boolean enable;
+    private boolean enableAPI = false;
+    private boolean enablePortal = true;
+    private String url = "/user-portal/recovery/username";
 
-    public boolean isEnable() {
-        return enable;
+    public boolean isEnableAPI() {
+        return enableAPI;
     }
 
-    public void setEnable(boolean enable) {
-        this.enable = enable;
+    public void setEnableAPI(boolean enableAPI) {
+        this.enableAPI = enableAPI;
+    }
+
+    public boolean isEnablePortal() {
+        return enablePortal;
+    }
+
+    public void setEnablePortal(boolean enablePortal) {
+        this.enablePortal = enablePortal;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

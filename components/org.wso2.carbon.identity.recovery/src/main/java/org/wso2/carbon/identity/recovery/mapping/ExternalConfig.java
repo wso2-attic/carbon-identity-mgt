@@ -19,26 +19,25 @@
 package org.wso2.carbon.identity.recovery.mapping;
 
 /**
- * Class to represent notification based password recovery config
+ * Class to represent External Password Recovery config
  */
-public class NotificationBasedConfig {
+public class ExternalConfig {
+    private boolean enablePortal = false;
+    private String url = "";
 
-    private EmailLinkConfig emailLink = new EmailLinkConfig();
-    private RecoveryCodeConfig recoveryCode = new RecoveryCodeConfig();
-
-    public EmailLinkConfig getEmailLink() {
-        return emailLink;
+    public String getUrl() {
+        return url;
     }
 
-    public void setEmailLink(EmailLinkConfig emailLink) {
-        this.emailLink = emailLink;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public RecoveryCodeConfig getRecoveryCode() {
-        return recoveryCode;
+    public boolean isEnablePortal() {
+        return enablePortal;
     }
 
-    public void setRecoveryCode(RecoveryCodeConfig recoveryCode) {
-        this.recoveryCode = recoveryCode;
+    public void setEnablePortal(boolean enablePortal) {
+        this.enablePortal = enablePortal;
     }
 }
