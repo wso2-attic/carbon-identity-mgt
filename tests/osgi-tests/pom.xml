@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.identity.mgt</groupId>
         <artifactId>carbon-identity-mgt-tests</artifactId>
-        <version>0.1.7-SNAPSHOT</version>
+        <version>0.1.8-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -79,12 +79,12 @@
             <artifactId>in-memory-connectors-test-artifact</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.identity.mgt</groupId>
-            <artifactId>identity-store-interceptor-test-artifact</artifactId>
+            <groupId>org.wso2.carbon.identity.commons</groupId>
+            <artifactId>org.wso2.carbon.identity.commons</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity.commons</groupId>
-            <artifactId>org.wso2.carbon.identity.commons</artifactId>
+            <artifactId>org.wso2.carbon.identity.event</artifactId>
         </dependency>
 
         <!-- Pax Exam Dependencies-->
@@ -158,6 +158,10 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
     </dependencies>
 

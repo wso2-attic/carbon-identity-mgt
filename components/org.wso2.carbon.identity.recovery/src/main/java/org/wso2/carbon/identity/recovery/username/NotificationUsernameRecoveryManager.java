@@ -66,37 +66,14 @@ public class NotificationUsernameRecoveryManager {
     public boolean verifyUsername(ArrayList<UserClaim> claims) throws
             IdentityRecoveryException {
 
-        // Check whether username recovery enable
-        boolean isRecoveryUsernameEnable = usernameConfig.isEnable();
-
-        if (!isRecoveryUsernameEnable) {
-            throw Utils.handleClientException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_USERNAME_RECOVERY_NOT_ENABLE, null);
-        }
-
-        boolean isNotificationInternallyManaged = usernameConfig.getNotificationInternallyManaged().isEnable();
-
-        if (isNotificationInternallyManaged) {
             return recoverUserByClaims(claims);
-        }
-        throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_NO_VALID_USERNAME, null);
+
     }
 
 
     public boolean recoverUserByClaims(ArrayList<UserClaim> claims)
             throws IdentityRecoveryException {
 
-        // Check whether username recovery enable
-        boolean isRecoveryUsernameEnable = Utils.getRecoveryConfigs().getRecovery().getUsername().isEnable();
-
-        if (!isRecoveryUsernameEnable) {
-
-            if (log.isDebugEnabled()) {
-                log.debug("Username Recovery is not enabled");
-            }
-            return false;
-            //TODO send exception
-        }
 
         if (claims == null || claims.size() < 1) {
 
