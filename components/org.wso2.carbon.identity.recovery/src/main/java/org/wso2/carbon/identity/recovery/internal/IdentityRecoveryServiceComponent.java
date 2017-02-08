@@ -32,6 +32,7 @@ import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
+import org.wso2.carbon.identity.recovery.mapping.EmailLinkConfig;
 import org.wso2.carbon.identity.recovery.password.NotificationPasswordRecoveryManager;
 import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
 
@@ -93,7 +94,7 @@ public class IdentityRecoveryServiceComponent {
 //                    new UserEmailVerificationConfigImpl(), null);
 //            bundleContext.registerService(IdentityConnectorConfig.class.getName(),
 //                    new AdminForcedPasswordResetConfigImpl(), null);
-
+            IdentityRecoveryServiceDataHolder.getInstance().setEmailLinkConfig(new EmailLinkConfig());
 
         } catch (Exception e) {
             log.error("Error while activating identity governance component.", e);
@@ -145,12 +146,10 @@ public class IdentityRecoveryServiceComponent {
             service = EventService.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "unsetIdentityEventService"
-    )
-    protected void setIdentityEventService(EventService identityEventService) {
+            unbind = "unsetIdentityEventService") protected void setIdentityEventService(
+            EventService identityEventService) {
         IdentityRecoveryServiceDataHolder.getInstance().setIdentityEventService(identityEventService);
     }
-
 
     private void loadDefaultChallengeQuestions() throws IdentityRecoveryException {
         ChallengeQuestionManager.getInstance().setDefaultChallengeQuestions();
@@ -161,13 +160,11 @@ public class IdentityRecoveryServiceComponent {
             service = JNDIContextManager.class,
             cardinality = ReferenceCardinality.AT_LEAST_ONE,
             policy = ReferencePolicy.DYNAMIC,
-            unbind = "onJNDIUnregister"
-    )
-    protected void onJNDIReady(JNDIContextManager jndiContextManager) {
+            unbind = "onJNDIUnregister") protected void onJNDIReady(JNDIContextManager jndiContextManager) {
         try {
             Context ctx = jndiContextManager.newInitialContext();
-            DataSource dsObject = (DataSource)ctx.lookup("java:comp/env/jdbc/WSO2CARBON_DB");
-            if(dsObject != null) {
+            DataSource dsObject = (DataSource) ctx.lookup("java:comp/env/jdbc/WSO2CARBON_DB");
+            if (dsObject != null) {
                 jdbcTemplate = new JdbcTemplate(dsObject);
                 initializeDao(jdbcTemplate);
             } else {

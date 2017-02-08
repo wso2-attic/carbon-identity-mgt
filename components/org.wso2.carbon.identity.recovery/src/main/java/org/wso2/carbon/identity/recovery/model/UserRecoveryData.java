@@ -18,32 +18,32 @@
 
 package org.wso2.carbon.identity.recovery.model;
 
-import org.wso2.carbon.identity.mgt.User;
+import java.sql.Timestamp;
 
 /**
  * This object represents an entry of the identity metadata database.
  */
 public class UserRecoveryData {
-    private User user;
+    private String userUniqueId;
     private String secret;
     private String remainingSetIds;
+    private Timestamp timeCreated = null;
 
     private Enum recoveryScenario;
     private Enum recoveryStep;
 
-    public UserRecoveryData(User user, String secret, Enum recoveryScenario, Enum recoveryStep) {
-        this.user = user;
+    public UserRecoveryData(String userUniqueId, String secret, Enum recoveryScenario, Enum recoveryStep) {
+        this.userUniqueId = userUniqueId;
         this.secret = secret;
         this.recoveryScenario = recoveryScenario;
         this.recoveryStep = recoveryStep;
     }
 
-    public UserRecoveryData(User user, String secret, Enum recoveryScenario) {
-        this.user = user;
+    public UserRecoveryData(String userUniqueId, String secret, Enum recoveryScenario) {
+        this.userUniqueId = userUniqueId;
         this.secret = secret;
         this.recoveryScenario = recoveryScenario;
     }
-
 
     public String getRemainingSetIds() {
         return remainingSetIds;
@@ -57,9 +57,9 @@ public class UserRecoveryData {
         return secret;
     }
 
-    public User getUser() {
+    public String getUserUniqueId() {
 
-        return user;
+        return userUniqueId;
     }
 
     public Enum getRecoveryScenario() {
@@ -72,5 +72,13 @@ public class UserRecoveryData {
 
     public void setRecoveryStep(Enum recoveryStep) {
         this.recoveryStep = recoveryStep;
+    }
+
+    public Timestamp getTimeCreated() {
+        return new Timestamp(this.timeCreated.getTime());
+    }
+
+    public void setTimeCreated(Timestamp timeCreated) {
+        this.timeCreated = new Timestamp(timeCreated.getTime());
     }
 }

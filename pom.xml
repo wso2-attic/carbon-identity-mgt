@@ -430,7 +430,7 @@
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
         <carbon.datasources.version>1.0.0</carbon.datasources.version>
         <carbon.jndi.version>1.0.0</carbon.jndi.version>
-        <carbon.identity.commons.version>0.1.12</carbon.identity.commons.version>
+        <carbon.identity.commons.version>0.1.13</carbon.identity.commons.version>
         <commons.lang.version>3.4</commons.lang.version>
         <jackson.version>1.8.6</jackson.version>
 

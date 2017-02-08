@@ -29,7 +29,7 @@ public class IdentityRecoveryConstants {
             IDENTITY_MANAGEMENT_I18N_PATH + "/questionCollection";
     public static final String LINE_SEPARATOR = "!";
     public static final String CHALLENGE_QUESTION_URI = "http://wso2.org/claims/challengeQuestionUris";
-    public static final String NOTIFICATION_TYPE_PASSWORD_RESET = "passwordreset";
+    public static final String NOTIFICATION_TYPE_PASSWORD_RESET = "passwordReset";
     public static final String NOTIFICATION_TYPE_ADMIN_FORCED_PASSWORD_RESET = "adminforcedpasswordreset";
     public static final String NOTIFICATION_TYPE_ADMIN_FORCED_PASSWORD_RESET_WITH_OTP =
             "adminforcedpasswordresetwithotp";
