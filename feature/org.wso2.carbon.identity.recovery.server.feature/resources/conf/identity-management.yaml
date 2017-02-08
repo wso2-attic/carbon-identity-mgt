@@ -24,7 +24,7 @@ recovery:
     notifyStart: false
     minAnswers: 2
    notificationBased:
-    emailLink:
+    recoveryLink:
         enableAPI: true
         enablePortal: true
     recoveryCode:

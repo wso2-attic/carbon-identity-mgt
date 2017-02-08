@@ -32,7 +32,7 @@ import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
-import org.wso2.carbon.identity.recovery.mapping.EmailLinkConfig;
+import org.wso2.carbon.identity.recovery.mapping.RecoveryLinkConfig;
 import org.wso2.carbon.identity.recovery.password.NotificationPasswordRecoveryManager;
 import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
 
@@ -94,7 +94,7 @@ public class IdentityRecoveryServiceComponent {
 //                    new UserEmailVerificationConfigImpl(), null);
 //            bundleContext.registerService(IdentityConnectorConfig.class.getName(),
 //                    new AdminForcedPasswordResetConfigImpl(), null);
-            IdentityRecoveryServiceDataHolder.getInstance().setEmailLinkConfig(new EmailLinkConfig());
+            IdentityRecoveryServiceDataHolder.getInstance().setRecoveryLinkConfig(new RecoveryLinkConfig());
 
         } catch (Exception e) {
             log.error("Error while activating identity governance component.", e);

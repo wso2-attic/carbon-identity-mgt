@@ -211,7 +211,7 @@ public class JDBCRecoveryDataStore implements UserRecoveryDataStore {
 
     private boolean isCodeExpired(UserRecoveryData userRecoveryDataObject) throws IdentityRecoveryClientException {
         long createdTimeStamp = userRecoveryDataObject.getTimeCreated().getTime();
-        int notificationExpiryTimeInMinutes = IdentityRecoveryServiceDataHolder.getInstance().getEmailLinkConfig()
+        int notificationExpiryTimeInMinutes = IdentityRecoveryServiceDataHolder.getInstance().getRecoveryLinkConfig()
                 .getNotificationExpiryTime(); //Notification expiry time in minutes
         long expiryTime = createdTimeStamp + notificationExpiryTimeInMinutes * 60L * 1000L;
 

@@ -18,7 +18,7 @@ package org.wso2.carbon.identity.recovery.internal;
 
 import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.RealmService;
-import org.wso2.carbon.identity.recovery.mapping.EmailLinkConfig;
+import org.wso2.carbon.identity.recovery.mapping.RecoveryLinkConfig;
 
 /**
  * Identity Recovery Service DataHolder.
@@ -28,7 +28,7 @@ public class IdentityRecoveryServiceDataHolder {
     private static IdentityRecoveryServiceDataHolder instance = new IdentityRecoveryServiceDataHolder();
     private RealmService realmService;
     private EventService identityEventService;
-    private EmailLinkConfig emailLinkConfig;
+    private RecoveryLinkConfig recoveryLinkConfig;
 
     public static IdentityRecoveryServiceDataHolder getInstance() {
         return instance;
@@ -50,11 +50,11 @@ public class IdentityRecoveryServiceDataHolder {
         this.realmService = realmService;
     }
 
-    public EmailLinkConfig getEmailLinkConfig() {
-        return emailLinkConfig;
+    public RecoveryLinkConfig getRecoveryLinkConfig() {
+        return recoveryLinkConfig;
     }
 
-    public void setEmailLinkConfig(EmailLinkConfig emailLinkConfig) {
-        this.emailLinkConfig = emailLinkConfig;
+    public void setRecoveryLinkConfig(RecoveryLinkConfig recoveryLinkConfig) {
+        this.recoveryLinkConfig = recoveryLinkConfig;
     }
 }

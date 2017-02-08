@@ -21,7 +21,7 @@ package org.wso2.carbon.identity.recovery.mapping;
 /**
  *
  */
-public class EmailLinkConfig {
+public class RecoveryLinkConfig {
     private boolean enableAPI = false;
     private boolean enablePortal = true;
     private int notificationExpiryTime = 3; //expiry time in minutes

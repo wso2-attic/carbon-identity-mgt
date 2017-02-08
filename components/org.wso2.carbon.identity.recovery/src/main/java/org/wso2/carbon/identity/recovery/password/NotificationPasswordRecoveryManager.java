@@ -65,7 +65,7 @@ public class NotificationPasswordRecoveryManager {
         boolean isNotificationInternallyManage;
 
         if (notify == null) {
-            isNotificationInternallyManage = IdentityRecoveryServiceDataHolder.getInstance().getEmailLinkConfig()
+            isNotificationInternallyManage = IdentityRecoveryServiceDataHolder.getInstance().getRecoveryLinkConfig()
                     .isNotificationInternallyManage();
         } else {
             isNotificationInternallyManage = notify.booleanValue();
@@ -124,9 +124,9 @@ public class NotificationPasswordRecoveryManager {
         }
 
         userRecoveryDataStore.invalidateByCode(code);
-        boolean isNotificationInternallyManaged = IdentityRecoveryServiceDataHolder.getInstance().getEmailLinkConfig()
-                .isNotificationInternallyManage();
-        boolean isNotificationSendWhenSuccess = IdentityRecoveryServiceDataHolder.getInstance().getEmailLinkConfig()
+        boolean isNotificationInternallyManaged = IdentityRecoveryServiceDataHolder.getInstance()
+                .getRecoveryLinkConfig().isNotificationInternallyManage();
+        boolean isNotificationSendWhenSuccess = IdentityRecoveryServiceDataHolder.getInstance().getRecoveryLinkConfig()
                 .isSendRecoveryNotificationSuccess();
 
         if (isNotificationInternallyManaged && isNotificationSendWhenSuccess) {
