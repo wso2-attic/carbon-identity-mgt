@@ -24,11 +24,21 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.jndi.JNDIContextManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.identity.common.jdbc.JdbcTemplate;
+import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
+import org.wso2.carbon.identity.recovery.mapping.RecoveryLinkConfig;
+import org.wso2.carbon.identity.recovery.password.NotificationPasswordRecoveryManager;
+import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
+
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 /**
  * @scr.reference name="realm.service"
@@ -54,13 +64,14 @@ public class IdentityRecoveryServiceComponent {
 
     private static Logger log = LoggerFactory.getLogger(IdentityRecoveryServiceComponent.class);
     private IdentityRecoveryServiceDataHolder dataHolder = IdentityRecoveryServiceDataHolder.getInstance();
+    private JdbcTemplate jdbcTemplate;
 
     @Activate
     protected void activate(BundleContext bundleContext) {
 
         try {
-//            bundleContext.registerService(NotificationPasswordRecoveryManager.class.getName(),
-//                    NotificationPasswordRecoveryManager.getInstance(), null);
+            bundleContext.registerService(NotificationPasswordRecoveryManager.class.getName(),
+                    NotificationPasswordRecoveryManager.getInstance(), null);
 //            bundleContext.registerService(SecurityQuestionPasswordRecoveryManager.class.getName(),
 //                    SecurityQuestionPasswordRecoveryManager.getInstance(), null);
 //            bundleContext.registerService(NotificationUsernameRecoveryManager.class.getName(),
@@ -83,7 +94,7 @@ public class IdentityRecoveryServiceComponent {
 //                    new UserEmailVerificationConfigImpl(), null);
 //            bundleContext.registerService(IdentityConnectorConfig.class.getName(),
 //                    new AdminForcedPasswordResetConfigImpl(), null);
-
+            IdentityRecoveryServiceDataHolder.getInstance().setRecoveryLinkConfig(new RecoveryLinkConfig());
 
         } catch (Exception e) {
             log.error("Error while activating identity governance component.", e);
@@ -125,17 +136,50 @@ public class IdentityRecoveryServiceComponent {
         log.debug("UnSetting the Realm Service");
         dataHolder.setRealmService(null);
     }
-//
-//    protected void unsetIdentityEventService(EventService identityEventService) {
-//        IdentityRecoveryServiceDataHolder.getInstance().setIdentityEventService(null);
-//    }
-//
-//    protected void setIdentityEventService(EventService identityEventService) {
-//        IdentityRecoveryServiceDataHolder.getInstance().setIdentityEventService(identityEventService);
-//    }
-//
+
+    protected void unsetIdentityEventService(EventService identityEventService) {
+        IdentityRecoveryServiceDataHolder.getInstance().setIdentityEventService(null);
+    }
+
+    @Reference(
+            name = "eventservice",
+            service = EventService.class,
+            cardinality = ReferenceCardinality.AT_LEAST_ONE,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetIdentityEventService") protected void setIdentityEventService(
+            EventService identityEventService) {
+        IdentityRecoveryServiceDataHolder.getInstance().setIdentityEventService(identityEventService);
+    }
 
     private void loadDefaultChallengeQuestions() throws IdentityRecoveryException {
         ChallengeQuestionManager.getInstance().setDefaultChallengeQuestions();
+    }
+
+    @Reference(
+            name = "org.wso2.carbon.datasource.jndi",
+            service = JNDIContextManager.class,
+            cardinality = ReferenceCardinality.AT_LEAST_ONE,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "onJNDIUnregister") protected void onJNDIReady(JNDIContextManager jndiContextManager) {
+        try {
+            Context ctx = jndiContextManager.newInitialContext();
+            DataSource dsObject = (DataSource) ctx.lookup("java:comp/env/jdbc/WSO2CARBON_DB");
+            if (dsObject != null) {
+                jdbcTemplate = new JdbcTemplate(dsObject);
+                initializeDao(jdbcTemplate);
+            } else {
+                log.error("Could not find WSO2CarbonDB");
+            }
+        } catch (NamingException e) {
+            log.error("Error occurred while looking up the Datasource", e);
+        }
+    }
+
+    protected void onJNDIUnregister(JNDIContextManager jndiContextManager) {
+        log.info("Un-registering data sources");
+    }
+
+    private void initializeDao(JdbcTemplate jdbcTemplate) {
+        JDBCRecoveryDataStore.getInstance().setJdbcTemplate(jdbcTemplate);
     }
 }

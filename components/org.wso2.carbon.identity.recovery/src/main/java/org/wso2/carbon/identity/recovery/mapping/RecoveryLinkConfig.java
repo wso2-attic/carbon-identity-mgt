@@ -21,9 +21,12 @@ package org.wso2.carbon.identity.recovery.mapping;
 /**
  *
  */
-public class EmailLinkConfig {
+public class RecoveryLinkConfig {
     private boolean enableAPI = false;
     private boolean enablePortal = true;
+    private int notificationExpiryTime = 3; //expiry time in minutes
+    private boolean isNotificationInternallyManage = false;
+    private boolean sendRecoveryNotificationSuccess = true;
 
     public boolean isEnableAPI() {
         return enableAPI;
@@ -39,5 +42,29 @@ public class EmailLinkConfig {
 
     public void setEnablePortal(boolean enablePortal) {
         this.enablePortal = enablePortal;
+    }
+
+    public int getNotificationExpiryTime() {
+        return notificationExpiryTime;
+    }
+
+    public void setNotificationExpiryTime(int notificationExpiryTime) {
+        this.notificationExpiryTime = notificationExpiryTime;
+    }
+
+    public boolean isNotificationInternallyManage() {
+        return isNotificationInternallyManage;
+    }
+
+    public void setNotificationInternallyManage(boolean notificationInternallyManage) {
+        this.isNotificationInternallyManage = notificationInternallyManage;
+    }
+
+    public boolean isSendRecoveryNotificationSuccess() {
+        return sendRecoveryNotificationSuccess;
+    }
+
+    public void setSendRecoveryNotificationSuccess(boolean sendRecoveryNotificationSuccess) {
+        this.sendRecoveryNotificationSuccess = sendRecoveryNotificationSuccess;
     }
 }

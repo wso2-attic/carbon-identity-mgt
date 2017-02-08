@@ -18,8 +18,6 @@
  */
 package org.wso2.carbon.identity.recovery.bean;
 
-import org.wso2.carbon.identity.mgt.User;
-
 import java.io.Serializable;
 
 /**
@@ -32,7 +30,7 @@ public class NotificationResponseBean implements Serializable {
     /**
      * user identifier according to the user store.
      */
-    private User user;
+    private String userUniqueId;
 
     /**
      * key that is received after successful verification.
@@ -40,21 +38,21 @@ public class NotificationResponseBean implements Serializable {
     private String key;
 
 
-    public NotificationResponseBean(User user, String key) {
-        this.user = user;
+    public NotificationResponseBean(String userUniqueId, String key) {
+        this.userUniqueId = userUniqueId;
         this.key = key;
     }
 
-    public NotificationResponseBean(User user) {
-        this.user = user;
+    public NotificationResponseBean(String userUniqueId) {
+        this.userUniqueId = userUniqueId;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserUniqueId() {
+        return userUniqueId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserUniqueId(String userUniqueId) {
+        this.userUniqueId = userUniqueId;
     }
 
     public String getKey() {

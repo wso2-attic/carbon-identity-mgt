@@ -37,6 +37,10 @@
             <artifactId>org.wso2.carbon.identity.commons</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon.identity.commons</groupId>
+            <artifactId>org.wso2.carbon.identity.event</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.msf4j</groupId>
             <artifactId>msf4j-core</artifactId>
         </dependency>
@@ -73,7 +77,8 @@
 
             org.wso2.carbon.identity.common.*;version="${carbon.identity.commons.version}",
             org.wso2.carbon.identity.event.*;version="${carbon.identity.commons.version}",
-            org.wso2.carbon.identity.mgt.*; version="${carbon.identity.mgt.version}"
+            org.wso2.carbon.identity.mgt.*; version="${carbon.identity.mgt.version}",
+            org.osgi.service.jndi.*; version="${carbon.jndi.version}",
         </import.package>
     </properties>
 </project>
