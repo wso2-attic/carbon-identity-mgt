@@ -79,6 +79,7 @@
             org.wso2.carbon.identity.event.*;version="${carbon.identity.commons.version}",
             org.wso2.carbon.identity.mgt.*; version="${carbon.identity.mgt.version}",
             org.osgi.service.jndi.*; version="${carbon.jndi.version}",
+            javax.naming.*,
         </import.package>
     </properties>
 </project>
