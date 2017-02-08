@@ -16,11 +16,13 @@
 
 package org.wso2.carbon.identity.mgt.test.identity.store.handler;
 
+import org.wso2.carbon.identity.common.base.event.EventContext;
+import org.wso2.carbon.identity.common.base.event.model.Event;
+import org.wso2.carbon.identity.common.base.exception.IdentityException;
+import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.common.base.message.MessageContext;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.event.EventException;
-import org.wso2.carbon.identity.event.EventMessageContext;
-import org.wso2.carbon.identity.event.model.Event;
 
 /**
  * Test identity store event handler.
@@ -31,7 +33,7 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
     public static final ThreadLocal<Boolean> POST = new ThreadLocal<>();
 
     @Override
-    public void handleEvent(EventMessageContext eventMessageContext) throws EventException {
+    public void handleEvent(EventContext eventMessageContext) throws EventException {
         Event event = eventMessageContext.getEvent();
 
         if ("PRE_GET_USER_BY_ID".equals(event.getEventName())) {
@@ -231,6 +233,11 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
     }
 
     @Override
+    public void configure(InitConfig initConfig) throws IdentityException {
+
+    }
+
+
     public void rollBack(MessageContext messageContext) {
 
     }

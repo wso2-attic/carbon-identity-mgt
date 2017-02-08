@@ -18,9 +18,11 @@ package org.wso2.carbon.identity.mgt.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.identity.event.EventException;
+import org.wso2.carbon.identity.common.base.event.EventContext;
+import org.wso2.carbon.identity.common.base.event.model.Event;
+import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.event.EventService;
-import org.wso2.carbon.identity.event.model.Event;
+import org.wso2.carbon.identity.event.ResultReturningHandler;
 import org.wso2.carbon.identity.mgt.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.Group;
 import org.wso2.carbon.identity.mgt.IdentityStore;
@@ -82,16 +84,38 @@ public class InterceptingIdentityStore implements IdentityStore {
         IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(event);
 
         try {
-            eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+            eventService.pushEvent(event, messageContext);
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_USER_BY_ID);
             throw new IdentityStoreException(message, e);
         }
+        User user;
+        try {
 
-        User user = identityStore.getUser(uniqueUserId);
+            ResultReturningHandler<User> resultReturningHandler = new ResultReturningHandler<User>() {
+                @Override
+                public User handleEventWithResult(EventContext eventContext) throws IdentityException {
+                    try {
+                        return identityStore.getUser(uniqueUserId);
+                    } catch (IdentityStoreException e) {
+                        throw new IdentityException("##", e);
+                    } catch (UserNotFoundException e) {
+                        throw new IdentityException("##", e);
+                    }
+                }
+            };
 
+            eventService.pushEvent(event, messageContext, resultReturningHandler);
+
+            user = resultReturningHandler.getResult();
+
+        } catch (IdentityException e) {
+
+            String message = String.format("Error while adding the user.");
+            throw new IdentityStoreException(message, e);
+        }
         //Post handler
         eventProperties = new HashMap<>();
         eventProperties.put(IdentityStoreConstants.UNIQUE_USED_ID, uniqueUserId);
@@ -101,11 +125,20 @@ public class InterceptingIdentityStore implements IdentityStore {
         messageContext.setEvent(event);
 
         try {
-            eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+            eventService.pushEvent(event, messageContext);
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_USER_BY_ID);
+
+            try {
+
+                eventService.rollbackEvent(messageContext);
+
+            } catch (IdentityException e1) {
+                IdentityStoreException ex = new IdentityStoreException(message, e1);
+                e.addSuppressed(ex);
+            }
             throw new IdentityStoreException(message, e);
         }
 
@@ -123,7 +156,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_USER_BY_CLAIM);
@@ -141,7 +174,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_USER_BY_CLAIM);
@@ -162,7 +195,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_USER_BY_CLAIM_DOMAIN);
@@ -181,7 +214,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_USER_BY_CLAIM_DOMAIN);
@@ -203,7 +236,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_USERS);
@@ -222,7 +255,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_USERS);
@@ -245,7 +278,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_USERS_BY_DOMAIN);
@@ -265,7 +298,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_USERS_BY_DOMAIN);
@@ -288,7 +321,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_USERS_BY_CLAIM);
@@ -308,7 +341,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_USERS_BY_CLAIM);
@@ -332,7 +365,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_USERS_BY_CLAIM_DOMAIN);
@@ -353,7 +386,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_USERS_BY_CLAIM_DOMAIN);
@@ -378,7 +411,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_USERS_BY_META_CLAIM);
@@ -399,7 +432,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_USERS_BY_META_CLAIM);
@@ -424,7 +457,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_USERS_BY_META_CLAIM_DOMAIN);
@@ -446,7 +479,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_USERS_BY_META_CLAIM_DOMAIN);
@@ -466,7 +499,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_GROUP_BY_ID);
@@ -484,7 +517,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_GROUP_BY_ID);
@@ -504,7 +537,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_GROUP_BY_CLAIM);
@@ -522,7 +555,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_GROUP_BY_CLAIM);
@@ -543,7 +576,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_GROUP_BY_CLAIM_DOMAIN);
@@ -562,7 +595,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_GROUP_BY_CLAIM_DOMAIN);
@@ -583,7 +616,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_GROUPS);
@@ -602,7 +635,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_GROUPS);
@@ -624,7 +657,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_GROUPS_BY_DOMAIN);
@@ -644,7 +677,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_GROUPS_BY_DOMAIN);
@@ -666,7 +699,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_GROUPS_BY_DOMAIN);
@@ -686,7 +719,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_GROUPS_BY_CLAIM);
@@ -711,7 +744,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_GROUPS_BY_CLAIM_DOMAIN);
@@ -731,7 +764,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_GROUPS_BY_CLAIM_DOMAIN);
@@ -755,7 +788,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_GROUPS_BY_META_CLAIM);
@@ -776,7 +809,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_GROUPS_BY_META_CLAIM);
@@ -803,7 +836,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_LIST_GROUPS_BY_META_CLAIM_DOMAIN);
@@ -826,7 +859,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_LIST_GROUPS_BY_META_CLAIM_DOMAIN);
@@ -846,7 +879,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_GROUPS_OF_USER);
@@ -864,7 +897,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_GROUPS_OF_USER);
@@ -884,7 +917,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_GROUPS_OF_USER);
@@ -902,7 +935,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_USERS_OF_GROUP);
@@ -924,7 +957,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_IS_USER_IN_GROUP);
@@ -943,7 +976,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_IS_USER_IN_GROUP);
@@ -964,7 +997,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_CLAIMS_OF_USER_BY_ID);
@@ -982,7 +1015,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_CLAIMS_OF_USER_BY_ID);
@@ -1005,7 +1038,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_CLAIMS_OF_USER_BY_ID_META_CLAIMS);
@@ -1025,7 +1058,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_CLAIMS_OF_USER_BY_ID_META_CLAIMS);
@@ -1045,7 +1078,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_CLAIMS_OF_GROUP_BY_ID);
@@ -1063,7 +1096,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_CLAIMS_OF_GROUP_BY_ID);
@@ -1087,7 +1120,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_CLAIMS_OF_GROUP_BY_ID_META_CLAIMS);
@@ -1107,7 +1140,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_CLAIMS_OF_GROUP_BY_ID_META_CLAIMS);
@@ -1128,7 +1161,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_ADD_USER);
@@ -1146,7 +1179,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_ADD_USER);
@@ -1168,7 +1201,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_ADD_USER_BY_DOMAIN);
@@ -1187,7 +1220,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_ADD_USER_BY_DOMAIN);
@@ -1207,7 +1240,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_ADD_USERS_BY_DOMAIN);
@@ -1224,7 +1257,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_ADD_USERS);
@@ -1246,7 +1279,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_ADD_USERS_BY_DOMAIN);
@@ -1265,13 +1298,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_ADD_USERS_BY_DOMAIN);
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
+                e.addSuppressed(e1);
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1294,7 +1328,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_UPDATE_USER_CLAIMS_PUT);
@@ -1312,14 +1346,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_UPDATE_USER_CLAIMS_PUT);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1341,7 +1375,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_UPDATE_USER_CLAIMS_PATCH);
@@ -1360,14 +1394,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_UPDATE_USER_CLAIMS_PATCH);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1389,7 +1423,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_UPDATE_USER_CREDENTIALS_PUT);
@@ -1407,14 +1441,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_UPDATE_USER_CREDENTIALS_PUT);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1437,7 +1471,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_UPDATE_USER_CREDENTIALS_PATCH);
@@ -1456,14 +1490,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_UPDATE_USER_CREDENTIALS_PATCH);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1482,14 +1516,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_DELETE_USER);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1506,14 +1540,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_DELETE_USER);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1534,14 +1568,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_UPDATE_GROUPS_OF_USER_PUT);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1559,14 +1593,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_UPDATE_GROUPS_OF_USER_PUT);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1588,14 +1622,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_UPDATE_GROUPS_OF_USER_PUT);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1614,14 +1648,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_UPDATE_GROUPS_OF_USER_PUT);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1641,14 +1675,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_ADD_GROUP);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1666,14 +1700,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_ADD_GROUP);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1695,14 +1729,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_ADD_GROUP);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1721,14 +1755,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_ADD_GROUP_BY_DOMAIN);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1749,14 +1783,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_ADD_GROUPS);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1774,14 +1808,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_ADD_GROUPS);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1803,14 +1837,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_ADD_GROUPS_BY_DOMAIN);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1829,14 +1863,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_ADD_GROUPS_BY_DOMAIN);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1859,14 +1893,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_UPDATE_GROUP_CLAIMS_PUT);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1884,14 +1918,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_UPDATE_GROUP_CLAIMS_PUT);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1913,14 +1947,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_UPDATE_GROUP_CLAIMS_PATCH);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1939,14 +1973,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_UPDATE_GROUP_CLAIMS_PATCH);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1966,14 +2000,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_DELETE_GROUP);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -1990,14 +2024,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_DELETE_GROUP);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -2017,14 +2051,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_DELETE_GROUP);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -2042,14 +2076,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_UPDATE_USERS_OF_GROUP_PUT);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -2071,14 +2105,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_UPDATE_USERS_OF_GROUP_PATCH);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -2097,14 +2131,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_UPDATE_USERS_OF_GROUP_PATCH);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -2126,14 +2160,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_AUTHENTICATE);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -2153,14 +2187,13 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_AUTHENTICATE);
-
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -2180,14 +2213,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_PRIMARY_DOMAIN_NAME);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -2204,14 +2237,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_PRIMARY_DOMAIN_NAME);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -2231,14 +2264,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .PRE_GET_DOMAIN_NAMES);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
@@ -2246,6 +2279,7 @@ public class InterceptingIdentityStore implements IdentityStore {
         }
 
         Set<String> domainNames = identityStore.getDomainNames();
+
 
         eventProperties = new HashMap<>();
         eventProperties.put(IdentityStoreConstants.DOMAIN_LIST, domainNames);
@@ -2255,14 +2289,14 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         try {
             eventService.handleEvent(messageContext);
-        } catch (EventException e) {
+        } catch (IdentityException e) {
 
             String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
                     .POST_GET_DOMAIN_NAMES);
 
             try {
                 eventService.rollbackEvent(messageContext);
-            } catch (EventException e1) {
+            } catch (IdentityException e1) {
                 throw new IdentityStoreException(message, e);
             }
 
