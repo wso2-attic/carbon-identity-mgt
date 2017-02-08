@@ -82,6 +82,5 @@
             javax.naming.*,
             javax.sql.*,
         </import.package>
-        <DynamicImport-Package>*</DynamicImport-Package>
     </properties>
 </project>
