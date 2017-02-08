@@ -80,6 +80,8 @@
             org.wso2.carbon.identity.mgt.*; version="${carbon.identity.mgt.version}",
             org.osgi.service.jndi.*; version="${carbon.jndi.version}",
             javax.naming.*,
+            javax.sql.*,
         </import.package>
+        <DynamicImport-Package>*</DynamicImport-Package>
     </properties>
 </project>
