@@ -129,7 +129,7 @@ public class IdentityStoreImpl implements IdentityStore {
                     metaClaimMapping.isUnique()) {
                 try {
                     domainUserId = domain.getDomainUserId(claim);
-                    if (domainUserId != null) {
+                    if (!isNullOrEmpty(domainUserId)) {
                         userExists = true;
                         break;
                     }
@@ -171,7 +171,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         metaClaimMapping.isUnique()) {
                     try {
                         domainUserId = domain.getDomainUserId(claim);
-                        if (domainUserId != null) {
+                        if (!isNullOrEmpty(domainUserId)) {
                             if (!userExists) {
                                 userExists = true;
                             }
