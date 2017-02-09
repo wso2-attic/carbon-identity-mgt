@@ -38,6 +38,8 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.impl.config.StoreConfig;
 import org.wso2.carbon.identity.mgt.impl.internal.IdentityMgtDataHolder;
+import org.wso2.carbon.identity.mgt.impl.util.builder.event.EventHandlerDelegate;
+import org.wso2.carbon.identity.mgt.impl.util.builder.event.EventInterceptorTemplate;
 import org.wso2.carbon.identity.mgt.interceptor.IdentityStoreInterceptor;
 
 import java.util.HashMap;
@@ -73,8 +75,11 @@ public class InterceptingIdentityStore implements IdentityStore {
         }
     }
 
-    @Override
-    public User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
+    protected InterceptingIdentityStore(IdentityStore identityStore) {
+        this.identityStore = identityStore;
+    }
+
+    public User getUser1(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
         //Pre handler
         Map<String, Object> eventProperties = new HashMap<>();
@@ -139,6 +144,29 @@ public class InterceptingIdentityStore implements IdentityStore {
             }
             throw new IdentityStoreException(message, e);
         }
+
+        return user;
+    }
+
+    @Override
+    public User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
+
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+
+        EventInterceptorTemplate<User, IdentityStoreException> template = new EventInterceptorTemplate<>(eventService,
+                messageContext);
+        User user = template.pushEvent(IdentityStoreInterceptorConstants.PRE_GET_USER_BY_ID, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.UNIQUE_USED_ID, uniqueUserId);
+        }).executeWith(new EventHandlerDelegate<User>() {
+
+            @Override
+            public User execute() throws IdentityStoreException, UserNotFoundException {
+                return identityStore.getUser(uniqueUserId);
+            }
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_GET_USER_BY_ID, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.UNIQUE_USED_ID, uniqueUserId);
+            eventProperties.put(IdentityStoreConstants.USER, template.getResult());
+        }).getResult();
 
         return user;
     }

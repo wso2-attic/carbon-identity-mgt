@@ -20,7 +20,6 @@ import org.wso2.carbon.identity.common.base.event.EventContext;
 import org.wso2.carbon.identity.common.base.event.model.Event;
 import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.common.base.handler.InitConfig;
-import org.wso2.carbon.identity.common.base.message.MessageContext;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.event.EventException;
 
@@ -39,7 +38,7 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
         if ("PRE_GET_USER_BY_ID".equals(event.getEventName())) {
             PRE.set(true);
         } else if ("POST_GET_USER_BY_ID".equals(event.getEventName())) {
-            POST.set(true);
+            throw new EventException("Rollback test");
         } else if ("PRE_GET_USER_BY_CLAIM".equals(event.getEventName())) {
             PRE.set(true);
         } else if ("POST_GET_USER_BY_CLAIM".equals(event.getEventName())) {
@@ -237,9 +236,9 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
 
     }
 
-
-    public void rollBack(MessageContext messageContext) {
-
+    @Override
+    public void rollBack(EventContext eventContext) {
+        POST.set(Boolean.TRUE);
     }
 
     @Override
