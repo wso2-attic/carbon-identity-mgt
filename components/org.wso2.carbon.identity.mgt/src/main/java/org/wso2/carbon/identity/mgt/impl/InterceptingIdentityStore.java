@@ -94,16 +94,14 @@ public class InterceptingIdentityStore implements IdentityStore {
         User user;
         try {
 
-            ResultReturningHandler<User> resultReturningHandler = new ResultReturningHandler<User>() {
+            ResultReturningHandler<User, IdentityStoreException> resultReturningHandler = new
+                    ResultReturningHandler<User, IdentityStoreException>() {
                 @Override
-                public User handleEventWithResult(EventContext eventContext) throws IdentityException {
-                    try {
-                        return identityStore.getUser(uniqueUserId);
-                    } catch (IdentityStoreException e) {
-                        throw new IdentityException("##", e);
-                    } catch (UserNotFoundException e) {
-                        throw new IdentityException("##", e);
-                    }
+                public User handleEventWithResult(EventContext eventContext) throws IdentityStoreException,
+                        UserNotFoundException {
+
+                    return identityStore.getUser(uniqueUserId);
+
                 }
             };
 
@@ -113,7 +111,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         } catch (IdentityException e) {
 
-            String message = String.format("Error while adding the user.");
+            String message = "Error while adding the user.";
             throw new IdentityStoreException(message, e);
         }
         //Post handler
