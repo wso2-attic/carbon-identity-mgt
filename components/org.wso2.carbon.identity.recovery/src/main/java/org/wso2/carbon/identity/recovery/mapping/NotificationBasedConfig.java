@@ -23,15 +23,15 @@ package org.wso2.carbon.identity.recovery.mapping;
  */
 public class NotificationBasedConfig {
 
-    private EmailLinkConfig emailLink = new EmailLinkConfig();
+    private RecoveryLinkConfig recoveryLink = new RecoveryLinkConfig();
     private RecoveryCodeConfig recoveryCode = new RecoveryCodeConfig();
 
-    public EmailLinkConfig getEmailLink() {
-        return emailLink;
+    public RecoveryLinkConfig getRecoveryLink() {
+        return recoveryLink;
     }
 
-    public void setEmailLink(EmailLinkConfig emailLink) {
-        this.emailLink = emailLink;
+    public void setRecoveryLink(RecoveryLinkConfig recoveryLink) {
+        this.recoveryLink = recoveryLink;
     }
 
     public RecoveryCodeConfig getRecoveryCode() {

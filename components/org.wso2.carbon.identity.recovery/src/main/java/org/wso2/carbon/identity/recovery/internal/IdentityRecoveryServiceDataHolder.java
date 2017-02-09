@@ -16,7 +16,9 @@
 
 package org.wso2.carbon.identity.recovery.internal;
 
+import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.RealmService;
+import org.wso2.carbon.identity.recovery.mapping.RecoveryLinkConfig;
 
 /**
  * Identity Recovery Service DataHolder.
@@ -25,19 +27,20 @@ public class IdentityRecoveryServiceDataHolder {
 
     private static IdentityRecoveryServiceDataHolder instance = new IdentityRecoveryServiceDataHolder();
     private RealmService realmService;
-//    private EventService identityEventService;
+    private EventService identityEventService;
+    private RecoveryLinkConfig recoveryLinkConfig;
 
     public static IdentityRecoveryServiceDataHolder getInstance() {
         return instance;
     }
 
-//    public EventService getIdentityEventService() {
-//        return identityEventService;
-//    }
-//
-//    public void setIdentityEventService(EventService identityEventService) {
-//        this.identityEventService = identityEventService;
-//    }
+    public EventService getIdentityEventService() {
+        return identityEventService;
+    }
+
+    public void setIdentityEventService(EventService identityEventService) {
+        this.identityEventService = identityEventService;
+    }
 
     public RealmService getRealmService() {
         return realmService;
@@ -47,4 +50,11 @@ public class IdentityRecoveryServiceDataHolder {
         this.realmService = realmService;
     }
 
+    public RecoveryLinkConfig getRecoveryLinkConfig() {
+        return recoveryLinkConfig;
+    }
+
+    public void setRecoveryLinkConfig(RecoveryLinkConfig recoveryLinkConfig) {
+        this.recoveryLinkConfig = recoveryLinkConfig;
+    }
 }
