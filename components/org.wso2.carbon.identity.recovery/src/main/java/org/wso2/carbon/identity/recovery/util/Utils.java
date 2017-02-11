@@ -312,34 +312,34 @@ public class Utils {
         return challengeQuestions.toArray(new ChallengeQuestion[challengeQuestions.size()]);
     }
 
-//    public static boolean isAccountLocked(User user) throws IdentityRecoveryException {
-//
-//        try {
-//            return Boolean.parseBoolean(
-//                    getClaimFromIdentityStore(user, IdentityRecoveryConstants.ACCOUNT_LOCKED_CLAIM));
-//        } catch (IdentityStoreException e) {
-//            throw Utils.handleServerException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
-//        } catch (UserNotFoundException e) {
-//            throw Utils.handleServerException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
-//        }
-//    }
+    public static boolean isAccountLocked(User user) throws IdentityRecoveryException {
+
+        try {
+            return Boolean.parseBoolean(
+                    getClaimFromIdentityStore(user, IdentityRecoveryConstants.ACCOUNT_LOCKED_CLAIM));
+        } catch (IdentityStoreException e) {
+            throw Utils.handleServerException(
+                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
+        } catch (UserNotFoundException e) {
+            throw Utils.handleServerException(
+                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
+        }
+    }
 
 
-//    public static boolean isAccountDisabled(User user) throws IdentityRecoveryException {
-//
-//        try {
-//            return Boolean.parseBoolean(
-//                    getClaimFromIdentityStore(user, IdentityRecoveryConstants.ACCOUNT_DISABLED_CLAIM));
-//        } catch (IdentityStoreException e) {
-//            throw Utils.handleServerException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
-//        } catch (UserNotFoundException e) {
-//            throw Utils.handleServerException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
-//        }
-//    }
+    public static boolean isAccountDisabled(User user) throws IdentityRecoveryException {
+
+        try {
+            return Boolean.parseBoolean(
+                    getClaimFromIdentityStore(user, IdentityRecoveryConstants.ACCOUNT_DISABLED_CLAIM));
+        } catch (IdentityStoreException e) {
+            throw Utils.handleServerException(
+                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
+        } catch (UserNotFoundException e) {
+            throw Utils.handleServerException(
+                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
+        }
+    }
 
     public static String generateUUID() {
         return UUID.randomUUID().toString();

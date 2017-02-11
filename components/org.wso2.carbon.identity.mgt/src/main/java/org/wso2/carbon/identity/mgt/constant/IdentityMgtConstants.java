@@ -35,4 +35,6 @@ public class IdentityMgtConstants {
     public static final String PRIMARY_USERSTORE = "primary";
     public static final String USERSTORE_PRIORITY = "priority";
     public static final String USERSTORE_DISPLAY_NAME = "display-name";
+    public static final String USER_EXIST = "userExist";
+    public static final String NO_OF_DOMAINS = "noOfDomains";
 }

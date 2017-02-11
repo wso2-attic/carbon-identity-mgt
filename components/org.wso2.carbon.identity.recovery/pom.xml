@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.wso2.carbon.identity.mgt</groupId>
         <artifactId>org.wso2.carbon.identity.mgt.parent</artifactId>
-        <version>0.1.8-SNAPSHOT</version>
+        <version>0.1.10-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -35,6 +35,10 @@
         <dependency>
             <groupId>org.wso2.carbon.identity.commons</groupId>
             <artifactId>org.wso2.carbon.identity.commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.commons</groupId>
+            <artifactId>org.wso2.carbon.identity.event</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.msf4j</groupId>
@@ -73,7 +77,10 @@
 
             org.wso2.carbon.identity.common.*;version="${carbon.identity.commons.version}",
             org.wso2.carbon.identity.event.*;version="${carbon.identity.commons.version}",
-            org.wso2.carbon.identity.mgt.*; version="${carbon.identity.mgt.version}"
+            org.wso2.carbon.identity.mgt.*; version="${carbon.identity.mgt.version}",
+            org.osgi.service.jndi.*; version="${carbon.jndi.version}",
+            javax.naming.*,
+            javax.sql.*,
         </import.package>
     </properties>
 </project>

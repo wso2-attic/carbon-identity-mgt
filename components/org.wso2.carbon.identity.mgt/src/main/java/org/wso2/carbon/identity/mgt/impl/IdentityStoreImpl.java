@@ -26,6 +26,8 @@ import org.wso2.carbon.identity.mgt.bean.GroupBean;
 import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.claim.MetaClaim;
+import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
+import org.wso2.carbon.identity.mgt.constant.IdentityMgtConstants;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.DomainException;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
@@ -100,6 +102,97 @@ public class IdentityStoreImpl implements IdentityStore {
     /**
      * Identity User Management Read Operations.
      */
+
+    @Override
+    public boolean isUserExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
+        boolean userExists = false;
+        Domain domain;
+        try {
+            if (isNullOrEmpty(domainName)) {
+                domainName = getPrimaryDomainName();
+            }
+            domain = getDomainFromDomainName(domainName);
+        } catch (DomainException e) {
+            throw new IdentityStoreException(String.format("Domain %s was not found", domainName));
+        }
+        String domainUserId;
+
+        for (Claim claim : userClaims) {
+            MetaClaimMapping metaClaimMapping;
+            try {
+                metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
+            } catch (DomainException e) {
+                throw new IdentityStoreException(String.format
+                        ("Invalid domain configuration found for %s domain. No meta claim mappings.", domainName));
+            }
+            if (domain.isClaimSupported(claim.getClaimUri()) &&
+                    metaClaimMapping.isUnique()) {
+                try {
+                    domainUserId = domain.getDomainUserId(claim);
+                    if (!isNullOrEmpty(domainUserId)) {
+                        userExists = true;
+                        break;
+                    }
+                } catch (UserNotFoundException | DomainException e) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("User is not available in domain: " + domainName);
+                    }
+                    break;
+                }
+            }
+        }
+        return userExists;
+    }
+
+    @Override
+    public Map<String, String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
+        Map<String, String> userExistMetaMap = new HashMap<>();
+        boolean userExists = false;
+        String domainUserId;
+        int noOfDomains = 0;
+
+        Set<String> domainNames = getDomainNames();
+        for (String domainName : domainNames) {
+            Domain domain;
+            try {
+                domain = getDomainFromDomainName(domainName);
+            } catch (DomainException e) {
+                throw new IdentityStoreException(String.format("Domain %s was not found", domainName));
+            }
+            for (Claim claim : userClaims) {
+                MetaClaimMapping metaClaimMapping;
+                try {
+                    metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
+                } catch (DomainException e) {
+                    throw new IdentityStoreException(String.format
+                            ("Invalid domain configuration found for %s domain. No meta claim mappings.", domainName));
+                }
+                if (domain.isClaimSupported(claim.getClaimUri()) &&
+                        metaClaimMapping.isUnique()) {
+                    try {
+                        domainUserId = domain.getDomainUserId(claim);
+                        if (!isNullOrEmpty(domainUserId)) {
+                            if (!userExists) {
+                                userExists = true;
+                            }
+                            ++noOfDomains;
+                            break;
+                        }
+                    } catch (UserNotFoundException | DomainException e) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("User is not available in domain: " + domainName);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        userExistMetaMap.put(IdentityMgtConstants.USER_EXIST, Boolean.toString(userExists));
+        userExistMetaMap.put(IdentityMgtConstants.NO_OF_DOMAINS, Integer.toString(noOfDomains));
+        return userExistMetaMap;
+    }
+
 
     @Override
     public User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
