@@ -163,6 +163,27 @@ public interface IdentityStore {
     List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, String domainName)
             throws IdentityStoreException;
 
+    /***
+     *
+     * @param claims        List of populated claims
+     * @param offset        start index of the user
+     * @param length        number of users to retrieve
+     * @return List of users
+     * @throws IdentityStoreException
+     */
+
+    List<User> listUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException;
+
+    /***
+     *
+     * @param claims        List of populated claims
+     * @param offset        start index of the user
+     * @param length        number of users to retrieve
+     * @param domainName    domain of the user
+     * @return
+     * @throws IdentityStoreException
+     */
+    List<User> listUsers(List<Claim> claims , int offset, int length, String domainName) throws  IdentityStoreException;
     /**
      * Retrieve group from group Id.
      *

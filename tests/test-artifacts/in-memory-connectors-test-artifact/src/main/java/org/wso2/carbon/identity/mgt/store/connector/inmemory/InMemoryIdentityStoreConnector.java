@@ -23,14 +23,10 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Map.*;
 
 /**
  * InMemory Identity Store Connector.
@@ -90,7 +86,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
                                         .getAttributeValue().equals(attributeValue))
                                 .findAny().isPresent()
                 )
-                .map(Map.Entry::getKey)
+                .map(Entry::getKey)
                 .collect(Collectors.toList());
     }
 
@@ -105,7 +101,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
                                         .getAttributeValue().toLowerCase().matches(filterPattern.toLowerCase()))
                                 .findAny().isPresent()
                 )
-                .map(Map.Entry::getKey)
+                .map(Entry::getKey)
                 .collect(Collectors.toList());
     }
 
@@ -179,7 +175,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
                                         .getAttributeValue().equals(attributeValue))
                                 .findAny().isPresent()
                 )
-                .map(Map.Entry::getKey)
+                .map(Entry::getKey)
                 .collect(Collectors.toList());
     }
 
@@ -194,7 +190,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
                                         .getAttributeValue().toLowerCase().matches(filterPattern.toLowerCase()))
                                 .findAny().isPresent()
                 )
-                .map(Map.Entry::getKey)
+                .map(Entry::getKey)
                 .collect(Collectors.toList());
     }
 
@@ -235,6 +231,15 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public IdentityStoreConnectorConfig getIdentityStoreConfig() {
         return identityStoreConnectorConfig;
+    }
+
+    @Override
+    public List<String> getUsers(List<Attribute> attributes, int offset, int length)
+            throws IdentityStoreConnectorException {
+        List<String> users = new ArrayList<>();
+        return users;
+
+
     }
 
     @Override

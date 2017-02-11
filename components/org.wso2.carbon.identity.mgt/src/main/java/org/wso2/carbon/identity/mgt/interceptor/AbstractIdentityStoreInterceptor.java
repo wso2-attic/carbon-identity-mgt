@@ -87,12 +87,25 @@ public class AbstractIdentityStoreInterceptor implements IdentityStoreIntercepto
     }
 
     @Override
-    public void doPreListUsers(int offset, int length) throws IdentityStoreException {
+    public void doPreListUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException {
 
     }
 
     @Override
-    public void doPostListUsers(int offset, int length, List<User> users) throws IdentityStoreException {
+    public void doPostListUsers(List<Claim> claims, int offset, int length, List<User> users)
+            throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void doPreListUsers(List<Claim> claims, int offset, int length, String domainName)
+            throws IdentityStoreException {
+
+    }
+
+    @Override
+    public void doPostListUsers(List<Claim> claims, int offset, int length, String domainName, List<User> users)
+            throws IdentityStoreException {
 
     }
 
@@ -108,22 +121,24 @@ public class AbstractIdentityStoreInterceptor implements IdentityStoreIntercepto
     }
 
     @Override
-    public void doPreListUsers(Claim claim, int offset, int length) throws IdentityStoreException {
+    public void doPreListUsers(int offset, int length) throws IdentityStoreException {
 
     }
 
     @Override
-    public void doPostListUsers(Claim claim, int offset, int length, List<User> users) throws IdentityStoreException {
+    public void doPostListUsers(Claim claim, int offset, int length, List<User> users)
+            throws IdentityStoreException {
 
     }
 
     @Override
-    public void doPreListUsers(Claim claim, int offset, int length, String domainName) throws IdentityStoreException {
+    public void doPreListUsers(Claim claim, int offset, int length, String domainName)
+            throws IdentityStoreException {
 
     }
 
     @Override
-    public void doPostListUsers(Claim claim, int offset, int length, String domainName, List<User> users)
+    public void doPostListUsers(int offset, int length, List<User> users)
             throws IdentityStoreException {
 
     }
