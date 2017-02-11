@@ -28,6 +28,7 @@ import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryConstants;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryServerException;
 import org.wso2.carbon.identity.recovery.internal.IdentityRecoveryServiceDataHolder;
@@ -62,7 +63,7 @@ public class NotificationUsernameRecoveryManager {
         return instance;
     }
 
-    public boolean verifyUsername(ArrayList<UserClaim> claims) throws
+    public boolean verifyUsername(List<UserClaim> claims) throws
             IdentityRecoveryException {
 
             return recoverUserByClaims(claims);
@@ -70,9 +71,47 @@ public class NotificationUsernameRecoveryManager {
     }
 
 
+    public boolean recoverUserByClaims(List<UserClaim> claims)
+            throws IdentityRecoveryException {
+
+        /*
+         *  No need of checking username Enable
+         * */
+
+        boolean isNotificationInternallyManaged = usernameConfig.getNotificationInternallyManaged().isEnable();
+
+        if (isNotificationInternallyManaged) {
+            return  recoverUserByClaims(claims);
+        }
+        throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_NO_VALID_USERNAME, null);
+    }
+
+
+//    private void triggerNotification(User user, String type) throws IdentityRecoveryException {
+//
+//        RealmService realmService = IdentityRecoveryServiceDataHolder.getInstance().getRealmService();
+//        IdentityStore identityStore = realmService.getIdentityStore();
+//
+//        Claim claim = new Claim();
+//        claim.setClaimUri(claimUri);
+//        claim.setValue(value);
+//
+//        try {
+//            return identityStore.listUsers(claim, 0, 100);
+//        } catch (IdentityStoreException e) {
+//            String msg = "Unable to retrieve the user list from claim";
+//            throw new IdentityRecoveryException(msg, e);
+//        }
+//    }
+//}
+
     public boolean recoverUserByClaims(ArrayList<UserClaim> claims)
             throws IdentityRecoveryException {
 
+        /* No need of checking recovery enable from back end side it is already checked from API side
+         And portal side.
+
+         */
 
         if (claims == null || claims.size() < 1) {
 
@@ -81,6 +120,8 @@ public class NotificationUsernameRecoveryManager {
             }
             return false;
             //TODO send exception
+//            throw Utils.handleClientException(
+//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_NO_FIELD_FOUND_FOR_USER_RECOVERY, null);
         }
 
         List<User> resultedUserList = new ArrayList<>();
@@ -107,6 +148,7 @@ public class NotificationUsernameRecoveryManager {
                         log.debug("Matched userList : " + Arrays.toString(matchedUserList.toArray()));
                     }
                     // If more than one user find the first matching user list. Hence need to define unique claims
+                    //If more than one user find the first matching user list. Hence need to define unique claims
                     if (!resultedUserList.isEmpty()) {
                         List<User> users = new ArrayList<>();
                         for (User resultedUser : resultedUserList) {
@@ -144,6 +186,8 @@ public class NotificationUsernameRecoveryManager {
                                 + claim.getClaimValue());
                     }
                     return false;
+//                    throw Utils.handleClientException(
+//                            IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_NO_USER_FOUND_FOR_RECOVERY, null);
                 }
             }
         }

@@ -26,6 +26,8 @@ public class UsernameConfig {
     private boolean enableAPI = false;
     private boolean enablePortal = true;
     private String url = "/user-portal/recovery/username";
+    private boolean enable;
+    private NotificationInternallyManagedConfig notificationInternallyManaged;
 
     public boolean isEnableAPI() {
         return enableAPI;
@@ -49,5 +51,13 @@ public class UsernameConfig {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public NotificationInternallyManagedConfig getNotificationInternallyManaged() {
+        return notificationInternallyManaged;
+    }
+
+    public void setNotificationInternallyManaged(NotificationInternallyManagedConfig notificationInternallyManaged) {
+        this.notificationInternallyManaged = notificationInternallyManaged;
     }
 }
