@@ -23,10 +23,15 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static java.util.Map.*;
 
 /**
  * InMemory Identity Store Connector.
@@ -86,7 +91,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
                                         .getAttributeValue().equals(attributeValue))
                                 .findAny().isPresent()
                 )
-                .map(Entry::getKey)
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
 
@@ -101,7 +106,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
                                         .getAttributeValue().toLowerCase().matches(filterPattern.toLowerCase()))
                                 .findAny().isPresent()
                 )
-                .map(Entry::getKey)
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
 
@@ -175,7 +180,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
                                         .getAttributeValue().equals(attributeValue))
                                 .findAny().isPresent()
                 )
-                .map(Entry::getKey)
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
 
@@ -190,7 +195,7 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
                                         .getAttributeValue().toLowerCase().matches(filterPattern.toLowerCase()))
                                 .findAny().isPresent()
                 )
-                .map(Entry::getKey)
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
 
