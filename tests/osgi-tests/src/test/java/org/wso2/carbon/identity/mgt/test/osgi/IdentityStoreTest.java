@@ -71,10 +71,6 @@ public class IdentityStoreTest {
     public Option[] createConfiguration() {
 
         List<Option> optionList = IdentityMgtOSGiTestUtils.getDefaultSecurityPAXOptions();
-//        optionList.add(mavenBundle()
-//                               .groupId("org.wso2.carbon.identity.mgt")
-//                               .artifactId("identity-store-handler-test-artifact")
-//                               .versionAsInProject());
 
         optionList.add(systemProperty("java.security.auth.login.config")
                                .value(Paths.get(IdentityMgtOSGiTestUtils.getCarbonHome(), "conf", "security",

@@ -75,7 +75,7 @@ public class EventInterceptorTemplate<T extends Object, X extends Exception> {
         ResultReturningHandler<T, X> resultReturningHandler = new ResultReturningHandler<T, X>() {
 
             @Override
-            public T handleEventWithResult(EventContext eventContext) throws X {
+            public T handleEventWithResult(EventContext eventContext, Event event) throws X {
                 try {
                     return delegate.execute();
                 } catch (Exception e) {

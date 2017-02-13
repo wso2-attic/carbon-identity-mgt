@@ -32,8 +32,7 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
     public static final ThreadLocal<Boolean> POST = new ThreadLocal<>();
 
     @Override
-    public void handleEvent(EventContext eventMessageContext) throws EventException {
-        Event event = eventMessageContext.getEvent();
+    public void handle(EventContext eventMessageContext, Event event) throws EventException {
 
         if ("PRE_GET_USER_BY_ID".equals(event.getEventName())) {
             PRE.set(true);
@@ -237,8 +236,10 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
     }
 
     @Override
-    public void rollBack(EventContext eventContext) {
-        POST.set(Boolean.TRUE);
+    public void rollBack(EventContext eventContext, Event event) throws IdentityException {
+        if ("POST_GET_USER_BY_ID".equals(event.getEventName())) {
+            POST.set(Boolean.TRUE);
+        }
     }
 
     @Override
