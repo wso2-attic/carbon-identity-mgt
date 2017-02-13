@@ -54,11 +54,7 @@ public class ChallengeQuestionManager {
     }
 
     public static ChallengeQuestionManager getInstance() {
-        try {
-            recoveryConfig = Utils.getRecoveryConfigs().getRecovery().getPassword().getSecurityQuestionConfig();
-        } catch (IdentityRecoveryServerException e) {
-            log.error("Error while Loading recovery-config file.", e);
-        }
+        recoveryConfig = new SecurityQuestionsConfig();
         return instance;
     }
 
@@ -705,7 +701,7 @@ public class ChallengeQuestionManager {
      * @return true if security question based password recovery enabled, false otherwise.
      * @throws IdentityRecoveryException
      */
-    public boolean isQuestionBasedPwdRecoveryEnabled() throws IdentityRecoveryException {
-        return recoveryConfig.isEnable();
+    public boolean isQuestionBasedPwdRecoveryEnabledInPortal() throws IdentityRecoveryException {
+        return recoveryConfig.isEnablePortal();
     }
 }

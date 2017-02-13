@@ -16,7 +16,7 @@ Carbon Identity Management project is one stop shop for all your identity needs.
 
 ## Getting Started
 
-This component is currently under development and can try-out as follows..
+This component is currently under development and can try-out as follows.
 
 ## Download
 
@@ -31,7 +31,7 @@ Use Maven snippet:
 
 ### Snapshot Releases
 
-Use following Maven repository for snapshot versions of Carbon Security.
+Use following Maven repository for snapshot versions of Carbon Identity Management.
 
 ````xml
 <repository>
@@ -50,7 +50,7 @@ Use following Maven repository for snapshot versions of Carbon Security.
 
 ### Released Versions
 
-Use following Maven repository for released stable versions of Carbon Security.
+Use following Maven repository for released stable versions of Carbon Identity Management.
 
 ````xml
 <repository>

@@ -19,26 +19,25 @@
 package org.wso2.carbon.identity.recovery.mapping;
 
 /**
- * Class to represent notification based password recovery config
+ *
  */
-public class NotificationBasedConfig {
+public class RecoveryCodeConfig {
+    private boolean enableAPI = false;
+    private boolean enablePortal = false;
 
-    private RecoveryLinkConfig recoveryLink = new RecoveryLinkConfig();
-    private RecoveryCodeConfig recoveryCode = new RecoveryCodeConfig();
-
-    public RecoveryLinkConfig getRecoveryLink() {
-        return recoveryLink;
+    public boolean isEnableAPI() {
+        return enableAPI;
     }
 
-    public void setRecoveryLink(RecoveryLinkConfig recoveryLink) {
-        this.recoveryLink = recoveryLink;
+    public void setEnableAPI(boolean enableAPI) {
+        this.enableAPI = enableAPI;
     }
 
-    public RecoveryCodeConfig getRecoveryCode() {
-        return recoveryCode;
+    public boolean isEnablePortal() {
+        return enablePortal;
     }
 
-    public void setRecoveryCode(RecoveryCodeConfig recoveryCode) {
-        this.recoveryCode = recoveryCode;
+    public void setEnablePortal(boolean enablePortal) {
+        this.enablePortal = enablePortal;
     }
 }
