@@ -466,6 +466,95 @@ public class InterceptingIdentityStore implements IdentityStore {
     }
 
     @Override
+    public List<User> listUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException {
+
+        Map<String, Object> eventProperties = new HashMap<>();
+        eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+        eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+        eventProperties.put(IdentityStoreConstants.LENGTH, length);
+
+        Event event = new Event(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_CLAIMS, eventProperties);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(event);
+
+        try {
+            eventService.handleEvent(messageContext);
+        } catch (EventException e) {
+
+            String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
+                    .PRE_LIST_USERS_BY_CLAIMS);
+            throw new IdentityStoreException(message, e);
+        }
+
+        List<User> users = identityStore.listUsers(claims, offset, length);
+
+        eventProperties = new HashMap<>();
+        eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+        eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+        eventProperties.put(IdentityStoreConstants.LENGTH, length);
+        eventProperties.put(IdentityStoreConstants.USER_LIST, users);
+
+        event = new Event(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_CLAIMS, eventProperties);
+        messageContext = new IdentityMgtMessageContext(event);
+
+        try {
+            eventService.handleEvent(messageContext);
+        } catch (EventException e) {
+
+            String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
+                    .POST_LIST_USERS_BY_CLAIM);
+            throw new IdentityStoreException(message, e);
+        }
+
+        return users;
+    }
+
+    @Override
+    public List<User> listUsers(List<Claim> claims, int offset, int length, String domainName)
+            throws IdentityStoreException {
+        Map<String, Object> eventProperties = new HashMap<>();
+        eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+        eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+        eventProperties.put(IdentityStoreConstants.LENGTH, length);
+        eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
+
+        Event event = new Event(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_CLAIMS_DOMAIN, eventProperties);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(event);
+
+        try {
+            eventService.handleEvent(messageContext);
+        } catch (EventException e) {
+
+            String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
+                    .PRE_LIST_USERS_BY_CLAIM_DOMAIN);
+            throw new IdentityStoreException(message, e);
+        }
+
+        List<User> users = identityStore.listUsers(claims, offset, length, domainName);
+
+        eventProperties = new HashMap<>();
+        eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+        eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+        eventProperties.put(IdentityStoreConstants.LENGTH, length);
+        eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
+        eventProperties.put(IdentityStoreConstants.USER_LIST, domainName);
+
+        event = new Event(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_CLAIMS_DOMAIN, eventProperties);
+        messageContext = new IdentityMgtMessageContext(event);
+
+        try {
+            eventService.handleEvent(messageContext);
+        } catch (EventException e) {
+
+            String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
+                    .POST_LIST_USERS_BY_CLAIMS_DOMAIN);
+            throw new IdentityStoreException(message, e);
+        }
+
+        return users;
+    }
+
+
+    @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
         Map<String, Object> eventProperties = new HashMap<>();

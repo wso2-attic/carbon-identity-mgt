@@ -202,6 +202,15 @@ public interface IdentityStoreConnector {
     IdentityStoreConnectorConfig getIdentityStoreConfig();
 
     /**
+     * gets a user.
+     *
+     * @param attributes Attributes of the user.
+     * @return List of connector unique ids of the users.
+     * @throws IdentityStoreConnectorException Identity store connector exception.
+     */
+    List<String> getUsers(List<Attribute> attributes, int offset, int length) throws IdentityStoreConnectorException;
+
+    /**
      * Adds a new user.
      *
      * @param attributes Attributes of the user.

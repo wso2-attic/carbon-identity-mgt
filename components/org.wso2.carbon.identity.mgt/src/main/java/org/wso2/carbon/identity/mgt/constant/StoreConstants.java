@@ -88,6 +88,10 @@ public class StoreConstants {
         public static final String POST_LIST_USERS_BY_META_CLAIM = "POST_LIST_USERS_BY_CLAIM_DOMAIN";
         public static final String PRE_LIST_USERS_BY_META_CLAIM_DOMAIN = "PRE_LIST_USERS_BY_META_CLAIM_DOMAIN";
         public static final String POST_LIST_USERS_BY_META_CLAIM_DOMAIN = "POST_LIST_USERS_BY_META_CLAIM_DOMAIN";
+        public static final String PRE_LIST_USERS_BY_CLAIMS = "PRE_LIST_USERS_BY_CLAIMS";
+        public static final String POST_LIST_USERS_BY_CLAIMS = "POST_LIST_USERS_BY_CLAIMS";
+        public static final String PRE_LIST_USERS_BY_CLAIMS_DOMAIN = "PRE_LIST_USERS_BY_CLAIMS_DOMAIN";
+        public static final String POST_LIST_USERS_BY_CLAIMS_DOMAIN = "POST_LIST_USERS_BY_CLAIMS_DOMAIN";
 
         public static final String PRE_GET_GROUP_BY_ID = "PRE_GET_GROUP_BY_ID";
         public static final String POST_GET_GROUP_BY_ID = "POST_GET_GROUP_BY_ID";

@@ -291,6 +291,41 @@ public class Domain {
                 .collect(Collectors.toList());
     }
 
+    public List<String> listDomainUsers(List<Claim> claims, int offset, int length) throws DomainException {
+
+        if (claims.isEmpty()) {
+            return null;
+        }
+        // Map of connector ID and its list of attributes.
+        Map<String, List<Attribute>> connectorIdToAttributeMap = getAttributesMap(claims);
+        List<String> connectorUserIds = new ArrayList<>();
+
+        if (!connectorIdToAttributeMap.isEmpty()) {
+
+            for (Map.Entry<String, List<Attribute>> entry : connectorIdToAttributeMap.entrySet()) {
+                // Check whether all the claims are in the same connector.
+                if (entry.getValue().size() != claims.size()) {
+                    continue;
+                } else {
+                    IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+
+                    try {
+                        // Add all connector UserIDs and get the Union
+                        connectorUserIds.addAll(identityStoreConnector.getUsers(entry.getValue(), offset, length));
+
+
+                    } catch (IdentityStoreConnectorException e) {
+                        // Recover from the inconsistent state in the connectors
+                        throw new DomainException("Identity store connector failed to get " +
+                                "Users for given set of attributes.", e);
+                    }
+                }
+            }
+        }
+
+        return connectorUserIds;
+    }
+
     public List<String> listDomainUsers(MetaClaim metaClaim, String filterPattern, int offset, int length)
             throws DomainException {
 

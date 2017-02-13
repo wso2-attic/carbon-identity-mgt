@@ -106,21 +106,48 @@ public interface IdentityStoreInterceptor {
     /**
      * Triggers prior to listing users with an offset and length.
      *
+     *
+     * @param claims
      * @param offset Offset for list of users.
      * @param length Length from the offset.
      * @throws IdentityStoreException Identity store exception.
      */
-    void doPreListUsers(int offset, int length) throws IdentityStoreException;
+    void doPreListUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException;
 
     /**
      * Triggers post to listing users with an offset and length.
      *
+     *
+     * @param claims
      * @param offset Offset for list of users.
      * @param length Length from the offset.
      * @param users User list to be returned from listUsers method.
      * @throws IdentityStoreException Identity store exception.
      */
-    void doPostListUsers(int offset, int length, List<User> users) throws IdentityStoreException;
+    void doPostListUsers(List<Claim> claims, int offset, int length, List<User> users) throws IdentityStoreException;
+
+    /***
+     *
+     * @param claims
+     * @param offset Offset for list of users.
+     * @param length Length from the offset.
+     * @param domainName Domain of the users.
+     * @throws IdentityStoreException
+     */
+    void doPreListUsers(List<Claim> claims, int offset, int length, String domainName) throws IdentityStoreException;
+
+
+    /***
+     *
+     * @param claims
+     * @param offset Offset for list of users.
+     * @param length Length from the offset.
+     * @param domainName Domain of the users.
+     * @param users User list to be returned from listUsers method.
+     * @throws IdentityStoreException
+     */
+    void doPostListUsers(List<Claim> claims, int offset, int length, String domainName, List<User> users)
+            throws  IdentityStoreException;
 
     /**
      * Triggers prior to listing all users in a domain with an offset and length.
@@ -146,12 +173,11 @@ public interface IdentityStoreInterceptor {
     /**
      * Triggers prior to listing all users that matches a given claim with an offset and length..
      *
-     * @param claim  User claim
      * @param offset Offset for list of users.
      * @param length Length from the offset.
      * @throws IdentityStoreException Identity store exception.
      */
-    void doPreListUsers(Claim claim, int offset, int length) throws IdentityStoreException;
+    void doPreListUsers(int offset, int length) throws IdentityStoreException;
 
     /**
      * Triggers post to listing all users that matches a given claim with an offset and length.
@@ -178,14 +204,12 @@ public interface IdentityStoreInterceptor {
     /**
      * Triggers post to listing users that matches a given claim with an offset and length.
      *
-     * @param claim  User claim
      * @param offset Offset for list of users.
      * @param length Length from the offset.
-     * @param domainName The domain name to retrieve users from.
      * @param users User list to be returned from listUsers method.
      * @throws IdentityStoreException Identity store exception.
      */
-    void doPostListUsers(Claim claim, int offset, int length, String domainName, List<User> users) throws
+    void doPostListUsers(int offset, int length, List<User> users) throws
             IdentityStoreException;
 
     /**
