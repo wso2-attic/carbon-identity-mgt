@@ -192,45 +192,36 @@ public class ChallengeQuestionManager {
     /**
      * Get challenge questions answered by a user.
      *
-     * @param user
+     * @param uniqueUserID
      * @return
      */
-    public List<UserChallengeAnswer> getChallengeAnswersOfUser(User user) throws IdentityRecoveryException {
-
-        validateUser(user);
+    public List<UserChallengeAnswer> getChallengeAnswersOfUser(String uniqueUserID) throws IdentityRecoveryException {
 
         List<UserChallengeAnswer> userChallengeAnswers = new ArrayList<>();
         if (log.isDebugEnabled()) {
             log.debug("Retrieving Challenge question from the user profile.");
         }
 
-        List<String> challengesUris = getChallengeQuestionUris(user);
+        List<String> challengesUris = getChallengeQuestionUris(uniqueUserID);
         List<ChallengeQuestion> challengeQuestions = getAllChallengeQuestions();
 
         for (String challengesUri1 : challengesUris) {
             String challengesUri = challengesUri1.trim();
             String challengeValue;
             try {
-                challengeValue = Utils.getClaimFromIdentityStore(user, challengesUri);
+                challengeValue = Utils.getClaimFromIdentityStore(uniqueUserID, challengesUri);
             } catch (IdentityStoreException e) {
                 throw Utils.handleServerException(
                         IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_QUESTIONS,
-                        user.getUniqueUserId(), e);
+                        uniqueUserID, e);
             } catch (UserNotFoundException e) {
                 throw Utils.handleServerException(
                         IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_QUESTIONS,
-                        user.getUniqueUserId(), e);
+                        uniqueUserID, e);
             }
 
             // TODO: Add the correct separator.
-            String challengeQuestionSeparator = "";
-//          IdentityRecoveryConstants.ConnectorConfig.QUESTION_CHALLENGE_SEPARATOR;
-//          String challengeQuestionSeparator = IdentityUtil.getProperty(IdentityRecoveryConstants.ConnectorConfig
-//                  .QUESTION_CHALLENGE_SEPARATOR);
-
-            if (StringUtils.isEmpty(challengeQuestionSeparator)) {
-                challengeQuestionSeparator = IdentityRecoveryConstants.DEFAULT_CHALLENGE_QUESTION_SEPARATOR;
-            }
+            String challengeQuestionSeparator = recoveryConfig.getQuestionSeparator();
 
             String[] challengeValues = challengeValue.split(challengeQuestionSeparator);
             if (challengeValues.length == 2) {
@@ -267,10 +258,8 @@ public class ChallengeQuestionManager {
      * @return
      * @throws IdentityRecoveryException
      */
-    public ChallengeQuestion getUserChallengeQuestion(User user, String challengesUri)
+    public ChallengeQuestion getUserChallengeQuestion(String uniqueUserID, String challengesUri)
             throws IdentityRecoveryException {
-
-        validateUser(user);
 
         ChallengeQuestion userChallengeQuestion = null;
         if (log.isDebugEnabled()) {
@@ -279,26 +268,21 @@ public class ChallengeQuestionManager {
 
         String challengeValue = null;
         try {
-            challengeValue = Utils.getClaimFromIdentityStore(user, challengesUri);
+            challengeValue = Utils.getClaimFromIdentityStore(uniqueUserID, challengesUri);
         } catch (IdentityStoreException e) {
             throw Utils.handleServerException(
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_QUESTION,
-                    user.getUniqueUserId(), e);
+                   uniqueUserID, e);
         } catch (UserNotFoundException e) {
             throw Utils.handleServerException(
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_QUESTION,
-                    user.getUniqueUserId(), e);
+                    uniqueUserID, e);
         }
 
         if (challengeValue != null) {
 
-            String challengeQuestionSeparator = IdentityRecoveryConstants.ConnectorConfig.QUESTION_CHALLENGE_SEPARATOR;
-//            String challengeQuestionSeparator = IdentityUtil.getProperty(IdentityRecoveryConstants.ConnectorConfig
-//                    .QUESTION_CHALLENGE_SEPARATOR);
-
-            if (StringUtils.isEmpty(challengeQuestionSeparator)) {
-                challengeQuestionSeparator = IdentityRecoveryConstants.DEFAULT_CHALLENGE_QUESTION_SEPARATOR;
-            }
+            //TODO might want to get rid of separator
+            String challengeQuestionSeparator = recoveryConfig.getQuestionSeparator();
 
             String[] challengeValues = challengeValue.split(challengeQuestionSeparator);
             if (challengeValues.length == 2) {
@@ -317,7 +301,7 @@ public class ChallengeQuestionManager {
         if (log.isDebugEnabled()) {
             log.debug("Retrieving answered Challenge question set ids from the user profile.");
         }
-        List<String> challengesUris = getChallengeQuestionUris(user);
+        List<String> challengesUris = getChallengeQuestionUris(user.getUniqueUserId());
 
         if (challengesUris.isEmpty()) {
             String msg = "No associated challenge question found for the user : " + user.getUniqueUserId();
@@ -334,16 +318,17 @@ public class ChallengeQuestionManager {
     /**
      * Get the claims URIs of the challenge sets answered by the user.
      *
-     * @param user
+     * @param userID
      * @return
      */
-    public List<String> getChallengeQuestionUris(User user)
+    public List<String> getChallengeQuestionUris(String uniqueUserID)
             throws IdentityRecoveryException {
 
-        validateUser(user);
+        //validateUser(userID);
 
         if (log.isDebugEnabled()) {
-            String msg = String.format("Getting answered challenge question uris from %s's profile.", user.toString());
+            String msg = String.format("Getting answered challenge question uris from %s's profile.",
+                    uniqueUserID);
             log.debug(msg);
         }
 
@@ -352,15 +337,14 @@ public class ChallengeQuestionManager {
         String[] challengesUris;
 
         try {
-            claimValue = Utils.getClaimFromIdentityStore(user, IdentityRecoveryConstants.CHALLENGE_QUESTION_URI);
+            claimValue = Utils.getClaimFromIdentityStore(uniqueUserID,
+                    IdentityRecoveryConstants.CHALLENGE_QUESTION_URI);
         } catch (IdentityStoreException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_URIS,
-                    user.getUniqueUserId(), e);
+                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_URIS, uniqueUserID, e);
         } catch (UserNotFoundException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_URIS,
-                    user.getUniqueUserId(), e);
+                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_URIS, uniqueUserID, e);
         }
 
         if (claimValue != null) {
@@ -432,8 +416,8 @@ public class ChallengeQuestionManager {
                     if (userChallengeAnswer.getQuestion().getQuestionSetId() != null && userChallengeAnswer
                             .getQuestion().getQuestion() != null && userChallengeAnswer.getAnswer() != null) {
 
-                        String oldValue = Utils.getClaimFromIdentityStore(user, userChallengeAnswer.getQuestion()
-                                        .getQuestionSetId().trim());
+                        String oldValue = Utils.getClaimFromIdentityStore(user.getUniqueUserId(),
+                                userChallengeAnswer.getQuestion().getQuestionSetId().trim());
 
                         if (oldValue != null && oldValue.contains(separator)) {
                             String oldAnswer = oldValue.split(separator)[1];
@@ -472,21 +456,19 @@ public class ChallengeQuestionManager {
     }
 
     /**
-     * @param user
+     * @param uniqueUserID
      * @param userChallengeAnswers
      * @return
      */
-    public boolean verifyChallengeAnswer(User user, List<UserChallengeAnswer> userChallengeAnswers)
+    public boolean verifyChallengeAnswer(String uniqueUserID, List<UserChallengeAnswer> userChallengeAnswers)
             throws IdentityRecoveryException {
-
-        validateUser(user);
 
         boolean verification = false;
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Verifying challenge question answers for %s.", user.toString()));
+            log.debug(String.format("Verifying challenge question answers for userID %s.", uniqueUserID));
         }
 
-        List<UserChallengeAnswer> storedAnswers = getChallengeAnswersOfUser(user);
+        List<UserChallengeAnswer> storedAnswers = getChallengeAnswersOfUser(uniqueUserID);
 
         for (UserChallengeAnswer userChallengeAnswer : userChallengeAnswers) {
             if (StringUtils.isBlank(userChallengeAnswer.getAnswer())) {
@@ -523,18 +505,18 @@ public class ChallengeQuestionManager {
         return verification;
     }
 
-    public boolean verifyUserChallengeAnswer(User user, UserChallengeAnswer userChallengeAnswer)
+    public boolean verifyUserChallengeAnswer(String uniqueUserID, UserChallengeAnswer userChallengeAnswer)
             throws IdentityRecoveryException {
 
         // check whether user data are valid.
-        validateUser(user);
+//        validateUser(user);
 
         boolean verification = false;
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Verifying challenge question answer for %s.", user.toString()));
+            log.debug(String.format("Verifying challenge question answer for %s.", uniqueUserID));
         }
 
-        List<UserChallengeAnswer> storedDto = getChallengeAnswersOfUser(user);
+        List<UserChallengeAnswer> storedDto = getChallengeAnswersOfUser(uniqueUserID);
         if (StringUtils.isBlank(userChallengeAnswer.getAnswer())) {
             log.error("Invalid. Empty answer provided for the challenge question.");
             return false;
@@ -670,7 +652,8 @@ public class ChallengeQuestionManager {
         String locale = IdentityRecoveryConstants.LOCALE_EN_US;
         try {
             String userLocale =
-                    Utils.getClaimFromIdentityStore(user, IdentityRecoveryConstants.Questions.LOCALE_CLAIM);
+                    Utils.getClaimFromIdentityStore(user.getUniqueUserId(), IdentityRecoveryConstants.Questions
+                            .LOCALE_CLAIM);
             if (StringUtils.isNotBlank(userLocale)) {
                 locale = userLocale;
             }

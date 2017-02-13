@@ -20,36 +20,27 @@ package org.wso2.carbon.identity.recovery.bean;
 
 import org.wso2.carbon.identity.recovery.model.ChallengeQuestion;
 
+import java.util.List;
+
 /**
  * Challenge Questions Response.
  */
 public class ChallengeQuestionsResponse {
 
-    private ChallengeQuestion[] question;
+    private List<ChallengeQuestion> questions;
     private String code;
     private String status;
 
-    public ChallengeQuestionsResponse() {
-        //Default constructor
+    public ChallengeQuestionsResponse(List<ChallengeQuestion> questions) {
+        this.questions = questions;
     }
 
-    public ChallengeQuestionsResponse(ChallengeQuestion[] question) {
-        if (question != null) {
-            this.question = question.clone();
-        }
+    public List<ChallengeQuestion> getQuestions() {
+        return questions;
     }
 
-    public ChallengeQuestion[] getQuestion() {
-        if (question == null) {
-            return new ChallengeQuestion[0];
-        }
-        return question.clone();
-    }
-
-    public void setQuestion(ChallengeQuestion[] question) {
-        if (question != null) {
-            this.question = question.clone();
-        }
+    public void setQuestions(List<ChallengeQuestion> questions) {
+        this.questions = questions;
     }
 
     public String getCode() {
@@ -67,4 +58,6 @@ public class ChallengeQuestionsResponse {
     public void setStatus(String status) {
         this.status = status;
     }
+
+
 }

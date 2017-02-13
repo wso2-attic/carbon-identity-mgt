@@ -24,6 +24,8 @@ public class SecurityQuestionsConfig {
     private int minAnswers = 2;
     private boolean enableAPI = false;
     private boolean enablePortal = true;
+    private String questionSeparator = "!";
+    private boolean validateOneByOne = true;
 
     public boolean isNotifyStart() {
         return notifyStart;
@@ -55,5 +57,21 @@ public class SecurityQuestionsConfig {
 
     public void setEnablePortal(boolean enablePortal) {
         this.enablePortal = enablePortal;
+    }
+
+    public String getQuestionSeparator() {
+        return questionSeparator;
+    }
+
+    public void setQuestionSeparator(String questionSeparator) {
+        this.questionSeparator = questionSeparator;
+    }
+
+    public boolean isValidateOneByOne() {
+        return validateOneByOne;
+    }
+
+    public void setValidateOneByOne(boolean validateOneByOne) {
+        this.validateOneByOne = validateOneByOne;
     }
 }
