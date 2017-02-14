@@ -202,7 +202,7 @@ public interface IdentityStoreConnector {
     IdentityStoreConnectorConfig getIdentityStoreConfig();
 
     /**
-     * gets a user.
+     * Get a list of users which matches a given list of attributes.
      *
      * @param attributes Attributes of the user.
      * @return List of connector unique ids of the users.

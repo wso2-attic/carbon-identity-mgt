@@ -19,7 +19,6 @@
 
 package org.wso2.carbon.identity.recovery.username;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.mgt.IdentityStore;
@@ -75,7 +74,7 @@ public class NotificationUsernameRecoveryManager {
 
          */
 
-        if (claims == null || claims.size() < 1) {
+        if (claims == null || claims.isEmpty()) {
 
             if (log.isDebugEnabled()) {
                 log.debug("No claims are recieved");
@@ -114,11 +113,10 @@ public class NotificationUsernameRecoveryManager {
         RealmService realmService = IdentityRecoveryServiceDataHolder.getInstance().getRealmService();
         IdentityStore identityStore = realmService.getIdentityStore();
 
-
         try {
-            return identityStore.listUsers(claims, 0, 3);
+            return identityStore.listUsers(claims, 0, 100);
         } catch (IdentityStoreException e) {
-            String msg = "Unable to retrieve the user list from claim";
+            String msg = "Unable to retrieve the user list from claim.";
             throw new IdentityRecoveryException(msg, e);
         }
     }

@@ -418,12 +418,12 @@ public class IdentityStoreImpl implements IdentityStore {
     @Override
     public List<User> listUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException {
 
-        if (claims.isEmpty()) {
-            throw new IdentityStoreClientException("Invalid claims.");
+        if (claims == null || claims.isEmpty()) {
+            throw new IdentityStoreClientException("Empty list of claims.");
         }
 
         if (offset < 0) {
-            throw new IdentityStoreClientException("Invalid offset value.");
+            throw new IdentityStoreClientException("Invalid offset value: " + offset);
         }
 
         if (length == 0) {
@@ -441,12 +441,12 @@ public class IdentityStoreImpl implements IdentityStore {
             return listUsers(claims, offset, length);
         }
 
-        if (claims.isEmpty()) {
-            throw new IdentityStoreClientException("Invalid claim.");
+        if (claims == null || claims.isEmpty()) {
+            throw new IdentityStoreClientException("Empty list of claims.");
         }
 
         if (offset < 0) {
-            throw new IdentityStoreClientException("Invalid offset value.");
+            throw new IdentityStoreClientException("Invalid offset value: " + offset);
         }
 
         if (length == 0) {
@@ -1790,29 +1790,26 @@ public class IdentityStoreImpl implements IdentityStore {
                                 .build())
                         .collect(Collectors.toList()));
 
-/*                if (matchedDomainUserIds == null || Collections.emptyList().isEmpty()) {
-                    return Collections.emptyList();
-                }*/
             }
 
         } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain Ids"), e);
+            throw new IdentityStoreServerException("Error while retrieving domain Ids.", e);
 
         } catch (IdentityStoreException e) {
-            throw new IdentityStoreServerException(String.format("No domains found"), e);
+            throw new IdentityStoreServerException("No domains found.", e);
         }
         return users;
 
     }
 
-    private  List<User> doListUsers(List<Claim> claims, int offset, int length, Domain domain)
+    private List<User> doListUsers(List<Claim> claims, int offset, int length, Domain domain)
                                                               throws IdentityStoreServerException {
 
         List<String> matchedDomainUserIds;
         try {
              matchedDomainUserIds = domain.listDomainUsers(claims, offset, length);
         } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Error while retrieving domain Ids"), e);
+            throw new IdentityStoreServerException("Error while retrieving domain Ids", e);
 
         }
         if (matchedDomainUserIds == null || Collections.emptyList().isEmpty()) {

@@ -243,8 +243,6 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
             throws IdentityStoreConnectorException {
         List<String> users = new ArrayList<>();
         return users;
-
-
     }
 
     @Override

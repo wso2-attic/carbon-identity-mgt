@@ -308,7 +308,7 @@ public class IdentityStoreTest {
     public void testListUsersByClaimsOffsetAndLength() throws IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
-        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+        Assert.assertNotNull(realmService, "Failed to get realm service instance.");
 
         List<Claim> claims = new ArrayList<>();
         Claim claim1 = new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Lopez");
@@ -317,7 +317,6 @@ public class IdentityStoreTest {
         claims.add(claim2);
 
         List<User> users = realmService.getIdentityStore().listUsers(claims, 1, 1);
-
 
         Assert.assertNotNull(users, "Failed to list the users.");
         Assert.assertTrue(users.isEmpty() && users.size() == 0 , "Number of users received in the response " +

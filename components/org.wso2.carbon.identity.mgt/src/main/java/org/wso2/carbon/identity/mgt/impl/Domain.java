@@ -291,6 +291,15 @@ public class Domain {
                 .collect(Collectors.toList());
     }
 
+    /**
+     *  List a set of users which satisfy multiple claims.
+     *
+     * @param claims list of claims.
+     * @param offset
+     * @param length
+     * @return
+     * @throws DomainException
+     */
     public List<String> listDomainUsers(List<Claim> claims, int offset, int length) throws DomainException {
 
         if (claims.isEmpty()) {
@@ -298,32 +307,50 @@ public class Domain {
         }
         // Map of connector ID and its list of attributes.
         Map<String, List<Attribute>> connectorIdToAttributeMap = getAttributesMap(claims);
-        List<String> connectorUserIds = new ArrayList<>();
+        Map<String, List<String>> connectorToDomainUserIdMap = new HashMap<>();
+        List<String> intersect = new ArrayList<>();
+        IdentityStoreConnector identityStoreConnector;
 
         if (!connectorIdToAttributeMap.isEmpty()) {
-
             for (Map.Entry<String, List<Attribute>> entry : connectorIdToAttributeMap.entrySet()) {
-                // Check whether all the claims are in the same connector.
-                if (entry.getValue().size() != claims.size()) {
-                    continue;
-                } else {
-                    IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+                List<String> connectorUserIds = null;
+                try {
+                    identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+                    connectorUserIds = identityStoreConnector.getUsers(entry.getValue(), offset, length);
 
-                    try {
-                        // Add all connector UserIDs and get the Union
-                        connectorUserIds.addAll(identityStoreConnector.getUsers(entry.getValue(), offset, length));
+                } catch (IdentityStoreConnectorException e) {
+                    throw new DomainException("Failed to list connector user ids.", e);
+                }
 
-
-                    } catch (IdentityStoreConnectorException e) {
-                        // Recover from the inconsistent state in the connectors
-                        throw new DomainException("Identity store connector failed to get " +
-                                "Users for given set of attributes.", e);
+                List<DomainUser> domainUsers;
+                List<String> domainUserIds = new ArrayList<>();
+                try {
+                    domainUsers = uniqueIdResolver.getUsers(connectorUserIds, entry.getKey(), this.id);
+                    for (DomainUser domainuser : domainUsers) {
+                        domainUserIds.add(domainuser.getDomainUserId());
                     }
+                    connectorToDomainUserIdMap.put(entry.getKey(), domainUserIds);
+                } catch (UniqueIdResolverException e) {
+                    throw new DomainException("Failed to retrieve the unique user ids.", e);
                 }
             }
         }
 
-        return connectorUserIds;
+        // Select the intersection of UserIds
+        if (!connectorToDomainUserIdMap.isEmpty()) {
+            connectorToDomainUserIdMap.entrySet().forEach(entry -> {
+                if (intersect == null || intersect.isEmpty()) {
+                    intersect.addAll(entry.getValue());
+                } else {
+                    List<String> temp = entry.getValue().stream()
+                            .filter(intersect::contains)
+                            .collect(Collectors.toList());
+                    intersect.clear();
+                    intersect.addAll(temp);
+                }
+            });
+        }
+        return intersect;
     }
 
     public List<String> listDomainUsers(MetaClaim metaClaim, String filterPattern, int offset, int length)
