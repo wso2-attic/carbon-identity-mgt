@@ -54,11 +54,7 @@ public class ChallengeQuestionManager {
     }
 
     public static ChallengeQuestionManager getInstance() {
-        try {
-            recoveryConfig = Utils.getRecoveryConfigs().getRecovery().getPassword().getSecurityQuestion();
-        } catch (IdentityRecoveryServerException e) {
-            log.error("Error while Loading recovery-config file.", e);
-        }
+        recoveryConfig = new SecurityQuestionsConfig();
         return instance;
     }
 

@@ -89,6 +89,16 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public boolean isUserExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
+        return identityStore.isUserExist(userClaims, domainName);
+    }
+
+    @Override
+    public Map<String, String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
+        return identityStore.isUserExist(userClaims);
+    }
+
+    @Override
     public User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
         if (cacheStatus.get(UNIQUE_USER_CACHE) && isNullOrEmpty(uniqueUserId)) {
