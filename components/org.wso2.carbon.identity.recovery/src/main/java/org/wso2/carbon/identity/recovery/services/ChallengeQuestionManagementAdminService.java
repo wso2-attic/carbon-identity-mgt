@@ -187,7 +187,7 @@ public class ChallengeQuestionManagementAdminService {
         }
 
         try {
-            return questionManager.getChallengeAnswersOfUser(user);
+            return questionManager.getChallengeAnswersOfUser(user.getUniqueUserId());
         } catch (IdentityRecoveryException e) {
             String msg = "Error retrieving user challenge answers for " + user.getUniqueUserId();
             log.error(msg, e);

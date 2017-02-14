@@ -135,7 +135,7 @@ public class JDBCRecoveryDataStore implements UserRecoveryDataStore {
                         if (StringUtils.isNotBlank(resultSet.getString("REMAINING_SETS"))) {
                             userRecoveryData.setRemainingSetIds(resultSet.getString("REMAINING_SETS"));
                         }
-
+                        userRecoveryData.setTimeCreated(resultSet.getTimestamp("TIME_CREATED"));
                         return userRecoveryData;
 
                     }, namedPreparedStatement -> {
@@ -145,13 +145,14 @@ public class JDBCRecoveryDataStore implements UserRecoveryDataStore {
             throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED, null, e);
         }
 
+        if (userRecoveryDataObject == null) {
+            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_INVALID_CODE, code);
+        }
+
         if (isCodeExpired(userRecoveryDataObject)) {
             throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_EXPIRED_CODE, code);
         }
 
-        if (userRecoveryDataObject == null) {
-            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_INVALID_CODE, code);
-        }
 
         return userRecoveryDataObject;
     }

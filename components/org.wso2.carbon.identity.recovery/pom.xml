@@ -74,7 +74,7 @@
 
             org.yaml.snakeyaml; version="1.16.0.wso2v1",
             org.yaml.snakeyaml.introspector; version="1.16.0.wso2v1",
-
+            org.wso2.carbon.kernel.*,
             org.wso2.carbon.identity.common.*;version="${carbon.identity.commons.version}",
             org.wso2.carbon.identity.event.*;version="${carbon.identity.commons.version}",
             org.wso2.carbon.identity.mgt.*; version="${carbon.identity.mgt.version}",
