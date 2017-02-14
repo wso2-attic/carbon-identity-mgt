@@ -95,6 +95,12 @@ public class SecurityQuestionPasswordRecoveryManager {
         return instance;
     }
 
+    /**
+     * To initiate challenge question based password recovery, answer questions one by one
+     * @param user User object
+     * @return ChallengeQuestionsResponse, with security question to be asked and recovery code
+     * @throws IdentityRecoveryException
+     */
     public ChallengeQuestionsResponse initiateUserChallengeQuestion(User user) throws IdentityRecoveryException {
 
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
@@ -176,6 +182,12 @@ public class SecurityQuestionPasswordRecoveryManager {
     }
 
 
+    /**
+     * To initiate challenge question based password recovery, answer questions at once
+     * @param user User object
+     * @return ChallengeQuestionsResponse, with security questions to be asked and recovery code
+     * @throws IdentityRecoveryException
+     */
     public ChallengeQuestionsResponse initiateUserChallengeQuestionAtOnce(User user) throws IdentityRecoveryException {
         String challengeQuestionSeparator = securityQuestionsConfig.getQuestionSeparator();
         String uniqueUserID = user.getUniqueUserId();
@@ -249,14 +261,21 @@ public class SecurityQuestionPasswordRecoveryManager {
         return challengeQuestionResponse;
     }
 
-
+    /**
+     * Validate user answers for the security question(s) asked for recovery
+     * @param userChallengeAnswer List of UserChallengeAnswers
+     * @param code recovery code sent in previous step
+     * @return ChallengeQuestionsResponse with recovery status,
+     * previously asked question(s) will be sent again in error scenarios
+     * if answer is valid, next question will be sent when answer questions one by one
+     * @throws IdentityRecoveryException
+     */
     public ChallengeQuestionsResponse validateUserChallengeQuestions(List<UserChallengeAnswer> userChallengeAnswer,
                                                                      String code) throws
             IdentityRecoveryException {
 
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         UserRecoveryData userRecoveryData = null;
-
 
         List<ChallengeQuestion> questions = new ArrayList<>();
         ChallengeQuestionsResponse challengeQuestionResponse = new ChallengeQuestionsResponse(questions);
@@ -439,11 +458,21 @@ public class SecurityQuestionPasswordRecoveryManager {
 //        }
 //    }
 
+    /**
+     * Validate requested questions with answered questions
+     * @param requestedQuestions list of questions asked, setIDs
+     * @param userChallengeAnswers list of questions answered
+     * @param userUniqueID unique ID of user
+     * @param challengeQuestionManager ChallengeQuestionManager instance
+     * @return List of asked questions
+     * @throws IdentityRecoveryException
+     */
     private List<ChallengeQuestion> validateQuestions(String[] requestedQuestions,
                                                       List<UserChallengeAnswer> userChallengeAnswers,
                                                       String userUniqueID,
                                                       ChallengeQuestionManager challengeQuestionManager)
             throws IdentityRecoveryException {
+
         List<String> userChallengeIds = new ArrayList<>();
         List<ChallengeQuestion> questions = new ArrayList<>();
 
@@ -451,24 +480,36 @@ public class SecurityQuestionPasswordRecoveryManager {
                 .toLowerCase()).collect(Collectors.toList()));
 
         for (int i = 0; i < requestedQuestions.length; i++) {
+            //check whether answered question is available in asked question
             if (!userChallengeIds.contains(StringUtils.lowerCase(requestedQuestions[i]))) {
                 throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
                         .ERROR_CODE_NEED_TO_ANSWER_TO_REQUESTED_QUESTIONS, null);
             } else {
+                //if answered question is in asked questions
                 String q = challengeQuestionManager.getUserChallengeQuestion(userUniqueID,
                         requestedQuestions[i]).getQuestion();
                 ChallengeQuestion question = new ChallengeQuestion(requestedQuestions[i], q);
                 questions.add(question);
             }
         }
+        //list of asked questions
         return questions;
     }
 
-    private ChallengeQuestion validateQuestion(String requestedQuestions,
+    /**
+     * Validate requested questions with answered question
+     * @param requestedQuestion asked question, setID
+     * @param userChallengeAnswer question answered
+     * @param userUniqueID unique ID of user
+     * @param challengeQuestionManager ChallengeQuestionManager instance
+     * @return asked question
+     * @throws IdentityRecoveryException
+     */
+    private ChallengeQuestion validateQuestion(String requestedQuestion,
                                                UserChallengeAnswer userChallengeAnswer,
                                                String userUniqueID, ChallengeQuestionManager challengeQuestionManager)
             throws IdentityRecoveryException {
-        if (!requestedQuestions.equals(userChallengeAnswer.getQuestion().getQuestionSetId())) {
+        if (!requestedQuestion.equals(userChallengeAnswer.getQuestion().getQuestionSetId())) {
             throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
                     .ERROR_CODE_NEED_TO_ANSWER_TO_ASKED_SECURITY_QUESTION, null);
         } else {
@@ -493,7 +534,12 @@ public class SecurityQuestionPasswordRecoveryManager {
 //        }
 //    }
 
-
+    /**
+     * Select rendom list from provided list
+     * @param allQuesitons all the questions user has answered
+     * @param minNoOfQuestionsToAnswser number of questions to be selected
+     * @return selected list of question setIDs
+     */
     private static String[] getRandomQuestionIds(String[] allQuesitons, int minNoOfQuestionsToAnswser) {
         ArrayList remainingQuestions = new ArrayList(Arrays.asList(allQuesitons));
         ArrayList selectedQuestions = new ArrayList();
