@@ -21,26 +21,34 @@
     <parent>
         <groupId>org.wso2.carbon.identity.mgt</groupId>
         <artifactId>carbon-identity-mgt-test-artifacts</artifactId>
-        <version>0.1.7-SNAPSHOT</version>
+        <version>0.1.11-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>identity-store-interceptor-test-artifact</artifactId>
+    <artifactId>identity-store-handler-test-artifact</artifactId>
     <packaging>bundle</packaging>
-    <name>WSO2 Carbon Identity Management - Test Identity Store Interceptor</name>
+    <name>WSO2 Carbon Identity Management - Test Identity Store Handler</name>
 
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon.identity.mgt</groupId>
             <artifactId>org.wso2.carbon.identity.mgt</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.commons</groupId>
+            <artifactId>org.wso2.carbon.identity.event</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.commons</groupId>
+            <artifactId>org.wso2.carbon.identity.commons</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>
-        <private.package>org.wso2.carbon.identity.mgt.test.identity.store.interceptor.internal</private.package>
+        <private.package>org.wso2.carbon.identity.mgt.test.identity.store.handler.internal</private.package>
         <export.package>
-            !org.wso2.carbon.identity.mgt.test.identity.store.interceptor.internal,
-            org.wso2.carbon.identity.mgt.test.identity.store.interceptor.*
+            !org.wso2.carbon.identity.mgt.test.identity.store.handler.internal,
+            org.wso2.carbon.identity.mgt.test.identity.store.handler.*
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",
@@ -48,15 +56,12 @@
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
             javax.security.auth.*,
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
-            org.wso2.carbon.identity.mgt.*;version="${org.wso2.carbon.identity.mgt.version.range}"
+            org.wso2.carbon.identity.mgt.*;version="${org.wso2.carbon.identity.mgt.version.range}",
+            org.wso2.carbon.identity.common.*;version="${org.wso2.carbon.identity.common.version.range}",
+            org.wso2.carbon.identity.event.*;version="${org.wso2.carbon.identity.common.version.range}",
         </import.package>
 
         <dsannotations>*</dsannotations>
-
-        <carbon.component>
-            osgi.service;
-            objectClass="org.wso2.carbon.identity.mgt.interceptor.IdentityStoreInterceptor"
-        </carbon.component>
 
         <!-- OSGi API version range-->
         <osgi.framework.package.import.version.range>[1.8.0, 2.0.0)</osgi.framework.package.import.version.range>
@@ -65,6 +70,7 @@
         <org.osgi.service.component.annotations.version.range>[1.2.0, 1.3.0)
         </org.osgi.service.component.annotations.version.range>
         <org.wso2.carbon.identity.mgt.version.range>[0.1.0, 1.0.0)</org.wso2.carbon.identity.mgt.version.range>
+        <org.wso2.carbon.identity.common.version.range>[0.1.0, 1.0.0)</org.wso2.carbon.identity.common.version.range>
 
         <!-- Dependency package version ranges -->
 

@@ -136,8 +136,8 @@ public class StoreConstants {
         public static final String POST_ADD_USER_BY_DOMAIN = "POST_ADD_USER_BY_DOMAIN";
         public static final String PRE_ADD_USERS = "PRE_ADD_USERS";
         public static final String POST_ADD_USERS = "POST_ADD_USERS";
-        public static final String PRE_ADD_USERS_BY_DOMAIN = "PRE_ADD_USERS_POST_ADD_USER_BY_DOMAIN";
-        public static final String POST_ADD_USERS_BY_DOMAIN = "PRE_ADD_USERS_PRE_ADD_USER_BY_DOMAIN";
+        public static final String PRE_ADD_USERS_BY_DOMAIN = "PRE_ADD_USERS_BY_DOMAIN";
+        public static final String POST_ADD_USERS_BY_DOMAIN = "POST_ADD_USERS_BY_DOMAIN";
 
         public static final String PRE_UPDATE_USER_CLAIMS_PUT = "PRE_UPDATE_USER_CLAIMS_PUT";
         public static final String POST_UPDATE_USER_CLAIMS_PUT = "POST_UPDATE_USER_CLAIMS_PUT";
