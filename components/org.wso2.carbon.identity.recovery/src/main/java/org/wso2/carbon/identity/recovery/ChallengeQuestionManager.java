@@ -290,7 +290,7 @@ public class ChallengeQuestionManager {
     }
 
 
-    public String[] getUserChallengeQuestionIds(User user) throws IdentityRecoveryException {
+    public List<String> getUserChallengeQuestionIds(User user) throws IdentityRecoveryException {
 
         validateUser(user);
 
@@ -304,10 +304,8 @@ public class ChallengeQuestionManager {
             if (log.isDebugEnabled()) {
                 log.debug(msg);
             }
-            return new String[0];
         }
-        String[] urls = new String[challengesUris.size()];
-        return challengesUris.toArray(urls);
+        return challengesUris;
 
     }
 

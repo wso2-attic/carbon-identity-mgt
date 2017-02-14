@@ -45,12 +45,14 @@ import org.wso2.carbon.identity.recovery.model.UserRecoveryData;
 import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
 import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
 import org.wso2.carbon.identity.recovery.util.Utils;
+import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+
 import java.util.stream.Collectors;
 
 //import org.wso2.carbon.base.MultitenantConstants;
@@ -134,32 +136,26 @@ public class SecurityQuestionPasswordRecoveryManager {
         int minNoOfQuestionsToAnswer = securityQuestionsConfig.getMinAnswers(); //TODO get from config bean
 
         ChallengeQuestionManager challengeQuestionManager = ChallengeQuestionManager.getInstance();
-        String[] ids = challengeQuestionManager.getUserChallengeQuestionIds(user);
+        List<String> ids = challengeQuestionManager.getUserChallengeQuestionIds(user);
         //TODO change to list
 
-        if (ids == null || ids.length == 0) {
+        if (ids.isEmpty()) {
             return new ChallengeQuestionsResponse(new ArrayList<>());
         }
 
         //when user has more than required number of security questions answered
-        if (ids.length > minNoOfQuestionsToAnswer) {
+        if (ids.size() > minNoOfQuestionsToAnswer) {
             ids = getRandomQuestionIds(ids, minNoOfQuestionsToAnswer);
         }
 
-        String metaData = null;
+//        String metaData = null;
 
         //generate selected list of security question
-        for (int i = 0; i < ids.length; i++) {
-            if (i == 0) {
-                metaData = ids[0];
-            } else {
-                metaData = metaData + challengeQuestionSeparator + ids[i];
-            }
-        }
+        String metaData = String.join(challengeQuestionSeparator, ids);
 
         //get first question
         ChallengeQuestion userChallengeQuestion = challengeQuestionManager.getUserChallengeQuestion(user
-                .getUniqueUserId(), ids[0]);
+                .getUniqueUserId(), ids.get(0));
         List<ChallengeQuestion> questions = new ArrayList<>();
         questions.add(userChallengeQuestion);
         ChallengeQuestionsResponse challengeQuestionsResponse = new ChallengeQuestionsResponse(questions);
@@ -174,7 +170,7 @@ public class SecurityQuestionPasswordRecoveryManager {
         recoveryData.setRemainingSetIds(metaData);
         userRecoveryDataStore.store(recoveryData);
 
-        if (ids.length > 1) {
+        if (ids.size() > 1) {
             challengeQuestionsResponse.setStatus(IdentityRecoveryConstants.RECOVERY_STATUS_INCOMPLETE);
         }
 
@@ -221,30 +217,26 @@ public class SecurityQuestionPasswordRecoveryManager {
         int minNoOfQuestionsToAnswer = securityQuestionsConfig.getMinAnswers();
 
         ChallengeQuestionManager challengeQuestionManager = ChallengeQuestionManager.getInstance();
-        String[] ids = challengeQuestionManager.getUserChallengeQuestionIds(user);
+        List<String> ids = challengeQuestionManager.getUserChallengeQuestionIds(user);
 
-        if (ids == null || ids.length == 0) {
+        if (ids.isEmpty()) {
             //When no security questions are answered by the user
             return new ChallengeQuestionsResponse(new ArrayList<>());
         }
 
         //when user has more than required number of security questions answered
-        if (ids.length > minNoOfQuestionsToAnswer) {
+        if (ids.size() > minNoOfQuestionsToAnswer) {
             ids = getRandomQuestionIds(ids, minNoOfQuestionsToAnswer);
         }
 
-        List<ChallengeQuestion> randomQuestions = new ArrayList<>();
+        List<ChallengeQuestion> randomQuestions;
 
         //select random set of security questions to be answered
-        String allChallengeQuestions = null;
-        for (int i = 0; i < ids.length; i++) {
-            randomQuestions.add(challengeQuestionManager.getUserChallengeQuestion(user.getUniqueUserId(), ids[i]));
-            if (i == 0) {
-                allChallengeQuestions = ids[0];
-            } else {
-                allChallengeQuestions = allChallengeQuestions + challengeQuestionSeparator + ids[i];
-            }
-        }
+        String allChallengeQuestions = String.join(challengeQuestionSeparator, ids);
+
+        randomQuestions = ids.stream().map(LambdaExceptionUtils.rethrowFunction(id-> challengeQuestionManager
+                .getUserChallengeQuestion(user
+                .getUniqueUserId(), id))).collect(Collectors.toList());
 
         ChallengeQuestionsResponse challengeQuestionResponse = new ChallengeQuestionsResponse(randomQuestions);
 
@@ -335,19 +327,14 @@ public class SecurityQuestionPasswordRecoveryManager {
                     UserRecoveryData recoveryData = new UserRecoveryData(userRecoveryData.getUserUniqueId(),
                             secretKey, RecoveryScenarios.QUESTION_BASED_PW_RECOVERY);
 
-                    String remainingSetIds = userRecoveryData.getRemainingSetIds();
+                    String remainingSetIds;
+                    List<String> ids = new ArrayList<>(Arrays.asList(remainingQuestionIds));
 
                     //if there are more questions to be answered
-                    if (remainingQuestionIds.length > 1) {
+                    if (ids.size() > 1) {
                         //update remaining questions list
-                        for (int i = 1; i < remainingQuestionIds.length; i++) {
-                            if (i == 1) {
-                                remainingSetIds = remainingQuestionIds[1];
-                            } else {
-                                remainingSetIds = remainingSetIds + challengeQuestionSeparator +
-                                        remainingQuestionIds[i];
-                            }
-                        }
+                        ids.remove(0);
+                        remainingSetIds = String.join(challengeQuestionSeparator, ids);
                         //next question to be asked
                         ChallengeQuestion challengeQuestion = challengeQuestionManager.getUserChallengeQuestion
                                 (userRecoveryData.getUserUniqueId(), remainingQuestionIds[1]);
@@ -536,20 +523,20 @@ public class SecurityQuestionPasswordRecoveryManager {
 
     /**
      * Select rendom list from provided list
-     * @param allQuesitons all the questions user has answered
+     * @param remainingQuestions all the questions user has answered
      * @param minNoOfQuestionsToAnswser number of questions to be selected
      * @return selected list of question setIDs
      */
-    private static String[] getRandomQuestionIds(String[] allQuesitons, int minNoOfQuestionsToAnswser) {
-        ArrayList remainingQuestions = new ArrayList(Arrays.asList(allQuesitons));
-        ArrayList selectedQuestions = new ArrayList();
+    private static List<String> getRandomQuestionIds(List<String> remainingQuestions, int minNoOfQuestionsToAnswser) {
+       // ArrayList remainingQuestions = new ArrayList(allQuesitons);
+        List<String> selectedQuestions = new ArrayList<>();
 
         for (int i = 0; i < minNoOfQuestionsToAnswser; i++) {
             int random = new Random().nextInt(remainingQuestions.size());
             selectedQuestions.add(i, remainingQuestions.get(random));
             remainingQuestions.remove(random);
         }
-        return (String[]) selectedQuestions.toArray(new String[selectedQuestions.size()]);
+        return selectedQuestions;
     }
 
 //    private void triggerNotification(User user, String type, String code) throws IdentityRecoveryException {
