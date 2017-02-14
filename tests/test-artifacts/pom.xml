@@ -30,6 +30,7 @@
 
     <modules>
         <module>in-memory-connectors-test-artifact</module>
+        <module>identity-store-handler-test-artifact</module>
     </modules>
 
 </project>

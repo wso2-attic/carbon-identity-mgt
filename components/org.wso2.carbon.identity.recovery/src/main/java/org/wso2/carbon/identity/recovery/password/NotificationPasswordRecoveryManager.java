@@ -19,10 +19,10 @@ package org.wso2.carbon.identity.recovery.password;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.identity.common.base.event.EventContext;
+import org.wso2.carbon.identity.common.base.event.model.Event;
+import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.event.EventConstants;
-import org.wso2.carbon.identity.event.EventException;
-import org.wso2.carbon.identity.event.EventMessageContext;
-import org.wso2.carbon.identity.event.model.Event;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
@@ -161,11 +161,12 @@ public class NotificationPasswordRecoveryManager {
 
         properties.put(IdentityRecoveryConstants.TEMPLATE_TYPE, type);
         Event identityMgtEvent = new Event(eventName, properties);
-        EventMessageContext eventMessageContext = new EventMessageContext(identityMgtEvent);
+        EventContext eventContext = new EventContext(null);
 
         try {
-            IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().handleEvent(eventMessageContext);
-        } catch (EventException e) {
+            IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().pushEvent(identityMgtEvent,
+                                                                                                eventContext);
+        } catch (IdentityException e) {
             throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION,
                     userUniqueId, e);
         }
