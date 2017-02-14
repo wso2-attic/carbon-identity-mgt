@@ -188,8 +188,8 @@ public class ChallengeQuestionManager {
     /**
      * Get challenge questions answered by a user.
      *
-     * @param uniqueUserID
-     * @return
+     * @param uniqueUserID unique ID of the user
+     * @return List of User Challengeanswer
      */
     public List<UserChallengeAnswer> getChallengeAnswersOfUser(String uniqueUserID) throws IdentityRecoveryException {
 
@@ -249,9 +249,9 @@ public class ChallengeQuestionManager {
     /**
      * Retrieve the challenge question answered from a particular challenge question set.
      *
-     * @param user
+     * @param uniqueUserID unique ID of the user
      * @param challengesUri claim uri of the challenge set
-     * @return
+     * @return ChallengeQuestion of the requested claim
      * @throws IdentityRecoveryException
      */
     public ChallengeQuestion getUserChallengeQuestion(String uniqueUserID, String challengesUri)
@@ -314,8 +314,8 @@ public class ChallengeQuestionManager {
     /**
      * Get the claims URIs of the challenge sets answered by the user.
      *
-     * @param userID
-     * @return
+     * @param uniqueUserID unique ID of the user
+     * @return String list of challenge question URIs
      */
     public List<String> getChallengeQuestionUris(String uniqueUserID)
             throws IdentityRecoveryException {
@@ -451,10 +451,10 @@ public class ChallengeQuestionManager {
         }
     }
 
-    /**
-     * @param uniqueUserID
-     * @param userChallengeAnswers
-     * @return
+    /**  Verify whether the provided user challenge answers for the challenge questions are correct
+     * @param uniqueUserID unique ID of the user
+     * @param userChallengeAnswers List of user ChallenegeAnswer
+     * @return true if user answers are correct, false otherwise
      */
     public boolean verifyChallengeAnswer(String uniqueUserID, List<UserChallengeAnswer> userChallengeAnswers)
             throws IdentityRecoveryException {
@@ -501,6 +501,12 @@ public class ChallengeQuestionManager {
         return verification;
     }
 
+    /**
+     * Verify whether the provided user challenge answer for the challenge question is correct
+     * @param uniqueUserID unique ID of the user
+     * @param userChallengeAnswer user's ChallenegeAnswer
+     * @return true if user answer is correct, false otherwise
+     */
     public boolean verifyUserChallengeAnswer(String uniqueUserID, UserChallengeAnswer userChallengeAnswer)
             throws IdentityRecoveryException {
 

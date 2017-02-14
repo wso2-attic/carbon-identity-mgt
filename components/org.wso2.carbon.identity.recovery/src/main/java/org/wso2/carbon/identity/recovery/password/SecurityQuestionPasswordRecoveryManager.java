@@ -97,31 +97,10 @@ public class SecurityQuestionPasswordRecoveryManager {
 
     public ChallengeQuestionsResponse initiateUserChallengeQuestion(User user) throws IdentityRecoveryException {
 
-
-//        boolean isNotificationInternallyManaged = Boolean.parseBoolean(Utils.getRecoveryConfigs
-//                (IdentityRecoveryConstants.ConnectorConfig.NOTIFICATION_INTERNALLY_MANAGE, user.getTenantDomain()));
-//      boolean isNotificationInternallyManaged = true;//TODO get from config bean
-
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         userRecoveryDataStore.invalidateByUserUniqueId(user.getUniqueUserId());
 
         String challengeQuestionSeparator = securityQuestionsConfig.getQuestionSeparator();
-
-//        int tenantId = IdentityTenantUtil.getTenantId(user.getTenantDomain());
-//        UserStoreManager userStoreManager;
-//        try {
-//            userStoreManager = IdentityRecoveryServiceDataHolder.getInstance().getRealmService().
-//                    getTenantUserRealm(tenantId).getUserStoreManager();
-//            String domainQualifiedUsername = IdentityUtil.addDomainToName(user.getUserName(),
-// user.getUserStoreDomain());
-//            if (!userStoreManager.isExistingUser(domainQualifiedUsername)) {
-//                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_INVALID_USER,
-//                        domainQualifiedUsername);
-//            }
-//
-//        } catch (UserStoreException e) {
-//            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED, null);
-//        }
 
         //TODO Check account lock and account disable
 //        if (Utils.isAccountDisabled(user)) {
@@ -132,6 +111,8 @@ public class SecurityQuestionPasswordRecoveryManager {
 //                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_LOCKED_ACCOUNT, user.getUserName());
 //        }
 
+        //TODO notification sending
+//      boolean isNotificationInternallyManaged = true;//TODO get from config bean
 //        boolean isNotificationSendWhenInitiatingPWRecovery= false; //TODO get from config bean
 
 //        if (isNotificationInternallyManaged && isNotificationSendWhenInitiatingPWRecovery) {
@@ -151,16 +132,17 @@ public class SecurityQuestionPasswordRecoveryManager {
         //TODO change to list
 
         if (ids == null || ids.length == 0) {
-            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-                    .ERROR_CODE_CHALLENGE_QUESTION_NOT_FOUND, user.getUniqueUserId());
+            return new ChallengeQuestionsResponse(new ArrayList<>());
         }
 
+        //when user has more than required number of security questions answered
         if (ids.length > minNoOfQuestionsToAnswer) {
             ids = getRandomQuestionIds(ids, minNoOfQuestionsToAnswer);
         }
 
         String metaData = null;
 
+        //generate selected list of security question
         for (int i = 0; i < ids.length; i++) {
             if (i == 0) {
                 metaData = ids[0];
@@ -169,24 +151,27 @@ public class SecurityQuestionPasswordRecoveryManager {
             }
         }
 
+        //get first question
         ChallengeQuestion userChallengeQuestion = challengeQuestionManager.getUserChallengeQuestion(user
                 .getUniqueUserId(), ids[0]);
         List<ChallengeQuestion> questions = new ArrayList<>();
         questions.add(userChallengeQuestion);
         ChallengeQuestionsResponse challengeQuestionsResponse = new ChallengeQuestionsResponse(questions);
 
+        //get recovery code
         String secretKey = UUID.randomUUID().toString();
+        challengeQuestionsResponse.setCode(secretKey);
+
+        //construct and store user recovery data
         UserRecoveryData recoveryData = new UserRecoveryData(user.getUniqueUserId(), secretKey, RecoveryScenarios
                 .QUESTION_BASED_PW_RECOVERY, RecoverySteps.VALIDATE_CHALLENGE_QUESTION);
         recoveryData.setRemainingSetIds(metaData);
-
-        challengeQuestionsResponse.setCode(secretKey);
+        userRecoveryDataStore.store(recoveryData);
 
         if (ids.length > 1) {
             challengeQuestionsResponse.setStatus(IdentityRecoveryConstants.RECOVERY_STATUS_INCOMPLETE);
         }
 
-        userRecoveryDataStore.store(recoveryData);
         return challengeQuestionsResponse;
     }
 
@@ -194,9 +179,6 @@ public class SecurityQuestionPasswordRecoveryManager {
     public ChallengeQuestionsResponse initiateUserChallengeQuestionAtOnce(User user) throws IdentityRecoveryException {
         String challengeQuestionSeparator = securityQuestionsConfig.getQuestionSeparator();
         String uniqueUserID = user.getUniqueUserId();
-
-//        boolean isNotificationInternallyManaged = true; //TODO read from config bean
-
 
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         userRecoveryDataStore.invalidateByUserUniqueId(uniqueUserID);
@@ -210,6 +192,8 @@ public class SecurityQuestionPasswordRecoveryManager {
 //                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_LOCKED_ACCOUNT, null);
 //        }
 
+        //TODO notification sending
+        //        boolean isNotificationInternallyManaged = true; //TODO read from config bean
 //        boolean isNotificationSendWhenInitiatingPWRecovery= false; //TODO read from config bean
 //
 //        if (isNotificationInternallyManaged && isNotificationSendWhenInitiatingPWRecovery) {
@@ -222,28 +206,25 @@ public class SecurityQuestionPasswordRecoveryManager {
 //            }
 //        }
 
-        int minNoOfQuestionsToAnswer = securityQuestionsConfig.getMinAnswers(); //TODO read from config bean
+        int minNoOfQuestionsToAnswer = securityQuestionsConfig.getMinAnswers();
 
         ChallengeQuestionManager challengeQuestionManager = ChallengeQuestionManager.getInstance();
         String[] ids = challengeQuestionManager.getUserChallengeQuestionIds(user);
 
         if (ids == null || ids.length == 0) {
-//            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-//                    .ERROR_CODE_CHALLENGE_QUESTION_NOT_FOUND, user.getUniqueUserId());
+            //When no security questions are answered by the user
             return new ChallengeQuestionsResponse(new ArrayList<>());
         }
 
-
+        //when user has more than required number of security questions answered
         if (ids.length > minNoOfQuestionsToAnswer) {
             ids = getRandomQuestionIds(ids, minNoOfQuestionsToAnswer);
         }
 
-//        ChallengeQuestion questions[] = new ChallengeQuestion[ids.length];
         List<ChallengeQuestion> randomQuestions = new ArrayList<>();
 
+        //select random set of security questions to be answered
         String allChallengeQuestions = null;
-//        for (String id : ids) {
-//            randomQuestions.add(challengeQuestionManager.getUserChallengeQuestion(user, id));
         for (int i = 0; i < ids.length; i++) {
             randomQuestions.add(challengeQuestionManager.getUserChallengeQuestion(user.getUniqueUserId(), ids[i]));
             if (i == 0) {
@@ -253,100 +234,21 @@ public class SecurityQuestionPasswordRecoveryManager {
             }
         }
 
-//        }
-//        ChallengeQuestionsResponse challengeQuestionResponse = new ChallengeQuestionsResponse(questions);
         ChallengeQuestionsResponse challengeQuestionResponse = new ChallengeQuestionsResponse(randomQuestions);
 
+        //recovery code
         String secretKey = UUID.randomUUID().toString();
+        challengeQuestionResponse.setCode(secretKey);
+
+        //construct and store user recovery data
         UserRecoveryData recoveryData = new UserRecoveryData(uniqueUserID, secretKey, RecoveryScenarios
                 .QUESTION_BASED_PW_RECOVERY, RecoverySteps.VALIDATE_ALL_CHALLENGE_QUESTIONS);
         recoveryData.setRemainingSetIds(allChallengeQuestions);
-
-        challengeQuestionResponse.setCode(secretKey);
         userRecoveryDataStore.store(recoveryData);
+
         return challengeQuestionResponse;
     }
 
-
-    //TODO new method
-//    public ChallengeQuestionResponse validateUserChallengeQuestionAnswers(User user,
-//              List<UserChallengeAnswer> userChallengeAnswers, String code) throws IdentityRecoveryException {
-//
-//        UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
-//        UserRecoveryData userRecoveryData = userRecoveryDataStore.loadByCode(code);
-//        //if return data from load, it means the code is validated. Otherwise it returns exceptions.
-//
-//        try {
-//            if (userChallengeAnswers == null) {
-//                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-//                        .ERROR_CODE_CHALLENGE_QUESTION_NOT_FOUND, null);
-//            }
-//
-//            String challengeQuestionSeparator = securityQuestionsConfig.getQuestionSeparator();
-//
-//            if (RecoverySteps.VALIDATE_ALL_CHALLENGE_QUESTIONS.equals(userRecoveryData.getRecoveryStep())) {
-//                String allChallengeQuestions = userRecoveryData.getRemainingSetIds();
-//
-//                if (StringUtils.isNotBlank(allChallengeQuestions)) {
-//                    String[] requestedQuestions = allChallengeQuestions.split(challengeQuestionSeparator);
-//
-//                    if (requestedQuestions.length != userChallengeAnswers.size()) {
-//                        throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-//                                .ERROR_CODE_NEED_TO_ANSWER_TO_REQUESTED_QUESTIONS, null);
-//                    }
-//                    validateQuestion(requestedQuestions, userChallengeAnswers);
-//                    //Validate whether user answered all the requested questions
-//
-//                } else {
-//                    throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-//                            .ERROR_CODE_CHALLENGE_QUESTION_NOT_FOUND, null);
-//                }
-//                ChallengeQuestionManager challengeQuestionManager = ChallengeQuestionManager.getInstance();
-//
-//                for (UserChallengeAnswer answer : userChallengeAnswers) {
-//                    boolean verified = challengeQuestionManager.verifyUserChallengeAnswer(user, answer);
-//                    if (!verified) {
-////                    handleAnswerVerificationFail(userRecoveryData.getUser());
-//                        throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-//                                .ERROR_CODE_INVALID_ANSWER_FOR_SECURITY_QUESTION, null);
-//                    }
-//                }
-//
-////                for (int i = 0; i < userChallengeAnswers.size(); i++) {
-////                    boolean verified = challengeQuestionManager.verifyUserChallengeAnswer(user,
-////                            userChallengeAnswer[i]);
-////                    if (!verified) {
-//////                    handleAnswerVerificationFail(userRecoveryData.getUser());
-////                        throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-////                                .ERROR_CODE_INVALID_ANSWER_FOR_SECURITY_QUESTION, null);
-////                    }
-////                }
-//
-//                // Reset password recovery failed attempts
-////                resetRecoveryPasswordFailedAttempts(userRecoveryData.getUser());
-//
-//                userRecoveryDataStore.invalidateByCode(code);
-//                ChallengeQuestionResponse challengeQuestionResponse = new ChallengeQuestionResponse();
-//                String secretKey = UUID.randomUUID().toString();
-//                challengeQuestionResponse.setCode(secretKey);
-//                challengeQuestionResponse.setStatus(IdentityRecoveryConstants.RECOVERY_STATUS_COMPLETE);
-//                UserRecoveryData recoveryData = new UserRecoveryData(user.getUniqueUserId(), secretKey,
-//                        RecoveryScenarios.QUESTION_BASED_PW_RECOVERY);
-//
-//                recoveryData.setRecoveryStep(RecoverySteps.UPDATE_PASSWORD);
-//
-//                userRecoveryDataStore.store(recoveryData);
-//
-//                return challengeQuestionResponse;
-//            } else {
-//                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-//                        .ERROR_CODE_INVALID_CODE, null);
-//            }
-//        } catch (IdentityRecoveryClientException e) {
-//            //handleAnswerVerificationFail(user);
-//            throw e;
-//        }
-//    }
 
     public ChallengeQuestionsResponse validateUserChallengeQuestions(List<UserChallengeAnswer> userChallengeAnswer,
                                                                      String code) throws
@@ -355,23 +257,20 @@ public class SecurityQuestionPasswordRecoveryManager {
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         UserRecoveryData userRecoveryData = null;
 
-        //if return data from load, it means the code is validated. Otherwise it returns exceptions.
+
         List<ChallengeQuestion> questions = new ArrayList<>();
         ChallengeQuestionsResponse challengeQuestionResponse = new ChallengeQuestionsResponse(questions);
 
         String challengeQuestionSeparator = securityQuestionsConfig.getQuestionSeparator();
 
-        if (StringUtils.isEmpty(challengeQuestionSeparator)) {
-            challengeQuestionSeparator = IdentityRecoveryConstants.DEFAULT_CHALLENGE_QUESTION_SEPARATOR;
-        }
-
+        //load recovery data using provided code
+        //if return data from load, it means the code is validated. Otherwise it returns exceptions.
         try {
             userRecoveryData = userRecoveryDataStore.loadByCode(code);
         } catch (IdentityRecoveryException e) {
             log.error("Error while loading recovery data with code " + code, e);
             String errorCode = !StringUtils.isEmpty(e.getErrorCode()) ? e.getErrorCode() : IdentityRecoveryConstants
-                    .ErrorMessages
-                    .ERROR_CODE_UNEXPECTED.getCode();
+                    .ErrorMessages.ERROR_CODE_UNEXPECTED.getCode();
             challengeQuestionResponse.setCode(code);
             challengeQuestionResponse.setStatus(errorCode);
             return challengeQuestionResponse;
@@ -382,13 +281,13 @@ public class SecurityQuestionPasswordRecoveryManager {
 
         ChallengeQuestionManager challengeQuestionManager = ChallengeQuestionManager.getInstance();
 
-
         try {
             if (userChallengeAnswer == null) {
                 throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
                         .ERROR_CODE_CHALLENGE_QUESTION_NOT_FOUND, null);
             }
 
+            //if validate security questions one by one
             if (RecoverySteps.VALIDATE_CHALLENGE_QUESTION.equals(userRecoveryData.getRecoveryStep())) {
 
                 if (userChallengeAnswer.size() > 1) {
@@ -396,25 +295,32 @@ public class SecurityQuestionPasswordRecoveryManager {
                             .ERROR_CODE_MULTIPLE_QUESTION_NOT_ALLOWED, null);
                 }
 
+                //match first question of remaining questions to be answered(asked question), with answered question
+                //exception will be thrown if answered to other question
                 String[] remainingQuestionIds = userRecoveryData.getRemainingSetIds().split(challengeQuestionSeparator);
                 questions.add(validateQuestion(remainingQuestionIds[0], userChallengeAnswer.get(0),
-                        userRecoveryData.getUserUniqueId(),
-                        challengeQuestionManager));
+                        userRecoveryData.getUserUniqueId(), challengeQuestionManager));
+
                 challengeQuestionResponse.setQuestions(questions);
 
+                //verify users answer
                 boolean verified = challengeQuestionManager.verifyUserChallengeAnswer(userRecoveryData
                         .getUserUniqueId(), userChallengeAnswer.get(0));
+
                 if (verified) {
                     userRecoveryDataStore.invalidateByCode(code);
                     secretKey = UUID.randomUUID().toString();
                     challengeQuestionResponse.setCode(secretKey);
 
+                    //construct new user recovery data
                     UserRecoveryData recoveryData = new UserRecoveryData(userRecoveryData.getUserUniqueId(),
                             secretKey, RecoveryScenarios.QUESTION_BASED_PW_RECOVERY);
 
                     String remainingSetIds = userRecoveryData.getRemainingSetIds();
 
+                    //if there are more questions to be answered
                     if (remainingQuestionIds.length > 1) {
+                        //update remaining questions list
                         for (int i = 1; i < remainingQuestionIds.length; i++) {
                             if (i == 1) {
                                 remainingSetIds = remainingQuestionIds[1];
@@ -423,11 +329,14 @@ public class SecurityQuestionPasswordRecoveryManager {
                                         remainingQuestionIds[i];
                             }
                         }
+                        //next question to be asked
                         ChallengeQuestion challengeQuestion = challengeQuestionManager.getUserChallengeQuestion
                                 (userRecoveryData.getUserUniqueId(), remainingQuestionIds[1]);
                         questions.remove(0);
                         questions.add(challengeQuestion);
                         challengeQuestionResponse.setQuestions(questions);
+
+                        //update user recovery data
                         recoveryData.setRecoveryStep(RecoverySteps.VALIDATE_CHALLENGE_QUESTION);
                         challengeQuestionResponse.setStatus(IdentityRecoveryConstants.RECOVERY_STATUS_INCOMPLETE);
                         recoveryData.setRemainingSetIds(remainingSetIds);
@@ -438,6 +347,7 @@ public class SecurityQuestionPasswordRecoveryManager {
                         challengeQuestionResponse.setStatus(IdentityRecoveryConstants.RECOVERY_STATUS_COMPLETE);
                     }
 
+                    //store user recovery data
                     userRecoveryDataStore.store(recoveryData);
 
                     //TODO Reset password recovery failed attempts
@@ -445,14 +355,18 @@ public class SecurityQuestionPasswordRecoveryManager {
 
                     return challengeQuestionResponse;
                 } else {
+                    //TODO handle recovery failed attempts
                     challengeQuestionResponse.setStatus(IdentityRecoveryConstants.ErrorMessages
                             .ERROR_CODE_INVALID_ANSWER_FOR_SECURITY_QUESTION.getCode());
                     return challengeQuestionResponse;
                 }
 
             } else if (RecoverySteps.VALIDATE_ALL_CHALLENGE_QUESTIONS.equals(userRecoveryData.getRecoveryStep())) {
+                //validate all the questions at once
+
                 String allChallengeQuestions = userRecoveryData.getRemainingSetIds();
 
+                //validate asked questions with answered questions
                 if (StringUtils.isNotBlank(allChallengeQuestions)) {
                     String[] requestedQuestions = allChallengeQuestions.split(challengeQuestionSeparator);
 
@@ -460,10 +374,9 @@ public class SecurityQuestionPasswordRecoveryManager {
                         throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
                                 .ERROR_CODE_NEED_TO_ANSWER_TO_REQUESTED_QUESTIONS, null);
                     }
-//                    validateQuestion(requestedQuestions, userChallengeAnswer);
+
                     questions = validateQuestions(requestedQuestions, userChallengeAnswer,
-                            userRecoveryData.getUserUniqueId(),
-                            challengeQuestionManager);
+                            userRecoveryData.getUserUniqueId(), challengeQuestionManager);
                     challengeQuestionResponse.setQuestions(questions);
                     //Validate whether user answered all the requested questions
 
@@ -471,16 +384,16 @@ public class SecurityQuestionPasswordRecoveryManager {
                     throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
                             .ERROR_CODE_CHALLENGE_QUESTION_NOT_FOUND, null);
                 }
+                //verify user answered for the questions
                 for (int i = 0; i < userChallengeAnswer.size(); i++) {
                     boolean verified = challengeQuestionManager.verifyUserChallengeAnswer(userRecoveryData
                             .getUserUniqueId(), userChallengeAnswer.get(i));
                     if (!verified) {
-//                    handleAnswerVerificationFail(userRecoveryData.getUser());
+                        //TODO
+                        //handleAnswerVerificationFail(userRecoveryData.getUser());
                         challengeQuestionResponse.setStatus(IdentityRecoveryConstants.ErrorMessages
                                 .ERROR_CODE_INVALID_ANSWER_FOR_SECURITY_QUESTION.getCode());
                         return challengeQuestionResponse;
-//                        throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-//                                .ERROR_CODE_INVALID_ANSWER_FOR_SECURITY_QUESTION, null);
                     }
                 }
 
@@ -488,7 +401,6 @@ public class SecurityQuestionPasswordRecoveryManager {
                 //resetRecoveryPasswordFailedAttempts(userRecoveryData.getUser());
 
                 userRecoveryDataStore.invalidateByCode(code);
-//                ChallengeQuestionResponse challengeQuestionResponse = new ChallengeQuestionResponse();
                 secretKey = UUID.randomUUID().toString();
                 challengeQuestionResponse.setCode(secretKey);
                 challengeQuestionResponse.setStatus(IdentityRecoveryConstants.RECOVERY_STATUS_COMPLETE);
@@ -534,9 +446,7 @@ public class SecurityQuestionPasswordRecoveryManager {
             throws IdentityRecoveryException {
         List<String> userChallengeIds = new ArrayList<>();
         List<ChallengeQuestion> questions = new ArrayList<>();
-//        for (int i = 0; i < userChallengeAnswer.length; i++) {
-//            userChallengeIds.add(userChallengeAnswer[i].getQuestion().getQuestionSetId().toLowerCase());
-//        }
+
         userChallengeIds.addAll(userChallengeAnswers.stream().map(answer -> answer.getQuestion().getQuestionSetId()
                 .toLowerCase()).collect(Collectors.toList()));
 
