@@ -115,13 +115,13 @@ public class Utils {
     /**
      * Get user claim value from identity store manager
      *
-     * @param user
+     * @param uniqueUserID
      * @param claimuri
      * @return
      * @throws IdentityStoreException
      * @throws UserNotFoundException
      */
-    public static String getClaimFromIdentityStore(User user, String claimuri)
+    public static String getClaimFromIdentityStore(String uniqueUserID, String claimuri)
             throws IdentityStoreException, UserNotFoundException {
 
         RealmService realmService = IdentityRecoveryServiceDataHolder.getInstance().getRealmService();
@@ -129,7 +129,7 @@ public class Utils {
         String claimValue = "";
 
         if (identityStore != null) {
-            List<Claim> claimsList = identityStore.getClaimsOfUser(user.getUniqueUserId());
+            List<Claim> claimsList = identityStore.getClaimsOfUser(uniqueUserID);
             if (claimsList != null && !claimsList.isEmpty()) {
                 for (Claim claim : claimsList) {
                     if (claim.getClaimUri().equals(claimuri)) {
@@ -316,7 +316,7 @@ public class Utils {
 
         try {
             return Boolean.parseBoolean(
-                    getClaimFromIdentityStore(user, IdentityRecoveryConstants.ACCOUNT_LOCKED_CLAIM));
+                    getClaimFromIdentityStore(user.getUniqueUserId(), IdentityRecoveryConstants.ACCOUNT_LOCKED_CLAIM));
         } catch (IdentityStoreException e) {
             throw Utils.handleServerException(
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
@@ -331,7 +331,8 @@ public class Utils {
 
         try {
             return Boolean.parseBoolean(
-                    getClaimFromIdentityStore(user, IdentityRecoveryConstants.ACCOUNT_DISABLED_CLAIM));
+                    getClaimFromIdentityStore(user.getUniqueUserId(),
+                            IdentityRecoveryConstants.ACCOUNT_DISABLED_CLAIM));
         } catch (IdentityStoreException e) {
             throw Utils.handleServerException(
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);

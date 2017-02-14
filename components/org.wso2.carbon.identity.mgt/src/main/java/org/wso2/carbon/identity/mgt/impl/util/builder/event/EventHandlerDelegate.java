@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.event;
+package org.wso2.carbon.identity.mgt.impl.util.builder.event;
 
-import org.wso2.carbon.identity.common.base.event.EventContext;
-import org.wso2.carbon.identity.common.base.event.model.Event;
 
 /**
- * Identity management message context.
+ * Functional interface to be used to execute the main logic in the interceptor after firing PRE-events
+ * and before firing POST-events.
+ * @param <T> Handler delegate type.
  */
-public class IdentityMgtMessageContext extends EventContext {
+@FunctionalInterface
+public interface EventHandlerDelegate<T> {
 
-    public IdentityMgtMessageContext(Event event) {
-        super(event);
-    }
-
+    /**
+     * The primary task needs to be implemented in the execute method.
+     *
+     * @param <X1> Generics exception.
+     * @return the value of generic type T
+     * @throws X1 which is a "generics" exception
+     */
+    <X1 extends Exception> T execute() throws X1;
 }
