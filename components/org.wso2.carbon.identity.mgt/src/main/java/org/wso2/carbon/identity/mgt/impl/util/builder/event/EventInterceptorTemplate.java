@@ -106,7 +106,6 @@ public class EventInterceptorTemplate<T extends Object, X extends Exception> {
     private EventInterceptorTemplate<T, X> pushEvent(String eventId, Map<String, Object> eventProperties)
             throws IdentityStoreException {
         Event event = new Event(eventId, eventProperties);
-        messageContext.setEvent(event);
         try {
             eventService.pushEvent(event, messageContext);
         } catch (IdentityException e) {

@@ -38,6 +38,7 @@ import org.wso2.carbon.identity.mgt.impl.util.builder.event.EventHandlerDelegate
 import org.wso2.carbon.identity.mgt.impl.util.builder.event.EventInterceptorTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.security.auth.callback.Callback;
 

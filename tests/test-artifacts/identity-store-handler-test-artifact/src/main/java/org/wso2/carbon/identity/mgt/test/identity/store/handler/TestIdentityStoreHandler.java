@@ -236,7 +236,7 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
     }
 
     @Override
-    public void rollBack(EventContext eventContext, Event event) throws IdentityException {
+    public void onFault(EventContext eventContext, Event event) throws IdentityException {
         if ("POST_GET_USER_BY_ID".equals(event.getEventName())) {
             POST.set(Boolean.TRUE);
         }
