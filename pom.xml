@@ -421,6 +421,7 @@
 
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.kernel.version>5.1.0</carbon.kernel.version>
+        <carbon.kernel.package.import.version>[5,6)</carbon.kernel.package.import.version>
         <carbon.launcher.version>5.1.0</carbon.launcher.version>
         <carbon.core.version>5.1.0</carbon.core.version>
         <carbon.osgi.test.util.version>5.1.0</carbon.osgi.test.util.version>
