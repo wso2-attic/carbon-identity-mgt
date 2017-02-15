@@ -161,7 +161,7 @@ public class NotificationPasswordRecoveryManager {
 
         properties.put(IdentityRecoveryConstants.TEMPLATE_TYPE, type);
         Event identityMgtEvent = new Event(eventName, properties);
-        EventContext eventContext = new EventContext(null);
+        EventContext eventContext = new EventContext();
 
         try {
             IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().pushEvent(identityMgtEvent,

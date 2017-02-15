@@ -70,18 +70,58 @@ public class InterceptingIdentityStore implements IdentityStore {
 
     @Override
     public boolean isUserExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
-        return identityStore.isUserExist(userClaims, domainName);
+
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
+
+        EventInterceptorTemplate<Boolean, IdentityStoreException> template = new EventInterceptorTemplate<>
+                (eventService, messageContext);
+
+        Boolean isUserExist = template.pushEvent(IdentityStoreInterceptorConstants.PRE_IS_USER_EXIST_DOMAIN,
+                                            (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.CLAIM_LIST, userClaims);
+            eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
+        }).executeWith(new EventHandlerDelegate<Boolean>() {
+            @Override
+            public Boolean execute() throws IdentityStoreException {
+                return identityStore.isUserExist(userClaims, domainName);
+            }
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_IS_USER_EXIST_DOMAIN, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.CLAIM_LIST, userClaims);
+            eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
+            eventProperties.put(IdentityStoreConstants.IS_USER_EXIST, template.getResult());
+        }).getResult();
+
+        return isUserExist;
     }
 
     @Override
     public Map<String, String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
-        return identityStore.isUserExist(userClaims);
+
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
+
+        EventInterceptorTemplate<Map<String, String>, IdentityStoreException> template = new EventInterceptorTemplate<>
+                (eventService, messageContext);
+
+        Map<String, String> isUserExist = template.pushEvent(IdentityStoreInterceptorConstants.PRE_IS_USER_EXIST,
+                                            (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.CLAIM_LIST, userClaims);
+        }).executeWith(new EventHandlerDelegate<Map<String, String>>() {
+            @Override
+            public Map<String, String> execute() throws IdentityStoreException {
+                return identityStore.isUserExist(userClaims);
+            }
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_IS_USER_EXIST, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.CLAIM_LIST, userClaims);
+            eventProperties.put(IdentityStoreConstants.IS_USER_EXIST, template.getResult());
+        }).getResult();
+
+        return isUserExist;
     }
 
     @Override
     public User getUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<User, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -104,7 +144,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public User getUser(Claim claim) throws IdentityStoreException, UserNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<User, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -127,7 +167,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public User getUser(Claim claim, String domainName) throws IdentityStoreException, UserNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<User, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -155,7 +195,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<User> listUsers(int offset, int length) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -180,7 +220,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<User> listUsers(int offset, int length, String domainName) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -209,7 +249,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public List<User> listUsers(Claim claim, int offset, int length) throws IdentityStoreException {
 
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -237,7 +277,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<User> listUsers(Claim claim, int offset, int length, String domainName) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -268,7 +308,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length)
             throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -300,7 +340,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public List<User> listUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, String domainName)
             throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -332,7 +372,7 @@ public class InterceptingIdentityStore implements IdentityStore {
 
     @Override
     public List<User> listUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException {
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -359,12 +399,12 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<User> listUsers(List<Claim> claims, int offset, int length, String domainName)
             throws IdentityStoreException {
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
 
-        List<User> users = template.pushEvent(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_CLAIMS,
+        List<User> users = template.pushEvent(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_CLAIMS_DOMAIN,
                 (eventProperties) -> {
                     eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
                     eventProperties.put(IdentityStoreConstants.OFFSET, offset);
@@ -375,7 +415,7 @@ public class InterceptingIdentityStore implements IdentityStore {
             public List<User> execute() throws IdentityStoreException {
                 return identityStore.listUsers(claims, offset, length);
             }
-        }).pushEvent(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_CLAIMS, (eventProperties) -> {
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_CLAIMS_DOMAIN, (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
             eventProperties.put(IdentityStoreConstants.OFFSET, offset);
             eventProperties.put(IdentityStoreConstants.LENGTH, length);
@@ -388,7 +428,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Group, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -413,7 +453,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public Group getGroup(Claim claim) throws IdentityStoreException, GroupNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Group, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -437,7 +477,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public Group getGroup(Claim claim, String domainName) throws IdentityStoreException, GroupNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Group, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -463,7 +503,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<Group> listGroups(int offset, int length) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Group>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -489,7 +529,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<Group> listGroups(int offset, int length, String domainName) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Group>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -518,7 +558,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public List<Group> listGroups(Claim claim, int offset, int length) throws IdentityStoreException {
 
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Group>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -547,7 +587,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public List<Group> listGroups(Claim claim, int offset, int length, String domainName)
             throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Group>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -578,7 +618,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length)
             throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Group>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -610,7 +650,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public List<Group> listGroups(MetaClaim metaClaim, String filterPattern, int offset, int length, String domainName)
             throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Group>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -643,7 +683,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<Group> getGroupsOfUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Group>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -668,7 +708,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<User> getUsersOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -682,7 +722,7 @@ public class InterceptingIdentityStore implements IdentityStore {
             public List<User> execute() throws IdentityStoreException, GroupNotFoundException {
                 return identityStore.getUsersOfGroup(uniqueGroupId);
             }
-        }).pushEvent(IdentityStoreInterceptorConstants.POST_GET_GROUPS_OF_USER, (eventProperties) -> {
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_GET_USERS_OF_GROUP, (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.UNIQUE_GROUP_ID, uniqueGroupId);
             eventProperties.put(IdentityStoreConstants.GROUP_LIST, template.getResult());
         }).getResult();
@@ -694,7 +734,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public boolean isUserInGroup(String uniqueUserId, String uniqueGroupId)
             throws IdentityStoreException, UserNotFoundException, GroupNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Boolean, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -722,7 +762,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<Claim> getClaimsOfUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Claim>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -748,7 +788,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public List<Claim> getClaimsOfUser(String uniqueUserId, List<MetaClaim> metaClaims)
             throws IdentityStoreException, UserNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Claim>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -777,7 +817,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<Claim> getClaimsOfGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Claim>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -803,7 +843,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public List<Claim> getClaimsOfGroup(String uniqueGroupId, List<MetaClaim> metaClaims)
             throws IdentityStoreException, GroupNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Claim>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -831,7 +871,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public User addUser(UserBean userBean) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<User, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -854,7 +894,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public User addUser(UserBean userBean, String domainName) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<User, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -867,7 +907,7 @@ public class InterceptingIdentityStore implements IdentityStore {
             public User execute() throws IdentityStoreException {
                 return identityStore.addUser(userBean, domainName);
             }
-        }).pushEvent(IdentityStoreInterceptorConstants.POST_ADD_USER, (eventProperties) -> {
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_ADD_USER_BY_DOMAIN, (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.USER_BEAN, userBean);
             eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
             eventProperties.put(IdentityStoreConstants.USER, template.getResult());
@@ -879,7 +919,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<User> addUsers(List<UserBean> userBeans) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -902,7 +942,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<User> addUsers(List<UserBean> userBeans, String domainName) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -929,7 +969,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public void updateUserClaims(String uniqueUserId, List<Claim> claims)
             throws IdentityStoreException, UserNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -954,7 +994,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public void updateUserClaims(String uniqueUserId, List<Claim> claimsToAdd, List<Claim> claimsToRemove)
             throws IdentityStoreException, UserNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -980,7 +1020,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public void updateUserCredentials(String uniqueUserId, List<Callback> credentials)
             throws IdentityStoreException, UserNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1006,7 +1046,7 @@ public class InterceptingIdentityStore implements IdentityStore {
                                       List<Callback> credentialsToRemove)
             throws IdentityStoreException, UserNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1032,7 +1072,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public void deleteUser(String uniqueUserId) throws IdentityStoreException, UserNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1054,7 +1094,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIds) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1079,7 +1119,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public void updateGroupsOfUser(String uniqueUserId, List<String> uniqueGroupIdsToAdd,
                                    List<String> uniqueGroupIdsToRemove) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1105,7 +1145,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public Group addGroup(GroupBean groupBean) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Group, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1128,7 +1168,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public Group addGroup(GroupBean groupBean, String domainName) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Group, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1154,7 +1194,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<Group> addGroups(List<GroupBean> groupBeans) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Group>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1166,7 +1206,7 @@ public class InterceptingIdentityStore implements IdentityStore {
             public List<Group> execute() throws IdentityStoreException {
                 return identityStore.addGroups(groupBeans);
             }
-        }).pushEvent(IdentityStoreInterceptorConstants.POST_ADD_GROUP, (eventProperties) -> {
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_ADD_GROUPS, (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.GROUP_BEAN_LIST, groupBeans);
             eventProperties.put(IdentityStoreConstants.GROUP_LIST, template.getResult());
         }).getResult();
@@ -1177,7 +1217,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public List<Group> addGroups(List<GroupBean> groupBeans, String domainName) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<List<Group>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1203,7 +1243,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public void updateGroupClaims(String uniqueGroupId, List<Claim> claims)
             throws IdentityStoreException, GroupNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1229,7 +1269,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public void updateGroupClaims(String uniqueGroupId, List<Claim> claimsToAdd, List<Claim> claimsToRemove)
             throws IdentityStoreException, GroupNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1256,7 +1296,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public void deleteGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1278,7 +1318,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIds) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1303,7 +1343,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public void updateUsersOfGroup(String uniqueGroupId, List<String> uniqueUserIdsToAdd,
                                    List<String> uniqueUserIdsToRemove) throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1330,7 +1370,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     public AuthenticationContext authenticate(Claim claim, Callback[] credentials, String domainName)
             throws AuthenticationFailure, IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<AuthenticationContext, IdentityStoreException> template = new
                 EventInterceptorTemplate<>(eventService, messageContext);
@@ -1359,7 +1399,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public String getPrimaryDomainName() throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<String, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1372,6 +1412,7 @@ public class InterceptingIdentityStore implements IdentityStore {
                 return identityStore.getPrimaryDomainName();
             }
         }).pushEvent(IdentityStoreInterceptorConstants.POST_GET_PRIMARY_DOMAIN_NAME, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.PRIMARY_DOMAIN_NAME, template.getResult());
         }).getResult();
 
         return primaryDomainName;
@@ -1380,7 +1421,7 @@ public class InterceptingIdentityStore implements IdentityStore {
     @Override
     public Set<String> getDomainNames() throws IdentityStoreException {
 
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
         EventInterceptorTemplate<Set<String>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
@@ -1393,6 +1434,7 @@ public class InterceptingIdentityStore implements IdentityStore {
                 return identityStore.getDomainNames();
             }
         }).pushEvent(IdentityStoreInterceptorConstants.POST_GET_DOMAIN_NAMES, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.DOMAIN_LIST, template.getResult());
         }).getResult();
 
         return domainNames;
