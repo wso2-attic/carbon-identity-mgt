@@ -332,89 +332,56 @@ public class InterceptingIdentityStore implements IdentityStore {
 
     @Override
     public List<User> listUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException {
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
 
-        Map<String, Object> eventProperties = new HashMap<>();
-        eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
-        eventProperties.put(IdentityStoreConstants.OFFSET, offset);
-        eventProperties.put(IdentityStoreConstants.LENGTH, length);
+        EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
+                (eventService, messageContext);
 
-        Event event = new Event(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_CLAIMS, eventProperties);
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(event);
-
-        try {
-            eventService.handleEvent(messageContext);
-        } catch (EventException e) {
-
-            String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
-                    .PRE_LIST_USERS_BY_CLAIMS);
-            throw new IdentityStoreException(message, e);
-        }
-
-        List<User> users = identityStore.listUsers(claims, offset, length);
-
-        eventProperties = new HashMap<>();
-        eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
-        eventProperties.put(IdentityStoreConstants.OFFSET, offset);
-        eventProperties.put(IdentityStoreConstants.LENGTH, length);
-        eventProperties.put(IdentityStoreConstants.USER_LIST, users);
-
-        event = new Event(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_CLAIMS, eventProperties);
-        messageContext = new IdentityMgtMessageContext(event);
-
-        try {
-            eventService.handleEvent(messageContext);
-        } catch (EventException e) {
-
-            String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
-                    .POST_LIST_USERS_BY_CLAIM);
-            throw new IdentityStoreException(message, e);
-        }
-
+        List<User> users = template.pushEvent(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_META_CLAIM,
+                (eventProperties) -> {
+                    eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+                    eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+                    eventProperties.put(IdentityStoreConstants.LENGTH, length);
+                }).executeWith(new EventHandlerDelegate<List<User>>() {
+            @Override
+            public List<User> execute() throws IdentityStoreException {
+                return identityStore.listUsers(claims, offset, length);
+            }
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_META_CLAIM, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+            eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+            eventProperties.put(IdentityStoreConstants.LENGTH, length);
+            eventProperties.put(IdentityStoreConstants.USER_LIST, template.getResult());
+        }).getResult();
         return users;
     }
 
     @Override
     public List<User> listUsers(List<Claim> claims, int offset, int length, String domainName)
             throws IdentityStoreException {
-        Map<String, Object> eventProperties = new HashMap<>();
-        eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
-        eventProperties.put(IdentityStoreConstants.OFFSET, offset);
-        eventProperties.put(IdentityStoreConstants.LENGTH, length);
-        eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
 
-        Event event = new Event(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_CLAIMS_DOMAIN, eventProperties);
-        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(event);
+        EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
+                (eventService, messageContext);
 
-        try {
-            eventService.handleEvent(messageContext);
-        } catch (EventException e) {
-
-            String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
-                    .PRE_LIST_USERS_BY_CLAIM_DOMAIN);
-            throw new IdentityStoreException(message, e);
-        }
-
-        List<User> users = identityStore.listUsers(claims, offset, length, domainName);
-
-        eventProperties = new HashMap<>();
-        eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
-        eventProperties.put(IdentityStoreConstants.OFFSET, offset);
-        eventProperties.put(IdentityStoreConstants.LENGTH, length);
-        eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
-        eventProperties.put(IdentityStoreConstants.USER_LIST, domainName);
-
-        event = new Event(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_CLAIMS_DOMAIN, eventProperties);
-        messageContext = new IdentityMgtMessageContext(event);
-
-        try {
-            eventService.handleEvent(messageContext);
-        } catch (EventException e) {
-
-            String message = String.format("Error while handling %s event.", IdentityStoreInterceptorConstants
-                    .POST_LIST_USERS_BY_CLAIMS_DOMAIN);
-            throw new IdentityStoreException(message, e);
-        }
-
+        List<User> users = template.pushEvent(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_META_CLAIM,
+                (eventProperties) -> {
+                    eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+                    eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+                    eventProperties.put(IdentityStoreConstants.LENGTH, length);
+                    eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
+                }).executeWith(new EventHandlerDelegate<List<User>>() {
+            @Override
+            public List<User> execute() throws IdentityStoreException {
+                return identityStore.listUsers(claims, offset, length);
+            }
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_META_CLAIM, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+            eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+            eventProperties.put(IdentityStoreConstants.LENGTH, length);
+            eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
+            eventProperties.put(IdentityStoreConstants.USER_LIST, template.getResult());
+        }).getResult();
         return users;
     }
 
