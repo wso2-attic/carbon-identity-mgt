@@ -27,14 +27,14 @@
     <groupId>org.wso2.carbon.identity.mgt</groupId>
     <artifactId>org.wso2.carbon.identity.mgt.parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.15-SNAPSHOT</version>
+    <version>0.1.15</version>
     <name>WSO2 Carbon Identity Management - Parent</name>
 
     <scm>
         <url>https://github.com/wso2/carbon-identity-mgt.git</url>
         <developerConnection>scm:git:https://github.com/wso2/carbon-identity-mgt.git</developerConnection>
         <connection>scm:git:https://github.com/wso2/carbon-identity-mgt.git</connection>
-        <tag>HEAD</tag>
+        <tag>v0.1.15</tag>
     </scm>
 
     <build>
@@ -413,7 +413,7 @@
     </modules>
 
     <properties>
-        <carbon.identity.mgt.version>0.1.15-SNAPSHOT</carbon.identity.mgt.version>
+        <carbon.identity.mgt.version>0.1.15</carbon.identity.mgt.version>
 
         <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
         <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
