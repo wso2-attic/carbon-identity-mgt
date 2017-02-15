@@ -464,7 +464,6 @@ public class IdentityStoreImpl implements IdentityStore {
         return doListUsers(claims, offset, length, domain);
     }
 
-
     @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 

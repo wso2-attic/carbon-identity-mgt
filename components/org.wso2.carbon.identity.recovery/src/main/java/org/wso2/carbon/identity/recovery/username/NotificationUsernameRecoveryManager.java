@@ -86,7 +86,6 @@ public class NotificationUsernameRecoveryManager {
         User user;
         List<User> resultedUserList = getUserList(claims);
 
-
         if (resultedUserList.size() == 1) {
             user = resultedUserList.get(0);
             if (log.isDebugEnabled()) {

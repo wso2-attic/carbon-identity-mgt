@@ -384,7 +384,7 @@ public class InterceptingIdentityStore implements IdentityStore {
         }).getResult();
         return users;
     }
-
+    
     @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 

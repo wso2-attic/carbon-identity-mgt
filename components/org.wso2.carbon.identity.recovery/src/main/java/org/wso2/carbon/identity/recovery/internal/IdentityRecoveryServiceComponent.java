@@ -38,7 +38,6 @@ import org.wso2.carbon.identity.recovery.password.SecurityQuestionPasswordRecove
 import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
 import org.wso2.carbon.identity.recovery.username.NotificationUsernameRecoveryManager;
 
-
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
