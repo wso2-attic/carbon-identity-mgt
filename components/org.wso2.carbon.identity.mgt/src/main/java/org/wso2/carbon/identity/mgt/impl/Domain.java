@@ -338,17 +338,22 @@ public class Domain {
 
         // Select the intersection of UserIds
         if (!connectorToDomainUserIdMap.isEmpty()) {
-            connectorToDomainUserIdMap.entrySet().forEach(entry -> {
-                if (intersect == null || intersect.isEmpty()) {
-                    intersect.addAll(entry.getValue());
-                } else {
-                    List<String> temp = entry.getValue().stream()
-                            .filter(intersect::contains)
-                            .collect(Collectors.toList());
+            for (Map.Entry<String, List<String>> entry : connectorToDomainUserIdMap.entrySet()) {
+                if (entry.getValue() == null || entry.getValue().isEmpty()) {
                     intersect.clear();
-                    intersect.addAll(temp);
+                    break;
+                } else {
+                    if (intersect.isEmpty()) {
+                        intersect.addAll(entry.getValue());
+                    } else {
+                        List<String> temp = entry.getValue().stream()
+                                .filter(intersect::contains)
+                                .collect(Collectors.toList());
+                        intersect.clear();
+                        intersect.addAll(temp);
+                    }
                 }
-            });
+            }
         }
         return intersect;
     }
