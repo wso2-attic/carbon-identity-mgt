@@ -337,7 +337,7 @@ public class InterceptingIdentityStore implements IdentityStore {
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
 
-        List<User> users = template.pushEvent(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_META_CLAIM,
+        List<User> users = template.pushEvent(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_CLAIMS,
                 (eventProperties) -> {
                     eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
                     eventProperties.put(IdentityStoreConstants.OFFSET, offset);
@@ -347,7 +347,7 @@ public class InterceptingIdentityStore implements IdentityStore {
             public List<User> execute() throws IdentityStoreException {
                 return identityStore.listUsers(claims, offset, length);
             }
-        }).pushEvent(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_META_CLAIM, (eventProperties) -> {
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_CLAIMS, (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
             eventProperties.put(IdentityStoreConstants.OFFSET, offset);
             eventProperties.put(IdentityStoreConstants.LENGTH, length);
@@ -364,7 +364,7 @@ public class InterceptingIdentityStore implements IdentityStore {
         EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
 
-        List<User> users = template.pushEvent(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_META_CLAIM,
+        List<User> users = template.pushEvent(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_CLAIMS,
                 (eventProperties) -> {
                     eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
                     eventProperties.put(IdentityStoreConstants.OFFSET, offset);
@@ -375,7 +375,7 @@ public class InterceptingIdentityStore implements IdentityStore {
             public List<User> execute() throws IdentityStoreException {
                 return identityStore.listUsers(claims, offset, length);
             }
-        }).pushEvent(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_META_CLAIM, (eventProperties) -> {
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_CLAIMS, (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
             eventProperties.put(IdentityStoreConstants.OFFSET, offset);
             eventProperties.put(IdentityStoreConstants.LENGTH, length);
@@ -384,7 +384,6 @@ public class InterceptingIdentityStore implements IdentityStore {
         }).getResult();
         return users;
     }
-
 
     @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
