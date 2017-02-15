@@ -331,6 +331,61 @@ public class InterceptingIdentityStore implements IdentityStore {
     }
 
     @Override
+    public List<User> listUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException {
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+
+        EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
+                (eventService, messageContext);
+
+        List<User> users = template.pushEvent(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_CLAIMS,
+                (eventProperties) -> {
+                    eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+                    eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+                    eventProperties.put(IdentityStoreConstants.LENGTH, length);
+                }).executeWith(new EventHandlerDelegate<List<User>>() {
+            @Override
+            public List<User> execute() throws IdentityStoreException {
+                return identityStore.listUsers(claims, offset, length);
+            }
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_CLAIMS, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+            eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+            eventProperties.put(IdentityStoreConstants.LENGTH, length);
+            eventProperties.put(IdentityStoreConstants.USER_LIST, template.getResult());
+        }).getResult();
+        return users;
+    }
+
+    @Override
+    public List<User> listUsers(List<Claim> claims, int offset, int length, String domainName)
+            throws IdentityStoreException {
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
+
+        EventInterceptorTemplate<List<User>, IdentityStoreException> template = new EventInterceptorTemplate<>
+                (eventService, messageContext);
+
+        List<User> users = template.pushEvent(IdentityStoreInterceptorConstants.PRE_LIST_USERS_BY_CLAIMS,
+                (eventProperties) -> {
+                    eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+                    eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+                    eventProperties.put(IdentityStoreConstants.LENGTH, length);
+                    eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
+                }).executeWith(new EventHandlerDelegate<List<User>>() {
+            @Override
+            public List<User> execute() throws IdentityStoreException {
+                return identityStore.listUsers(claims, offset, length);
+            }
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_CLAIMS, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
+            eventProperties.put(IdentityStoreConstants.OFFSET, offset);
+            eventProperties.put(IdentityStoreConstants.LENGTH, length);
+            eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
+            eventProperties.put(IdentityStoreConstants.USER_LIST, template.getResult());
+        }).getResult();
+        return users;
+    }
+    
+    @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
         IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext(null);
