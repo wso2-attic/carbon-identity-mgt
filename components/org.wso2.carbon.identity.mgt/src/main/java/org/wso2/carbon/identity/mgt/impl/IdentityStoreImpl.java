@@ -35,7 +35,10 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreClientException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreServerException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
-
+import org.wso2.carbon.identity.mgt.resolver.DomainUser;
+import org.wso2.carbon.lcm.core.LifecycleOperationManager;
+import org.wso2.carbon.lcm.core.exception.LifecycleException;
+import org.wso2.carbon.lcm.core.util.LifecycleUtils;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +54,12 @@ import javax.security.auth.callback.Callback;
 
 import static org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants.USERNAME_CLAIM;
 import static org.wso2.carbon.kernel.utils.LambdaExceptionUtils.rethrowConsumer;
+import static org.wso2.carbon.kernel.utils.LambdaExceptionUtils.rethrowFunction;
 import static org.wso2.carbon.kernel.utils.StringUtils.isNullOrEmpty;
+
+//import org.wso2.carbon.lcm.core.LifecycleOperationManager;
+//import org.wso2.carbon.lcm.core.exception.LifecycleException;
+//import org.wso2.carbon.lcm.core.impl.LifecycleState;
 
 /**
  * Represents a virtual identity store to abstract the underlying stores.
@@ -205,21 +213,18 @@ public class IdentityStoreImpl implements IdentityStore {
 
         Domain domain = domains.get(decodedUniqueUserId.getKey());
 
-        boolean userExists;
+        DomainUser domainUser;
         try {
-            userExists = domain.isUserExists(decodedUniqueUserId.getValue());
+            domainUser = domain.getUser(decodedUniqueUserId.getValue());
         } catch (DomainException e) {
-            throw new IdentityStoreServerException(String.format("Failed to check the existence of the unique user - " +
+            throw new IdentityStoreServerException(String.format("Failed to retrieve user -" +
                     "%s.", uniqueUserId), e);
-        }
-
-        if (!userExists) {
-            throw new UserNotFoundException("Invalid unique user id.");
         }
 
         return new User.UserBuilder()
                 .setUserId(uniqueUserId)
                 .setDomainName(domain.getName())
+                .setState(domainUser.getState())
                 .setIdentityStore(this)
 //                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
@@ -810,29 +815,25 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new GroupNotFoundException("Invalid unique group id.");
         }
 
-        List<String> domainUserIds;
+        List<DomainUser> domainUsers;
         try {
-            domainUserIds = domain.getUsersOfGroup(decodedUniqueGroupId.getValue());
+            domainUsers = domain.getUsersOfGroup(decodedUniqueGroupId.getValue());
         } catch (DomainException e) {
             throw new IdentityStoreServerException(String.format("Failed to retrieve the unique group ids for user id" +
                     " - %s.", uniqueGroupId), e);
         }
 
-        if (domainUserIds.isEmpty()) {
+        if (domainUsers.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<String> uniqueUserIds = new ArrayList<>();
-        domainUserIds.forEach(rethrowConsumer(domainUserId -> uniqueUserIds
-                .add(getEncodedUniqueEntityId(domain.getId(), domainUserId))));
-
-        return uniqueUserIds.stream()
-                .map(uniqueUserId -> new User.UserBuilder()
-                        .setUserId(uniqueUserId)
+        return domainUsers.stream()
+                .map(rethrowFunction(domainUser -> new User.UserBuilder()
+                        .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUser.getDomainUserId()))
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
 //                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
-                        .build())
+                        .build()))
                 .collect(Collectors.toList());
     }
 
@@ -997,16 +998,31 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
         }
 
+        String initialState;
+        try {
+            initialState = LifecycleUtils.getInitialState(IdentityMgtConstants.USER_LIFE_CYCLE);
+        } catch (LifecycleException e) {
+            throw new IdentityStoreServerException("Error while reading initial state of user life cycle", e);
+        }
+
         String domainUserId;
         try {
+            userBean.setState(initialState);
             domainUserId = domain.addUser(userBean);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist user.", e);
         }
 
+        try {
+            LifecycleOperationManager.addLifecycle(IdentityMgtConstants.USER_LIFE_CYCLE, domainUserId, domainUserId);
+        } catch (LifecycleException e) {
+            throw new IdentityStoreServerException("Failed to persist lifecycle data ", e);
+        }
+
         return new User.UserBuilder()
                 .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUserId))
                 .setDomainName(domain.getName())
+                .setState(initialState)
                 .setIdentityStore(this)
 //                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
@@ -1035,25 +1051,40 @@ public class IdentityStoreImpl implements IdentityStore {
                     "- %s", domainName), e);
         }
 
+        String initialState;
+        try {
+            initialState = LifecycleUtils.getInitialState(IdentityMgtConstants.USER_LIFE_CYCLE);
+        } catch (LifecycleException e) {
+            throw new IdentityStoreServerException("Error while reading initial state of user life cycle", e);
+        }
+
         String domainUserId;
         try {
+            userBean.setState(initialState);
             domainUserId = domain.addUser(userBean);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist user.", e);
         }
 
+        try {
+            LifecycleOperationManager.addLifecycle(IdentityMgtConstants.USER_LIFE_CYCLE, domainUserId, domainUserId);
+        } catch (LifecycleException e) {
+            throw new IdentityStoreServerException("Failed to persist lifecycle data ", e);
+        }
+
         return new User.UserBuilder()
                 .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUserId))
                 .setDomainName(domain.getName())
+                .setState(initialState)
                 .setIdentityStore(this)
 //                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
     }
 
     @Override
-    public List<User> addUsers(List<UserBean> userBeen) throws IdentityStoreException {
+    public List<User> addUsers(List<UserBean> userBeans) throws IdentityStoreException {
 
-        if (userBeen == null || userBeen.isEmpty()) {
+        if (userBeans == null || userBeans.isEmpty()) {
             throw new IdentityStoreClientException("Invalid user list.");
         }
 
@@ -1064,9 +1095,17 @@ public class IdentityStoreImpl implements IdentityStore {
             throw new IdentityStoreServerException("Error while retrieving the primary domain.", e);
         }
 
+        String initialState;
+        try {
+            initialState = LifecycleUtils.getInitialState(IdentityMgtConstants.USER_LIFE_CYCLE);
+            userBeans.forEach(userBean -> userBean.setState(initialState));
+        } catch (LifecycleException e) {
+            throw new IdentityStoreServerException("Error while reading initial state of user life cycle", e);
+        }
+
         List<String> domainUserIds;
         try {
-            domainUserIds = domain.addUsers(userBeen);
+            domainUserIds = domain.addUsers(userBeans);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist user.", e);
         }
@@ -1076,13 +1115,19 @@ public class IdentityStoreImpl implements IdentityStore {
         }
 
         List<String> uniqueUserIds = new ArrayList<>();
-        domainUserIds.forEach(rethrowConsumer(domainUserId -> uniqueUserIds
-                .add(getEncodedUniqueEntityId(domain.getId(), domainUserId))));
+        domainUserIds.forEach(rethrowConsumer(domainUserId -> {
+                    String uniqueUserId = getEncodedUniqueEntityId(domain.getId(), domainUserId);
+                    uniqueUserIds.add(uniqueUserId);
+                    LifecycleOperationManager.addLifecycle(IdentityMgtConstants.USER_LIFE_CYCLE, domainUserId,
+                            domainUserId);
+                }
+        ));
 
         return uniqueUserIds.stream()
                 .map(uniqueUserId -> new User.UserBuilder()
                         .setUserId(uniqueUserId)
                         .setDomainName(domain.getName())
+                        .setState(initialState)
                         .setIdentityStore(this)
 //                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
@@ -1090,13 +1135,13 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public List<User> addUsers(List<UserBean> userBeen, String domainName) throws IdentityStoreException {
+    public List<User> addUsers(List<UserBean> userBeans, String domainName) throws IdentityStoreException {
 
         if (isNullOrEmpty(domainName)) {
-            return addUsers(userBeen);
+            return addUsers(userBeans);
         }
 
-        if (userBeen == null || userBeen.isEmpty()) {
+        if (userBeans == null || userBeans.isEmpty()) {
             throw new IdentityStoreClientException("Invalid user list.");
         }
 
@@ -1108,9 +1153,18 @@ public class IdentityStoreImpl implements IdentityStore {
                     "- %s", domainName), e);
         }
 
+        String initialState;
+        try {
+            initialState = LifecycleUtils.getInitialState(IdentityMgtConstants.USER_LIFE_CYCLE);
+            userBeans.forEach(userBean -> userBean.setState(initialState));
+        } catch (LifecycleException e) {
+            throw new IdentityStoreServerException("Error while reading initial state of user life cycle", e);
+        }
+
+
         List<String> domainUserIds;
         try {
-            domainUserIds = domain.addUsers(userBeen);
+            domainUserIds = domain.addUsers(userBeans);
         } catch (DomainException e) {
             throw new IdentityStoreClientException("Failed to persist user.", e);
         }
@@ -1120,12 +1174,18 @@ public class IdentityStoreImpl implements IdentityStore {
         }
 
         List<String> uniqueUserIds = new ArrayList<>();
-        domainUserIds.forEach(rethrowConsumer(domainUserId -> uniqueUserIds
-                .add(getEncodedUniqueEntityId(domain.getId(), domainUserId))));
+        domainUserIds.forEach(rethrowConsumer(domainUserId -> {
+                    String uniqueUserId = getEncodedUniqueEntityId(domain.getId(), domainUserId);
+                    uniqueUserIds.add(uniqueUserId);
+                    LifecycleOperationManager.addLifecycle(IdentityMgtConstants.USER_LIFE_CYCLE, domainUserId,
+                            domainUserId);
+                }
+        ));
 
         return uniqueUserIds.stream()
                 .map(uniqueUserId -> new User.UserBuilder()
                         .setUserId(uniqueUserId)
+                        .setState(initialState)
                         .setDomainName(domain.getName())
                         .setIdentityStore(this)
 //                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
@@ -1714,16 +1774,17 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private User doGetUser(Claim claim, Domain domain) throws IdentityStoreException, UserNotFoundException {
 
-        String domainUserId;
+        DomainUser domainUser;
         try {
-            domainUserId = domain.getDomainUserId(claim);
+            domainUser = domain.getDomainUser(claim);
         } catch (DomainException e) {
-            throw new IdentityStoreServerException("Failed to get the domain user id.");
+            throw new IdentityStoreServerException("Failed to get the domain user.");
         }
 
         return new User.UserBuilder()
-                .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUserId))
+                .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUser.getDomainUserId()))
                 .setDomainName(domain.getName())
+                .setState(domainUser.getState())
                 .setIdentityStore(this)
 //                .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                 .build();
@@ -1731,83 +1792,74 @@ public class IdentityStoreImpl implements IdentityStore {
 
     private List<User> doListUsers(int offset, int length, Domain domain) throws IdentityStoreException {
 
-        List<String> domainUserIds;
+        List<DomainUser> domainUsers;
         try {
-            domainUserIds = domain.listDomainUsers(offset, length);
+            domainUsers = domain.listDomainUsers(offset, length);
         } catch (DomainException e) {
             throw new IdentityStoreServerException(String.format("Failed to list users in the domain - %s", domain), e);
         }
 
-        if (domainUserIds == null || domainUserIds.isEmpty()) {
+        if (domainUsers == null || domainUsers.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<String> uniqueUserIds = new ArrayList<>();
-        domainUserIds.forEach(rethrowConsumer(domainUserId -> uniqueUserIds
-                .add(getEncodedUniqueEntityId(domain.getId(), domainUserId))));
-
-        return uniqueUserIds.stream()
-                .map(uniqueUserId -> new User.UserBuilder()
-                        .setUserId(uniqueUserId)
+        return domainUsers.stream()
+                .map(rethrowFunction(domainUser -> new User.UserBuilder()
+                        .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUser.getDomainUserId()))
                         .setDomainName(domain.getName())
+                        .setState(domainUser.getState())
                         .setIdentityStore(this)
 //                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
-                        .build())
+                        .build()))
                 .collect(Collectors.toList());
     }
 
     private List<User> doListUsers(Claim claim, int offset, int length, Domain domain) throws IdentityStoreException {
 
-        List<String> domainUserIds;
+        List<DomainUser> domainUsers;
         try {
-            domainUserIds = domain.listDomainUsers(claim, offset, length);
+            domainUsers = domain.listDomainUsers(claim, offset, length);
         } catch (DomainException e) {
             throw new IdentityStoreServerException(String.format("Failed to list users in the domain - %s", domain), e);
         }
 
-        if (domainUserIds == null || domainUserIds.isEmpty()) {
+        if (domainUsers == null || domainUsers.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<String> uniqueUserIds = new ArrayList<>();
-        domainUserIds.forEach(rethrowConsumer(domainUserId -> uniqueUserIds
-                .add(getEncodedUniqueEntityId(domain.getId(), domainUserId))));
-
-        return uniqueUserIds.stream()
-                .map(uniqueUserId -> new User.UserBuilder()
-                        .setUserId(uniqueUserId)
+        return domainUsers.stream()
+                .map(rethrowFunction(domainUser -> new User.UserBuilder()
+                        .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUser.getDomainUserId()))
                         .setDomainName(domain.getName())
+                        .setState(domainUser.getState())
                         .setIdentityStore(this)
 //                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
-                        .build())
+                        .build()))
                 .collect(Collectors.toList());
     }
 
     private List<User> doListUsers(MetaClaim metaClaim, String filterPattern, int offset, int length, Domain domain)
             throws IdentityStoreException {
 
-        List<String> domainUserIds;
+        List<DomainUser> domainUsers;
         try {
-            domainUserIds = domain.listDomainUsers(metaClaim, filterPattern, offset, length);
+            domainUsers = domain.listDomainUsers(metaClaim, filterPattern, offset, length);
         } catch (DomainException e) {
             throw new IdentityStoreServerException(String.format("Failed to list users in the domain - %s", domain), e);
         }
 
-        if (domainUserIds == null || domainUserIds.isEmpty()) {
+        if (domainUsers == null || domainUsers.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<String> uniqueUserIds = new ArrayList<>();
-        domainUserIds.forEach(rethrowConsumer(domainUserId -> uniqueUserIds
-                .add(getEncodedUniqueEntityId(domain.getId(), domainUserId))));
-
-        return uniqueUserIds.stream()
-                .map(uniqueUserId -> new User.UserBuilder()
-                        .setUserId(uniqueUserId)
+        return domainUsers.stream()
+                .map(rethrowFunction(domainUser -> new User.UserBuilder()
+                        .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUser.getDomainUserId()))
                         .setDomainName(domain.getName())
+                        .setState(domainUser.getState())
                         .setIdentityStore(this)
 //                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
-                        .build())
+                        .build()))
                 .collect(Collectors.toList());
     }
 

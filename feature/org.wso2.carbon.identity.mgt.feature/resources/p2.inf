@@ -1,3 +1,6 @@
 instructions.configure = \
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../../features/org.wso2.carbon.identity.mgt_${feature.version}/conf,target:${installFolder}/../../../conf/identity,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../../features/org.wso2.carbon.identity.mgt_${feature.version}/dbscripts,target:${installFolder}/../../../dbscripts,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../../resources/); \
+org.eclipse.equinox.p2.touchpoint.natives.mkdir(path:${installFolder}/../../../resources/lifecycles); \
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../../features/org.wso2.carbon.identity.mgt_${feature.version}/conf/UserLifeCycle.xml/,target:${installFolder}/../../../resources/lifecycles/UserLifeCycle.xml,overwrite:true);\
