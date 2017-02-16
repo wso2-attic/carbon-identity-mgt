@@ -291,6 +291,73 @@ public class Domain {
                 .collect(Collectors.toList());
     }
 
+    /**
+     *  List a set of users which satisfy multiple claims.
+     *
+     * @param claims list of claims.
+     * @param offset
+     * @param length
+     * @return
+     * @throws DomainException
+     */
+    public List<String> listDomainUsers(List<Claim> claims, int offset, int length) throws DomainException {
+
+        if (claims.isEmpty()) {
+            return null;
+        }
+        // Map of connector ID and its list of attributes.
+        Map<String, List<Attribute>> connectorIdToAttributeMap = getAttributesMap(claims);
+        Map<String, List<String>> connectorToDomainUserIdMap = new HashMap<>();
+        List<String> intersect = new ArrayList<>();
+        IdentityStoreConnector identityStoreConnector;
+
+        if (!connectorIdToAttributeMap.isEmpty()) {
+            for (Map.Entry<String, List<Attribute>> entry : connectorIdToAttributeMap.entrySet()) {
+                List<String> connectorUserIds = null;
+                try {
+                    identityStoreConnector = identityStoreConnectorsMap.get(entry.getKey());
+                    connectorUserIds = identityStoreConnector.getUsers(entry.getValue(), offset, length);
+
+                } catch (IdentityStoreConnectorException e) {
+                    throw new DomainException("Failed to list connector user ids.", e);
+                }
+
+                List<DomainUser> domainUsers;
+                List<String> domainUserIds = new ArrayList<>();
+                try {
+                    domainUsers = uniqueIdResolver.getUsers(connectorUserIds, entry.getKey(), this.id);
+                    for (DomainUser domainuser : domainUsers) {
+                        domainUserIds.add(domainuser.getDomainUserId());
+                    }
+                    connectorToDomainUserIdMap.put(entry.getKey(), domainUserIds);
+                } catch (UniqueIdResolverException e) {
+                    throw new DomainException("Failed to retrieve the unique user ids.", e);
+                }
+            }
+        }
+
+        // Select the intersection of UserIds
+        if (!connectorToDomainUserIdMap.isEmpty()) {
+            for (Map.Entry<String, List<String>> entry : connectorToDomainUserIdMap.entrySet()) {
+                if (entry.getValue() == null || entry.getValue().isEmpty()) {
+                    intersect.clear();
+                    break;
+                } else {
+                    if (intersect.isEmpty()) {
+                        intersect.addAll(entry.getValue());
+                    } else {
+                        List<String> temp = entry.getValue().stream()
+                                .filter(intersect::contains)
+                                .collect(Collectors.toList());
+                        intersect.clear();
+                        intersect.addAll(temp);
+                    }
+                }
+            }
+        }
+        return intersect;
+    }
+
     public List<String> listDomainUsers(MetaClaim metaClaim, String filterPattern, int offset, int length)
             throws DomainException {
 

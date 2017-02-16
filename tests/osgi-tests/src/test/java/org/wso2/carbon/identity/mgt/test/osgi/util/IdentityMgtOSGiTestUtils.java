@@ -86,6 +86,14 @@ public class IdentityMgtOSGiTestUtils {
                 .artifactId("in-memory-connectors-test-artifact")
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
+                  .groupId("org.wso2.carbon.identity.commons")
+                  .artifactId("org.wso2.carbon.identity.event")
+                  .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                  .groupId("org.wso2.carbon.identity.mgt")
+                  .artifactId("identity-store-handler-test-artifact")
+                  .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
                 .groupId("org.wso2.carbon.datasources")
                 .artifactId("org.wso2.carbon.datasource.core")
                 .versionAsInProject());
@@ -104,10 +112,6 @@ public class IdentityMgtOSGiTestUtils {
         defaultOptionList.add(mavenBundle()
                 .groupId("org.wso2.carbon.identity.commons")
                 .artifactId("org.wso2.carbon.identity.commons")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.identity.commons")
-                .artifactId("org.wso2.carbon.identity.event")
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                 .groupId("org.apache.commons")

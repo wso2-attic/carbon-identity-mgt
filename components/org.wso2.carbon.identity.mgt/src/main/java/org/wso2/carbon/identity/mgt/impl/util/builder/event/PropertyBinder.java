@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package org.wso2.carbon.identity.mgt.impl.internal.config.interceptor;
+package org.wso2.carbon.identity.mgt.impl.util.builder.event;
 
-import java.util.List;
+import java.util.Map;
 
 /**
- * This class represents all the config entries for identity store interceptors.
+ * Functional interface which is used in Identity store interceptors where
+ * properties are bound to event system when publishing events
  */
-public class IdentityStoreInterceptorConfigs {
+public interface PropertyBinder {
 
-    private List<InterceptorEntry> identityStoreInterceptors;
-
-    public List<InterceptorEntry> getIdentityStoreInterceptors() {
-        return identityStoreInterceptors;
-    }
-
-    public void setIdentityStoreInterceptors(List<InterceptorEntry> identityStoreInterceptors) {
-        this.identityStoreInterceptors = identityStoreInterceptors;
-    }
+    /**
+     * Bind the custom properties to the property object.
+     * @param properties Map with properties.
+     */
+    void bind(Map<String, Object> properties);
 }

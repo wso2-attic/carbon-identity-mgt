@@ -35,6 +35,7 @@ import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+import org.wso2.carbon.identity.mgt.test.identity.store.handler.TestIdentityStoreHandler;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
@@ -97,6 +98,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
 
         users.add(user);
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(groups = "addUsers")
@@ -118,6 +124,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
 
         users.add(user);
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(groups = "addUsers")
@@ -149,6 +160,11 @@ public class IdentityStoreTest {
                                                                            "is invalid.");
 
         users.addAll(addedUsers);
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(groups = "addUsers")
@@ -181,6 +197,11 @@ public class IdentityStoreTest {
                                                                            "is invalid.");
 
         users.addAll(addedUsers);
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -192,6 +213,11 @@ public class IdentityStoreTest {
         User user = realmService.getIdentityStore().getUser(users.get(0).getUniqueUserId());
 
         Assert.assertNotNull(user, "Failed to receive the user.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -207,6 +233,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(user, "Failed to receive the user.");
 
         Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -221,6 +252,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(user, "Failed to receive the user.");
 
         Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -234,6 +270,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(users, "Failed to list the users.");
         Assert.assertTrue(!users.isEmpty() && users.size() == 3, "Number of users received in the response " +
                                                                  "is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -247,6 +288,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(users, "Failed to list the users.");
         Assert.assertTrue(!users.isEmpty() && users.size() == 3, "Number of users received in the response " +
                                                                  "is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -261,6 +307,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(users, "Failed to list the users.");
         Assert.assertTrue(!users.isEmpty() && users.size() == 2, "Number of users received in the response " +
                                                                  "is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -275,6 +326,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(users, "Failed to list the users.");
         Assert.assertTrue(!users.isEmpty() && users.size() == 2, "Number of users received in the response " +
                                                                  "is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -289,6 +345,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(users, "Failed to list the users.");
         Assert.assertTrue(!users.isEmpty() && users.size() == 2, "Number of users received in the response " +
                                                                  "is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -303,6 +364,29 @@ public class IdentityStoreTest {
         Assert.assertNotNull(users, "Failed to list the users.");
         Assert.assertTrue(!users.isEmpty() && users.size() == 2, "Number of users received in the response " +
                                                                  "is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
+    }
+    @Test(dependsOnGroups = {"addUsers"})
+    public void testListUsersByClaimsOffsetAndLength() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance.");
+
+        List<Claim> claims = new ArrayList<>();
+        Claim claim1 = new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Lopez");
+        claims.add(claim1);
+        Claim claim2 = new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "ella@wso2.com");
+        claims.add(claim2);
+
+        List<User> users = realmService.getIdentityStore().listUsers(claims, 1, 1);
+
+        Assert.assertNotNull(users, "Failed to list the users.");
+        Assert.assertTrue(users.isEmpty() && users.size() == 0 , "Number of users received in the response " +
+                "is invalid.");
     }
 
     @Test(groups = "addGroups")
@@ -322,6 +406,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
 
         groups.add(group);
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(groups = "addGroups")
@@ -341,6 +430,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
 
         groups.add(group);
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(groups = "addGroups")
@@ -368,6 +462,11 @@ public class IdentityStoreTest {
                                                                              "response is invalid.");
 
         groups.addAll(addedGroups);
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(groups = "addGroups")
@@ -396,6 +495,11 @@ public class IdentityStoreTest {
                                                                              "response is invalid.");
 
         groups.addAll(addedGroups);
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -419,6 +523,11 @@ public class IdentityStoreTest {
         Group group = realmService.getIdentityStore().getGroup(groups.get(0).getUniqueGroupId());
 
         Assert.assertNotNull(group, "Failed to receive the group.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -433,6 +542,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(group, "Failed to receive the group.");
 
         Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -447,6 +561,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(group, "Failed to receive the group.");
 
         Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -460,6 +579,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(groups, "Failed to list the users.");
         Assert.assertTrue(!groups.isEmpty() && groups.size() == 3, "Number of users received in the response " +
                                                                    "is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -473,6 +597,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(groups, "Failed to list the groups.");
         Assert.assertTrue(!groups.isEmpty() && groups.size() == 3, "Number of groups received in the response " +
                                                                    "is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -487,6 +616,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(groups, "Failed to list the groups.");
         Assert.assertTrue(!groups.isEmpty() && groups.size() == 2, "Number of groups received in the response " +
                                                                    "is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -501,6 +635,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(groups, "Failed to list the groups.");
         Assert.assertTrue(!groups.isEmpty() && groups.size() == 2, "Number of groups received in the response " +
                                                                    "is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -515,6 +654,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(groups, "Failed to list the groups.");
         Assert.assertTrue(!groups.isEmpty() && groups.size() == 2, "Number of groups received in the response " +
                                                                    "is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -542,7 +686,13 @@ public class IdentityStoreTest {
                     (0).getUniqueGroupId(), groups.get(1).getUniqueGroupId()));
         } catch (IdentityStoreException e) {
             Assert.fail("Failed to update groups of user.");
+
         }
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers", "addGroups"}, groups = "addUsersToGroup")
@@ -557,6 +707,11 @@ public class IdentityStoreTest {
         } catch (IdentityStoreException e) {
             Assert.fail("Failed to update groups of user.");
         }
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
@@ -581,6 +736,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(usersOfGroup, "Failed to get the users.");
         Assert.assertTrue(!usersOfGroup.isEmpty() && usersOfGroup.size() > 0, "Number of users received in the " +
                                                                               "response is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
@@ -593,6 +753,11 @@ public class IdentityStoreTest {
                 .get(0).getUniqueGroupId());
 
         Assert.assertTrue(isUserInGroup, "Is user exists in group failed.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -605,6 +770,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(claims, "Failed to get the claims.");
         Assert.assertTrue(!claims.isEmpty() && claims.size() > 0, "Number of claims received in the " +
                                                                   "response is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -622,6 +792,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(claims, "Failed to get the claims.");
         Assert.assertTrue(!claims.isEmpty() && claims.size() == 2, "Number of claims received in the " +
                                                                    "response is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -634,6 +809,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(claims, "Failed to get the claims.");
         Assert.assertTrue(!claims.isEmpty() && claims.size() > 0, "Number of claims received in the " +
                                                                   "response is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -651,6 +831,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(claims, "Failed to get the claims.");
         Assert.assertTrue(!claims.isEmpty() && claims.size() == 2, "Number of claims received in the " +
                                                                    "response is invalid.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -669,6 +854,11 @@ public class IdentityStoreTest {
         } catch (IdentityStoreException e) {
             Assert.fail("Failed to update user claims.");
         }
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addUsers"})
@@ -690,6 +880,11 @@ public class IdentityStoreTest {
         } catch (IdentityStoreException e) {
             Assert.fail("Failed to update user claims.");
         }
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -707,6 +902,11 @@ public class IdentityStoreTest {
         } catch (IdentityStoreException e) {
             Assert.fail("Failed to update group claims.");
         }
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test(dependsOnGroups = {"addGroups"})
@@ -727,6 +927,11 @@ public class IdentityStoreTest {
         } catch (IdentityStoreException e) {
             Assert.fail("Failed to update group claims.");
         }
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test
@@ -743,6 +948,11 @@ public class IdentityStoreTest {
         }
 
         Assert.assertNotNull(primaryDomainName, "Failed to get primary domain name.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 
     @Test
@@ -759,5 +969,10 @@ public class IdentityStoreTest {
         }
 
         Assert.assertTrue(domainNames != null && !domainNames.isEmpty(), "Failed to get primary domain name.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
     }
 }

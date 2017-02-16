@@ -415,6 +415,55 @@ public class IdentityStoreImpl implements IdentityStore {
 
         return doListUsers(metaClaim, filterPattern, offset, length, domain);
     }
+    
+    @Override
+    public List<User> listUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException {
+
+        if (claims == null || claims.isEmpty()) {
+            throw new IdentityStoreClientException("Empty list of claims.");
+        }
+
+        if (offset < 0) {
+            throw new IdentityStoreClientException("Invalid offset value: " + offset);
+        }
+
+        if (length == 0) {
+            return Collections.emptyList();
+        }
+
+        return doListUsers(claims, offset, length);
+    }
+
+    @Override
+    public List<User> listUsers(List<Claim> claims, int offset, int length, String domainName)
+            throws IdentityStoreException {
+
+        if (isNullOrEmpty(domainName)) {
+            return listUsers(claims, offset, length);
+        }
+
+        if (claims == null || claims.isEmpty()) {
+            throw new IdentityStoreClientException("Empty list of claims.");
+        }
+
+        if (offset < 0) {
+            throw new IdentityStoreClientException("Invalid offset value: " + offset);
+        }
+
+        if (length == 0) {
+            return Collections.emptyList();
+        }
+
+        Domain domain;
+        try {
+            domain = getDomainFromDomainName(domainName);
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException(String.format("Error while retrieving domain " +
+                    "from the domain name - %s", domainName), e);
+        }
+
+        return doListUsers(claims, offset, length, domain);
+    }
 
     @Override
     public boolean isGroupExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
@@ -460,7 +509,7 @@ public class IdentityStoreImpl implements IdentityStore {
         }
         return false;
     }
-
+    
     @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
@@ -1762,6 +1811,68 @@ public class IdentityStoreImpl implements IdentityStore {
 //                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private List<User> doListUsers(List<Claim> claims, int offset, int length) throws IdentityStoreServerException {
+
+        List<User> users = new ArrayList<>();
+        try {
+
+            Set<String> domainNames = getDomainNames();
+            for (String domainName : domainNames) {
+                List<String> uniqueUserIds = new ArrayList<>();
+                Domain domain = getDomainFromDomainName(domainName);
+                List<String> matchedDomainUserIds = domain.listDomainUsers(claims, offset, length);
+                matchedDomainUserIds.forEach(rethrowConsumer(domainUserId -> uniqueUserIds
+                        .add(getEncodedUniqueEntityId(domain.getId(), domainUserId))));
+
+                users.addAll(uniqueUserIds.stream()
+                        .map(uniqueUserId -> new User.UserBuilder()
+                                .setUserId(uniqueUserId)
+                                .setDomainName(domain.getName())
+                                .setIdentityStore(this)
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+                                .build())
+                        .collect(Collectors.toList()));
+
+            }
+
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException("Error while retrieving domain Ids.", e);
+
+        } catch (IdentityStoreException e) {
+            throw new IdentityStoreServerException("No domains found.", e);
+        }
+        return users;
+
+    }
+
+    private List<User> doListUsers(List<Claim> claims, int offset, int length, Domain domain)
+                                                              throws IdentityStoreServerException {
+
+        List<String> matchedDomainUserIds;
+        try {
+             matchedDomainUserIds = domain.listDomainUsers(claims, offset, length);
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException("Error while retrieving domain Ids", e);
+
+        }
+        if (matchedDomainUserIds == null || Collections.emptyList().isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<String> uniqueUserIds = new ArrayList<>();
+        matchedDomainUserIds.forEach(rethrowConsumer(domainUserId -> uniqueUserIds
+                .add(getEncodedUniqueEntityId(domain.getId(), domainUserId))));
+
+        return uniqueUserIds.stream()
+                .map(uniqueUserId -> new User.UserBuilder()
+                        .setUserId(uniqueUserId)
+                        .setDomainName(domain.getName())
+                        .setIdentityStore(this)
+//                        .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
+                        .build())
+                .collect(Collectors.toList());
+
     }
 
     private Group doGetGroup(Claim claim, Domain domain) throws IdentityStoreException, GroupNotFoundException {

@@ -164,6 +164,28 @@ public interface IdentityStore {
             throws IdentityStoreException;
 
     /**
+     * List users that matches multiple claims.
+     *
+     * @param claims        List of populated claims.
+     * @param offset        start index of the user.
+     * @param length        number of users to retrieve.
+     * @return List of users.
+     * @throws IdentityStoreException IdentityStore Exception.
+     */
+    List<User> listUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException;
+
+    /**
+     * List users that matches multiple claims in a given domain.
+     *
+     * @param claims        List of populated claims.
+     * @param offset        start index of the user.
+     * @param length        number of users to retrieve.
+     * @param domainName    domain of the user.
+     * @return List of users.
+     * @throws IdentityStoreException IdentityStore Exception.
+     */
+    List<User> listUsers(List<Claim> claims , int offset, int length, String domainName) throws  IdentityStoreException;
+    /**
      * Check group existence in a specific domain.
      *
      * @param userClaims Claims of the group

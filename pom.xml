@@ -27,7 +27,7 @@
     <groupId>org.wso2.carbon.identity.mgt</groupId>
     <artifactId>org.wso2.carbon.identity.mgt.parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.10-SNAPSHOT</version>
+    <version>0.1.16-SNAPSHOT</version>
     <name>WSO2 Carbon Identity Management - Parent</name>
 
     <scm>
@@ -181,7 +181,7 @@
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.mgt</groupId>
-                <artifactId>identity-store-interceptor-test-artifact</artifactId>
+                <artifactId>identity-store-handler-test-artifact</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
             </dependency>
             <dependency>
@@ -413,7 +413,7 @@
     </modules>
 
     <properties>
-        <carbon.identity.mgt.version>0.1.10-SNAPSHOT</carbon.identity.mgt.version>
+        <carbon.identity.mgt.version>0.1.16-SNAPSHOT</carbon.identity.mgt.version>
 
         <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
         <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
@@ -421,6 +421,7 @@
 
         <carbon.feature.plugin.version>2.0.1</carbon.feature.plugin.version>
         <carbon.kernel.version>5.1.0</carbon.kernel.version>
+        <carbon.kernel.package.import.version>[5,6)</carbon.kernel.package.import.version>
         <carbon.launcher.version>5.1.0</carbon.launcher.version>
         <carbon.core.version>5.1.0</carbon.core.version>
         <carbon.osgi.test.util.version>5.1.0</carbon.osgi.test.util.version>
@@ -430,7 +431,7 @@
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
         <carbon.datasources.version>1.0.0</carbon.datasources.version>
         <carbon.jndi.version>1.0.0</carbon.jndi.version>
-        <carbon.identity.commons.version>0.1.13</carbon.identity.commons.version>
+        <carbon.identity.commons.version>0.1.17</carbon.identity.commons.version>
         <commons.lang.version>3.4</commons.lang.version>
         <jackson.version>1.8.6</jackson.version>
 
@@ -481,7 +482,6 @@
         <equinox.simpleconfigurator.manipulator.version>2.0.0.v20131217-1203
         </equinox.simpleconfigurator.manipulator.version>
         <equinox.util.version>1.0.500.v20130404-1337</equinox.util.version>
-        <org.eclipse.equinox.cm.version>1.1.0.v20131021-1936</org.eclipse.equinox.cm.version>
         <org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>
         <equinox.osgi.version>3.10.2.v20150203-1939</equinox.osgi.version>
         <ow2.jta.spec.version>1.0.12</ow2.jta.spec.version>

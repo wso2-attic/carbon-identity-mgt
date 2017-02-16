@@ -88,6 +88,10 @@ public class StoreConstants {
         public static final String POST_LIST_USERS_BY_META_CLAIM = "POST_LIST_USERS_BY_CLAIM_DOMAIN";
         public static final String PRE_LIST_USERS_BY_META_CLAIM_DOMAIN = "PRE_LIST_USERS_BY_META_CLAIM_DOMAIN";
         public static final String POST_LIST_USERS_BY_META_CLAIM_DOMAIN = "POST_LIST_USERS_BY_META_CLAIM_DOMAIN";
+        public static final String PRE_LIST_USERS_BY_CLAIMS = "PRE_LIST_USERS_BY_CLAIMS";
+        public static final String POST_LIST_USERS_BY_CLAIMS = "POST_LIST_USERS_BY_CLAIMS";
+        public static final String PRE_LIST_USERS_BY_CLAIMS_DOMAIN = "PRE_LIST_USERS_BY_CLAIMS_DOMAIN";
+        public static final String POST_LIST_USERS_BY_CLAIMS_DOMAIN = "POST_LIST_USERS_BY_CLAIMS_DOMAIN";
 
         public static final String PRE_GET_GROUP_BY_ID = "PRE_GET_GROUP_BY_ID";
         public static final String POST_GET_GROUP_BY_ID = "POST_GET_GROUP_BY_ID";
@@ -136,8 +140,8 @@ public class StoreConstants {
         public static final String POST_ADD_USER_BY_DOMAIN = "POST_ADD_USER_BY_DOMAIN";
         public static final String PRE_ADD_USERS = "PRE_ADD_USERS";
         public static final String POST_ADD_USERS = "POST_ADD_USERS";
-        public static final String PRE_ADD_USERS_BY_DOMAIN = "PRE_ADD_USERS_POST_ADD_USER_BY_DOMAIN";
-        public static final String POST_ADD_USERS_BY_DOMAIN = "PRE_ADD_USERS_PRE_ADD_USER_BY_DOMAIN";
+        public static final String PRE_ADD_USERS_BY_DOMAIN = "PRE_ADD_USERS_BY_DOMAIN";
+        public static final String POST_ADD_USERS_BY_DOMAIN = "POST_ADD_USERS_BY_DOMAIN";
 
         public static final String PRE_UPDATE_USER_CLAIMS_PUT = "PRE_UPDATE_USER_CLAIMS_PUT";
         public static final String POST_UPDATE_USER_CLAIMS_PUT = "POST_UPDATE_USER_CLAIMS_PUT";
