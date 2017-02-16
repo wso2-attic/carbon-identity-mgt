@@ -36,6 +36,7 @@ import org.wso2.carbon.identity.recovery.mapping.RecoveryLinkConfig;
 import org.wso2.carbon.identity.recovery.password.NotificationPasswordRecoveryManager;
 import org.wso2.carbon.identity.recovery.password.SecurityQuestionPasswordRecoveryManager;
 import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
+import org.wso2.carbon.identity.recovery.username.NotificationUsernameRecoveryManager;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -73,6 +74,10 @@ public class IdentityRecoveryServiceComponent {
         try {
             bundleContext.registerService(NotificationPasswordRecoveryManager.class.getName(),
                     NotificationPasswordRecoveryManager.getInstance(), null);
+//            bundleContext.registerService(SecurityQuestionPasswordRecoveryManager.class.getName(),
+//                    SecurityQuestionPasswordRecoveryManager.getInstance(), null);
+            bundleContext.registerService(NotificationUsernameRecoveryManager.class.getName(),
+                    NotificationUsernameRecoveryManager.getInstance(), null);
             bundleContext.registerService(SecurityQuestionPasswordRecoveryManager.class.getName(),
                     SecurityQuestionPasswordRecoveryManager.getInstance(), null);
 //            bundleContext.registerService(NotificationUsernameRecoveryManager.class.getName(),

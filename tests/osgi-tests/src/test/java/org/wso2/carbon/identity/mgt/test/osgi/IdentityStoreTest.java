@@ -370,6 +370,24 @@ public class IdentityStoreTest {
         TestIdentityStoreHandler.PRE.set(false);
         TestIdentityStoreHandler.POST.set(false);
     }
+    @Test(dependsOnGroups = {"addUsers"})
+    public void testListUsersByClaimsOffsetAndLength() throws IdentityStoreException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance.");
+
+        List<Claim> claims = new ArrayList<>();
+        Claim claim1 = new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Lopez");
+        claims.add(claim1);
+        Claim claim2 = new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "ella@wso2.com");
+        claims.add(claim2);
+
+        List<User> users = realmService.getIdentityStore().listUsers(claims, 1, 1);
+
+        Assert.assertNotNull(users, "Failed to list the users.");
+        Assert.assertTrue(users.isEmpty() && users.size() == 0 , "Number of users received in the response " +
+                "is invalid.");
+    }
 
     @Test(groups = "addGroups")
     public void testAddGroup() throws IdentityStoreException {
@@ -482,6 +500,18 @@ public class IdentityStoreTest {
         Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
         TestIdentityStoreHandler.PRE.set(false);
         TestIdentityStoreHandler.POST.set(false);
+    }
+
+    @Test(dependsOnGroups = {"addGroups"})
+    public void testGroupExistence() throws IdentityStoreException, GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        boolean isGroupExist = realmService.getIdentityStore().isGroupExist(groups.get(0).getClaims(), groups.get(0)
+                .getDomainName());
+
+        Assert.assertTrue(isGroupExist, "Failed to receive the user.");
     }
 
     @Test(dependsOnGroups = {"addGroups"})

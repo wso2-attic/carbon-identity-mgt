@@ -23,6 +23,7 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -235,6 +236,13 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public IdentityStoreConnectorConfig getIdentityStoreConfig() {
         return identityStoreConnectorConfig;
+    }
+
+    @Override
+    public List<String> getUsers(List<Attribute> attributes, int offset, int length)
+            throws IdentityStoreConnectorException {
+        List<String> users = new ArrayList<>();
+        return users;
     }
 
     @Override

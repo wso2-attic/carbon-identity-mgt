@@ -161,6 +161,22 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public List<User> listUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException {
+        return identityStore.listUsers(claims, offset, length);
+    }
+
+    @Override
+    public List<User> listUsers(List<Claim> claims, int offset, int length, String domainName)
+            throws IdentityStoreException {
+        return identityStore.listUsers(claims, offset, length, domainName);
+    }
+
+    @Override
+    public boolean isGroupExist(List<Claim> groupClaims, String domainName) throws IdentityStoreException {
+        return identityStore.isGroupExist(groupClaims, domainName);
+    }
+
+    @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
         if (cacheStatus.get(UNIQUE_GROUP_CACHE) && isNullOrEmpty(uniqueGroupId)) {

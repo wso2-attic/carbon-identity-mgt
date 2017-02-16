@@ -18,7 +18,7 @@
     <parent>
         <groupId>org.wso2.carbon.identity.mgt</groupId>
         <artifactId>org.wso2.carbon.identity.mgt.parent</artifactId>
-        <version>0.1.12-SNAPSHOT</version>
+        <version>0.1.17-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -32,6 +32,7 @@
         <module>test-artifacts</module>
         <module>distribution</module>
         <module>osgi-tests</module>
+        <module>coverage-report</module>
     </modules>
 
 </project>
