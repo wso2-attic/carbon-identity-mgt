@@ -34,6 +34,8 @@ public class UserBean {
 
     private List<Callback> credentials = new ArrayList<>();
 
+    private String state;
+
     public List<Claim> getClaims() {
 
         if (claims == null) {
@@ -56,5 +58,13 @@ public class UserBean {
 
     public void setCredentials(List<Callback> credentials) {
         this.credentials = credentials;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

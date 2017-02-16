@@ -353,6 +353,16 @@
                 <artifactId>msf4j-all</artifactId>
                 <version>${msf4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.lcm</groupId>
+                <artifactId>org.wso2.carbon.lcm.core</artifactId>
+                <version>${org.wso2.carbon.lcm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.lcm</groupId>
+                <artifactId>org.wso2.carbon.lcm.sql</artifactId>
+                <version>${org.wso2.carbon.lcm.version}</version>
+            </dependency>
 
             <!-- Features -->
             <dependency>
@@ -414,6 +424,7 @@
 
     <properties>
         <carbon.identity.mgt.version>0.1.17-SNAPSHOT</carbon.identity.mgt.version>
+        <org.wso2.carbon.lcm.version>1.0.0</org.wso2.carbon.lcm.version>
 
         <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
         <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>

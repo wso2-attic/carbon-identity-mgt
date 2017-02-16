@@ -31,10 +31,19 @@ public class DomainUser {
 
     private List<UserPartition> userPartitions;
 
+    private String state;
+
     public DomainUser(String domainUserId, List<UserPartition> userPartitions) {
 
         this.domainUserId = domainUserId;
         this.userPartitions = userPartitions;
+    }
+
+    public DomainUser(String domainUserId, List<UserPartition> userPartitions, String state) {
+
+        this.domainUserId = domainUserId;
+        this.userPartitions = userPartitions;
+        this.state = state;
     }
 
     public DomainUser() {
@@ -66,5 +75,13 @@ public class DomainUser {
             this.userPartitions = new ArrayList<>();
         }
         this.userPartitions.add(userPartition);
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getState() {
+        return state;
     }
 }
