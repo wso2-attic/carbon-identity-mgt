@@ -19,14 +19,6 @@
 
 package org.wso2.carbon.identity.recovery.password;
 
-//import org.apache.commons.lang3.StringUtils;
-//import org.apache.commons.lang3.math.NumberUtils;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
-//import org.osgi.service.component.annotations.Reference;
-//import org.osgi.service.component.annotations.ReferenceCardinality;
-//import org.osgi.service.component.annotations.ReferencePolicy;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,23 +46,6 @@ import java.util.Random;
 import java.util.UUID;
 
 import java.util.stream.Collectors;
-
-//import org.wso2.carbon.base.MultitenantConstants;
-//import org.wso2.carbon.identity.application.common.model.Property;
-//import org.wso2.carbon.identity.application.common.model.User;
-//import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
-//import org.wso2.carbon.identity.core.util.IdentityUtil;
-//import org.wso2.carbon.identity.event.IdentityEventConstants;
-//import org.wso2.carbon.identity.event.IdentityEventException;
-//import org.wso2.carbon.identity.event.event.Event;
-//import org.wso2.carbon.identity.mgt.RealmService;
-//import org.wso2.carbon.registry.core.utils.UUIDGenerator;
-//import org.wso2.carbon.user.api.UserStoreException;
-//import org.wso2.carbon.user.api.UserStoreManager;
-//import org.wso2.carbon.user.core.UserCoreConstants;
-//import org.wso2.carbon.user.core.UserRealm;
-//import org.wso2.carbon.user.core.service.RealmService;
-
 
 /**
  * Security Question Password Recovery Manager
@@ -147,8 +122,6 @@ public class SecurityQuestionPasswordRecoveryManager {
         if (ids.size() > minNoOfQuestionsToAnswer) {
             ids = getRandomQuestionIds(ids, minNoOfQuestionsToAnswer);
         }
-
-//        String metaData = null;
 
         //generate selected list of security question
         String metaData = String.join(challengeQuestionSeparator, ids);
@@ -403,7 +376,7 @@ public class SecurityQuestionPasswordRecoveryManager {
                     }
                 }
 
-                // Reset password recovery failed attempts
+                //TODO Reset password recovery failed attempts
                 //resetRecoveryPasswordFailedAttempts(userRecoveryData.getUser());
 
                 userRecoveryDataStore.invalidateByCode(code);
@@ -528,7 +501,6 @@ public class SecurityQuestionPasswordRecoveryManager {
      * @return selected list of question setIDs
      */
     private static List<String> getRandomQuestionIds(List<String> remainingQuestions, int minNoOfQuestionsToAnswser) {
-       // ArrayList remainingQuestions = new ArrayList(allQuesitons);
         List<String> selectedQuestions = new ArrayList<>();
 
         for (int i = 0; i < minNoOfQuestionsToAnswser; i++) {
