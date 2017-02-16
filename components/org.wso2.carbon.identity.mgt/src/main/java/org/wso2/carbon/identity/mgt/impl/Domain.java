@@ -502,7 +502,7 @@ public class Domain {
         try {
             domainGroups = uniqueIdResolver.getGroups(connectorGroupIds, metaClaimMapping
                     .getIdentityStoreConnectorId(), this.id);
-        } catch (UniqueIdResolverException | GroupNotFoundException e) {
+        } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to retrieve the unique group ids.", e);
         }
 
@@ -545,7 +545,7 @@ public class Domain {
         try {
             domainGroups = uniqueIdResolver.getGroups(connectorGroupIds, metaClaimMapping
                     .getIdentityStoreConnectorId(), this.id);
-        } catch (UniqueIdResolverException | GroupNotFoundException e) {
+        } catch (UniqueIdResolverException e) {
             throw new DomainException("Failed to retrieve the unique group ids.", e);
         }
 
