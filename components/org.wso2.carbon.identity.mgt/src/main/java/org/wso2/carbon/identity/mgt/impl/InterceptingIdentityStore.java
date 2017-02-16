@@ -386,8 +386,8 @@ public class InterceptingIdentityStore implements IdentityStore {
     }
 
     @Override
-    public boolean isGroupExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
-        return identityStore.isGroupExist(userClaims, domainName);
+    public boolean isGroupExist(List<Claim> groupClaims, String domainName) throws IdentityStoreException {
+        return identityStore.isGroupExist(groupClaims, domainName);
     }
     
     @Override

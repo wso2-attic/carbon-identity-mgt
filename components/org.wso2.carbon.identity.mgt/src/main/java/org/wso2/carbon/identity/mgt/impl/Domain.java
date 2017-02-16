@@ -429,7 +429,7 @@ public class Domain {
             connectorGroupId = identityStoreConnector.getConnectorGroupId(metaClaimMapping.getAttributeName(),
                     claim.getValue());
         } catch (GroupNotFoundException e) {
-            throw new GroupNotFoundException("Failed to get connector group id.", e);
+            throw new GroupNotFoundException("Failed to get connector group id for claim %s." + claim.getClaimUri(), e);
         } catch (IdentityStoreConnectorException e) {
             throw new DomainException("An error occurred while searching the group.", e);
         }

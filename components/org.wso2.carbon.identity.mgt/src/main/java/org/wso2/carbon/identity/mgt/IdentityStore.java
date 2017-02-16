@@ -185,15 +185,16 @@ public interface IdentityStore {
      * @throws IdentityStoreException IdentityStore Exception.
      */
     List<User> listUsers(List<Claim> claims , int offset, int length, String domainName) throws  IdentityStoreException;
+
     /**
      * Check group existence in a specific domain.
      *
-     * @param userClaims Claims of the group
+     * @param groupClaims Claims of the group
      * @param domainName Domain name of the group
      * @return True if group exists
      * @throws IdentityStoreException
      */
-    boolean isGroupExist(List<Claim> userClaims, String domainName) throws IdentityStoreException;
+    boolean isGroupExist(List<Claim> groupClaims, String domainName) throws IdentityStoreException;
 
     /**
      * Retrieve group from group Id.

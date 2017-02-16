@@ -34,7 +34,6 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreClientException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreServerException;
-import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -466,9 +465,9 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
-    public boolean isGroupExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
+    public boolean isGroupExist(List<Claim> groupClaims, String domainName) throws IdentityStoreException {
         Domain domain;
-        UniqueIdResolverException uniqueIdResolverException = new UniqueIdResolverException();
+        DomainException domainException = new DomainException();
         try {
             if (isNullOrEmpty(domainName)) {
                 domainName = getPrimaryDomainName();
@@ -479,7 +478,7 @@ public class IdentityStoreImpl implements IdentityStore {
         }
         String domainGroupId;
 
-        for (Claim claim : userClaims) {
+        for (Claim claim : groupClaims) {
             MetaClaimMapping metaClaimMapping;
             try {
                 metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
@@ -496,16 +495,15 @@ public class IdentityStoreImpl implements IdentityStore {
                     }
                 } catch (GroupNotFoundException e) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Group is not available in domain: " + domainName);
+                        log.debug("Group is not found in domain: %s for claim: %s", domainName, claim.getClaimUri());
                     }
-                    return false;
                 } catch (DomainException e) {
-                    uniqueIdResolverException.addSuppressed(e);
+                    domainException.addSuppressed(e);
                 }
             }
         }
-        if (uniqueIdResolverException.getSuppressed().length > 0) {
-            throw new IdentityStoreException("An error occurred while searching the group.", uniqueIdResolverException);
+        if (domainException.getSuppressed().length > 0) {
+            throw new IdentityStoreException("An error occurred while searching the group.", domainException);
         }
         return false;
     }
