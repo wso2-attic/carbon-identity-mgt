@@ -57,10 +57,6 @@ import static org.wso2.carbon.kernel.utils.LambdaExceptionUtils.rethrowConsumer;
 import static org.wso2.carbon.kernel.utils.LambdaExceptionUtils.rethrowFunction;
 import static org.wso2.carbon.kernel.utils.StringUtils.isNullOrEmpty;
 
-//import org.wso2.carbon.lcm.core.LifecycleOperationManager;
-//import org.wso2.carbon.lcm.core.exception.LifecycleException;
-//import org.wso2.carbon.lcm.core.impl.LifecycleState;
-
 /**
  * Represents a virtual identity store to abstract the underlying stores.
  *
