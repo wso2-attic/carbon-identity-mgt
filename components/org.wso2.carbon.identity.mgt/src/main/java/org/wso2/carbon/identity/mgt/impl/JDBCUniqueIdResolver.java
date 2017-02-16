@@ -590,7 +590,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
     @Override
     public List<DomainGroup> getGroups(List<String> connectorGroupIds, String connectorId, int domainId) throws
-            GroupNotFoundException, UniqueIdResolverException {
+            UniqueIdResolverException {
 
         UniqueIdResolverException uniqueIdResolverException = new UniqueIdResolverException();
         List<DomainGroup> domainGroups = new ArrayList<>();
