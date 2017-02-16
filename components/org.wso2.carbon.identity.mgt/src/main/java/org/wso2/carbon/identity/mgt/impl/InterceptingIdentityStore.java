@@ -466,6 +466,11 @@ public class InterceptingIdentityStore implements IdentityStore {
     }
 
     @Override
+    public boolean isGroupExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
+        return identityStore.isGroupExist(userClaims, domainName);
+    }
+
+    @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
         Map<String, Object> eventProperties = new HashMap<>();

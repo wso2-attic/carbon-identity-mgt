@@ -34,6 +34,7 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreClientException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreServerException;
+import org.wso2.carbon.identity.mgt.exception.UniqueIdResolverException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -413,6 +414,51 @@ public class IdentityStoreImpl implements IdentityStore {
         }
 
         return doListUsers(metaClaim, filterPattern, offset, length, domain);
+    }
+
+    @Override
+    public boolean isGroupExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
+        Domain domain;
+        UniqueIdResolverException uniqueIdResolverException = new UniqueIdResolverException();
+        try {
+            if (isNullOrEmpty(domainName)) {
+                domainName = getPrimaryDomainName();
+            }
+            domain = getDomainFromDomainName(domainName);
+        } catch (DomainException e) {
+            throw new IdentityStoreException(String.format("Domain %s was not found", domainName));
+        }
+        String domainGroupId;
+
+        for (Claim claim : userClaims) {
+            MetaClaimMapping metaClaimMapping;
+            try {
+                metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
+            } catch (DomainException e) {
+                throw new IdentityStoreException(String.format
+                        ("Invalid domain configuration found for %s domain. No meta claim mappings.", domainName));
+            }
+            if (domain.isClaimSupported(claim.getClaimUri()) &&
+                    metaClaimMapping.isUnique()) {
+                try {
+                    domainGroupId = domain.getDomainGroupId(claim);
+                    if (!isNullOrEmpty(domainGroupId)) {
+                        return true;
+                    }
+                } catch (GroupNotFoundException e) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Group is not available in domain: " + domainName);
+                    }
+                    return false;
+                } catch (DomainException e) {
+                    uniqueIdResolverException.addSuppressed(e);
+                }
+            }
+        }
+        if (uniqueIdResolverException.getSuppressed().length > 0) {
+            throw new IdentityStoreException("An error occurred while searching the group.", uniqueIdResolverException);
+        }
+        return false;
     }
 
     @Override

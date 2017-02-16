@@ -399,6 +399,18 @@ public class IdentityStoreTest {
     }
 
     @Test(dependsOnGroups = {"addGroups"})
+    public void testGroupExistence() throws IdentityStoreException, GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        boolean isGroupExist = realmService.getIdentityStore().isGroupExist(groups.get(0).getClaims(), groups.get(0)
+                .getDomainName());
+
+        Assert.assertTrue(isGroupExist, "Failed to receive the user.");
+    }
+
+    @Test(dependsOnGroups = {"addGroups"})
     public void testGetGroupByUniqueGroupId() throws IdentityStoreException, GroupNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));

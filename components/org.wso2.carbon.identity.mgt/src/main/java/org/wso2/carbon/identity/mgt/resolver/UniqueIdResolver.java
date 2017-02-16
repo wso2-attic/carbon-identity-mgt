@@ -105,7 +105,7 @@ public interface UniqueIdResolver {
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
     DomainGroup getGroupFromConnectorGroupId(String connectorGroupId, String connectorId, int domainId) throws
-            UniqueIdResolverException;
+            UniqueIdResolverException, GroupNotFoundException;
 
     /**
      * Check whether group exists or not.
@@ -135,7 +135,7 @@ public interface UniqueIdResolver {
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
     List<DomainGroup> getGroups(List<String> connectorGroupIds, String connectorId, int domainId) throws
-            UniqueIdResolverException;
+            UniqueIdResolverException, GroupNotFoundException;
 
     /**
      * Get groups of user by user unique id.
