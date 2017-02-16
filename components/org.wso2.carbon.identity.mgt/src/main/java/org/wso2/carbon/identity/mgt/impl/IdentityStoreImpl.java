@@ -414,7 +414,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         return doListUsers(metaClaim, filterPattern, offset, length, domain);
     }
-
+    
     @Override
     public List<User> listUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException {
 
@@ -464,6 +464,50 @@ public class IdentityStoreImpl implements IdentityStore {
         return doListUsers(claims, offset, length, domain);
     }
 
+    @Override
+    public boolean isGroupExist(List<Claim> groupClaims, String domainName) throws IdentityStoreException {
+        Domain domain;
+        DomainException domainException = new DomainException();
+        try {
+            if (isNullOrEmpty(domainName)) {
+                domainName = getPrimaryDomainName();
+            }
+            domain = getDomainFromDomainName(domainName);
+        } catch (DomainException e) {
+            throw new IdentityStoreException(String.format("Domain %s was not found", domainName));
+        }
+        String domainGroupId;
+
+        for (Claim claim : groupClaims) {
+            MetaClaimMapping metaClaimMapping;
+            try {
+                metaClaimMapping = domain.getMetaClaimMapping(claim.getClaimUri());
+            } catch (DomainException e) {
+                throw new IdentityStoreException(String.format
+                        ("Invalid domain configuration found for %s domain. No meta claim mappings.", domainName));
+            }
+            if (domain.isClaimSupported(claim.getClaimUri()) &&
+                    metaClaimMapping.isUnique()) {
+                try {
+                    domainGroupId = domain.getDomainGroupId(claim);
+                    if (!isNullOrEmpty(domainGroupId)) {
+                        return true;
+                    }
+                } catch (GroupNotFoundException e) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Group is not found in domain: %s for claim: %s", domainName, claim.getClaimUri());
+                    }
+                } catch (DomainException e) {
+                    domainException.addSuppressed(e);
+                }
+            }
+        }
+        if (domainException.getSuppressed().length > 0) {
+            throw new IdentityStoreException("An error occurred while searching the group.", domainException);
+        }
+        return false;
+    }
+    
     @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 

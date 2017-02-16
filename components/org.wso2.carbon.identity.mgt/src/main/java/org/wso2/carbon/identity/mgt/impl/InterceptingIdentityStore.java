@@ -384,6 +384,11 @@ public class InterceptingIdentityStore implements IdentityStore {
         }).getResult();
         return users;
     }
+
+    @Override
+    public boolean isGroupExist(List<Claim> groupClaims, String domainName) throws IdentityStoreException {
+        return identityStore.isGroupExist(groupClaims, domainName);
+    }
     
     @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {

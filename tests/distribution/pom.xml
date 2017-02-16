@@ -68,7 +68,6 @@
         <dependency>
             <groupId>org.wso2.carbon.identity.commons</groupId>
             <artifactId>org.wso2.carbon.identity.common.feature</artifactId>
-            <version>${carbon.identity.commons.version}</version>
             <type>zip</type>
         </dependency>
     </dependencies>

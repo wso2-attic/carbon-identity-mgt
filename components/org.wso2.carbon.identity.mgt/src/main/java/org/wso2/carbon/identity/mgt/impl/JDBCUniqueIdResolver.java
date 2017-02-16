@@ -286,7 +286,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
     @Override
     public DomainGroup getGroupFromConnectorGroupId(String connectorGroupId, String connectorId, int domainId)
-            throws UniqueIdResolverException {
+            throws UniqueIdResolverException, GroupNotFoundException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUniqueGroup = "SELECT GROUP_ID, CONNECTOR_ID, CONNECTOR_GROUP_ID " +
@@ -318,7 +318,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                 }
             }
             if (groupUUID == null) {
-                throw new UniqueIdResolverException("No group found.");
+                throw new GroupNotFoundException("No group found.");
             }
             domainGroup.setDomainGroupId(groupUUID);
             domainGroup.setGroupPartitions(groupPartitions);
@@ -598,7 +598,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             try {
                 DomainGroup domainGroup = getGroupFromConnectorGroupId(entry, connectorId, domainId);
                 domainGroups.add(domainGroup);
-            } catch (UniqueIdResolverException e) {
+            } catch (UniqueIdResolverException | GroupNotFoundException e) {
                 uniqueIdResolverException.addSuppressed(e);
             }
         });
