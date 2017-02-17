@@ -40,6 +40,7 @@ public class UniqueIdResolverConstants {
         public static final String DOMAIN_ID = "domain_id";
         public static final String MAPPING_DOMAIN_ID = "mapping_domain_id";
         public static final String CONNECTOR_TYPE = "connector_type";
+        public static final String STATE = "state";
 
         public static final String LIMIT = "limit";
         public static final String OFFSET = "offset";

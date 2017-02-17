@@ -37,4 +37,5 @@ public class IdentityMgtConstants {
     public static final String USERSTORE_DISPLAY_NAME = "display-name";
     public static final String USER_EXIST = "userExist";
     public static final String NO_OF_DOMAINS = "noOfDomains";
+    public static final String USER_LIFE_CYCLE = "user-life-cycle";
 }
