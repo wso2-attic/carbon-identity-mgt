@@ -79,7 +79,8 @@ public class IdentityRecoveryServiceComponent {
             bundleContext.registerService(NotificationUsernameRecoveryManager.class.getName(),
                     NotificationUsernameRecoveryManager.getInstance(), null);
             bundleContext.registerService(SecurityQuestionPasswordRecoveryManager.class.getName(),
-                    SecurityQuestionPasswordRecoveryManager.getInstance(), null);
+                    new SecurityQuestionPasswordRecoveryManager(JDBCRecoveryDataStore.getInstance(),
+                            ChallengeQuestionManager.getInstance()), null);
 //            bundleContext.registerService(NotificationUsernameRecoveryManager.class.getName(),
 //                    NotificationUsernameRecoveryManager.getInstance(), null);
 //            bundleContext.registerService(UserSelfRegistrationManager.class.getName(),

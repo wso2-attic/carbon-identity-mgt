@@ -62,6 +62,32 @@ domains:
     properties:
      unique: "true"
    -
+    attribute: "resourceType"
+    claimUri: "http://wso2.org/claims/resourceType"
+   -
+    attribute: "createdDate"
+    claimUri: "http://wso2.org/claims/createdDate"
+   -
+    attribute: "lastModifiedDate"
+    claimUri: "http://wso2.org/claims/lastModifiedDate"
+   -
+    attribute: "location"
+    claimUri: "http://wso2.org/claims/location"
+   -
+    attribute: "version"
+    claimUri: "http://wso2.org/claims/version"
+   -
+    attribute: "challengeQuestionUris"
+    claimUri: "http://wso2.org/claims/challengeQuestionUris"
+   -
+    attribute: "challengeQuestion1"
+    claimUri: "http://wso2.org/claims/challengeQuestion1"
+   -
+    attribute: "challengeQuestion2"
+    claimUri: "http://wso2.org/claims/challengeQuestion2"
+   -
+    attribute: "challengeQuestion3"
+    claimUri: "http://wso2.org/claims/challengeQuestion3"
 
   credentialStoreConnectors:
   -
