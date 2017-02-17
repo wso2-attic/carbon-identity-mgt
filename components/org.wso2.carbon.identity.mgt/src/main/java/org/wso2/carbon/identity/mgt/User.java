@@ -45,14 +45,20 @@ public class User implements Serializable {
     private String domainName;
 
     /**
+     * user current lifecycle state
+     */
+    private String state;
+
+    /**
      * The IdentityStore this user originates from.
      */
     private transient IdentityStore identityStore;
 
-    private User(String uniqueUserId, String domainName) {
+    private User(String uniqueUserId, String domainName, String state) {
 
         this.uniqueUserId = uniqueUserId;
         this.domainName = domainName;
+        this.state = state;
     }
 
     /**
@@ -71,6 +77,10 @@ public class User implements Serializable {
      */
     public String getDomainName() {
         return this.domainName;
+    }
+
+    public String getState() {
+        return state;
     }
 
     /**
@@ -221,6 +231,8 @@ public class User implements Serializable {
 
         private String domainName;
 
+        private String state;
+
         private IdentityStore identityStore;
 
 //        private AuthorizationStore authorizationStore;
@@ -239,6 +251,11 @@ public class User implements Serializable {
 
         public UserBuilder setUserId(String userName) {
             this.userId = userName;
+            return this;
+        }
+
+        public UserBuilder setState(String state) {
+            this.state = state;
             return this;
         }
 
@@ -264,7 +281,7 @@ public class User implements Serializable {
                 throw new StoreException("Required data missing for building user.");
             }
 
-            User user = new User(userId, domainName);
+            User user = new User(userId, domainName, state);
             user.setIdentityStore(identityStore);
             return user;
         }

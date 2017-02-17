@@ -26,6 +26,7 @@ import org.wso2.carbon.identity.mgt.claim.MetaClaimMapping;
 import org.wso2.carbon.identity.mgt.connector.Attribute;
 import org.wso2.carbon.identity.mgt.connector.CredentialStoreConnector;
 import org.wso2.carbon.identity.mgt.connector.IdentityStoreConnector;
+import org.wso2.carbon.identity.mgt.constant.IdentityMgtConstants;
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.CredentialStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.DomainClientException;
@@ -40,7 +41,8 @@ import org.wso2.carbon.identity.mgt.resolver.DomainUser;
 import org.wso2.carbon.identity.mgt.resolver.GroupPartition;
 import org.wso2.carbon.identity.mgt.resolver.UniqueIdResolver;
 import org.wso2.carbon.identity.mgt.resolver.UserPartition;
-
+import org.wso2.carbon.lcm.core.exception.LifecycleException;
+import org.wso2.carbon.lcm.core.util.LifecycleUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -195,6 +197,60 @@ public class Domain {
         }
     }
 
+    /**
+     * Get user from domain user id
+     * @param domainUserId domainUserId
+     * @return domainUser
+     * @throws DomainException DomainException
+     * @throws UserNotFoundException UserNotFoundException
+     */
+    public DomainUser getUser(String domainUserId) throws DomainException, UserNotFoundException {
+        try {
+            return this.uniqueIdResolver.getUser(domainUserId, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException("Failed to retrieve user.", e);
+        }
+    }
+
+    /**
+     * Get domain user from a unique claim
+     * @param claim : unique claim
+     * @return
+     * @throws DomainException
+     * @throws UserNotFoundException
+     */
+    public DomainUser getDomainUser(Claim claim) throws DomainException, UserNotFoundException {
+        MetaClaimMapping metaClaimMapping = claimUriToMetaClaimMappings.get(claim.getClaimUri());
+
+        if (!metaClaimMapping.isUnique()) {
+            throw new DomainClientException("Provided claim is not unique.");
+        }
+
+        IdentityStoreConnector identityStoreConnector = identityStoreConnectorsMap
+                .get(metaClaimMapping.getIdentityStoreConnectorId());
+
+        String connectorUserId;
+        try {
+            connectorUserId = identityStoreConnector.getConnectorUserId(metaClaimMapping.getAttributeName(),
+                    claim.getValue());
+        } catch (IdentityStoreConnectorException e) {
+            throw new DomainException("Failed to get connector user", e);
+        }
+
+        if (isNullOrEmpty(connectorUserId)) {
+            throw new UserNotFoundException("Invalid claim value.");
+        }
+
+        DomainUser domainUser;
+        try {
+            domainUser = uniqueIdResolver.getUserFromConnectorUserId(connectorUserId, metaClaimMapping
+                    .getIdentityStoreConnectorId(), this.id);
+            return domainUser;
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException("Failed to retrieve the domain user.", e);
+        }
+    }
+
     public String getDomainUserId(Claim claim) throws DomainException, UserNotFoundException {
 
         MetaClaimMapping metaClaimMapping = claimUriToMetaClaimMappings.get(claim.getClaimUri());
@@ -233,7 +289,7 @@ public class Domain {
         return domainUser.getDomainUserId();
     }
 
-    public List<String> listDomainUsers(int offset, int length) throws DomainException {
+    public List<DomainUser> listDomainUsers(int offset, int length) throws DomainException {
 
         List<DomainUser> domainUsers;
         try {
@@ -246,14 +302,10 @@ public class Domain {
             return Collections.emptyList();
         }
 
-        return domainUsers.stream()
-                .filter(Objects::nonNull)
-                .filter(uniqueUser -> !isNullOrEmpty(uniqueUser.getDomainUserId()))
-                .map(DomainUser::getDomainUserId)
-                .collect(Collectors.toList());
+        return domainUsers;
     }
 
-    public List<String> listDomainUsers(Claim claim, int offset, int length) throws DomainException {
+    public List<DomainUser> listDomainUsers(Claim claim, int offset, int length) throws DomainException {
 
         MetaClaimMapping metaClaimMapping = claimUriToMetaClaimMappings.get(claim.getClaimUri());
 
@@ -284,11 +336,7 @@ public class Domain {
             throw new DomainException("Failed to retrieve the unique user ids.");
         }
 
-        return domainUsers.stream()
-                .filter(Objects::nonNull)
-                .filter(domainUser -> !isNullOrEmpty(domainUser.getDomainUserId()))
-                .map(DomainUser::getDomainUserId)
-                .collect(Collectors.toList());
+        return domainUsers;
     }
 
     /**
@@ -358,7 +406,8 @@ public class Domain {
         return intersect;
     }
 
-    public List<String> listDomainUsers(MetaClaim metaClaim, String filterPattern, int offset, int length)
+
+    public List<DomainUser> listDomainUsers(MetaClaim metaClaim, String filterPattern, int offset, int length)
             throws DomainException {
 
         MetaClaimMapping metaClaimMapping = claimUriToMetaClaimMappings.get(metaClaim.getClaimUri());
@@ -390,11 +439,7 @@ public class Domain {
             throw new DomainException("Failed to retrieve the unique user ids.");
         }
 
-        return domainUsers.stream()
-                .filter(Objects::nonNull)
-                .filter(uniqueUser -> !isNullOrEmpty(uniqueUser.getDomainUserId()))
-                .map(DomainUser::getDomainUserId)
-                .collect(Collectors.toList());
+        return domainUsers;
     }
 
     /**
@@ -428,8 +473,10 @@ public class Domain {
         try {
             connectorGroupId = identityStoreConnector.getConnectorGroupId(metaClaimMapping.getAttributeName(),
                     claim.getValue());
+        } catch (GroupNotFoundException e) {
+            throw new GroupNotFoundException("Failed to get connector group id for claim %s." + claim.getClaimUri(), e);
         } catch (IdentityStoreConnectorException e) {
-            throw new DomainException("Failed to get connector group id", e);
+            throw new DomainException("An error occurred while searching the group.", e);
         }
 
         if (isNullOrEmpty(connectorGroupId)) {
@@ -440,12 +487,14 @@ public class Domain {
         try {
             domainGroup = uniqueIdResolver.getGroupFromConnectorGroupId(connectorGroupId, metaClaimMapping
                     .getIdentityStoreConnectorId(), this.id);
+        } catch (GroupNotFoundException e) {
+            throw new GroupNotFoundException("Failed to retrieve the domain group id.", e);
         } catch (UniqueIdResolverException e) {
-            throw new DomainException("Failed to retrieve the domain group id.", e);
+            throw new DomainException("An error occurred while searching the group.", e);
         }
 
         if (domainGroup == null || isNullOrEmpty(domainGroup.getDomainGroupId())) {
-            throw new DomainException("Failed to retrieve the domain group id.");
+            throw new GroupNotFoundException("Failed to retrieve the domain group id.");
         }
 
         return domainGroup.getDomainGroupId();
@@ -577,7 +626,7 @@ public class Domain {
                 .collect(Collectors.toList());
     }
 
-    public List<String> getUsersOfGroup(String domainGroupId) throws DomainException {
+    public List<DomainUser> getUsersOfGroup(String domainGroupId) throws DomainException {
 
         List<DomainUser> domainUsers;
         try {
@@ -591,11 +640,7 @@ public class Domain {
             return Collections.emptyList();
         }
 
-        return domainUsers.stream()
-                .filter(Objects::nonNull)
-                .filter(uniqueUser -> !isNullOrEmpty(uniqueUser.getDomainUserId()))
-                .map(DomainUser::getDomainUserId)
-                .collect(Collectors.toList());
+        return domainUsers;
     }
 
     public boolean isUserInGroup(String domainUserId, String domainGroupId) throws DomainException {
@@ -836,8 +881,8 @@ public class Domain {
 
         String userUniqueId = IdentityUserMgtUtil.generateUUID();
         try {
-            String receivedUserUniqueId = uniqueIdResolver.addUser(new DomainUser(userUniqueId, userPartitions),
-                    this.id);
+            String receivedUserUniqueId = uniqueIdResolver.addUser(new DomainUser(userUniqueId, userPartitions,
+                            userBean.getState()), this.id);
 
             if (isNullOrEmpty(receivedUserUniqueId)) {
                 return receivedUserUniqueId;
@@ -929,8 +974,15 @@ public class Domain {
             return Collections.emptyList();
         }
 
+        String initialState;
+        try {
+            initialState = LifecycleUtils.getInitialState(IdentityMgtConstants.USER_LIFE_CYCLE);
+        } catch (LifecycleException e) {
+            throw new DomainException("Error while reading initial state of user life cycle", e);
+        }
+
         List<DomainUser> domainUsers = userPartitionsMapOfUsers.entrySet().stream()
-                .map(entry -> new DomainUser(entry.getKey(), entry.getValue()))
+                .map(entry -> new DomainUser(entry.getKey(), entry.getValue(), initialState))
                 .collect(Collectors.toList());
 
         try {
