@@ -21,7 +21,6 @@ import org.wso2.carbon.identity.common.base.event.model.Event;
 import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
-import org.wso2.carbon.identity.event.EventException;
 
 /**
  * Test identity store event handler.
@@ -32,12 +31,12 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
     public static final ThreadLocal<Boolean> POST = new ThreadLocal<>();
 
     @Override
-    public void handle(EventContext eventMessageContext, Event event) throws EventException {
+    public void handle(EventContext eventMessageContext, Event event) throws IdentityException {
 
         if ("PRE_GET_USER_BY_ID".equals(event.getEventName())) {
             PRE.set(true);
         } else if ("POST_GET_USER_BY_ID".equals(event.getEventName())) {
-            throw new EventException("Rollback test");
+            throw new IdentityException("Rollback test");
         } else if ("PRE_GET_USER_BY_CLAIM".equals(event.getEventName())) {
             PRE.set(true);
         } else if ("POST_GET_USER_BY_CLAIM".equals(event.getEventName())) {

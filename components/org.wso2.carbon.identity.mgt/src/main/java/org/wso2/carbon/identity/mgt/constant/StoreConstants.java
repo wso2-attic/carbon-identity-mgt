@@ -62,12 +62,18 @@ public class StoreConstants {
         public static final String AUTHENTICATION_CONTEXT = "AUTHENTICATION_CONTEXT";
         public static final String PRIMARY_DOMAIN_NAME = "PRIMARY_DOMAIN_NAME";
         public static final String DOMAIN_LIST = "DOMAIN_LIST";
+        public static final String IS_USER_EXIST = "IS_USER_EXIST";
     }
 
     /**
      * This class holds the constants related to identity store interceptors.
      */
     public static class IdentityStoreInterceptorConstants {
+
+        public static final String PRE_IS_USER_EXIST = "PRE_IS_USER_EXIST";
+        public static final String POST_IS_USER_EXIST = "POST_IS_USER_EXIST";
+        public static final String PRE_IS_USER_EXIST_DOMAIN = "PRE_IS_USER_EXIST_DOMAIN";
+        public static final String POST_IS_USER_EXIST_DOMAIN = "POST_IS_USER_EXIST_DOMAIN";
 
         public static final String PRE_GET_USER_BY_ID = "PRE_GET_USER_BY_ID";
         public static final String POST_GET_USER_BY_ID = "POST_GET_USER_BY_ID";
