@@ -1714,14 +1714,17 @@ public class Domain {
                     try {
                         connector.authenticate(userPartition.getConnectorUserId(), credentials);
                         AuthenticationContext successContext = new AuthenticationContext();
-                        successContext.addParameter(IdentityMgtConstants.DOMAIN_USER, domainUser);
+                        successContext.addParameter(IdentityMgtConstants.DOMAIN_USER_ID, domainUser.getDomainUserId());
+                        successContext.addParameter(IdentityMgtConstants.STATE, domainUser.getState());
                         return successContext;
                     } catch (CredentialStoreConnectorException | AuthenticationFailure e) {
                         if (log.isDebugEnabled()) {
                             log.debug("Failed to authenticate from the provided credential.", e);
                         }
                         FailedAuthenticationContext failedAuthenticationContext = new FailedAuthenticationContext();
-                        failedAuthenticationContext.addParameter(IdentityMgtConstants.DOMAIN_USER, domainUser);
+                        failedAuthenticationContext.addParameter(IdentityMgtConstants.DOMAIN_USER_ID,
+                                domainUser.getDomainUserId());
+                        failedAuthenticationContext.addParameter(IdentityMgtConstants.STATE, domainUser.getState());
                         return failedAuthenticationContext;
                     }
                 }
