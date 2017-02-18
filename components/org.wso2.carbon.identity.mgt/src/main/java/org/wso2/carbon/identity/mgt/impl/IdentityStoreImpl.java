@@ -1721,10 +1721,11 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     /**
-     * Get AuthenticationContext from DomainAuthenticationContext
-     *
-     * @param authenticationContext : domainAuthenticationContext
-     * @return : AuthenticationContext
+     * Populate AuthenticationContext with unique user ids
+     * @param authenticationContext : AuthenticationContext
+     * @param domain : Domain
+     * @return :AuthenticationContext
+     * @throws IdentityStoreException: IdentityStoreException
      */
     private AuthenticationContext getAuthenticationContext(AuthenticationContext authenticationContext,
                                                            Domain domain)
@@ -1745,7 +1746,7 @@ public class IdentityStoreImpl implements IdentityStore {
                         domain.getId(), domainUser.getDomainUserId()));
                 return authenticationContext;
             }
-            throw new IdentityStoreException("Invalid Authentication context ");
+            throw new IdentityStoreException("Invalid Authentication context");
         }
     }
 
