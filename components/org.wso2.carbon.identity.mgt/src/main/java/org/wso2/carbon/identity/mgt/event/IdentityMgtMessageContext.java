@@ -17,15 +17,14 @@
 package org.wso2.carbon.identity.mgt.event;
 
 import org.wso2.carbon.identity.common.base.event.EventContext;
-import org.wso2.carbon.identity.common.base.event.model.Event;
 
 /**
  * Identity management message context.
  */
 public class IdentityMgtMessageContext extends EventContext {
 
-    public IdentityMgtMessageContext(Event event) {
-        super(event);
+    public IdentityMgtMessageContext() {
+
     }
 
 }
