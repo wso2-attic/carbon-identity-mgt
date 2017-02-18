@@ -19,6 +19,7 @@ package org.wso2.carbon.identity.mgt.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.mgt.AuthenticationContext;
+import org.wso2.carbon.identity.mgt.FailedAuthenticationContext;
 import org.wso2.carbon.identity.mgt.Group;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.User;
@@ -1637,42 +1638,23 @@ public class IdentityStoreImpl implements IdentityStore {
                 throw new AuthenticationFailure(String.format("Invalid domain name - %s.", domainName));
             }
 
-            String domainUserId = domain.authenticate(claim, credentials);
-            String uniqueUserId;
-            try {
-                uniqueUserId = getEncodedUniqueEntityId(domain.getId(), domainUserId);
-            } catch (IdentityStoreException e) {
-                throw new IdentityStoreServerException("Failed to build unique user id.");
-            }
-
-            return new AuthenticationContext(
-                    new User.UserBuilder()
-                            .setUserId(uniqueUserId)
-                            .setIdentityStore(this)
-//                            .setAuthorizationStore(IdentityMgtDataHolder.getInstance().getAuthorizationStore())
-                            .setDomainName(domain.getName())
-                            .build());
+            return getAuthenticationContext(domain.authenticate(claim, credentials), domain);
         }
+
+        FailedAuthenticationContext failedAuthenticationContext = new FailedAuthenticationContext();
 
         for (Domain domain : sortedDomains) {
             if (domain.isClaimSupported(claim.getClaimUri())) {
                 try {
-                    String domainUserId = domain.authenticate(claim, credentials);
-                    String uniqueUserId;
-                    try {
-                        uniqueUserId = getEncodedUniqueEntityId(domain.getId(), domainUserId);
-                    } catch (IdentityStoreException e) {
-                        throw new IdentityStoreServerException("Failed to build unique user id.");
+                    AuthenticationContext authenticationContext = domain.authenticate(claim, credentials);
+                    if (authenticationContext.isAuthenticated()) {
+                        return getAuthenticationContext(authenticationContext, domain);
+                    } else {
+                        DomainUser domainUser = (DomainUser) authenticationContext.getParameter(
+                                IdentityMgtConstants.DOMAIN_USER);
+                        failedAuthenticationContext.addFailedUserIdToList(getEncodedUniqueEntityId(domain
+                                .getId(), domainUser.getDomainUserId()));
                     }
-
-                    return new AuthenticationContext(
-                            new User.UserBuilder()
-                                    .setUserId(uniqueUserId)
-                                    .setIdentityStore(this)
-//                                    .setAuthorizationStore(IdentityMgtDataHolder.getInstance()
-// .getAuthorizationStore())
-                                    .setDomainName(domain.getName())
-                                    .build());
                 } catch (AuthenticationFailure e) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Failed to authenticate user - %s from domain - %s", claim.getValue(),
@@ -1682,7 +1664,7 @@ public class IdentityStoreImpl implements IdentityStore {
             }
         }
 
-        throw new AuthenticationFailure("Invalid user credentials.");
+        return failedAuthenticationContext;
     }
 
     /**
@@ -1736,6 +1718,36 @@ public class IdentityStoreImpl implements IdentityStore {
     private String getEncodedUniqueEntityId(int domainId, String domainEntityId) throws IdentityStoreException {
 
         return domainId + "." + domainEntityId;
+    }
+
+    /**
+     * Populate AuthenticationContext with unique user ids
+     * @param authenticationContext : AuthenticationContext
+     * @param domain : Domain
+     * @return :AuthenticationContext
+     * @throws IdentityStoreException: IdentityStoreException
+     */
+    private AuthenticationContext getAuthenticationContext(AuthenticationContext authenticationContext,
+                                                           Domain domain)
+            throws IdentityStoreException {
+
+        DomainUser domainUser = (DomainUser) authenticationContext.getParameter(IdentityMgtConstants.DOMAIN_USER);
+
+        if (authenticationContext.isAuthenticated()) {
+            authenticationContext.setUser(new User.UserBuilder()
+                    .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUser.getDomainUserId()))
+                    .setIdentityStore(this)
+                    .setState(domainUser.getState())
+                    .setDomainName(domain.getName()).build());
+            return authenticationContext;
+        } else {
+            if (authenticationContext instanceof FailedAuthenticationContext) {
+                ((FailedAuthenticationContext) authenticationContext).addFailedUserIdToList(getEncodedUniqueEntityId(
+                        domain.getId(), domainUser.getDomainUserId()));
+                return authenticationContext;
+            }
+            throw new IdentityStoreException("Invalid Authentication context");
+        }
     }
 
     /**
