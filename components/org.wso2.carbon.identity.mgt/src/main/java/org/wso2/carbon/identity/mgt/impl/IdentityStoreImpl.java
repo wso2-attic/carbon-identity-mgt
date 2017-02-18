@@ -1650,10 +1650,10 @@ public class IdentityStoreImpl implements IdentityStore {
                     if (authenticationContext.isAuthenticated()) {
                         return getAuthenticationContext(authenticationContext, domain);
                     } else {
-                        DomainUser domainUser = (DomainUser) authenticationContext.getParameter(
-                                IdentityMgtConstants.DOMAIN_USER);
+                        String domainUserId = (String) authenticationContext.getParameter(
+                                IdentityMgtConstants.DOMAIN_USER_ID);
                         failedAuthenticationContext.addFailedUserIdToList(getEncodedUniqueEntityId(domain
-                                .getId(), domainUser.getDomainUserId()));
+                                .getId(), domainUserId));
                     }
                 } catch (AuthenticationFailure e) {
                     if (log.isDebugEnabled()) {
@@ -1731,19 +1731,20 @@ public class IdentityStoreImpl implements IdentityStore {
                                                            Domain domain)
             throws IdentityStoreException {
 
-        DomainUser domainUser = (DomainUser) authenticationContext.getParameter(IdentityMgtConstants.DOMAIN_USER);
+        String domainUserId = (String) authenticationContext.getParameter(IdentityMgtConstants.DOMAIN_USER_ID);
+        String state = (String) authenticationContext.getParameter(IdentityMgtConstants.STATE);
 
         if (authenticationContext.isAuthenticated()) {
             authenticationContext.setUser(new User.UserBuilder()
-                    .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUser.getDomainUserId()))
+                    .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUserId))
                     .setIdentityStore(this)
-                    .setState(domainUser.getState())
+                    .setState(state)
                     .setDomainName(domain.getName()).build());
             return authenticationContext;
         } else {
             if (authenticationContext instanceof FailedAuthenticationContext) {
                 ((FailedAuthenticationContext) authenticationContext).addFailedUserIdToList(getEncodedUniqueEntityId(
-                        domain.getId(), domainUser.getDomainUserId()));
+                        domain.getId(), domainUserId));
                 return authenticationContext;
             }
             throw new IdentityStoreException("Invalid Authentication context");
