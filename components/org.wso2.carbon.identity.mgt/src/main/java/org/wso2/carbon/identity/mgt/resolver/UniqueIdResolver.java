@@ -54,7 +54,7 @@ public interface UniqueIdResolver {
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
     DomainUser getUserFromConnectorUserId(String connectorUserId, String connectorId, int domainId) throws
-            UniqueIdResolverException;
+            UserNotFoundException, UniqueIdResolverException;
 
     /**
      * Get global unique Ids for a connector specific user Ids.

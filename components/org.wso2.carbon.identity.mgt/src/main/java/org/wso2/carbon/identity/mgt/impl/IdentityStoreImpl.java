@@ -110,8 +110,8 @@ public class IdentityStoreImpl implements IdentityStore {
 
     @Override
     public boolean isUserExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
-        boolean userExists = false;
         Domain domain;
+        DomainException domainException = new DomainException();
         try {
             if (isNullOrEmpty(domainName)) {
                 domainName = getPrimaryDomainName();
@@ -135,26 +135,28 @@ public class IdentityStoreImpl implements IdentityStore {
                 try {
                     domainUserId = domain.getDomainUserId(claim);
                     if (!isNullOrEmpty(domainUserId)) {
-                        userExists = true;
-                        break;
+                        return true;
                     }
-                } catch (UserNotFoundException | DomainException e) {
+                } catch (UserNotFoundException e) {
                     if (log.isDebugEnabled()) {
-                        log.debug("User is not available in domain: " + domainName);
+                        log.debug("User is not available in domain: %s for claim: %s", domainName, claim.getClaimUri());
                     }
-                    break;
+                } catch (DomainException e) {
+                    domainException.addSuppressed(e);
                 }
             }
         }
-        return userExists;
+        if (domainException.getSuppressed().length > 0) {
+            throw new IdentityStoreException("An error occurred while searching the user.", domainException);
+        }
+        return false;
     }
 
     @Override
-    public Map<String, String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
-        Map<String, String> userExistMetaMap = new HashMap<>();
-        boolean userExists = false;
+    public List<String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
+        List<String> userExistMap = new ArrayList<>();
+        DomainException domainException = new DomainException();
         String domainUserId;
-        int noOfDomains = 0;
 
         Set<String> domainNames = getDomainNames();
         for (String domainName : domainNames) {
@@ -177,25 +179,24 @@ public class IdentityStoreImpl implements IdentityStore {
                     try {
                         domainUserId = domain.getDomainUserId(claim);
                         if (!isNullOrEmpty(domainUserId)) {
-                            if (!userExists) {
-                                userExists = true;
-                            }
-                            ++noOfDomains;
+                            userExistMap.add(getEncodedUniqueEntityId(domain.getId(), domainUserId));
                             break;
                         }
-                    } catch (UserNotFoundException | DomainException e) {
+                    }  catch (UserNotFoundException e) {
                         if (log.isDebugEnabled()) {
-                            log.debug("User is not available in domain: " + domainName);
+                            log.debug("User is not available in domain: %s for claim: %s", domainName,
+                                    claim.getClaimUri());
                         }
-                        break;
+                    } catch (DomainException e) {
+                        domainException.addSuppressed(e);
                     }
                 }
             }
         }
-
-        userExistMetaMap.put(IdentityMgtConstants.USER_EXIST, Boolean.toString(userExists));
-        userExistMetaMap.put(IdentityMgtConstants.NO_OF_DOMAINS, Integer.toString(noOfDomains));
-        return userExistMetaMap;
+        if (domainException.getSuppressed().length > 0) {
+            throw new IdentityStoreException("An error occurred while searching the user.", domainException);
+        }
+        return userExistMap;
     }
 
 

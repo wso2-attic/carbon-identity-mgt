@@ -38,7 +38,6 @@ import org.wso2.carbon.identity.mgt.impl.util.builder.event.EventHandlerDelegate
 import org.wso2.carbon.identity.mgt.impl.util.builder.event.EventInterceptorTemplate;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.security.auth.callback.Callback;
 
@@ -95,19 +94,19 @@ public class InterceptingIdentityStore implements IdentityStore {
     }
 
     @Override
-    public Map<String, String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
+    public List<String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
 
         IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
-        EventInterceptorTemplate<Map<String, String>, IdentityStoreException> template = new EventInterceptorTemplate<>
+        EventInterceptorTemplate<List<String>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
 
-        Map<String, String> isUserExist = template.pushEvent(IdentityStoreInterceptorConstants.PRE_IS_USER_EXIST,
+        List<String> isUserExist = template.pushEvent(IdentityStoreInterceptorConstants.PRE_IS_USER_EXIST,
                                             (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.CLAIM_LIST, userClaims);
-        }).executeWith(new EventHandlerDelegate<Map<String, String>>() {
+        }).executeWith(new EventHandlerDelegate<List<String>>() {
             @Override
-            public Map<String, String> execute() throws IdentityStoreException {
+            public List<String> execute() throws IdentityStoreException {
                 return identityStore.isUserExist(userClaims);
             }
         }).pushEvent(IdentityStoreInterceptorConstants.POST_IS_USER_EXIST, (eventProperties) -> {
