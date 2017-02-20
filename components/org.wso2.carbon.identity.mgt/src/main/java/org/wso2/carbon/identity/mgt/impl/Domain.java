@@ -18,6 +18,8 @@ package org.wso2.carbon.identity.mgt.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.identity.mgt.AuthenticationContext;
+import org.wso2.carbon.identity.mgt.FailedAuthenticationContext;
 import org.wso2.carbon.identity.mgt.bean.GroupBean;
 import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
@@ -1679,7 +1681,7 @@ public class Domain {
         }
     }
 
-    public String authenticate(Claim claim, Callback[] credentials) throws AuthenticationFailure {
+    public AuthenticationContext authenticate(Claim claim, Callback[] credentials) throws AuthenticationFailure {
 
         MetaClaimMapping metaClaimMapping = claimUriToMetaClaimMappings.get(claim.getClaimUri());
 
@@ -1711,9 +1713,19 @@ public class Domain {
                 if (connector.canHandle(credentials)) {
                     try {
                         connector.authenticate(userPartition.getConnectorUserId(), credentials);
-                        return domainUser.getDomainUserId();
-                    } catch (CredentialStoreConnectorException e) {
-                        throw new AuthenticationFailure("Failed to authenticate from the provided credential.", e);
+                        AuthenticationContext successContext = new AuthenticationContext();
+                        successContext.addParameter(IdentityMgtConstants.DOMAIN_USER_ID, domainUser.getDomainUserId());
+                        successContext.addParameter(IdentityMgtConstants.STATE, domainUser.getState());
+                        return successContext;
+                    } catch (CredentialStoreConnectorException | AuthenticationFailure e) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Failed to authenticate from the provided credential.", e);
+                        }
+                        FailedAuthenticationContext failedAuthenticationContext = new FailedAuthenticationContext();
+                        failedAuthenticationContext.addParameter(IdentityMgtConstants.DOMAIN_USER_ID,
+                                domainUser.getDomainUserId());
+                        failedAuthenticationContext.addParameter(IdentityMgtConstants.STATE, domainUser.getState());
+                        return failedAuthenticationContext;
                     }
                 }
             }

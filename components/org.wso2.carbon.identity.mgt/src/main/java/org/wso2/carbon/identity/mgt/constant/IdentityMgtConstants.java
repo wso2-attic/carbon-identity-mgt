@@ -38,4 +38,7 @@ public class IdentityMgtConstants {
     public static final String USER_EXIST = "userExist";
     public static final String NO_OF_DOMAINS = "noOfDomains";
     public static final String USER_LIFE_CYCLE = "user-life-cycle";
+    public static final String DOMAIN_USER_ID = "domainUserId";
+    public static final String STATE = "state";
+
 }

@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.identity.mgt.claim;
 
+import java.io.Serializable;
+
 /**
  * Represents a claim that is associated with an entity usually a user.
  * Claims describe the capabilities associated with some entity in the system.
@@ -23,8 +25,9 @@ package org.wso2.carbon.identity.mgt.claim;
  * Hence a claim has a uri, value and many other properties.
  * This class models the properties of a claim.
  */
-public class Claim {
+public class Claim implements Serializable {
 
+    private static final long serialVersionUID = 4070228119280928289L;
     /**
      * An URI to uniquely identify the dialect of a claim.
      */
