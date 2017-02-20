@@ -19,17 +19,13 @@
 
 package org.wso2.carbon.identity.recovery.password;
 
-//import org.apache.commons.lang3.StringUtils;
-//import org.apache.commons.lang3.math.NumberUtils;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
-//import org.osgi.service.component.annotations.Reference;
-//import org.osgi.service.component.annotations.ReferenceCardinality;
-//import org.osgi.service.component.annotations.ReferencePolicy;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.identity.common.base.event.EventContext;
+import org.wso2.carbon.identity.common.base.event.model.Event;
+import org.wso2.carbon.identity.common.base.exception.IdentityException;
+import org.wso2.carbon.identity.event.EventConstants;
 import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryClientException;
@@ -38,39 +34,25 @@ import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.RecoveryScenarios;
 import org.wso2.carbon.identity.recovery.RecoverySteps;
 import org.wso2.carbon.identity.recovery.bean.ChallengeQuestionsResponse;
+import org.wso2.carbon.identity.recovery.internal.IdentityRecoveryServiceDataHolder;
 import org.wso2.carbon.identity.recovery.mapping.SecurityQuestionsConfig;
 import org.wso2.carbon.identity.recovery.model.ChallengeQuestion;
 import org.wso2.carbon.identity.recovery.model.UserChallengeAnswer;
 import org.wso2.carbon.identity.recovery.model.UserRecoveryData;
-import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
 import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
 import org.wso2.carbon.identity.recovery.util.Utils;
 import org.wso2.carbon.kernel.utils.LambdaExceptionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+
 import java.util.stream.Collectors;
-
-//import org.wso2.carbon.base.MultitenantConstants;
-//import org.wso2.carbon.identity.application.common.model.Property;
-//import org.wso2.carbon.identity.application.common.model.User;
-//import org.wso2.carbon.identity.core.util.IdentityTenantUtil;
-//import org.wso2.carbon.identity.core.util.IdentityUtil;
-//import org.wso2.carbon.identity.event.IdentityEventConstants;
-//import org.wso2.carbon.identity.event.IdentityEventException;
-//import org.wso2.carbon.identity.event.event.Event;
-//import org.wso2.carbon.identity.mgt.RealmService;
-//import org.wso2.carbon.registry.core.utils.UUIDGenerator;
-//import org.wso2.carbon.user.api.UserStoreException;
-//import org.wso2.carbon.user.api.UserStoreManager;
-//import org.wso2.carbon.user.core.UserCoreConstants;
-//import org.wso2.carbon.user.core.UserRealm;
-//import org.wso2.carbon.user.core.service.RealmService;
-
 
 /**
  * Security Question Password Recovery Manager
@@ -84,63 +66,50 @@ public class SecurityQuestionPasswordRecoveryManager {
 //    private static final String PROPERTY_ACCOUNT_LOCK_ON_FAILURE_MAX = "account.lock.handler.On.Failure.Max.Attempts";
 
 
-    private static SecurityQuestionPasswordRecoveryManager instance = new SecurityQuestionPasswordRecoveryManager();
+//    private static SecurityQuestionPasswordRecoveryManager instance = new SecurityQuestionPasswordRecoveryManager();
 
-    private static SecurityQuestionsConfig securityQuestionsConfig;
+    private static SecurityQuestionsConfig securityQuestionsConfig = new SecurityQuestionsConfig();
+    ChallengeQuestionManager challengeQuestionManager;
+    UserRecoveryDataStore userRecoveryDataStore;
 
-    private SecurityQuestionPasswordRecoveryManager() {
-
+    public SecurityQuestionPasswordRecoveryManager(UserRecoveryDataStore userRecoveryDataStore,
+                                                   ChallengeQuestionManager challengeQuestionManager) {
+        this.userRecoveryDataStore = userRecoveryDataStore;
+        this.challengeQuestionManager = challengeQuestionManager;
     }
 
-    public static SecurityQuestionPasswordRecoveryManager getInstance() {
-        securityQuestionsConfig = new SecurityQuestionsConfig();
-        return instance;
-    }
+//    public static SecurityQuestionPasswordRecoveryManager getInstance() {
+//        securityQuestionsConfig = new SecurityQuestionsConfig();
+//        return instance;
+//    }
 
     /**
      * To initiate challenge question based password recovery, answer questions one by one
+     *
      * @param user User object
      * @return ChallengeQuestionsResponse, with security question to be asked and recovery code
      * @throws IdentityRecoveryException
      */
     public ChallengeQuestionsResponse initiateUserChallengeQuestion(User user) throws IdentityRecoveryException {
 
-        UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
-        userRecoveryDataStore.invalidateByUserUniqueId(user.getUniqueUserId());
+        String uniqueUserId = user.getUniqueUserId();
+        userRecoveryDataStore.invalidateByUserUniqueId(uniqueUserId);
 
         String challengeQuestionSeparator = securityQuestionsConfig.getQuestionSeparator();
 
-        //TODO Check account lock and account disable
-//        if (Utils.isAccountDisabled(user)) {
-//            throw Utils.handleClientException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_DISABLED_ACCOUNT, user.getUserName());
-//        } else if (Utils.isAccountLocked(user)) {
-//            throw Utils.handleClientException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_LOCKED_ACCOUNT, user.getUserName());
-//        }
+        // check account disable/lock
+        handleAccountState(uniqueUserId);
 
         //TODO notification sending
-//      boolean isNotificationInternallyManaged = true;//TODO get from config bean
-//        boolean isNotificationSendWhenInitiatingPWRecovery= false; //TODO get from config bean
-
-//        if (isNotificationInternallyManaged && isNotificationSendWhenInitiatingPWRecovery) {
-//            try {
-////                triggerNotification(user, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET_INITIATE,
-// null);
-//            } catch (Exception e) {
-//                log.warn("Error while sending password reset initiating notification to user :" + user
-// .getUniqueUserId());
-//            }
-//        }
+        handleNotification(uniqueUserId);
 
         int minNoOfQuestionsToAnswer = securityQuestionsConfig.getMinAnswers(); //TODO get from config bean
 
-        ChallengeQuestionManager challengeQuestionManager = ChallengeQuestionManager.getInstance();
         List<String> ids = challengeQuestionManager.getUserChallengeQuestionIds(user);
         //TODO change to list
 
         if (ids.isEmpty()) {
-            return new ChallengeQuestionsResponse(new ArrayList<>());
+            return new ChallengeQuestionsResponse(Collections.EMPTY_LIST);
         }
 
         //when user has more than required number of security questions answered
@@ -148,14 +117,12 @@ public class SecurityQuestionPasswordRecoveryManager {
             ids = getRandomQuestionIds(ids, minNoOfQuestionsToAnswer);
         }
 
-//        String metaData = null;
-
         //generate selected list of security question
         String metaData = String.join(challengeQuestionSeparator, ids);
 
         //get first question
-        ChallengeQuestion userChallengeQuestion = challengeQuestionManager.getUserChallengeQuestion(user
-                .getUniqueUserId(), ids.get(0));
+        ChallengeQuestion userChallengeQuestion = challengeQuestionManager.getUserChallengeQuestion(uniqueUserId,
+                ids.get(0));
         List<ChallengeQuestion> questions = new ArrayList<>();
         questions.add(userChallengeQuestion);
         ChallengeQuestionsResponse challengeQuestionsResponse = new ChallengeQuestionsResponse(questions);
@@ -165,14 +132,12 @@ public class SecurityQuestionPasswordRecoveryManager {
         challengeQuestionsResponse.setCode(secretKey);
 
         //construct and store user recovery data
-        UserRecoveryData recoveryData = new UserRecoveryData(user.getUniqueUserId(), secretKey, RecoveryScenarios
+        UserRecoveryData recoveryData = new UserRecoveryData(uniqueUserId, secretKey, RecoveryScenarios
                 .QUESTION_BASED_PW_RECOVERY, RecoverySteps.VALIDATE_CHALLENGE_QUESTION);
         recoveryData.setRemainingSetIds(metaData);
         userRecoveryDataStore.store(recoveryData);
 
-        if (ids.size() > 1) {
-            challengeQuestionsResponse.setStatus(IdentityRecoveryConstants.RECOVERY_STATUS_INCOMPLETE);
-        }
+        challengeQuestionsResponse.setStatus(IdentityRecoveryConstants.RECOVERY_STATUS_INCOMPLETE);
 
         return challengeQuestionsResponse;
     }
@@ -180,6 +145,7 @@ public class SecurityQuestionPasswordRecoveryManager {
 
     /**
      * To initiate challenge question based password recovery, answer questions at once
+     *
      * @param user User object
      * @return ChallengeQuestionsResponse, with security questions to be asked and recovery code
      * @throws IdentityRecoveryException
@@ -188,35 +154,17 @@ public class SecurityQuestionPasswordRecoveryManager {
         String challengeQuestionSeparator = securityQuestionsConfig.getQuestionSeparator();
         String uniqueUserID = user.getUniqueUserId();
 
-        UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         userRecoveryDataStore.invalidateByUserUniqueId(uniqueUserID);
 
-        //TODO check account disable/lock
-//        if (Utils.isAccountDisabled(user)) {
-//            throw Utils.handleClientException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_DISABLED_ACCOUNT, null);
-//        } else if (Utils.isAccountLocked(user)) {
-//            throw Utils.handleClientException(
-//                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_LOCKED_ACCOUNT, null);
-//        }
+        //check account disable/lock
+        handleAccountState(uniqueUserID);
 
         //TODO notification sending
-        //        boolean isNotificationInternallyManaged = true; //TODO read from config bean
-//        boolean isNotificationSendWhenInitiatingPWRecovery= false; //TODO read from config bean
-//
-//        if (isNotificationInternallyManaged && isNotificationSendWhenInitiatingPWRecovery) {
-//            try {
-////                triggerNotification(user, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET_INITIATE,
-// null);
-//            } catch (Exception e) {
-//                log.warn("Error while sending password reset initiating notification to user :" + user
-// .getUniqueUserId());
-//            }
-//        }
+        handleNotification(uniqueUserID);
 
         int minNoOfQuestionsToAnswer = securityQuestionsConfig.getMinAnswers();
 
-        ChallengeQuestionManager challengeQuestionManager = ChallengeQuestionManager.getInstance();
+
         List<String> ids = challengeQuestionManager.getUserChallengeQuestionIds(user);
 
         if (ids.isEmpty()) {
@@ -234,9 +182,9 @@ public class SecurityQuestionPasswordRecoveryManager {
         //select random set of security questions to be answered
         String allChallengeQuestions = String.join(challengeQuestionSeparator, ids);
 
-        randomQuestions = ids.stream().map(LambdaExceptionUtils.rethrowFunction(id-> challengeQuestionManager
+        randomQuestions = ids.stream().map(LambdaExceptionUtils.rethrowFunction(id -> challengeQuestionManager
                 .getUserChallengeQuestion(user
-                .getUniqueUserId(), id))).collect(Collectors.toList());
+                        .getUniqueUserId(), id))).collect(Collectors.toList());
 
         ChallengeQuestionsResponse challengeQuestionResponse = new ChallengeQuestionsResponse(randomQuestions);
 
@@ -253,10 +201,35 @@ public class SecurityQuestionPasswordRecoveryManager {
         return challengeQuestionResponse;
     }
 
+    private void handleAccountState(String uniqueUserId) throws IdentityRecoveryException {
+        if (Utils.isAccountDisabled(uniqueUserId)) {
+            throw Utils.handleClientException(
+                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_DISABLED_ACCOUNT, null);
+        } else if (Utils.isAccountLocked(uniqueUserId)) {
+            throw Utils.handleClientException(
+                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_LOCKED_ACCOUNT, null);
+        }
+    }
+
+    private void handleNotification(String uniqueUserID) {
+        boolean isNotificationInternallyManaged = securityQuestionsConfig.isNotificationInternallyManaged();
+        boolean isNotificationSendWhenInitiatingPWRecovery = securityQuestionsConfig.isNotifyWhenStartRecoveryFlow();
+
+        if (isNotificationInternallyManaged && isNotificationSendWhenInitiatingPWRecovery) {
+            try {
+                triggerNotification(uniqueUserID, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET_INITIATE,
+                        null);
+            } catch (Exception e) {
+                log.warn("Error while sending password reset initiating notification to userID:" + uniqueUserID);
+            }
+        }
+    }
+
     /**
      * Validate user answers for the security question(s) asked for recovery
+     *
      * @param userChallengeAnswer List of UserChallengeAnswers
-     * @param code recovery code sent in previous step
+     * @param code                recovery code sent in previous step
      * @return ChallengeQuestionsResponse with recovery status,
      * previously asked question(s) will be sent again in error scenarios
      * if answer is valid, next question will be sent when answer questions one by one
@@ -266,8 +239,7 @@ public class SecurityQuestionPasswordRecoveryManager {
                                                                      String code) throws
             IdentityRecoveryException {
 
-        UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
-        UserRecoveryData userRecoveryData = null;
+        UserRecoveryData userRecoveryData;
 
         List<ChallengeQuestion> questions = new ArrayList<>();
         ChallengeQuestionsResponse challengeQuestionResponse = new ChallengeQuestionsResponse(questions);
@@ -279,7 +251,7 @@ public class SecurityQuestionPasswordRecoveryManager {
         try {
             userRecoveryData = userRecoveryDataStore.loadByCode(code);
         } catch (IdentityRecoveryException e) {
-            log.error("Error while loading recovery data with code " + code, e);
+            log.error("Error while loading recovery data with code: " + code, e);
             String errorCode = !StringUtils.isEmpty(e.getErrorCode()) ? e.getErrorCode() : IdentityRecoveryConstants
                     .ErrorMessages.ERROR_CODE_UNEXPECTED.getCode();
             challengeQuestionResponse.setCode(code);
@@ -289,8 +261,6 @@ public class SecurityQuestionPasswordRecoveryManager {
 
         String secretKey = userRecoveryData.getSecret();
         challengeQuestionResponse.setCode(secretKey);
-
-        ChallengeQuestionManager challengeQuestionManager = ChallengeQuestionManager.getInstance();
 
         try {
             if (userChallengeAnswer == null) {
@@ -309,7 +279,7 @@ public class SecurityQuestionPasswordRecoveryManager {
                 //match first question of remaining questions to be answered(asked question), with answered question
                 //exception will be thrown if answered to other question
                 String[] remainingQuestionIds = userRecoveryData.getRemainingSetIds().split(challengeQuestionSeparator);
-                questions.add(validateQuestion(remainingQuestionIds[0], userChallengeAnswer.get(0),
+                questions.add(getValidatedQuestion(remainingQuestionIds[0], userChallengeAnswer.get(0),
                         userRecoveryData.getUserUniqueId(), challengeQuestionManager));
 
                 challengeQuestionResponse.setQuestions(questions);
@@ -381,7 +351,7 @@ public class SecurityQuestionPasswordRecoveryManager {
                                 .ERROR_CODE_NEED_TO_ANSWER_TO_REQUESTED_QUESTIONS, null);
                     }
 
-                    questions = validateQuestions(requestedQuestions, userChallengeAnswer,
+                    questions = getValidatedQuestions(requestedQuestions, userChallengeAnswer,
                             userRecoveryData.getUserUniqueId(), challengeQuestionManager);
                     challengeQuestionResponse.setQuestions(questions);
                     //Validate whether user answered all the requested questions
@@ -403,7 +373,7 @@ public class SecurityQuestionPasswordRecoveryManager {
                     }
                 }
 
-                // Reset password recovery failed attempts
+                //TODO Reset password recovery failed attempts
                 //resetRecoveryPasswordFailedAttempts(userRecoveryData.getUser());
 
                 userRecoveryDataStore.invalidateByCode(code);
@@ -428,7 +398,7 @@ public class SecurityQuestionPasswordRecoveryManager {
         }
     }
 
-//    private void validateQuestion(String[] requestedQuestions, List<UserChallengeAnswer> userChallengeAnswers)
+//    private void getValidatedQuestion(String[] requestedQuestions, List<UserChallengeAnswer> userChallengeAnswers)
 //            throws IdentityRecoveryException {
 //        List<String> userChallengeIds = new ArrayList<>();
 ////        for (int i = 0; i < userChallengeAnswer.length; i++) {
@@ -447,17 +417,18 @@ public class SecurityQuestionPasswordRecoveryManager {
 
     /**
      * Validate requested questions with answered questions
-     * @param requestedQuestions list of questions asked, setIDs
-     * @param userChallengeAnswers list of questions answered
-     * @param userUniqueID unique ID of user
+     *
+     * @param requestedQuestions       list of questions asked, setIDs
+     * @param userChallengeAnswers     list of questions answered
+     * @param userUniqueID             unique ID of user
      * @param challengeQuestionManager ChallengeQuestionManager instance
      * @return List of asked questions
      * @throws IdentityRecoveryException
      */
-    private List<ChallengeQuestion> validateQuestions(String[] requestedQuestions,
-                                                      List<UserChallengeAnswer> userChallengeAnswers,
-                                                      String userUniqueID,
-                                                      ChallengeQuestionManager challengeQuestionManager)
+    private List<ChallengeQuestion> getValidatedQuestions(String[] requestedQuestions,
+                                                          List<UserChallengeAnswer> userChallengeAnswers,
+                                                          String userUniqueID,
+                                                          ChallengeQuestionManager challengeQuestionManager)
             throws IdentityRecoveryException {
 
         List<String> userChallengeIds = new ArrayList<>();
@@ -485,28 +456,28 @@ public class SecurityQuestionPasswordRecoveryManager {
 
     /**
      * Validate requested questions with answered question
-     * @param requestedQuestion asked question, setID
-     * @param userChallengeAnswer question answered
-     * @param userUniqueID unique ID of user
+     *
+     * @param requestedQuestionSetId   asked question, setID
+     * @param userChallengeAnswer      question answered
+     * @param userUniqueID             unique ID of user
      * @param challengeQuestionManager ChallengeQuestionManager instance
      * @return asked question
      * @throws IdentityRecoveryException
      */
-    private ChallengeQuestion validateQuestion(String requestedQuestion,
-                                               UserChallengeAnswer userChallengeAnswer,
-                                               String userUniqueID, ChallengeQuestionManager challengeQuestionManager)
+    private ChallengeQuestion getValidatedQuestion(String requestedQuestionSetId,
+                                                   UserChallengeAnswer userChallengeAnswer, String userUniqueID,
+                                                   ChallengeQuestionManager challengeQuestionManager)
             throws IdentityRecoveryException {
-        if (!requestedQuestion.equals(userChallengeAnswer.getQuestion().getQuestionSetId())) {
+        if (!requestedQuestionSetId.equals(userChallengeAnswer.getQuestion().getQuestionSetId())) {
             throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
                     .ERROR_CODE_NEED_TO_ANSWER_TO_ASKED_SECURITY_QUESTION, null);
-        } else {
-            String q = challengeQuestionManager.getUserChallengeQuestion(userUniqueID,
-                    userChallengeAnswer.getQuestion().getQuestionSetId()).getQuestion();
-            return new ChallengeQuestion(userChallengeAnswer.getQuestion().getQuestionSetId(), q);
         }
+        String question = challengeQuestionManager.getUserChallengeQuestion(userUniqueID,
+                userChallengeAnswer.getQuestion().getQuestionSetId()).getQuestion();
+        return new ChallengeQuestion(userChallengeAnswer.getQuestion().getQuestionSetId(), question);
     }
 
-//    private void validateQuestion(String[] requestedQuestions, UserChallengeAnswer[] userChallengeAnswer)
+//    private void getValidatedQuestion(String[] requestedQuestions, UserChallengeAnswer[] userChallengeAnswer)
 //            throws IdentityRecoveryException {
 //        List<String> userChallengeIds = new ArrayList<>();
 //        for (int i = 0; i < userChallengeAnswer.length; i++) {
@@ -522,17 +493,18 @@ public class SecurityQuestionPasswordRecoveryManager {
 //    }
 
     /**
-     * Select rendom list from provided list
-     * @param remainingQuestions all the questions user has answered
-     * @param minNoOfQuestionsToAnswser number of questions to be selected
+     * Select random list from provided list
+     *
+     * @param challengeQuestions       all the questions user has answered
+     * @param minNoOfQuestionsToAnswer number of questions to be selected
      * @return selected list of question setIDs
      */
-    private static List<String> getRandomQuestionIds(List<String> remainingQuestions, int minNoOfQuestionsToAnswser) {
-       // ArrayList remainingQuestions = new ArrayList(allQuesitons);
+    private List<String> getRandomQuestionIds(List<String> challengeQuestions, int minNoOfQuestionsToAnswer) {
         List<String> selectedQuestions = new ArrayList<>();
+        List<String> remainingQuestions = new ArrayList<>(challengeQuestions);
 
-        for (int i = 0; i < minNoOfQuestionsToAnswser; i++) {
-            int random = new Random().nextInt(remainingQuestions.size());
+        for (int i = 0; i < minNoOfQuestionsToAnswer; i++) {
+            int random = new Random().nextInt(challengeQuestions.size());
             selectedQuestions.add(i, remainingQuestions.get(random));
             remainingQuestions.remove(random);
         }
@@ -557,10 +529,33 @@ public class SecurityQuestionPasswordRecoveryManager {
 //            IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().handleEvent(identityMgtEvent);
 //        } catch (IdentityEventException e) {
 //            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages
-// .ERROR_CODE_TRIGGER_NOTIFICATION, user
+//.ERROR_CODE_TRIGGER_NOTIFICATION, user
 //                    .getUserName(), e);
 //        }
 //    }
+
+    private void triggerNotification(String userUniqueId, String type, String code)
+            throws IdentityRecoveryException {
+        String eventName = EventConstants.Event.TRIGGER_NOTIFICATION;
+        HashMap<String, Object> properties = new HashMap<>();
+        properties.put(EventConstants.EventProperty.USER_UNIQUE_ID, userUniqueId);
+
+        if (StringUtils.isNotBlank(code)) {
+            properties.put(IdentityRecoveryConstants.CONFIRMATION_CODE, code);
+        }
+
+        properties.put(IdentityRecoveryConstants.TEMPLATE_TYPE, type);
+        Event identityMgtEvent = new Event(eventName, properties);
+        EventContext eventContext = new EventContext();
+
+        try {
+            IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().pushEvent(identityMgtEvent,
+                    eventContext);
+        } catch (IdentityException e) {
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION,
+                    userUniqueId, e);
+        }
+    }
 
 //    private Property[] getConnectorConfigs(String tenantDomain) throws IdentityRecoveryException {
 //
