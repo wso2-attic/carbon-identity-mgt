@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-//import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.bean.UserBean;
@@ -29,14 +28,9 @@ import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-//import java.util.HashMap;
 import java.util.List;
-//import java.util.Map;
 
 import javax.inject.Inject;
-//import javax.security.auth.callback.Callback;
-//import javax.security.auth.callback.PasswordCallback;
-
 
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
