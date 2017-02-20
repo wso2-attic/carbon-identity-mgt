@@ -16,6 +16,7 @@ import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
@@ -81,7 +82,7 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
         UserChallengeAnswer answer = new UserChallengeAnswer(question, "Answer1");
         answers.add(answer);
         addChallengeQuestionForUser(answers);
-        
+
         challengeQuestionsResponse = securityQuestionPasswordRecoveryManager.initiateUserChallengeQuestion
                 (users.get(0));
         Assert.assertNotNull(challengeQuestionsResponse, "Failed to start challenge question based password recovery " +
@@ -169,6 +170,43 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
 
     }
 
+    @Test(groups = "startChallengeQuestionWhenAccountLocked", dependsOnGroups = {"answerRecoveryQuestionsAtOnce"})
+    public void startChallengeQuestionWhenAccountLocked() throws IdentityRecoveryException, UserNotFoundException,
+            IdentityStoreException {
+
+        lockAccount(users.get(0).getUniqueUserId());
+        boolean accountLockDetetcted = false;
+        try {
+            ChallengeQuestionsResponse challengeQuestionsResponse = securityQuestionPasswordRecoveryManager
+                    .initiateUserChallengeQuestion(users.get(0));
+        } catch (IdentityRecoveryException e) {
+            Assert.assertEquals(e.getErrorCode(), "17003", "Account lock status is not returned");
+            if (e.getErrorCode().equals("17003")) {
+                accountLockDetetcted = true;
+            }
+        }
+        Assert.assertTrue(accountLockDetetcted, "Account Locked exception is not thrown.");
+    }
+
+    @Test(groups = "startChallengeQuestionWhenAccountDisabled",
+            dependsOnGroups = {"startChallengeQuestionWhenAccountLocked"})
+    public void startChallengeQuestionWhenAccountDisabled() throws IdentityRecoveryException, UserNotFoundException,
+            IdentityStoreException {
+
+        disableAccount(users.get(0).getUniqueUserId());
+        boolean accountLockDetetcted = false;
+        try {
+            ChallengeQuestionsResponse challengeQuestionsResponse = securityQuestionPasswordRecoveryManager
+                    .initiateUserChallengeQuestion(users.get(0));
+        } catch (IdentityRecoveryException e) {
+            Assert.assertEquals(e.getErrorCode(), "17004", "Account lock status is not returned");
+            if (e.getErrorCode().equals("17004")) {
+                accountLockDetetcted = true;
+            }
+        }
+        Assert.assertTrue(accountLockDetetcted, "Account Locked exception is not thrown.");
+    }
+
     private void addUser() throws IdentityStoreException {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
@@ -204,7 +242,7 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
 
     private void addChallengeQuestionForUser(List<UserChallengeAnswer> answers) throws IdentityRecoveryException {
         ChallengeQuestionManager challengeQuestionManager = bundleContext.getService(bundleContext.getServiceReference
-                        (ChallengeQuestionManager.class));
+                (ChallengeQuestionManager.class));
 
         Assert.assertNotNull(challengeQuestionManager,
                 "Failed to get ChallengeQuestionManagerClientService instance");
@@ -218,6 +256,33 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
 
     private ChallengeQuestionsResponse startQuestionBasedPasswordRecovery(User user) throws IdentityRecoveryException {
         return securityQuestionPasswordRecoveryManager.initiateUserChallengeQuestion(user);
+    }
+
+    private void updateUserClaims(String uniqueUserId, Claim claim) throws UserNotFoundException,
+            IdentityStoreException {
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+
+        List<Claim> claims = new ArrayList<>();
+        claims.add(claim);
+
+        try {
+            realmService.getIdentityStore().updateUserClaims(uniqueUserId, claims);
+        } catch (IdentityStoreException e) {
+            Assert.fail("Failed to update user claims.");
+        }
+
+    }
+
+    private void lockAccount(String uniqueUserID) throws UserNotFoundException, IdentityStoreException {
+        Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/identity/accountLocked", "true");
+
+        updateUserClaims(uniqueUserID, claim);
+    }
+
+    private void disableAccount(String uniqueUserID) throws UserNotFoundException, IdentityStoreException {
+        Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/identity/accountDisabled", "true");
+
+        updateUserClaims(uniqueUserID, claim);
     }
 
 }

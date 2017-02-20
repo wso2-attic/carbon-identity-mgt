@@ -312,11 +312,11 @@ public class Utils {
         return challengeQuestions.toArray(new ChallengeQuestion[challengeQuestions.size()]);
     }
 
-    public static boolean isAccountLocked(User user) throws IdentityRecoveryException {
+    public static boolean isAccountLocked(String uniqueUserId) throws IdentityRecoveryException {
 
         try {
             return Boolean.parseBoolean(
-                    getClaimFromIdentityStore(user.getUniqueUserId(), IdentityRecoveryConstants.ACCOUNT_LOCKED_CLAIM));
+                    getClaimFromIdentityStore(uniqueUserId, IdentityRecoveryConstants.ACCOUNT_LOCKED_CLAIM));
         } catch (IdentityStoreException e) {
             throw Utils.handleServerException(
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
@@ -327,12 +327,11 @@ public class Utils {
     }
 
 
-    public static boolean isAccountDisabled(User user) throws IdentityRecoveryException {
+    public static boolean isAccountDisabled(String uniqueUserId) throws IdentityRecoveryException {
 
         try {
             return Boolean.parseBoolean(
-                    getClaimFromIdentityStore(user.getUniqueUserId(),
-                            IdentityRecoveryConstants.ACCOUNT_DISABLED_CLAIM));
+                    getClaimFromIdentityStore(uniqueUserId, IdentityRecoveryConstants.ACCOUNT_DISABLED_CLAIM));
         } catch (IdentityStoreException e) {
             throw Utils.handleServerException(
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
