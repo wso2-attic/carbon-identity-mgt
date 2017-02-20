@@ -38,7 +38,7 @@ public class IdentityRecoveryConstants {
     public static final String NOTIFICATION_TYPE_EMAIL_CONFIRM = "emailconfirm";
     public static final String NOTIFICATION_TYPE_ASK_PASSWORD = "askPassword";
     public static final String NOTIFICATION_TYPE_PASSWORD_RESET_SUCCESS = "passwordresetsucess";
-    public static final String NOTIFICATION_TYPE_PASSWORD_RESET_INITIATE = "initiaterecovery";
+    public static final String NOTIFICATION_TYPE_PASSWORD_RESET_INITIATE = "initiateRecovery";
     public static final String NOTIFICATION_ACCOUNT_ID_RECOVERY = "accountidrecovery";
     public static final String RECOVERY_STATUS_INCOMPLETE = "INCOMPLETE";
     public static final String RECOVERY_STATUS_COMPLETE = "COMPLETE";

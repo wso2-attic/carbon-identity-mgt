@@ -101,7 +101,7 @@ public class SecurityQuestionPasswordRecoveryManager {
         handleAccountState(uniqueUserId);
 
         //TODO notification sending
-//        handleNotification(uniqueUserId);
+        handleNotification(uniqueUserId);
 
         int minNoOfQuestionsToAnswer = securityQuestionsConfig.getMinAnswers(); //TODO get from config bean
 
@@ -160,7 +160,7 @@ public class SecurityQuestionPasswordRecoveryManager {
         handleAccountState(uniqueUserID);
 
         //TODO notification sending
-        //handleNotification(uniqueUserID);
+        handleNotification(uniqueUserID);
 
         int minNoOfQuestionsToAnswer = securityQuestionsConfig.getMinAnswers();
 
@@ -543,15 +543,6 @@ public class SecurityQuestionPasswordRecoveryManager {
         if (StringUtils.isNotBlank(code)) {
             properties.put(IdentityRecoveryConstants.CONFIRMATION_CODE, code);
         }
-        //todo need check additional properties
-//        if (metaProperties != null) {
-//            for (Property metaProperty : metaProperties) {
-//                if (StringUtils.isNotBlank(metaProperty.getValue()) && StringUtils.isNotBlank(metaProperty.getKey()))
-//                {
-//                    properties.put(metaProperty.getKey(), metaProperty.getValue());
-//                }
-//            }
-//        }
 
         properties.put(IdentityRecoveryConstants.TEMPLATE_TYPE, type);
         Event identityMgtEvent = new Event(eventName, properties);
