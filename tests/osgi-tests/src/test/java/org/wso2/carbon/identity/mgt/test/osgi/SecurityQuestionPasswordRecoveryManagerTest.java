@@ -274,13 +274,13 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
     }
 
     private void lockAccount(String uniqueUserID) throws UserNotFoundException, IdentityStoreException {
-        Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/identity/accountLocked", "true");
+        Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/accountLocked", "true");
 
         updateUserClaims(uniqueUserID, claim);
     }
 
     private void disableAccount(String uniqueUserID) throws UserNotFoundException, IdentityStoreException {
-        Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/identity/accountDisabled", "true");
+        Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/accountDisabled", "true");
 
         updateUserClaims(uniqueUserID, claim);
     }

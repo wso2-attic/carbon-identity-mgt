@@ -215,6 +215,21 @@ public class Domain {
     }
 
     /**
+     * Change user current state
+     * @param domainUserId : domain user id
+     * @param targetState  : target state
+     * @throws DomainException       : DomainException
+     * @throws UserNotFoundException : UserNotFoundException
+     */
+    public void setUserState(String domainUserId, String targetState) throws DomainException, UserNotFoundException {
+        try {
+            this.uniqueIdResolver.setUserState(domainUserId, targetState, this.id);
+        } catch (UniqueIdResolverException e) {
+            throw new DomainException("Failed to set user state to :" + targetState, e);
+        }
+    }
+
+    /**
      * Get domain user from a unique claim
      * @param claim : unique claim
      * @return
@@ -1079,7 +1094,7 @@ public class Domain {
 
         if (!connectorUserIdMap.equals(updatedConnectorUserIdMap)) {
             try {
-                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIdMap, this.id);
+                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIdMap, this.id, domainUser.getState());
             } catch (UniqueIdResolverException e) {
                 throw new DomainException("Failed to update user connector ids.", e);
             }
@@ -1153,7 +1168,7 @@ public class Domain {
 
         if (!connectorUserIdMap.equals(updatedConnectorUserIds)) {
             try {
-                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIds, this.id);
+                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIds, this.id, domainUser.getState());
             } catch (UniqueIdResolverException e) {
                 throw new DomainException("Failed to update user connector ids.", e);
             }
@@ -1231,7 +1246,7 @@ public class Domain {
 
         if (!connectorUserIdMap.equals(updatedConnectorUserIdMap)) {
             try {
-                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIdMap, this.id);
+                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIdMap, this.id, domainUser.getState());
             } catch (UniqueIdResolverException e) {
                 throw new DomainException("Failed to update user connector ids.", e);
             }
@@ -1305,7 +1320,7 @@ public class Domain {
 
         if (!connectorUserIdMap.equals(updatedConnectorUserIds)) {
             try {
-                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIds, this.id);
+                uniqueIdResolver.updateUser(domainUserId, updatedConnectorUserIds, this.id, domainUser.getState());
             } catch (UniqueIdResolverException e) {
                 throw new DomainException("Failed to update user connector ids.", e);
             }

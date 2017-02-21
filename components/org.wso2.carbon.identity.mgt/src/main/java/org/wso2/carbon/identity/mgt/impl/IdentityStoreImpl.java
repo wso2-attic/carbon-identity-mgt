@@ -1656,8 +1656,13 @@ public class IdentityStoreImpl implements IdentityStore {
                     } else {
                         String domainUserId = (String) authenticationContext.getParameter(
                                 IdentityMgtConstants.DOMAIN_USER_ID);
-                        failedAuthenticationContext.addFailedUserIdToList(getEncodedUniqueEntityId(domain
-                                .getId(), domainUserId));
+                        String state = (String) authenticationContext.getParameter(
+                                IdentityMgtConstants.STATE);
+                        failedAuthenticationContext.addFailedUserToList(new User.UserBuilder()
+                                .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUserId))
+                                .setIdentityStore(this)
+                                .setState(state)
+                                .setDomainName(domain.getName()).build());
                     }
                 } catch (AuthenticationFailure e) {
                     if (log.isDebugEnabled()) {
@@ -1701,6 +1706,25 @@ public class IdentityStoreImpl implements IdentityStore {
         }
 
         return domainMap.keySet();
+    }
+
+    @Override
+    public void setUserState(String uniqueUserId, String targetState) throws IdentityStoreException,
+            UserNotFoundException {
+        if (isNullOrEmpty(uniqueUserId)) {
+            throw new UserNotFoundException("Invalid unique user id.");
+        }
+
+        SimpleEntry<Integer, String> decodedUniqueUserId = getDecodedUniqueEntityId(uniqueUserId);
+
+        Domain domain = domains.get(decodedUniqueUserId.getKey());
+
+        try {
+            domain.setUserState(decodedUniqueUserId.getValue(), targetState);
+        } catch (DomainException e) {
+            throw new IdentityStoreServerException("Failed to set user state", e);
+        }
+
     }
 
     /**
@@ -1748,8 +1772,11 @@ public class IdentityStoreImpl implements IdentityStore {
             return authenticationContext;
         } else {
             if (authenticationContext instanceof FailedAuthenticationContext) {
-                ((FailedAuthenticationContext) authenticationContext).addFailedUserIdToList(getEncodedUniqueEntityId(
-                        domain.getId(), domainUserId));
+                ((FailedAuthenticationContext) authenticationContext).addFailedUserToList(new User.UserBuilder()
+                        .setUserId(getEncodedUniqueEntityId(domain.getId(), domainUserId))
+                        .setIdentityStore(this)
+                        .setState(state)
+                        .setDomainName(domain.getName()).build());
                 return authenticationContext;
             }
             throw new IdentityStoreException("Invalid Authentication context");

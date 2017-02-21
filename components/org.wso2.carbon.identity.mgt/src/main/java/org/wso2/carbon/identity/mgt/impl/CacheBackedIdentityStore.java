@@ -435,6 +435,12 @@ public class CacheBackedIdentityStore implements IdentityStore {
         return identityStore.getDomainNames();
     }
 
+    @Override
+    public void setUserState(String uniqueUserId, String targetState) throws IdentityStoreException,
+            UserNotFoundException {
+        identityStore.setUserState(uniqueUserId, targetState);
+    }
+
     private User doGetUser(String uniqueUserId, String domainName) throws IdentityStoreException,
             UserNotFoundException {
 

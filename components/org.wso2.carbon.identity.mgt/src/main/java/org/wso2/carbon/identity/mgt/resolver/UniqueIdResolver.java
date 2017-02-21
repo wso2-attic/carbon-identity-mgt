@@ -193,7 +193,7 @@ public interface UniqueIdResolver {
      * @param connectorUserIdMap Connector user id map.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
-    void updateUser(String domainUserId, Map<String, String> connectorUserIdMap, int domainId) throws
+    void updateUser(String domainUserId, Map<String, String> connectorUserIdMap, int domainId, String state) throws
             UniqueIdResolverException;
 
     /**
@@ -282,4 +282,14 @@ public interface UniqueIdResolver {
      */
     void updateUsersOfGroup(String doaminGroupId, List<String> domainUserIdsToUpdate,
                             List<String> domainUserIdsToRemove, int domainId) throws UniqueIdResolverException;
+
+    /**
+     * Set User state
+     * @param domainUserId : Domain user Id
+     * @param targetState ; Target state
+     * @param domainId : Domain Id
+     * @throws UniqueIdResolverException
+     */
+    void setUserState(String domainUserId, String targetState, int domainId) throws UniqueIdResolverException;
+
 }

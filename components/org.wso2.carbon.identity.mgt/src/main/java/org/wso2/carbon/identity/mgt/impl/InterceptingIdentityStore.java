@@ -1443,4 +1443,29 @@ public class InterceptingIdentityStore implements IdentityStore {
 
         return domainNames;
     }
+
+    @Override
+    public void setUserState(String uniqueUserId, String targetState) throws IdentityStoreException,
+            UserNotFoundException {
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
+        EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
+                (eventService, messageContext);
+
+        template.pushEvent(IdentityStoreInterceptorConstants
+                .PRE_SET_USER_STATE, (eventProperties)
+                -> {
+            eventProperties.put(IdentityStoreConstants.UNIQUE_USED_ID, uniqueUserId);
+            eventProperties.put(IdentityStoreConstants.TARGET_STATE, targetState);
+        }).executeWith(new EventHandlerDelegate<Void>() {
+            @Override
+            public Void execute() throws IdentityStoreException, UserNotFoundException {
+                identityStore.setUserState(uniqueUserId, targetState);
+                return null;
+            }
+        }).pushEvent(IdentityStoreInterceptorConstants.PRE_SET_USER_STATE, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.TARGET_STATE, targetState);
+        });
+
+        identityStore.setUserState(uniqueUserId, targetState);
+    }
 }

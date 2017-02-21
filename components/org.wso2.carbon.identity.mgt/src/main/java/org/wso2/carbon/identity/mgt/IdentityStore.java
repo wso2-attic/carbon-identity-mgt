@@ -596,4 +596,12 @@ public interface IdentityStore {
      * @throws IdentityStoreException Identity store exception.
      */
     Set<String> getDomainNames() throws IdentityStoreException;
+
+    /**
+     * Set a new user state
+     * @param uniqueUserId : user unique id
+     * @param targetState : target state
+     * @throws IdentityStoreException
+     */
+    void setUserState(String uniqueUserId, String targetState) throws IdentityStoreException, UserNotFoundException;
 }

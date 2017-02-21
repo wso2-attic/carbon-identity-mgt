@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.identity.mgt.Group;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
+import org.wso2.carbon.identity.mgt.UserState;
 import org.wso2.carbon.identity.mgt.bean.GroupBean;
 import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
@@ -878,6 +879,30 @@ public class IdentityStoreTest {
             realmService.getIdentityStore().updateUserClaims(users.get(0).getUniqueUserId(), claims);
         } catch (IdentityStoreException e) {
             Assert.fail("Failed to update user claims.");
+        }
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
+    }
+
+    @Test(dependsOnGroups = {"addUsers"})
+    public void testSetUserState() throws UserNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        ;
+
+        try {
+            String userId = users.get(0).getUniqueUserId();
+            realmService.getIdentityStore().setUserState(userId, UserState.UNLOCKED__UNVERIFIED.toString());
+            User user = realmService.getIdentityStore().getUser(userId);
+            Assert.assertEquals(user.getState(), UserState.UNLOCKED__UNVERIFIED.toString());
+
+        } catch (IdentityStoreException e) {
+            Assert.fail("Failed to set user state.");
         }
 
         Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");

@@ -225,6 +225,10 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
             PRE.set(true);
         } else if ("POST_GET_DOMAIN_NAMES".equals(event.getEventName())) {
             POST.set(true);
+        } else if ("PRE_SET_USER_STATE".equals(event.getEventName())) {
+            PRE.set(true);
+        } else if ("POST_SET_USER_STATE".equals(event.getEventName())) {
+            POST.set(true);
         }
 
     }

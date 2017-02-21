@@ -17,6 +17,8 @@
 package org.wso2.carbon.identity.mgt.impl.util.builder.event;
 
 
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+
 /**
  * Functional interface to be used to execute the main logic in the interceptor after firing PRE-events
  * and before firing POST-events.
@@ -32,5 +34,5 @@ public interface EventHandlerDelegate<T> {
      * @return the value of generic type T
      * @throws X1 which is a "generics" exception
      */
-    <X1 extends Exception> T execute() throws X1;
+    <X1 extends Exception> T execute() throws X1, UserNotFoundException;
 }
