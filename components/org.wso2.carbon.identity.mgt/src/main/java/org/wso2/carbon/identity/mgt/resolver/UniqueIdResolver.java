@@ -42,6 +42,7 @@ public interface UniqueIdResolver {
      * @param domainUserId Globally unique user Id.
      * @return Unique user.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
+     * @throws UserNotFoundException User Not Found Exception
      */
     DomainUser getUser(String domainUserId, int domainId) throws UniqueIdResolverException, UserNotFoundException;
 
@@ -51,6 +52,7 @@ public interface UniqueIdResolver {
      * @param connectorUserId The connector specific user Id.
      * @param connectorId     The connector Id.
      * @return Globally unique user Id.
+     * @throws UserNotFoundException User Not Found Exception
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
      */
     DomainUser getUserFromConnectorUserId(String connectorUserId, String connectorId, int domainId) throws
@@ -103,6 +105,7 @@ public interface UniqueIdResolver {
      * @param connectorId      The connector Id.
      * @return Globally unique group Id.
      * @throws UniqueIdResolverException Unique Id Resolver Exception.
+     * @throws GroupNotFoundException Group Not Found Exception
      */
     DomainGroup getGroupFromConnectorGroupId(String connectorGroupId, String connectorId, int domainId) throws
             UniqueIdResolverException, GroupNotFoundException;
