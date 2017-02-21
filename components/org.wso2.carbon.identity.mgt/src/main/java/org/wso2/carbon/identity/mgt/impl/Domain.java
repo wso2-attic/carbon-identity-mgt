@@ -268,8 +268,10 @@ public class Domain {
         try {
             connectorUserId = identityStoreConnector.getConnectorUserId(metaClaimMapping.getAttributeName(),
                     claim.getValue());
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException("Failed to get connector user id for claim %s." + claim.getClaimUri(), e);
         } catch (IdentityStoreConnectorException e) {
-            throw new DomainException("Failed to get connector user id", e);
+            throw new DomainException("An error occurred while searching the user.", e);
         }
 
         if (isNullOrEmpty(connectorUserId)) {
@@ -280,12 +282,14 @@ public class Domain {
         try {
             domainUser = uniqueIdResolver.getUserFromConnectorUserId(connectorUserId, metaClaimMapping
                     .getIdentityStoreConnectorId(), this.id);
+        } catch (UserNotFoundException e) {
+            throw new UserNotFoundException("Failed to retrieve the domain user id.", e);
         } catch (UniqueIdResolverException e) {
-            throw new DomainException("Failed to retrieve the domain user id.", e);
+            throw new DomainException("An error occurred while searching the user.", e);
         }
 
         if (domainUser == null || isNullOrEmpty(domainUser.getDomainUserId())) {
-            throw new DomainException("Failed to retrieve the domain user id.");
+            throw new UserNotFoundException("Failed to retrieve the domain user id.");
         }
 
         return domainUser.getDomainUserId();
@@ -1703,7 +1707,7 @@ public class Domain {
         try {
             domainUser = uniqueIdResolver.getUserFromConnectorUserId(connectorUserId, metaClaimMapping
                     .getIdentityStoreConnectorId(), this.id);
-        } catch (UniqueIdResolverException e) {
+        } catch (UniqueIdResolverException | UserNotFoundException e) {
             throw new AuthenticationFailure("Failed retrieve unique user info.", e);
         }
 

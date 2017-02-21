@@ -110,7 +110,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
     @Override
     public DomainUser getUserFromConnectorUserId(String connectorUserId, String connectorId, int domainId) throws
-            UniqueIdResolverException {
+            UserNotFoundException, UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
             final String selectUniqueUser = "SELECT USER_ID, CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_USER_ID, STATE " +
@@ -146,7 +146,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
                 }
             }
             if (userUUID == null) {
-                throw new UniqueIdResolverException("No user found.");
+                throw new UserNotFoundException("No user found.");
             }
             domainUser.setDomainUserId(userUUID);
             domainUser.setUserPartitions(userPartitions);
@@ -168,7 +168,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             try {
                 DomainUser domainUser = getUserFromConnectorUserId(entry, connectorId, domainId);
                 domainUsers.add(domainUser);
-            } catch (UniqueIdResolverException e) {
+            } catch (UniqueIdResolverException | UserNotFoundException e) {
                 uniqueIdResolverException.addSuppressed(e);
             }
         });

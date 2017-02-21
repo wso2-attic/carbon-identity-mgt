@@ -94,7 +94,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
-    public Map<String, String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
+    public List<String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
         return identityStore.isUserExist(userClaims);
     }
 

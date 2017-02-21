@@ -205,6 +205,31 @@ public class IdentityStoreTest {
     }
 
     @Test(dependsOnGroups = {"addUsers"})
+    public void testUserExistenceSpecificDomain() throws IdentityStoreException, UserNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        boolean isUserExist = realmService.getIdentityStore().isUserExist(users.get(0).getClaims(), users.get(0)
+                .getDomainName());
+
+        Assert.assertTrue(isUserExist, "Failed to receive the user.");
+    }
+
+    @Test(dependsOnGroups = {"addUsers"})
+    public void testUserExistenceAcrossDomains() throws IdentityStoreException, UserNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        List<String> userExistMap = realmService.getIdentityStore().isUserExist(users.get(0).getClaims());
+
+        Assert.assertNotNull(userExistMap, "Failed to receive the user.");
+        Assert.assertEquals(userExistMap.size(), 1,
+                "Failed to correct answer for the user existence across domains.");
+    }
+
+    @Test(dependsOnGroups = {"addUsers"})
     public void testGetUserByUniqueUserId() throws IdentityStoreException, UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
