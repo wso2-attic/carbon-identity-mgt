@@ -26,6 +26,8 @@ public class SecurityQuestionsConfig {
     private boolean enablePortal = true;
     private String questionSeparator = "!";
     private boolean validateOneByOne = true;
+    private boolean notificationInternallyManaged = true;
+    private boolean notifyWhenStartRecoveryFlow = true;
 
     public boolean isNotifyStart() {
         return notifyStart;
@@ -73,5 +75,21 @@ public class SecurityQuestionsConfig {
 
     public void setValidateOneByOne(boolean validateOneByOne) {
         this.validateOneByOne = validateOneByOne;
+    }
+
+    public boolean isNotificationInternallyManaged() {
+        return notificationInternallyManaged;
+    }
+
+    public void setNotificationInternallyManaged(boolean notificationInternallyManaged) {
+        this.notificationInternallyManaged = notificationInternallyManaged;
+    }
+
+    public boolean isNotifyWhenStartRecoveryFlow() {
+        return notifyWhenStartRecoveryFlow;
+    }
+
+    public void setNotifyWhenStartRecoveryFlow(boolean notifyWhenStartRecoveryFlow) {
+        this.notifyWhenStartRecoveryFlow = notifyWhenStartRecoveryFlow;
     }
 }

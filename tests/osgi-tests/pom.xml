@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.identity.mgt</groupId>
         <artifactId>carbon-identity-mgt-tests</artifactId>
-        <version>0.1.23-SNAPSHOT</version>
+        <version>0.1.24-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -65,6 +65,10 @@
         <dependency>
             <groupId>org.wso2.carbon.identity.mgt</groupId>
             <artifactId>org.wso2.carbon.identity.mgt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.mgt</groupId>
+            <artifactId>org.wso2.carbon.identity.recovery</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity.mgt</groupId>
@@ -308,10 +312,12 @@
                                                 <classfiles>
                                                     <fileset dir="../../components/org.wso2.carbon.identity.mgt/target/classes" />
                                                     <fileset dir="../../components/org.wso2.carbon.identity.claim/target/classes" />
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.recovery/target/classes" />
                                                 </classfiles>
                                                 <sourcefiles encoding="UTF-8">
                                                     <fileset dir="../../components/org.wso2.carbon.identity.mgt/src" />
                                                     <fileset dir="../../components/org.wso2.carbon.identity.claim/src" />
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.recovery/src" />
                                                 </sourcefiles>
                                             </structure>
                                             <html destdir="${project.build.directory}/site/jacoco" />
