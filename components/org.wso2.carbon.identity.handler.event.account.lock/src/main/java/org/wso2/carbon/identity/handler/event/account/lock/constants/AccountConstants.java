@@ -21,24 +21,17 @@ package org.wso2.carbon.identity.handler.event.account.lock.constants;
  */
 public class AccountConstants {
 
-//    public static final String ACCOUNT_LOCKED_CLAIM = "http://wso2.org/claims/identity/accountLocked";
-//    public static final String ACCOUNT_UNLOCK_TIME_CLAIM = "http://wso2.org/claims/identity/unlockTime";
-//    public static final String ACCOUNT_DISABLED_CLAIM = "http://wso2.org/claims/identity/accountDisabled";
-//    public static final String FAILED_LOGIN_ATTEMPTS_CLAIM =
-//            "http://wso2.org/claims/identity/failedLoginAttempts";
-//    public static final String FAILED_LOGIN_LOCKOUT_COUNT_CLAIM =
-//            "http://wso2.org/claims/identity/failedLoginLockoutCount";
-//
-//    public static final String ACCOUNT_LOCKED_PROPERTY = "account.lock.handler.enable";
-//    public static final String ACCOUNT_UNLOCK_TIME_PROPERTY = "account.lock.handler.Time";
-//    public static final String FAILED_LOGIN_ATTEMPTS_PROPERTY = "account.lock.handler.On.Failure.Max.Attempts";
-//    public static final String LOGIN_FAIL_TIMEOUT_RATIO_PROPERTY = "account.lock.handler.login.fail.timeout.ratio";
-//
+    public static final String ACCOUNT_LOCKED_CLAIM = "http://wso2.org/claims/accountLocked";
+    public static final String ACCOUNT_UNLOCK_TIME_CLAIM = "http://wso2.org/claims/unlockTime";
+    public static final String FAILED_LOGIN_ATTEMPTS_CLAIM = "http://wso2.org/claims/failedLoginAttempts";
+    public static final String EMAIL_VERIFIED_CLAIM = "http://wso2.org/claims/emailVerifed";
+    public static final String FAILED_LOGIN_LOCKOUT_COUNT_CLAIM = "http://wso2.org/claims/failedLoginLockoutCount";
+
+
 //    public static final String EMAIL_TEMPLATE_TYPE_ACC_LOCKED = "accountlock";
 //    public static final String EMAIL_TEMPLATE_TYPE_ACC_UNLOCKED = "accountunlock";
 //
 //    public static final String EMAIL_TEMPLATE_TYPE_ACC_DISABLED = "accountdisable";
 //    public static final String EMAIL_TEMPLATE_TYPE_ACC_ENABLED = "accountenable";
-
 
 }

@@ -392,17 +392,17 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     }
 
     @Override
-    public void updateUser(String domainUserId, Map<String, String> connectorUserIdMap, int domainId) throws
-            UniqueIdResolverException {
+    public void updateUser(String domainUserId, Map<String, String> connectorUserIdMap, int domainId, String state)
+            throws UniqueIdResolverException {
 
         // Put operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
             deleteUser(domainUserId, unitOfWork, domainId);
             final String addUser = "INSERT INTO IDM_USER " +
-                    "(USER_ID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN_ID, CONNECTOR_TYPE) " +
+                    "(USER_ID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN_ID, CONNECTOR_TYPE, STATE) " +
                     "VALUES (:" + SQLPlaceholders.USER_ID + ";, :" + SQLPlaceholders.CONNECTOR_USER_ID + ";, " +
                     ":" + SQLPlaceholders.CONNECTOR_ID + ";, :" + SQLPlaceholders.DOMAIN_ID + ";, " +
-                    ":" + SQLPlaceholders.CONNECTOR_TYPE + ";)";
+                    ":" + SQLPlaceholders.CONNECTOR_TYPE + ";,:" + SQLPlaceholders.STATE + ";)";
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
                     unitOfWork.getConnection(), addUser);
             for (Map.Entry<String, String> entry : connectorUserIdMap.entrySet()) {
@@ -886,6 +886,25 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
         } catch (SQLException e) {
             throw new UniqueIdResolverException("Error while updating groups of user", e);
+        }
+    }
+
+    @Override
+    public void setUserState(String domainUserId, String targetState, int domainId) throws UniqueIdResolverException {
+
+        try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
+            final String setState = "UPDATE IDM_USER SET STATE =:" + SQLPlaceholders.STATE + "; WHERE USER_ID = :" +
+                    SQLPlaceholders.USER_ID + "; AND DOMAIN_ID = :" + SQLPlaceholders.DOMAIN_ID + ";";
+
+            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
+                    unitOfWork.getConnection(), setState);
+            namedPreparedStatement.setString(SQLPlaceholders.STATE, targetState);
+            namedPreparedStatement.setString(SQLPlaceholders.USER_ID, domainUserId);
+            namedPreparedStatement.setInt(SQLPlaceholders.DOMAIN_ID, domainId);
+            namedPreparedStatement.getPreparedStatement().executeUpdate();
+
+        } catch (SQLException e) {
+            throw new UniqueIdResolverException("Error while set user state.", e);
         }
     }
 

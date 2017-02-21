@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,383 +16,531 @@
 
 package org.wso2.carbon.identity.handler.event.account.lock;
 
-//import org.apache.commons.lang.StringUtils;
-//import org.apache.commons.lang.math.NumberUtils;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
-//import org.wso2.carbon.identity.application.common.model.Property;
-//import org.wso2.carbon.identity.core.bean.context.MessageContext;
-//import org.wso2.carbon.identity.core.handler.InitConfig;
-//import org.wso2.carbon.identity.core.model.IdentityErrorMsgContext;
-//import org.wso2.carbon.identity.core.util.IdentityCoreConstants;
-//import org.wso2.carbon.identity.core.util.IdentityUtil;
-//import org.wso2.carbon.identity.event.IdentityEventConstants;
-
+import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.wso2.carbon.identity.common.base.event.EventContext;
+import org.wso2.carbon.identity.common.base.event.model.Event;
+import org.wso2.carbon.identity.common.base.exception.IdentityException;
+import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.common.base.message.MessageContext;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.event.EventException;
-import org.wso2.carbon.identity.event.model.Event;
+import org.wso2.carbon.identity.handler.event.account.lock.bean.AccountLockBean;
+import org.wso2.carbon.identity.handler.event.account.lock.constants.AccountConstants;
+import org.wso2.carbon.identity.handler.event.account.lock.internal.AccountServiceDataHolder;
+import org.wso2.carbon.identity.mgt.AuthenticationContext;
+import org.wso2.carbon.identity.mgt.FailedAuthenticationContext;
+import org.wso2.carbon.identity.mgt.IdentityStore;
+import org.wso2.carbon.identity.mgt.User;
+import org.wso2.carbon.identity.mgt.UserState;
+import org.wso2.carbon.identity.mgt.claim.Claim;
+import org.wso2.carbon.identity.mgt.constant.StoreConstants;
+import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+import org.wso2.carbon.lcm.core.LifecycleOperationManager;
+import org.wso2.carbon.lcm.core.exception.LifecycleException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
-//import org.wso2.carbon.identity.event.event.Event;
-//import org.wso2.carbon.identity.event.handler.AbstractEventHandler;
-//import org.wso2.carbon.user.core.UserCoreConstants;
-//import org.wso2.carbon.user.core.UserStoreException;
-//import org.wso2.carbon.user.core.UserStoreManager;
-//import org.wso2.carbon.user.core.util.UserCoreUtil;
+import static org.wso2.carbon.identity.mgt.UserState.LOCKED_INVALID_CREDENTIAL__UNVERIFIED;
+import static org.wso2.carbon.identity.mgt.UserState.LOCKED_INVALID_CREDENTIAL__VERIFIED;
+import static org.wso2.carbon.identity.mgt.UserState.LOCKED__UNVERIFIED;
+import static org.wso2.carbon.identity.mgt.UserState.LOCKED__VERIFIED;
+import static org.wso2.carbon.identity.mgt.UserState.UNLOCKED__UNVERIFIED;
+import static org.wso2.carbon.identity.mgt.UserState.UNLOCKED__VERIFIED;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants.POST_AUTHENTICATE;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants.POST_UPDATE_USER_CLAIMS_PATCH;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants.POST_UPDATE_USER_CLAIMS_PUT;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants.PRE_UPDATE_USER_CLAIMS_PATCH;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants.PRE_UPDATE_USER_CLAIMS_PUT;
+import static org.wso2.carbon.identity.mgt.impl.util.IdentityUserMgtUtil.setClaimInIdentityStore;
+import static org.wso2.carbon.identity.mgt.impl.util.IdentityUserMgtUtil.setClaimsInIdentityStore;
+import static org.wso2.carbon.kernel.utils.StringUtils.isNullOrEmpty;
+
 
 /**
  * AccountLockHandler class
  */
 public class AccountLockHandler extends AbstractEventHandler {
 
-//    private static final Log log = LogFactory.getLog(AccountLockHandler.class);
+    private AccountLockBean accountLockBean = new AccountLockBean();
+    private static Logger log = LoggerFactory.getLogger(AccountLockHandler.class);
+    private static String oldAccountLockValue = "account_lock_status";
 
-//    private static ThreadLocal<String> lockedState = new ThreadLocal<>();
+    @Override
+    public void handle(EventContext eventContext, Event event) throws EventException {
+        if (!accountLockBean.isEnabled()) {
+            return;
+        }
 
-    private enum LockedStates { LOCKED_MODIFIED, UNLOCKED_MODIFIED, LOCKED_UNMODIFIED, UNLOCKED_UNMODIFIED }
+        if (event.getEventName().equals(POST_AUTHENTICATE)) {
+            handlePostAuthentication(event);
+        } else if (event.getEventName().equals(PRE_UPDATE_USER_CLAIMS_PUT)) {
+            handlePreUpdateUserClaimsPUT(eventContext, event);
+        } else if (event.getEventName().equals(PRE_UPDATE_USER_CLAIMS_PATCH)) {
+            handlePreUpdateUserClaimsPATCH(eventContext, event);
+        } else if (event.getEventName().equals(POST_UPDATE_USER_CLAIMS_PATCH) ||
+                event.getEventName().equals(POST_UPDATE_USER_CLAIMS_PUT)) {
+            //Post update user PUT and Post update user PATCH
+            handlePostUpdateUserClaims(eventContext, event);
+        }
+    }
+
+
+    @Override
+    public void configure(InitConfig initConfig) throws IdentityException {
+    }
+
+    public int getPriority(MessageContext messageContext) {
+        return 100;
+    }
 
     public String getName() {
         return "account.lock.handler";
     }
 
-    public String getFriendlyName() {
-        return "Account Locking";
+
+    /**
+     * This is used to handle post authentication event in account lock handler
+     *
+     * @param event : Post Authentication Event
+     * @throws EventException : EventException
+     */
+    private void handlePostAuthentication(Event event) throws EventException {
+
+        AuthenticationContext authenticationContext = (AuthenticationContext) event.getEventProperties()
+                .get(StoreConstants.IdentityStoreConstants.AUTHENTICATION_CONTEXT);
+
+        if (authenticationContext == null) {
+            throw new EventException("No context found for authentication");
+        }
+
+        if (authenticationContext.isAuthenticated()) {
+            User authenticatedUser = authenticationContext.getUser();
+            //Handle locked state. Throws an exception if user is locked
+            handleLockedState(authenticatedUser);
+
+            //set user failed attempts to zero upon a successful attempt
+            setUserFailedAttempts(authenticatedUser, 0);
+
+        } else {
+            //Authentication failure
+            if (authenticationContext instanceof FailedAuthenticationContext) {
+                //Get authentication failed user list. It is a list since multiple domains can have same username
+                List<User> userList = ((FailedAuthenticationContext) authenticationContext).getFailedUsers();
+
+                for (User user : userList) {
+                    try {
+                        if (UserState.valueOf(user.getState()).isInGroup(UserState.Group.LOCKED)) {
+                            //No need to process. Invalid credential, locked user
+                            continue;
+                        }
+
+                        int userFailedAttemptsCount = 0;
+
+                        //Read the failedCount claim
+                        String userFailedAttemptsCountString = getUserClaimValue(user, AccountConstants
+                                .FAILED_LOGIN_ATTEMPTS_CLAIM);
+                        if (NumberUtils.isNumber(userFailedAttemptsCountString)) {
+                            userFailedAttemptsCount = Integer.parseInt(userFailedAttemptsCountString);
+                        }
+
+                        //increase the failed count by 1
+                        userFailedAttemptsCount++;
+
+                        //if user failed count is more than maxFailedAttempts count, the account should be locked
+                        if (userFailedAttemptsCount >= accountLockBean.getMaxFailedAttempts()) {
+                            lockInvalidCredentialUserAccount(user);
+                        } else {
+                            // Set user failed attempts count
+                            setUserFailedAttempts(user, userFailedAttemptsCount);
+                        }
+                    } catch (IdentityStoreException | UserNotFoundException e) {
+                        throw new EventException("Unexpected error : ", e);
+                    }
+                }
+
+            }
+        }
+
+
+    }
+
+    /**
+     * This is sued to extract domainId from unique user id
+     *
+     * @param uniqueEntityId : Unique user id
+     * @return : domain Id
+     * @throws EventException : EventException
+     */
+    private String getDecodedUniqueEntityId(String uniqueEntityId) throws
+            EventException {
+
+        String[] decodedUniqueEntityIdParts = uniqueEntityId.split("\\.", 2);
+        if (decodedUniqueEntityIdParts.length != 2 || isNullOrEmpty(decodedUniqueEntityIdParts[0]) ||
+                isNullOrEmpty(decodedUniqueEntityIdParts[1])) {
+            throw new EventException("invalid unique entity id.");
+        }
+        return decodedUniqueEntityIdParts[1];
+    }
+
+    /**
+     * This is used to get user claim value from claimURI
+     *
+     * @param user     : user
+     * @param claimURI : Claim URI
+     * @return : claim Value
+     * @throws IdentityStoreException :UserNotFoundException
+     * @throws UserNotFoundException  : UserNotFoundException
+     */
+    private String getUserClaimValue(User user, String claimURI) throws IdentityStoreException, UserNotFoundException {
+
+        Optional<Claim> optional = user.getClaims().stream()
+                .filter(claim -> claimURI.equals(claim.getClaimUri()))
+                .findFirst();
+        if (optional.isPresent()) {
+            Claim claim = optional.get();
+            if (claim != null && claim.getValue() != null) {
+                return claim.getValue();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * his is used to get user claim value from claimURI
+     *
+     * @param userId   : userUniqueId
+     * @param claimURI : claimURI
+     * @return : claim Value
+     * @throws IdentityStoreException : IdentityStoreException
+     * @throws UserNotFoundException  : UserNotFoundException
+     */
+    private String getUserClaimValue(String userId, String claimURI) throws IdentityStoreException,
+            UserNotFoundException {
+
+        IdentityStore identityStore = AccountServiceDataHolder.getInstance().getRealmService().getIdentityStore();
+        User user = identityStore.getUser(userId);
+        Optional<Claim> optional = user.getClaims().stream()
+                .filter(claim -> claimURI.equals(claim.getClaimUri()))
+                .findFirst();
+        if (optional.isPresent()) {
+            Claim claim = optional.get();
+            if (claim != null && claim.getValue() != null) {
+                return claim.getValue();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * This is used to handle lock state in account lock handler
+     *
+     * @param user : user
+     * @throws EventException :EventException
+     */
+    private void handleLockedState(User user) throws EventException {
+
+        if (UserState.valueOf(user.getState()) == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Invalid user state :" + user.getState());
+            }
+            throw new EventException("Invalid user state :" + user.getState());
+        }
+
+        if (UserState.valueOf(user.getState()).isInGroup(UserState.Group.LOCKED)) {
+
+            //Check user unlock time exceeds or not
+            if (LOCKED_INVALID_CREDENTIAL__VERIFIED.toString().equals(user.getState()) ||
+                    LOCKED_INVALID_CREDENTIAL__UNVERIFIED.toString().equals(user.getState())) {
+                String unlockedTimeString;
+                try {
+                    unlockedTimeString = getUserClaimValue(user, AccountConstants.ACCOUNT_UNLOCK_TIME_CLAIM);
+                } catch (IdentityStoreException | UserNotFoundException e) {
+                    throw new EventException("Error reading account lock claim, user :" + user.getUniqueUserId(), e);
+                }
+                if (NumberUtils.isNumber(unlockedTimeString)) {
+                    long unlockTime = Long.parseLong(unlockedTimeString);
+                    if (unlockTime != 0 && System.currentTimeMillis() >= unlockTime) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Unlocked user account :" + user.getUniqueUserId());
+                        }
+                        updateLifeCycleState(user, false, false);
+                        return;
+                    }
+                }
+
+            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("User Account is locked :" + user.getUniqueUserId());
+            }
+            throw new EventException("User Account is locked :" + user.getUniqueUserId());
+        }
+    }
+
+    /**
+     * This is used ot update user lifecycle states in Account Lock handler
+     *
+     * @param user   : user
+     * @param toLock : if true, set state to lock, else set state to unlock
+     * @throws EventException
+     * @Param isAdminChanged : Is admin change the state, else invalid credentials
+     */
+    private void updateLifeCycleState(User user, boolean toLock, boolean isAdminChanged) throws EventException {
+
+        try {
+            boolean emailVerified = Boolean.parseBoolean(getUserClaimValue(user,
+                    AccountConstants.EMAIL_VERIFIED_CLAIM));
+            IdentityStore identityStore = AccountServiceDataHolder.getInstance().getRealmService().getIdentityStore();
+            String domainUserId = getDecodedUniqueEntityId(user.getUniqueUserId());
+
+            if (emailVerified && toLock && isAdminChanged) {
+                // set to locked email verified state
+                LifecycleOperationManager.executeLifecycleEvent(LOCKED__VERIFIED.toString(),
+                        domainUserId, domainUserId, null);
+                identityStore.setUserState(user.getUniqueUserId(), LOCKED__VERIFIED.toString());
+
+            } else if (emailVerified && toLock && !isAdminChanged) {
+                // set to locked email verified state
+                LifecycleOperationManager.executeLifecycleEvent(LOCKED_INVALID_CREDENTIAL__VERIFIED.toString(),
+                        domainUserId, domainUserId, null);
+                identityStore.setUserState(user.getUniqueUserId(), LOCKED_INVALID_CREDENTIAL__VERIFIED.toString());
+
+            } else if (emailVerified && !toLock) {
+                LifecycleOperationManager.executeLifecycleEvent(UNLOCKED__VERIFIED.toString(), domainUserId,
+                        domainUserId, null);
+                identityStore.setUserState(user.getUniqueUserId(), UNLOCKED__VERIFIED.toString());
+
+            } else if (!emailVerified && toLock && isAdminChanged) {
+                LifecycleOperationManager.executeLifecycleEvent(LOCKED__UNVERIFIED.toString(),
+                        domainUserId, domainUserId, null);
+                identityStore.setUserState(user.getUniqueUserId(), LOCKED__UNVERIFIED.toString());
+            } else if (!emailVerified && toLock && !isAdminChanged) {
+                LifecycleOperationManager.executeLifecycleEvent(LOCKED_INVALID_CREDENTIAL__UNVERIFIED.toString(),
+                        domainUserId, domainUserId, null);
+                identityStore.setUserState(user.getUniqueUserId(), LOCKED_INVALID_CREDENTIAL__UNVERIFIED.toString());
+            } else {
+                LifecycleOperationManager.executeLifecycleEvent(UNLOCKED__UNVERIFIED.toString(), domainUserId,
+                        domainUserId, null);
+                identityStore.setUserState(user.getUniqueUserId(), UNLOCKED__UNVERIFIED.toString());
+            }
+
+        } catch (LifecycleException | UserNotFoundException | IdentityStoreException e) {
+            throw new EventException("Error while executing lifecycle event for user :" + user
+                    .getUniqueUserId(), e);
+        }
+    }
+
+    /**
+     * This is used to lock user account for invalid credentials
+     *
+     * @param user : user
+     * @throws EventException         EventException
+     * @throws IdentityStoreException IdentityStoreException
+     * @throws UserNotFoundException  UserNotFoundException
+     */
+    private void lockInvalidCredentialUserAccount(User user) throws EventException, IdentityStoreException,
+            UserNotFoundException {
+        //Update lifecycle state to lock
+        updateLifeCycleState(user, true, false);
+
+        int failedLoginLockoutCountValue = 0;
+
+        String failedLoginLockoutCountString = getUserClaimValue(user,
+                AccountConstants.FAILED_LOGIN_LOCKOUT_COUNT_CLAIM);
+        if (NumberUtils.isNumber(failedLoginLockoutCountString)) {
+            failedLoginLockoutCountValue = Integer.parseInt(failedLoginLockoutCountString);
+        }
+
+        //Set a unlock time
+        long lockTime = (long) (TimeUnit.MINUTES.toMillis(accountLockBean
+                .getAccountLockTimeInMinutes()) * Math.pow(accountLockBean.getLockedTimeRatio(),
+                failedLoginLockoutCountValue));
+
+        failedLoginLockoutCountValue++;
+
+        long unlockTime = System.currentTimeMillis() + lockTime;
+
+        Map<String, String> claims = new HashMap<>();
+        claims.put(AccountConstants.ACCOUNT_LOCKED_CLAIM, String.valueOf(true));
+        claims.put(AccountConstants.FAILED_LOGIN_ATTEMPTS_CLAIM, String.valueOf(0));
+        claims.put(AccountConstants.ACCOUNT_UNLOCK_TIME_CLAIM, String.valueOf(unlockTime));
+        claims.put(AccountConstants.FAILED_LOGIN_LOCKOUT_COUNT_CLAIM,
+                String.valueOf(failedLoginLockoutCountValue));
+        setClaimsInIdentityStore(user.getUniqueUserId(), claims, null);
+    }
+
+    /**
+     * This is used to set user failed attempts count
+     *
+     * @param user                    : user
+     * @param userFailedAttemptsCount : userFailedAttemptsCount
+     * @throws EventException : EventException
+     */
+    private void setUserFailedAttempts(User user, int userFailedAttemptsCount) throws EventException {
+        try {
+            setClaimInIdentityStore(user.getUniqueUserId(), AccountConstants
+                    .FAILED_LOGIN_ATTEMPTS_CLAIM, String.valueOf(userFailedAttemptsCount), null);
+        } catch (IdentityStoreException | UserNotFoundException e) {
+            throw new EventException("Error while setting failed attempts, user  :" + user.getUniqueUserId(), e);
+        }
     }
 
 
     /**
-     * Set the priority of this handler
+     * This is used to handle pre update user claims PUT
      *
-     * @param messageContext : context
-     * @return : priority
+     * @param eventContext ; Event Context
+     * @param event        : Event
+     * @throws EventException : EventException
      */
-    @Override
-    public int getPriority(MessageContext messageContext) {
-        return 100;
+    private void handlePreUpdateUserClaimsPUT(EventContext eventContext, Event event) throws EventException {
+        String uniqueUserId = (String) event.getEventProperties()
+                .get(StoreConstants.IdentityStoreConstants.UNIQUE_USED_ID);
+        List<Claim> claims = (List<Claim>) event.getEventProperties()
+                .get(StoreConstants.IdentityStoreConstants.CLAIM_LIST);
+
+        Optional<Claim> optional = claims.stream()
+                .filter(claim -> AccountConstants.ACCOUNT_LOCKED_CLAIM.equals(claim.getClaimUri()))
+                .findFirst();
+        if (optional.isPresent()) {
+            try {
+                boolean oldAccountLockClaimValue = Boolean.parseBoolean(getUserClaimValue(uniqueUserId,
+                        AccountConstants.ACCOUNT_LOCKED_CLAIM));
+                boolean newAccountLockClaimValue = Boolean.parseBoolean(optional.get().getValue());
+                if (oldAccountLockClaimValue != newAccountLockClaimValue) {
+                    eventContext.addParameter(oldAccountLockValue, oldAccountLockClaimValue);
+                }
+
+            } catch (IdentityStoreException | UserNotFoundException e) {
+                throw new EventException("Error while reading claims of user :" + uniqueUserId);
+            }
+        }
+
+    }
+
+
+    /**
+     * This is used to handle pre update user claims PATCH
+     *
+     * @param eventContext ; Event Context
+     * @param event        : Event
+     * @throws EventException : EventException
+     */
+    private void handlePreUpdateUserClaimsPATCH(EventContext eventContext, Event event) throws EventException {
+        String uniqueUserId = (String) event.getEventProperties()
+                .get(StoreConstants.IdentityStoreConstants.UNIQUE_USED_ID);
+        List<Claim> claimsToAdd = (List<Claim>) event.getEventProperties()
+                .get(StoreConstants.IdentityStoreConstants.CLAIM_LIST_TO_ADD);
+
+        Optional<Claim> optional = claimsToAdd.stream()
+                .filter(claim -> AccountConstants.ACCOUNT_LOCKED_CLAIM.equals(claim.getClaimUri()))
+                .findFirst();
+        if (optional.isPresent()) {
+            try {
+                boolean oldAccountLockClaimValue = Boolean.parseBoolean(getUserClaimValue(uniqueUserId,
+                        AccountConstants.ACCOUNT_LOCKED_CLAIM));
+                boolean newAccountLockClaimValue = Boolean.parseBoolean(optional.get().getValue());
+                if (oldAccountLockClaimValue != newAccountLockClaimValue) {
+                    eventContext.addParameter(oldAccountLockValue, oldAccountLockClaimValue);
+                }
+
+            } catch (IdentityStoreException | UserNotFoundException e) {
+                throw new EventException("Error while reading claims of user :" + uniqueUserId);
+            }
+        }
     }
 
     /**
-     * Handle the account lock event
+     * This is used to handle Post update user claims
      *
-     * @param event : Event
-     * @throws EventException : event exception
+     * @param eventContext : EventContext
+     * @param event        : Event
+     * @throws EventException : EventException
      */
-    @Override
-    public void handleEvent(Event event) throws EventException {
+    private void handlePostUpdateUserClaims(EventContext eventContext, Event event) throws EventException {
 
-//        Map<String, Object> eventProperties = event.getEventProperties();
-//        String userName = (String) eventProperties.get(IdentityEventConstants.EventProperty.USER_NAME);
-//        UserStoreManager userStoreManager = (UserStoreManager) eventProperties.get(
-// IdentityEventConstants.EventProperty.USER_STORE_MANAGER);
-//        String userStoreDomainName = AccountUtil.getUserStoreDomainName(userStoreManager);
-//        String tenantDomain = (String) eventProperties.get(IdentityEventConstants.EventProperty.TENANT_DOMAIN);
-//
-//        Property[] identityProperties = null;
-//        Boolean accountLockedEnabled = false;
-//        String accountLockTime = "0";
-//        int maximumFailedAttempts = 0;
-//        double unlockTimeRatio = 1;
-//        try {
-//            identityProperties = AccountServiceDataHolder.getInstance()
-//                    .getIdentityGovernanceService().getConfiguration(getPropertyNames(), tenantDomain);
-//        } catch (IdentityGovernanceException e) {
-//            throw new IdentityEventException("Error while retrieving Account Locking Handler properties.", e);
-//        }
-//        for (Property identityProperty : identityProperties) {
-//            if (AccountConstants.ACCOUNT_LOCKED_PROPERTY.equals(identityProperty.getName())) {
-//                accountLockedEnabled = Boolean.parseBoolean(identityProperty.getValue());
-//            } else if (AccountConstants.FAILED_LOGIN_ATTEMPTS_PROPERTY.equals(identityProperty.getName())) {
-//                maximumFailedAttempts = Integer.parseInt(identityProperty.getValue());
-//            } else if (AccountConstants.ACCOUNT_UNLOCK_TIME_PROPERTY.equals(identityProperty.getName())) {
-//                accountLockTime = identityProperty.getValue();
-//            } else if (AccountConstants.LOGIN_FAIL_TIMEOUT_RATIO_PROPERTY.equals(identityProperty.getName())) {
-//                String value = identityProperty.getValue();
-//                if (NumberUtils.isNumber(value)) {
-//                    if (Integer.parseInt(value) > 0) {
-//                        unlockTimeRatio = Integer.parseInt(value);
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (!accountLockedEnabled) {
-//            return;
-//        }
-//
-//        String usernameWithDomain = UserCoreUtil.addDomainToName(userName, userStoreDomainName);
-//        boolean userExists;
-//        try {
-//            userExists = userStoreManager.isExistingUser(usernameWithDomain);
-//        } catch (UserStoreException e) {
-//            throw new IdentityEventException("Error in accessing user store", e);
-//        }
-//        if (!userExists) {
-//            return;
-//        }
-//
-//        if (IdentityEventConstants.Event.PRE_AUTHENTICATION.equals(event.getEventName())) {
-//            handlePreAuthentication(event, userName, userStoreManager, userStoreDomainName, tenantDomain,
-//                    identityProperties, maximumFailedAttempts, accountLockTime, unlockTimeRatio);
-//        } else if (IdentityEventConstants.Event.POST_AUTHENTICATION.equals(event.getEventName())) {
-//            handlePostAuthentication(event, userName, userStoreManager, userStoreDomainName, tenantDomain,
-//                    identityProperties, maximumFailedAttempts, accountLockTime, unlockTimeRatio);
-//        } else if (IdentityEventConstants.Event.PRE_SET_USER_CLAIMS.equals(event.getEventName())) {
-//            handlePreSetUserClaimValues(event, userName, userStoreManager, userStoreDomainName, tenantDomain,
-//                    identityProperties, maximumFailedAttempts, accountLockTime, unlockTimeRatio);
-//        } else if (IdentityEventConstants.Event.POST_SET_USER_CLAIMS.equals(event.getEventName())) {
-//            handlePostSetUserClaimValues(event, userName, userStoreManager, userStoreDomainName, tenantDomain,
-//                    identityProperties, maximumFailedAttempts, accountLockTime, unlockTimeRatio);
-//        }
+        Object accountLockObject = eventContext.getParameter(oldAccountLockValue);
+        if (accountLockObject != null) {
+            boolean oldAccountLockValue = (boolean) accountLockObject;
+
+            String uniqueUserId = (String) event.getEventProperties()
+                    .get(StoreConstants.IdentityStoreConstants.UNIQUE_USED_ID);
+
+            try {
+                boolean newAccountLockClaimValue = Boolean.parseBoolean(getUserClaimValue(uniqueUserId,
+                        AccountConstants.ACCOUNT_LOCKED_CLAIM));
+
+                if (oldAccountLockValue != newAccountLockClaimValue) {
+                    if (newAccountLockClaimValue) {
+                        //if the user already in locked state, then it is not a admin user lock scenario
+                        if (!UserState.valueOf(getUserState(uniqueUserId)).isInGroup(UserState.Group.LOCKED)) {
+                            lockUserAccountByAdmin(uniqueUserId);
+                        }
+                    } else {
+                        unlockUserAccountByAdmin(uniqueUserId);
+                    }
+                }
+            } catch (IdentityStoreException | UserNotFoundException e) {
+                throw new EventException("Error while reading claims of user :" + uniqueUserId);
+            }
+
+        }
     }
 
-//    protected boolean handlePreAuthentication(Event event, String userName, UserStoreManager userStoreManager,
-//                                              String userStoreDomainName, String tenantDomain,
-//                                              Property[] identityProperties, int maximumFailedAttempts,
-//                                              String accountLockTime, double unlockTimeRatio)
-//            throws AccountLockException {
-//
-//        String accountLockedClaim = null;
-//        try {
-//            Map<String, String> values = userStoreManager.getUserClaimValues(userName, new String[]{
-//                    AccountConstants.ACCOUNT_LOCKED_CLAIM}, UserCoreConstants.DEFAULT_PROFILE);
-//            accountLockedClaim = values.get(AccountConstants.ACCOUNT_LOCKED_CLAIM);
-//
-//        } catch (UserStoreException e) {
-//            throw new AccountLockException("Error occurred while retrieving " + AccountConstants
-//                    .ACCOUNT_LOCKED_CLAIM + " claim value", e);
-//        }
-//        if (Boolean.parseBoolean(accountLockedClaim)) {
-//            long unlockTime = 0;
-//            try {
-//                Map<String, String> values = userStoreManager.getUserClaimValues(userName, new String[]{
-//                        AccountConstants.ACCOUNT_UNLOCK_TIME_CLAIM}, UserCoreConstants.DEFAULT_PROFILE);
-//                String userClaimValue = values.get(AccountConstants.ACCOUNT_UNLOCK_TIME_CLAIM);
-//
-//                if (NumberUtils.isNumber(userClaimValue)) {
-//                    unlockTime = Long.parseLong(userClaimValue);
-//                }
-//            } catch (UserStoreException e) {
-//                throw new AccountLockException("Error occurred while retrieving " + AccountConstants
-//                        .ACCOUNT_UNLOCK_TIME_CLAIM + " claim value", e);
-//            }
-//            if (unlockTime != 0 && System.currentTimeMillis() >= unlockTime) {
-//                Map<String, String> newClaims = new HashMap<>();
-//                newClaims.put(AccountConstants.ACCOUNT_LOCKED_CLAIM, Boolean.FALSE.toString());
-//                newClaims.put(AccountConstants.ACCOUNT_UNLOCK_TIME_CLAIM, "0");
-//                newClaims.put(AccountConstants.FAILED_LOGIN_ATTEMPTS_CLAIM, "0");
-//                try {
-//                    userStoreManager.setUserClaimValues(userName, newClaims, null);
-//                } catch (UserStoreException e) {
-//                    throw new AccountLockException("Error occurred while storing " + AccountConstants
-//                            .ACCOUNT_LOCKED_CLAIM + " and " + AccountConstants.ACCOUNT_UNLOCK_TIME_CLAIM +
-//                            "claim values", e);
-//                }
-//            } else {
-//                String message = null;
-//                if (StringUtils.isNotBlank(userStoreDomainName)) {
-//                    message = "Account is locked for user " + userName + " in user store "
-//                            + userStoreDomainName + " in tenant " + tenantDomain + ". Cannot login until the " +
-//                            "account is unlocked.";
-//                } else {
-//                    message = "Account is locked for user " + userName + " in tenant " + tenantDomain + ". Cannot" +
-//                            " login until the account is unlocked.";
-//                }
-//                IdentityErrorMsgContext customErrorMessageContext = new IdentityErrorMsgContext(UserCoreConstants.
-// ErrorCode.USER_IS_LOCKED);
-//                IdentityUtil.setIdentityErrorMsg(customErrorMessageContext);
-//                throw new AccountLockException(UserCoreConstants.ErrorCode.USER_IS_LOCKED + " " + message);
-//            }
-//        }
-//        return true;
-//    }
-//
-//    protected boolean handlePostAuthentication(Event event, String userName, UserStoreManager userStoreManager,
-//                                               String userStoreDomainName, String tenantDomain,
-//                                               Property[] identityProperties, int maximumFailedAttempts,
-//                                               String accountLockTime, double unlockTimeRatio)
-//            throws AccountLockException {
-//
-//        if ((Boolean) event.getEventProperties().get(IdentityEventConstants.EventProperty.OPERATION_STATUS)) {
-//            Map<String, String> newClaims = new HashMap<>();
-//            newClaims.put(AccountConstants.FAILED_LOGIN_ATTEMPTS_CLAIM, "0");
-//            newClaims.put(AccountConstants.ACCOUNT_UNLOCK_TIME_CLAIM, "0");
-//            newClaims.put(AccountConstants.ACCOUNT_LOCKED_CLAIM, Boolean.FALSE.toString());
-//            newClaims.put(AccountConstants.FAILED_LOGIN_LOCKOUT_COUNT_CLAIM, "0");
-//            try {
-//                //TODO need to support readOnly user stores too. IDENTITY-4754
-//                if (!userStoreManager.isReadOnly()) {
-//                    userStoreManager.setUserClaimValues(userName, newClaims, null);
-//                }
-//            } catch (UserStoreException e) {
-//                throw new AccountLockException("Error occurred while storing " + AccountConstants
-//                        .FAILED_LOGIN_ATTEMPTS_CLAIM + ", " + AccountConstants.ACCOUNT_UNLOCK_TIME_CLAIM + " and " +
-//                        "" + AccountConstants.ACCOUNT_LOCKED_CLAIM, e);
-//            }
-//        } else {
-//            int failedLoginLockoutCountValue = 0;
-//            int currentFailedAttempts;
-//            try {
-//                Map<String, String> values = userStoreManager.getUserClaimValues(userName, new String[]{
-//                        AccountConstants.FAILED_LOGIN_LOCKOUT_COUNT_CLAIM}, UserCoreConstants.DEFAULT_PROFILE);
-//                String loginAttemptCycles = values.get(AccountConstants.FAILED_LOGIN_LOCKOUT_COUNT_CLAIM);
-//
-//                if (NumberUtils.isNumber(loginAttemptCycles)) {
-//                    failedLoginLockoutCountValue = Integer.parseInt(loginAttemptCycles);
-//                }
-//
-//                Map<String, String> claimValues = userStoreManager.getUserClaimValues(userName, new String[]{
-//                        AccountConstants.FAILED_LOGIN_ATTEMPTS_CLAIM}, UserCoreConstants.DEFAULT_PROFILE);
-//                String currentFailedAttemptCount = claimValues.get(AccountConstants.FAILED_LOGIN_ATTEMPTS_CLAIM);
-//
-//                if (StringUtils.isBlank(currentFailedAttemptCount)) {
-//                    currentFailedAttempts = 0;
-//                } else {
-//                    currentFailedAttempts = Integer.parseInt(currentFailedAttemptCount);
-//                }
-//
-//            } catch (UserStoreException e) {
-//                throw new AccountLockException("Error occurred while retrieving " + AccountConstants
-//                        .FAILED_LOGIN_ATTEMPTS_CLAIM + " claim value", e);
-//            }
-//            currentFailedAttempts += 1;
-//            Map<String, String> newClaims = new HashMap<>();
-//            newClaims.put(AccountConstants.FAILED_LOGIN_ATTEMPTS_CLAIM, currentFailedAttempts + "");
-//            if (currentFailedAttempts >= maximumFailedAttempts) {
-//                newClaims.put(AccountConstants.ACCOUNT_LOCKED_CLAIM, "true");
-//                long unlockTimePropertyValue = 1;
-//                if (NumberUtils.isNumber(accountLockTime)) {
-//                    unlockTimePropertyValue = Integer.parseInt(accountLockTime);
-//                }
-//                unlockTimePropertyValue = (long) (unlockTimePropertyValue * 1000 * 60 * Math.pow(unlockTimeRatio,
-//                        failedLoginLockoutCountValue));
-//                failedLoginLockoutCountValue = failedLoginLockoutCountValue + 1;
-//
-//                long unlockTime = System.currentTimeMillis() + Long.parseLong(unlockTimePropertyValue + "");
-//
-//                newClaims.put(AccountConstants.ACCOUNT_UNLOCK_TIME_CLAIM, unlockTime + "");
-//                newClaims.put(AccountConstants.FAILED_LOGIN_LOCKOUT_COUNT_CLAIM, failedLoginLockoutCountValue + "");
-//                newClaims.put(AccountConstants.FAILED_LOGIN_ATTEMPTS_CLAIM, "0");
-//
-//                IdentityErrorMsgContext customErrorMessageContext = new IdentityErrorMsgContext(UserCoreConstants
-//                        .ErrorCode.USER_IS_LOCKED, currentFailedAttempts, maximumFailedAttempts);
-//                IdentityUtil.setIdentityErrorMsg(customErrorMessageContext);
-//                IdentityUtil.threadLocalProperties.get().put(IdentityCoreConstants.USER_ACCOUNT_STATE,
-//                        UserCoreConstants.ErrorCode.USER_IS_LOCKED);
-//
-//            } else {
-//                IdentityErrorMsgContext customErrorMessageContext = new IdentityErrorMsgContext(UserCoreConstants.
-// ErrorCode.INVALID_CREDENTIAL,
-//                        currentFailedAttempts, maximumFailedAttempts);
-//                IdentityUtil.setIdentityErrorMsg(customErrorMessageContext);
-//            }
-//            try {
-//                userStoreManager.setUserClaimValues(userName, newClaims, null);
-//            } catch (UserStoreException e) {
-//                throw new AccountLockException("Error occurred while locking user account", e);
-//            } catch (NumberFormatException e) {
-//                throw new AccountLockException("Error occurred while parsing config values", e);
-//            }
-//        }
-//        return true;
-//    }
-//
-//    protected boolean handlePreSetUserClaimValues(Event event, String userName, UserStoreManager userStoreManager,
-//                                                  String userStoreDomainName, String tenantDomain,
-//                                                  Property[] identityProperties, int maximumFailedAttempts,
-//                                                  String accountLockTime, double unlockTimeRatio)
-//            throws AccountLockException {
-//
-//        if (lockedState.get() != null) {
-//            return true;
-//        }
-//        Boolean existingAccountLockedValue;
-//        try {
-//            Map<String, String> claimValues = userStoreManager.getUserClaimValues(userName, new String[]{
-//                    AccountConstants.ACCOUNT_LOCKED_CLAIM}, UserCoreConstants.DEFAULT_PROFILE);
-//             existingAccountLockedValue = Boolean.valueOf(claimValues.get(AccountConstants.ACCOUNT_LOCKED_CLAIM));
-//
-//        } catch (UserStoreException e) {
-//            throw new AccountLockException("Error occurred while retrieving " + AccountConstants
-//                    .ACCOUNT_LOCKED_CLAIM + " claim value", e);
-//        }
-//        String newStateString = ((Map<String, String>) event.getEventProperties().get("USER_CLAIMS")).
-// get(AccountConstants.ACCOUNT_LOCKED_CLAIM);
-//        if (StringUtils.isNotBlank(newStateString)) {
-//            Boolean newAccountLockedValue = Boolean.parseBoolean(
-//                    ((Map<String, String>) event.getEventProperties().get("USER_CLAIMS"))
-//                            .get(AccountConstants.ACCOUNT_LOCKED_CLAIM));
-//            if (existingAccountLockedValue != newAccountLockedValue) {
-//                if (existingAccountLockedValue) {
-//                    lockedState.set(lockedStates.UNLOCKED_MODIFIED.toString());
-//                } else {
-//                    lockedState.set(lockedStates.LOCKED_MODIFIED.toString());
-//                    IdentityUtil.threadLocalProperties.get().put(IdentityCoreConstants.USER_ACCOUNT_STATE,
-//                            UserCoreConstants.ErrorCode.USER_IS_LOCKED);
-//                }
-//            } else {
-//                if (existingAccountLockedValue) {
-//                    lockedState.set(lockedStates.LOCKED_UNMODIFIED.toString());
-//                } else {
-//                    lockedState.set(lockedStates.UNLOCKED_UNMODIFIED.toString());
-//                }
-//            }
-//        } else {
-//            if (existingAccountLockedValue) {
-//                lockedState.set(lockedStates.LOCKED_UNMODIFIED.toString());
-//            } else {
-//                lockedState.set(lockedStates.UNLOCKED_UNMODIFIED.toString());
-//            }
-//        }
-//        return true;
-//    }
-//
-//    protected boolean handlePostSetUserClaimValues(Event event, String userName, UserStoreManager userStoreManager,
-//                                                   String userStoreDomainName, String tenantDomain,
-//                                                   Property[] identityProperties, int maximumFailedAttempts,
-//                                                   String accountLockTime, double unlockTimeRatio)
-//            throws AccountLockException {
-//
-//        try {
-//            if (lockedStates.UNLOCKED_MODIFIED.toString().equals(lockedState.get())) {
-//                triggerNotification(event, userName, userStoreManager, userStoreDomainName, tenantDomain,
-// identityProperties,
-//                        AccountConstants.EMAIL_TEMPLATE_TYPE_ACC_UNLOCKED);
-//            } else if (lockedStates.LOCKED_MODIFIED.toString().equals(lockedState.get())) {
-//                triggerNotification(event, userName, userStoreManager, userStoreDomainName, tenantDomain,
-// identityProperties,
-//                        AccountConstants.EMAIL_TEMPLATE_TYPE_ACC_LOCKED);
-//            }
-//        } finally {
-//            lockedState.remove();
-//        }
-//        return true;
-//    }
+    /**
+     * Update user to unlock state by admin
+     *
+     * @param uniqueUserId : user unique user id
+     * @throws IdentityStoreException : IdentityStoreException
+     * @throws UserNotFoundException  : UserNotFoundException
+     * @throws EventException         : EventException
+     */
+    private void unlockUserAccountByAdmin(String uniqueUserId) throws IdentityStoreException, UserNotFoundException,
+            EventException {
+        IdentityStore identityStore = AccountServiceDataHolder.getInstance().getRealmService().getIdentityStore();
+        User user = identityStore.getUser(uniqueUserId);
+        updateLifeCycleState(user, false, true);
+    }
 
+    /**
+     * Update user to lock state by admin
+     *
+     * @param uniqueUserId : user unique user id
+     * @throws IdentityStoreException : IdentityStoreException
+     * @throws UserNotFoundException  : UserNotFoundException
+     * @throws EventException         : EventException
+     */
+    private void lockUserAccountByAdmin(String uniqueUserId) throws IdentityStoreException, UserNotFoundException,
+            EventException {
+        IdentityStore identityStore = AccountServiceDataHolder.getInstance().getRealmService().getIdentityStore();
+        User user = identityStore.getUser(uniqueUserId);
+        updateLifeCycleState(user, true, true);
 
-//    protected void triggerNotification(Event event, String userName, UserStoreManager userStoreManager,
-//                                       String userStoreDomainName, String tenantDomain,
-//                                       Property[] identityProperties, String notificationEvent) throws
-//            AccountLockException {
-//
-//        String eventName = IdentityEventConstants.Event.TRIGGER_NOTIFICATION;
-//
-//        HashMap<String, Object> properties = new HashMap<>();
-//        properties.put(IdentityEventConstants.EventProperty.USER_NAME, userName);
-//        properties.put(IdentityEventConstants.EventProperty.USER_STORE_DOMAIN, userStoreDomainName);
-//        properties.put(IdentityEventConstants.EventProperty.TENANT_DOMAIN, tenantDomain);
-//        properties.put("TEMPLATE_TYPE", notificationEvent);
-//        Event identityMgtEvent = new Event(eventName, properties);
-//        try {
-//            AccountServiceDataHolder.getInstance().getIdentityEventService().handleEvent(identityMgtEvent);
-//        } catch (Exception e) {
-//            String errorMsg = "Error occurred while calling triggerNotification, detail : " + e.getMessage();
-//            //We are not throwing any exception from here, because this event notification should not break the main
-//            // flow.
-//            log.warn(errorMsg);
-//            if (log.isDebugEnabled()) {
-//                log.debug(errorMsg, e);
-//            }
-//        }
-//    }
+    }
+
+    /**
+     * Get the current state of user
+     *
+     * @param uniqueUserId : unique user ids
+     * @return : state
+     * @throws EventException : EventException
+     */
+    private String getUserState(String uniqueUserId) throws EventException {
+        IdentityStore identityStore = AccountServiceDataHolder.getInstance().getRealmService().getIdentityStore();
+        try {
+            User user = identityStore.getUser(uniqueUserId);
+            return user.getState();
+        } catch (IdentityStoreException | UserNotFoundException e) {
+            throw new EventException("Error while reading user state :" + uniqueUserId);
+        }
+    }
 
 }
+
+

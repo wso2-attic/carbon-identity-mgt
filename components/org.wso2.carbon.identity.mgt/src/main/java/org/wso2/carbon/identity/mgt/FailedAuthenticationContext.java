@@ -24,22 +24,22 @@ import java.util.List;
  */
 public class FailedAuthenticationContext extends AuthenticationContext {
 
-    List<String> failedUserIds = new ArrayList<>();
+    List<User> failedUsers = new ArrayList<>();
 
     public FailedAuthenticationContext() {
         super(null, false);
     }
 
-    public FailedAuthenticationContext(List<String> failedUserIds) {
+    public FailedAuthenticationContext(List<User> failedUsers) {
         super(null, false);
-        this.failedUserIds = failedUserIds;
+        this.failedUsers = failedUsers;
     }
 
-    public void addFailedUserIdToList(String uniqueUserId) {
-        failedUserIds.add(uniqueUserId);
+    public void addFailedUserToList(User failedUser) {
+        failedUsers.add(failedUser);
     }
 
-    public List<String> getFailedUserIds() {
-        return failedUserIds;
+    public List<User> getFailedUsers() {
+        return failedUsers;
     }
 }

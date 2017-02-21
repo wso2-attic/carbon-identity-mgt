@@ -64,6 +64,8 @@ public class StoreConstants {
         public static final String DOMAIN_LIST = "DOMAIN_LIST";
         public static final String IS_USER_EXIST = "IS_USER_EXIST";
         public static final String IS_USER_EXIST_LIST = "IS_USER_EXIST_LIST";
+        public static final String TARGET_STATE = "TARGET_STATE";
+
     }
 
     /**
@@ -196,5 +198,8 @@ public class StoreConstants {
         public static final String POST_GET_PRIMARY_DOMAIN_NAME = "POST_GET_PRIMARY_DOMAIN_NAME";
         public static final String PRE_GET_DOMAIN_NAMES = "PRE_GET_DOMAIN_NAMES";
         public static final String POST_GET_DOMAIN_NAMES = "POST_GET_DOMAIN_NAMES";
+
+        public static final String PRE_SET_USER_STATE = "PRE_SET_USER_STATE";
+        public static final String POST_SET_USER_STATE = "POST_SET_USER_STATE";
     }
 }

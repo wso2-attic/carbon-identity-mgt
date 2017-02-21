@@ -45,13 +45,13 @@ public class IdentityRecoveryConstants {
     public static final String TEMPLATE_TYPE = "TEMPLATE_TYPE";
     public static final String CONFIRMATION_CODE = "confirmation-code";
     public static final String WSO2CARBON_CLAIM_DIALECT = "http://wso2.org/claims";
-    public static final String ACCOUNT_LOCKED_CLAIM = "http://wso2.org/claims/identity/accountLocked";
-    public static final String ACCOUNT_DISABLED_CLAIM = "http://wso2.org/claims/identity/accountDisabled";
-    public static final String VERIFY_EMAIL_CLIAM = "http://wso2.org/claims/identity/verifyEmail";
-    public static final String EMAIL_VERIFIED_CLAIM = "http://wso2.org/claims/identity/emailVerified";
-    public static final String ASK_PASSWORD_CLAIM = "http://wso2.org/claims/identity/askPassword";
+    public static final String ACCOUNT_LOCKED_CLAIM = "http://wso2.org/claims/accountLocked";
+    public static final String ACCOUNT_DISABLED_CLAIM = "http://wso2.org/claims/accountDisabled";
+    public static final String VERIFY_EMAIL_CLIAM = "http://wso2.org/claims/verifyEmail";
+    public static final String EMAIL_VERIFIED_CLAIM = "http://wso2.org/claims/emailVerified";
+    public static final String ASK_PASSWORD_CLAIM = "http://wso2.org/claims/askPassword";
     public static final String ADMIN_FORCED_PASSWORD_RESET_CLAIM =
-            "http://wso2.org/claims/identity/adminForcedPasswordReset";
+            "http://wso2.org/claims/adminForcedPasswordReset";
     public static final String OTP_PASSWORD_CLAIM = "http://wso2.org/claims/oneTimePassword";
     public static final String DEFAULT_CHALLENGE_QUESTION_SEPARATOR = "!";
 
