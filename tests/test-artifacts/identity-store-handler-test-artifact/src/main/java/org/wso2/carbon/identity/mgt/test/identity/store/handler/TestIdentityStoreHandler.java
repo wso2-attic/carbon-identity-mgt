@@ -36,7 +36,7 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
         if ("PRE_GET_USER_BY_ID".equals(event.getEventName())) {
             PRE.set(true);
         } else if ("POST_GET_USER_BY_ID".equals(event.getEventName())) {
-            throw new IdentityException("Rollback test");
+            POST.set(true);
         } else if ("PRE_GET_USER_BY_CLAIM".equals(event.getEventName())) {
             PRE.set(true);
         } else if ("POST_GET_USER_BY_CLAIM".equals(event.getEventName())) {
@@ -236,9 +236,7 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
 
     @Override
     public void onFault(EventContext eventContext, Event event) throws IdentityException {
-        if ("POST_GET_USER_BY_ID".equals(event.getEventName())) {
-            POST.set(Boolean.TRUE);
-        }
+        POST.set(Boolean.FALSE);
     }
 
     @Override
