@@ -23,6 +23,8 @@ import org.wso2.carbon.identity.common.base.event.EventContext;
  */
 public class IdentityMgtMessageContext extends EventContext {
 
+    private static final long serialVersionUID = -956376002689983602L;
+
     public IdentityMgtMessageContext() {
 
     }
