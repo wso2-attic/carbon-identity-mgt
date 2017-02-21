@@ -111,7 +111,8 @@ public class IdentityStoreImpl implements IdentityStore {
     @Override
     public boolean isUserExist(List<Claim> userClaims, String domainName) throws IdentityStoreException {
         Domain domain;
-        DomainException domainException = new DomainException();
+        IdentityStoreException identityStoreException =
+                new IdentityStoreException("An error occurred while searching the user.");
         try {
             if (isNullOrEmpty(domainName)) {
                 domainName = getPrimaryDomainName();
@@ -139,15 +140,15 @@ public class IdentityStoreImpl implements IdentityStore {
                     }
                 } catch (UserNotFoundException e) {
                     if (log.isDebugEnabled()) {
-                        log.debug("User is not available in domain: %s for claim: %s", domainName, claim.getClaimUri());
+                        log.debug("User is not available in domain: {} for claim: {}", domainName, claim.getClaimUri());
                     }
                 } catch (DomainException e) {
-                    domainException.addSuppressed(e);
+                    identityStoreException.addSuppressed(e);
                 }
             }
         }
-        if (domainException.getSuppressed().length > 0) {
-            throw new IdentityStoreException("An error occurred while searching the user.", domainException);
+        if (identityStoreException.getSuppressed().length > 0) {
+            throw identityStoreException;
         }
         return false;
     }
@@ -155,7 +156,8 @@ public class IdentityStoreImpl implements IdentityStore {
     @Override
     public List<String> isUserExist(List<Claim> userClaims) throws IdentityStoreException {
         List<String> userExistMap = new ArrayList<>();
-        DomainException domainException = new DomainException();
+        IdentityStoreException identityStoreException =
+                new IdentityStoreException("An error occurred while searching the user.");
         String domainUserId;
 
         Set<String> domainNames = getDomainNames();
@@ -182,19 +184,19 @@ public class IdentityStoreImpl implements IdentityStore {
                             userExistMap.add(getEncodedUniqueEntityId(domain.getId(), domainUserId));
                             break;
                         }
-                    }  catch (UserNotFoundException e) {
+                    } catch (UserNotFoundException e) {
                         if (log.isDebugEnabled()) {
-                            log.debug("User is not available in domain: %s for claim: %s", domainName,
+                            log.debug("User is not available in domain: {} for claim: {}", domainName,
                                     claim.getClaimUri());
                         }
                     } catch (DomainException e) {
-                        domainException.addSuppressed(e);
+                        identityStoreException.addSuppressed(e);
                     }
                 }
             }
         }
-        if (domainException.getSuppressed().length > 0) {
-            throw new IdentityStoreException("An error occurred while searching the user.", domainException);
+        if (identityStoreException.getSuppressed().length > 0) {
+            throw identityStoreException;
         }
         return userExistMap;
     }
@@ -417,7 +419,7 @@ public class IdentityStoreImpl implements IdentityStore {
 
         return doListUsers(metaClaim, filterPattern, offset, length, domain);
     }
-    
+
     @Override
     public List<User> listUsers(List<Claim> claims, int offset, int length) throws IdentityStoreException {
 
@@ -470,7 +472,8 @@ public class IdentityStoreImpl implements IdentityStore {
     @Override
     public boolean isGroupExist(List<Claim> groupClaims, String domainName) throws IdentityStoreException {
         Domain domain;
-        DomainException domainException = new DomainException();
+        IdentityStoreException identityStoreException =
+                new IdentityStoreException("An error occurred while searching the group.");
         try {
             if (isNullOrEmpty(domainName)) {
                 domainName = getPrimaryDomainName();
@@ -498,19 +501,19 @@ public class IdentityStoreImpl implements IdentityStore {
                     }
                 } catch (GroupNotFoundException e) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Group is not found in domain: %s for claim: %s", domainName, claim.getClaimUri());
+                        log.debug("Group is not found in domain: {} for claim: {}", domainName, claim.getClaimUri());
                     }
                 } catch (DomainException e) {
-                    domainException.addSuppressed(e);
+                    identityStoreException.addSuppressed(e);
                 }
             }
         }
-        if (domainException.getSuppressed().length > 0) {
-            throw new IdentityStoreException("An error occurred while searching the group.", domainException);
+        if (identityStoreException.getSuppressed().length > 0) {
+            throw identityStoreException;
         }
         return false;
     }
-    
+
     @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
@@ -1723,8 +1726,9 @@ public class IdentityStoreImpl implements IdentityStore {
 
     /**
      * Populate AuthenticationContext with unique user ids
+     *
      * @param authenticationContext : AuthenticationContext
-     * @param domain : Domain
+     * @param domain                : Domain
      * @return :AuthenticationContext
      * @throws IdentityStoreException: IdentityStoreException
      */
@@ -1908,11 +1912,11 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     private List<User> doListUsers(List<Claim> claims, int offset, int length, Domain domain)
-                                                              throws IdentityStoreServerException {
+            throws IdentityStoreServerException {
 
         List<String> matchedDomainUserIds;
         try {
-             matchedDomainUserIds = domain.listDomainUsers(claims, offset, length);
+            matchedDomainUserIds = domain.listDomainUsers(claims, offset, length);
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving domain Ids", e);
 

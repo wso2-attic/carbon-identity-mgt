@@ -63,6 +63,7 @@ public class StoreConstants {
         public static final String PRIMARY_DOMAIN_NAME = "PRIMARY_DOMAIN_NAME";
         public static final String DOMAIN_LIST = "DOMAIN_LIST";
         public static final String IS_USER_EXIST = "IS_USER_EXIST";
+        public static final String IS_USER_EXIST_LIST = "IS_USER_EXIST_LIST";
     }
 
     /**

@@ -101,7 +101,7 @@ public class InterceptingIdentityStore implements IdentityStore {
         EventInterceptorTemplate<List<String>, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
 
-        List<String> isUserExist = template.pushEvent(IdentityStoreInterceptorConstants.PRE_IS_USER_EXIST,
+        List<String> isUserExistList = template.pushEvent(IdentityStoreInterceptorConstants.PRE_IS_USER_EXIST,
                                             (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.CLAIM_LIST, userClaims);
         }).executeWith(new EventHandlerDelegate<List<String>>() {
@@ -111,10 +111,10 @@ public class InterceptingIdentityStore implements IdentityStore {
             }
         }).pushEvent(IdentityStoreInterceptorConstants.POST_IS_USER_EXIST, (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.CLAIM_LIST, userClaims);
-            eventProperties.put(IdentityStoreConstants.IS_USER_EXIST, template.getResult());
+            eventProperties.put(IdentityStoreConstants.IS_USER_EXIST_LIST, template.getResult());
         }).getResult();
 
-        return isUserExist;
+        return isUserExistList;
     }
 
     @Override
