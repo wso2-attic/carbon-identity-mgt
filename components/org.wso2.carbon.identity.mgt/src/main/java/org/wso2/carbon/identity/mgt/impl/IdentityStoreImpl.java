@@ -1726,8 +1726,9 @@ public class IdentityStoreImpl implements IdentityStore {
 
     /**
      * Populate AuthenticationContext with unique user ids
+     *
      * @param authenticationContext : AuthenticationContext
-     * @param domain : Domain
+     * @param domain                : Domain
      * @return :AuthenticationContext
      * @throws IdentityStoreException: IdentityStoreException
      */
@@ -1911,11 +1912,11 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     private List<User> doListUsers(List<Claim> claims, int offset, int length, Domain domain)
-                                                              throws IdentityStoreServerException {
+            throws IdentityStoreServerException {
 
         List<String> matchedDomainUserIds;
         try {
-             matchedDomainUserIds = domain.listDomainUsers(claims, offset, length);
+            matchedDomainUserIds = domain.listDomainUsers(claims, offset, length);
         } catch (DomainException e) {
             throw new IdentityStoreServerException("Error while retrieving domain Ids", e);
 
