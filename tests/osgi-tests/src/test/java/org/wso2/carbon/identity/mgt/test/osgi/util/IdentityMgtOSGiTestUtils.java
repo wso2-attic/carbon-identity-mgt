@@ -87,6 +87,10 @@ public class IdentityMgtOSGiTestUtils {
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
                 .groupId("org.wso2.carbon.identity.mgt")
+                .artifactId("org.wso2.carbon.identity.handler.event.account.lock")
+                .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.identity.mgt")
                 .artifactId("in-memory-connectors-test-artifact")
                 .versionAsInProject());
         defaultOptionList.add(mavenBundle()
