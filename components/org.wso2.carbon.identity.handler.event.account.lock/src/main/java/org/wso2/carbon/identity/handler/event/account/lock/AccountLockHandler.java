@@ -52,11 +52,16 @@ import static org.wso2.carbon.identity.mgt.UserState.LOCKED__UNVERIFIED;
 import static org.wso2.carbon.identity.mgt.UserState.LOCKED__VERIFIED;
 import static org.wso2.carbon.identity.mgt.UserState.UNLOCKED__UNVERIFIED;
 import static org.wso2.carbon.identity.mgt.UserState.UNLOCKED__VERIFIED;
-import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants.POST_AUTHENTICATE;
-import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants.POST_UPDATE_USER_CLAIMS_PATCH;
-import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants.POST_UPDATE_USER_CLAIMS_PUT;
-import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants.PRE_UPDATE_USER_CLAIMS_PATCH;
-import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants.PRE_UPDATE_USER_CLAIMS_PUT;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants
+        .IdentityStoreInterceptorConstants.POST_AUTHENTICATE;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants
+        .IdentityStoreInterceptorConstants.POST_UPDATE_USER_CLAIMS_PATCH;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants
+        .IdentityStoreInterceptorConstants.POST_UPDATE_USER_CLAIMS_PUT;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants
+        .IdentityStoreInterceptorConstants.PRE_UPDATE_USER_CLAIMS_PATCH;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants
+        .IdentityStoreInterceptorConstants.PRE_UPDATE_USER_CLAIMS_PUT;
 import static org.wso2.carbon.identity.mgt.impl.util.IdentityUserMgtUtil.setClaimInIdentityStore;
 import static org.wso2.carbon.identity.mgt.impl.util.IdentityUserMgtUtil.setClaimsInIdentityStore;
 import static org.wso2.carbon.kernel.utils.StringUtils.isNullOrEmpty;
@@ -166,8 +171,6 @@ public class AccountLockHandler extends AbstractEventHandler {
 
             }
         }
-
-
     }
 
     /**
