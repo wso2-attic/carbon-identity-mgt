@@ -27,4 +27,12 @@ public class AccountConstants {
     public static final String FAILED_LOGIN_ATTEMPTS_CLAIM = "http://wso2.org/claims/failedLoginAttempts";
     public static final String EMAIL_VERIFIED_CLAIM = "http://wso2.org/claims/emailVerifed";
     public static final String FAILED_LOGIN_LOCKOUT_COUNT_CLAIM = "http://wso2.org/claims/failedLoginLockoutCount";
+
+
+    public static final String EMAIL_TEMPLATE_TYPE_ACC_LOCKED = "accountLock";
+    public static final String EMAIL_TEMPLATE_TYPE_ACC_UNLOCKED = "accountUnLock";
+
+    public static final String EMAIL_TEMPLATE_TYPE_ACC_DISABLED = "accountDisable";
+    public static final String EMAIL_TEMPLATE_TYPE_ACC_ENABLED = "accountEnable";
+
 }

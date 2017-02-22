@@ -25,6 +25,7 @@ import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.common.base.message.MessageContext;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
+import org.wso2.carbon.identity.event.EventConstants;
 import org.wso2.carbon.identity.event.EventException;
 import org.wso2.carbon.identity.handler.event.account.lock.bean.AccountLockBean;
 import org.wso2.carbon.identity.handler.event.account.lock.constants.AccountConstants;
@@ -75,6 +76,8 @@ public class AccountLockHandler extends AbstractEventHandler {
     private AccountLockBean accountLockBean = new AccountLockBean();
     private static Logger log = LoggerFactory.getLogger(AccountLockHandler.class);
     private static String oldAccountLockValue = "account_lock_status";
+    private static final String TEMPLATE_TYPE = "TEMPLATE_TYPE";
+
 
     @Override
     public void handle(EventContext eventContext, Event event) throws EventException {
@@ -174,7 +177,7 @@ public class AccountLockHandler extends AbstractEventHandler {
     }
 
     /**
-     * This is sued to extract domainId from unique user id
+     * This is used to extract domainId from unique user id
      *
      * @param uniqueEntityId : Unique user id
      * @return : domain Id
@@ -263,20 +266,23 @@ public class AccountLockHandler extends AbstractEventHandler {
                 String unlockedTimeString;
                 try {
                     unlockedTimeString = getUserClaimValue(user, AccountConstants.ACCOUNT_UNLOCK_TIME_CLAIM);
+
+                    if (NumberUtils.isNumber(unlockedTimeString)) {
+                        long unlockTime = Long.parseLong(unlockedTimeString);
+                        if (unlockTime != 0 && System.currentTimeMillis() >= unlockTime) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Unlocked user account :" + user.getUniqueUserId());
+                            }
+
+                            //Account state and  unlock email will be sent in post update claim handler.
+                            setClaimInIdentityStore(user.getUniqueUserId(), AccountConstants.ACCOUNT_LOCKED_CLAIM,
+                                    String.valueOf(false), null);
+                            return;
+                        }
+                    }
                 } catch (IdentityStoreException | UserNotFoundException e) {
                     throw new EventException("Error reading account lock claim, user :" + user.getUniqueUserId(), e);
                 }
-                if (NumberUtils.isNumber(unlockedTimeString)) {
-                    long unlockTime = Long.parseLong(unlockedTimeString);
-                    if (unlockTime != 0 && System.currentTimeMillis() >= unlockTime) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Unlocked user account :" + user.getUniqueUserId());
-                        }
-                        updateLifeCycleState(user, false, false);
-                        return;
-                    }
-                }
-
             }
 
             if (log.isDebugEnabled()) {
@@ -287,7 +293,7 @@ public class AccountLockHandler extends AbstractEventHandler {
     }
 
     /**
-     * This is used ot update user lifecycle states in Account Lock handler
+     * This is used to update user lifecycle states in Account Lock handler
      *
      * @param user   : user
      * @param toLock : if true, set state to lock, else set state to unlock
@@ -376,6 +382,10 @@ public class AccountLockHandler extends AbstractEventHandler {
         claims.put(AccountConstants.FAILED_LOGIN_LOCKOUT_COUNT_CLAIM,
                 String.valueOf(failedLoginLockoutCountValue));
         setClaimsInIdentityStore(user.getUniqueUserId(), claims, null);
+
+        if (accountLockBean.isNotificationInternallyManage()) {
+            triggerNotification(user.getUniqueUserId(), AccountConstants.EMAIL_TEMPLATE_TYPE_ACC_LOCKED);
+        }
     }
 
     /**
@@ -509,6 +519,10 @@ public class AccountLockHandler extends AbstractEventHandler {
         IdentityStore identityStore = AccountServiceDataHolder.getInstance().getRealmService().getIdentityStore();
         User user = identityStore.getUser(uniqueUserId);
         updateLifeCycleState(user, false, true);
+
+        if (accountLockBean.isNotificationInternallyManage()) {
+            triggerNotification(uniqueUserId, AccountConstants.EMAIL_TEMPLATE_TYPE_ACC_UNLOCKED);
+        }
     }
 
     /**
@@ -525,6 +539,9 @@ public class AccountLockHandler extends AbstractEventHandler {
         User user = identityStore.getUser(uniqueUserId);
         updateLifeCycleState(user, true, true);
 
+        if (accountLockBean.isNotificationInternallyManage()) {
+            triggerNotification(uniqueUserId, AccountConstants.EMAIL_TEMPLATE_TYPE_ACC_LOCKED);
+        }
     }
 
     /**
@@ -541,6 +558,24 @@ public class AccountLockHandler extends AbstractEventHandler {
             return user.getState();
         } catch (IdentityStoreException | UserNotFoundException e) {
             throw new EventException("Error while reading user state :" + uniqueUserId);
+        }
+    }
+
+    private void triggerNotification(String userUniqueId, String type)
+            throws EventException {
+        String eventName = EventConstants.Event.TRIGGER_NOTIFICATION;
+        HashMap<String, Object> properties = new HashMap<>();
+        properties.put(EventConstants.EventProperty.USER_UNIQUE_ID, userUniqueId);
+
+        properties.put(TEMPLATE_TYPE, type);
+        Event identityMgtEvent = new Event(eventName, properties);
+        EventContext eventContext = new EventContext();
+
+        try {
+            AccountServiceDataHolder.getInstance().getIdentityEventService().pushEvent(identityMgtEvent,
+                    eventContext);
+        } catch (IdentityException e) {
+            log.warn("Error while sending email : " + type + " for user :" + userUniqueId);
         }
     }
 

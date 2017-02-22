@@ -26,6 +26,7 @@ import org.wso2.carbon.identity.common.base.exception.IdentityRuntimeException;
 import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.common.base.message.MessageContext;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
+import org.wso2.carbon.identity.event.EventConstants;
 import org.wso2.carbon.identity.event.EventException;
 import org.wso2.carbon.identity.handler.event.account.lock.bean.AccountLockBean;
 import org.wso2.carbon.identity.handler.event.account.lock.constants.AccountConstants;
@@ -43,6 +44,7 @@ import org.wso2.carbon.lcm.core.exception.LifecycleException;
 import org.wso2.carbon.lcm.core.util.LifecycleOperationUtil;
 import org.wso2.carbon.lcm.sql.beans.LifecycleHistoryBean;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +61,7 @@ public class AccountDisabledHandler extends AbstractEventHandler {
     private AccountLockBean accountLockBean = new AccountLockBean();
     private static Logger log = LoggerFactory.getLogger(AccountDisabledHandler.class);
     private static String oldAccountDisabledValue = "account_disabled_status";
+    private static final String TEMPLATE_TYPE = "TEMPLATE_TYPE";
 
     private static List<String> events = Arrays.asList(
             StoreConstants.IdentityStoreInterceptorConstants.PRE_UPDATE_USER_CLAIMS_PUT,
@@ -234,6 +237,9 @@ public class AccountDisabledHandler extends AbstractEventHandler {
         IdentityStore identityStore = AccountServiceDataHolder.getInstance().getRealmService().getIdentityStore();
         User user = identityStore.getUser(uniqueUserId);
         updateLifeCycleState(user, true);
+        if (accountLockBean.isNotificationInternallyManage()) {
+            triggerNotification(uniqueUserId, AccountConstants.EMAIL_TEMPLATE_TYPE_ACC_DISABLED);
+        }
     }
 
 
@@ -250,6 +256,10 @@ public class AccountDisabledHandler extends AbstractEventHandler {
         IdentityStore identityStore = AccountServiceDataHolder.getInstance().getRealmService().getIdentityStore();
         User user = identityStore.getUser(uniqueUserId);
         updateLifeCycleState(user, false);
+
+        if (accountLockBean.isNotificationInternallyManage()) {
+            triggerNotification(uniqueUserId, AccountConstants.EMAIL_TEMPLATE_TYPE_ACC_ENABLED);
+        }
     }
 
 
@@ -348,7 +358,7 @@ public class AccountDisabledHandler extends AbstractEventHandler {
     }
 
     /**
-     * his is used to get user claim value from claimURI
+     * This is used to get user claim value from claimURI
      *
      * @param userId   : userUniqueId
      * @param claimURI : claimURI
@@ -412,7 +422,7 @@ public class AccountDisabledHandler extends AbstractEventHandler {
     }
 
     /**
-     * This is sued to extract domainId from unique user id
+     * This is used to extract domainId from unique user id
      *
      * @param uniqueEntityId : Unique user id
      * @return : domain Id
@@ -429,6 +439,24 @@ public class AccountDisabledHandler extends AbstractEventHandler {
         return decodedUniqueEntityIdParts[1];
     }
 
+
+    private void triggerNotification(String userUniqueId, String type)
+            throws EventException {
+        String eventName = EventConstants.Event.TRIGGER_NOTIFICATION;
+        HashMap<String, Object> properties = new HashMap<>();
+        properties.put(EventConstants.EventProperty.USER_UNIQUE_ID, userUniqueId);
+
+        properties.put(TEMPLATE_TYPE, type);
+        Event identityMgtEvent = new Event(eventName, properties);
+        EventContext eventContext = new EventContext();
+
+        try {
+            AccountServiceDataHolder.getInstance().getIdentityEventService().pushEvent(identityMgtEvent,
+                    eventContext);
+        } catch (IdentityException e) {
+            log.warn("Error while sending email : " + type + " for user :" + userUniqueId);
+        }
+    }
 
 }
 
