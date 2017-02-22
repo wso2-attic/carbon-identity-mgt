@@ -332,6 +332,7 @@ public class SecurityQuestionPasswordRecoveryManager {
                     return challengeQuestionResponse;
                 } else {
                     //TODO handle recovery failed attempts
+                    //handleAnswerVerificationFail(userRecoveryData.getUser());
                     challengeQuestionResponse.setStatus(IdentityRecoveryConstants.ErrorMessages
                             .ERROR_CODE_INVALID_ANSWER_FOR_SECURITY_QUESTION.getCode());
                     return challengeQuestionResponse;
