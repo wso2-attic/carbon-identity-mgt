@@ -21,9 +21,13 @@ import org.wso2.carbon.identity.mgt.connector.config.CredentialStoreConnectorCon
 import org.wso2.carbon.identity.mgt.exception.AuthenticationFailure;
 import org.wso2.carbon.identity.mgt.exception.CredentialStoreConnectorException;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.PasswordCallback;
 
 /**
  * In Memory Credential Store Connector.
@@ -31,6 +35,8 @@ import javax.security.auth.callback.Callback;
 public class InMemoryCredentialStoreConnector implements CredentialStoreConnector {
 
     private CredentialStoreConnectorConfig credentialStoreConnectorConfig;
+
+    private Map<String, char[]> credentialMap = new HashMap<>();
 
     @Override
     public void init(CredentialStoreConnectorConfig credentialStoreConnectorConfig) throws
@@ -41,23 +47,35 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
 
     @Override
     public String getCredentialStoreConnectorId() {
-        return null;
+        return "INMEM_CSC";
     }
 
     @Override
     public void authenticate(String connectorUserId, Callback[] callbacks) throws CredentialStoreConnectorException,
             AuthenticationFailure {
+        char[] password = credentialMap.get(connectorUserId);
 
+        for (Callback callback : callbacks) {
+            if (callback instanceof PasswordCallback) {
+                char[] credential = ((PasswordCallback) callback).getPassword();
+                if (Arrays.equals(password, credential)) {
+                    return;
+                } else {
+                    throw new AuthenticationFailure("Invalid Credentials");
+                }
+            }
+        }
+        throw new CredentialStoreConnectorException("Invalid Callback");
     }
 
     @Override
     public boolean canHandle(Callback[] callbacks) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean canStore(Callback[] callbacks) {
-        return false;
+        return true;
     }
 
     @Override
@@ -67,7 +85,17 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
 
     @Override
     public String addCredential(List<Callback> callbacks) throws CredentialStoreConnectorException {
-        return null;
+        String userId = UUID.randomUUID().toString();
+
+        char[] password = null;
+        for (Callback callback : callbacks) {
+            if (callback instanceof PasswordCallback) {
+                password = ((PasswordCallback) callback).getPassword();
+                credentialMap.put(userId, password);
+                return userId;
+            }
+        }
+        throw new CredentialStoreConnectorException("Error while saving credentials");
     }
 
     @Override
