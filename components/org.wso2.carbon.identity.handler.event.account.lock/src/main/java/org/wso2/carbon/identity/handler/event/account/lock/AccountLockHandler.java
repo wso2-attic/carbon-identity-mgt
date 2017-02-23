@@ -240,9 +240,9 @@ public class AccountLockHandler extends AbstractEventHandler {
 
         if (UserState.valueOf(user.getState()) == null) {
             if (log.isDebugEnabled()) {
-                log.debug("Invalid user state :" + user.getState());
+                log.debug("Invalid user state: " + user.getState());
             }
-            throw new EventException("Invalid user state :" + user.getState());
+            throw new EventException("Invalid user state: " + user.getState());
         }
 
         if (UserState.valueOf(user.getState()).isInGroup(UserState.Group.LOCKED)) {
@@ -539,7 +539,7 @@ public class AccountLockHandler extends AbstractEventHandler {
             User user = identityStore.getUser(uniqueUserId);
             return user.getState();
         } catch (IdentityStoreException | UserNotFoundException e) {
-            throw new EventException("Error while reading user state:" + uniqueUserId);
+            throw new EventException("Error while reading user state: " + uniqueUserId);
         }
     }
 
