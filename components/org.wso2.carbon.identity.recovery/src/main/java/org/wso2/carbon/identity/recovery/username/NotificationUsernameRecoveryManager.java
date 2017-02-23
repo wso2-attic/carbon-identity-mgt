@@ -19,10 +19,8 @@
 
 package org.wso2.carbon.identity.recovery.username;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.common.base.event.EventContext;
 import org.wso2.carbon.identity.common.base.event.model.Event;
 import org.wso2.carbon.identity.common.base.exception.IdentityException;
@@ -93,7 +91,6 @@ public class NotificationUsernameRecoveryManager {
          And portal side.
 
          */
-
         if (claims == null || claims.isEmpty()) {
 
             if (log.isDebugEnabled()) {
@@ -112,19 +109,20 @@ public class NotificationUsernameRecoveryManager {
                 log.debug("There are more than one user in the result set : "
                         + user.toString());
             }
-
-            //TODO send the username to the user as an email
+            // Send email an email with the username to the user.
+            if (usernameConfig.isNotificationInternallyManaged()) {
+                triggerNotification(user.getUniqueUserId(),
+                        IdentityRecoveryConstants.NOTIFICATION_ACCOUNT_ID_RECOVERY, user);
+            }
             return true;
+
         } else {
             if (log.isDebugEnabled()) {
                 log.debug("There are more than one user in the result set : "
                         + resultedUserList.toString());
             }
             return false;
-
         }
-
-
     }
 
     private static List<User> getUserList(List<Claim> claims) throws IdentityRecoveryException {
