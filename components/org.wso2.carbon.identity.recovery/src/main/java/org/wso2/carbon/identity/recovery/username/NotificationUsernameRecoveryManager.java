@@ -87,14 +87,10 @@ public class NotificationUsernameRecoveryManager {
     private boolean recoverUserByClaims(List<Claim> claims)
             throws IdentityRecoveryException {
 
-        /* No need of checking recovery enable from back end side it is already checked from API side
-         And portal side.
-
-         */
         if (claims == null || claims.isEmpty()) {
 
             if (log.isDebugEnabled()) {
-                log.debug("No claims are recieved");
+                log.debug("No claims are recieved.");
             }
             return false;
             //TODO send exception.
@@ -105,10 +101,7 @@ public class NotificationUsernameRecoveryManager {
 
         if (resultedUserList.size() == 1) {
             user = resultedUserList.get(0);
-            if (log.isDebugEnabled()) {
-                log.debug("There are more than one user in the result set : "
-                        + user.toString());
-            }
+
             // Send email an email with the username to the user.
             if (usernameConfig.isNotificationInternallyManaged()) {
                 triggerNotification(user.getUniqueUserId(),
@@ -118,7 +111,7 @@ public class NotificationUsernameRecoveryManager {
 
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("There are more than one user in the result set : "
+                log.debug("Can not identify a unique user, instead found: "
                         + resultedUserList.toString());
             }
             return false;
