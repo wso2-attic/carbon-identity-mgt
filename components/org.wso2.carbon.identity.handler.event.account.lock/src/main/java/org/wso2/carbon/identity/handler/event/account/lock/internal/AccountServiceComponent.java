@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.event.EventService;
+import org.wso2.carbon.identity.handler.event.account.lock.AccountDisabledHandler;
 import org.wso2.carbon.identity.handler.event.account.lock.AccountLockHandler;
 import org.wso2.carbon.identity.mgt.RealmService;
 
@@ -55,6 +56,12 @@ public class AccountServiceComponent {
                 new AccountLockHandler(), null);
         if (log.isDebugEnabled()) {
             log.debug("AccountLockHandler is registered");
+        }
+
+        context.getBundleContext().registerService(AbstractEventHandler.class.getName(),
+                new AccountDisabledHandler(), null);
+        if (log.isDebugEnabled()) {
+            log.debug("AccountDisabledHandler is registered");
         }
     }
 

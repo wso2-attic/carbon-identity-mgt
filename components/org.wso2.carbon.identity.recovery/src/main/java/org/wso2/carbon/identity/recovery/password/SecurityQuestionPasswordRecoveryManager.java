@@ -332,6 +332,7 @@ public class SecurityQuestionPasswordRecoveryManager {
                     return challengeQuestionResponse;
                 } else {
                     //TODO handle recovery failed attempts
+                    //handleAnswerVerificationFail(userRecoveryData.getUser());
                     challengeQuestionResponse.setStatus(IdentityRecoveryConstants.ErrorMessages
                             .ERROR_CODE_INVALID_ANSWER_FOR_SECURITY_QUESTION.getCode());
                     return challengeQuestionResponse;
@@ -504,8 +505,8 @@ public class SecurityQuestionPasswordRecoveryManager {
         List<String> remainingQuestions = new ArrayList<>(challengeQuestions);
 
         for (int i = 0; i < minNoOfQuestionsToAnswer; i++) {
-            int random = new Random().nextInt(challengeQuestions.size());
-            selectedQuestions.add(i, remainingQuestions.get(random));
+            int random = new Random().nextInt(remainingQuestions.size());
+            selectedQuestions.add(remainingQuestions.get(random));
             remainingQuestions.remove(random);
         }
         return selectedQuestions;

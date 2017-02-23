@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
+import org.wso2.carbon.identity.mgt.UserState;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
@@ -313,25 +314,22 @@ public class Utils {
     }
 
     public static boolean isAccountLocked(String uniqueUserId) throws IdentityRecoveryException {
-
-        try {
-            return Boolean.parseBoolean(
-                    getClaimFromIdentityStore(uniqueUserId, IdentityRecoveryConstants.ACCOUNT_LOCKED_CLAIM));
-        } catch (IdentityStoreException e) {
-            throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
-        } catch (UserNotFoundException e) {
-            throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
-        }
+        return isAccountInState(uniqueUserId, UserState.Group.LOCKED);
     }
 
 
     public static boolean isAccountDisabled(String uniqueUserId) throws IdentityRecoveryException {
+        return isAccountInState(uniqueUserId, UserState.Group.DISABLED);
+    }
+
+    private static boolean isAccountInState(String uniqueUserId, UserState.Group group) throws 
+            IdentityRecoveryException {
+        RealmService realmService = IdentityRecoveryServiceDataHolder.getInstance().getRealmService();
+        IdentityStore identityStore = realmService.getIdentityStore();
+        String state;
 
         try {
-            return Boolean.parseBoolean(
-                    getClaimFromIdentityStore(uniqueUserId, IdentityRecoveryConstants.ACCOUNT_DISABLED_CLAIM));
+            state = identityStore.getUser(uniqueUserId).getState();
         } catch (IdentityStoreException e) {
             throw Utils.handleServerException(
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
@@ -339,6 +337,8 @@ public class Utils {
             throw Utils.handleServerException(
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
         }
+        return UserState.valueOf(state).isInGroup(group);
+
     }
 
     public static String generateUUID() {

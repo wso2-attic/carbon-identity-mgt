@@ -101,7 +101,10 @@ public class NotificationUsernameRecoveryManager {
 
         if (resultedUserList.size() == 1) {
             user = resultedUserList.get(0);
-
+            if (log.isDebugEnabled()) {
+                log.debug("There are more than one user in the result set : "
+                        + user.toString());
+            }
             // Send email an email with the username to the user.
             if (usernameConfig.isNotificationInternallyManaged()) {
                 triggerNotification(user.getUniqueUserId(),

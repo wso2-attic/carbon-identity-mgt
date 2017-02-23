@@ -13,6 +13,7 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
+import org.wso2.carbon.identity.mgt.UserState;
 import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
@@ -258,15 +259,12 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
         return securityQuestionPasswordRecoveryManager.initiateUserChallengeQuestion(user);
     }
 
-    private void updateUserClaims(String uniqueUserId, Claim claim) throws UserNotFoundException,
+    private void updateUserState(String uniqueUserId, String state) throws UserNotFoundException,
             IdentityStoreException {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
 
-        List<Claim> claims = new ArrayList<>();
-        claims.add(claim);
-
         try {
-            realmService.getIdentityStore().updateUserClaims(uniqueUserId, claims);
+            realmService.getIdentityStore().setUserState(uniqueUserId, state);
         } catch (IdentityStoreException e) {
             Assert.fail("Failed to update user claims.");
         }
@@ -274,15 +272,11 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
     }
 
     private void lockAccount(String uniqueUserID) throws UserNotFoundException, IdentityStoreException {
-        Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/accountLocked", "true");
-
-        updateUserClaims(uniqueUserID, claim);
+        updateUserState(uniqueUserID, UserState.LOCKED__UNVERIFIED.toString());
     }
 
     private void disableAccount(String uniqueUserID) throws UserNotFoundException, IdentityStoreException {
-        Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/accountDisabled", "true");
-
-        updateUserClaims(uniqueUserID, claim);
+        updateUserState(uniqueUserID, UserState.DISABLED.toString());
     }
 
 }
