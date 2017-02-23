@@ -38,6 +38,7 @@ import org.wso2.carbon.identity.recovery.util.Utils;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * Manager class which can be used to recover passwords using a notification.
@@ -87,14 +88,10 @@ public class NotificationUsernameRecoveryManager {
     private boolean recoverUserByClaims(List<Claim> claims)
             throws IdentityRecoveryException {
 
-        /* No need of checking recovery enable from back end side it is already checked from API side
-         And portal side.
-
-         */
         if (claims == null || claims.isEmpty()) {
 
             if (log.isDebugEnabled()) {
-                log.debug("No claims are recieved");
+                log.debug("No claims are recieved.");
             }
             return false;
             //TODO send exception.
@@ -118,8 +115,14 @@ public class NotificationUsernameRecoveryManager {
 
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("There are more than one user in the result set : "
-                        + resultedUserList.toString());
+
+                StringJoiner joiner = new StringJoiner(",");
+
+                resultedUserList.forEach((user1) -> {
+                    joiner.add(user1.getUniqueUserId());
+                });
+
+                log.debug("Can not identify a unique user, instead found: " + joiner.toString());
             }
             return false;
         }
