@@ -27,7 +27,7 @@
     <groupId>org.wso2.carbon.identity.mgt</groupId>
     <artifactId>org.wso2.carbon.identity.mgt.parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.27-SNAPSHOT</version>
+    <version>0.1.29-SNAPSHOT</version>
     <name>WSO2 Carbon Identity Management - Parent</name>
 
     <scm>
@@ -430,7 +430,7 @@
     </modules>
 
     <properties>
-        <carbon.identity.mgt.version>0.1.27-SNAPSHOT</carbon.identity.mgt.version>
+        <carbon.identity.mgt.version>0.1.29-SNAPSHOT</carbon.identity.mgt.version>
         <org.wso2.carbon.lcm.version>1.0.0</org.wso2.carbon.lcm.version>
 
         <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>

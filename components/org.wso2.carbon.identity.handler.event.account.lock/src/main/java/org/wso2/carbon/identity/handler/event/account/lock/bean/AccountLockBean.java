@@ -32,6 +32,7 @@ public class AccountLockBean implements Serializable {
     private int accountLockTimeInMinutes = 2;
     private int maxFailedAttempts = 3;
     private int lockedTimeRatio = 1;
+    private boolean isAccountInactiveEnabled = true;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -75,5 +76,13 @@ public class AccountLockBean implements Serializable {
 
     public void setLockedTimeRatio(int lockedTimeRatio) {
         this.lockedTimeRatio = lockedTimeRatio;
+    }
+
+    public boolean isAccountInactiveEnabled() {
+        return isAccountInactiveEnabled;
+    }
+
+    public void setIsAccountInactiveEnabled(boolean isAccountInactiveEnabled) {
+        this.isAccountInactiveEnabled = isAccountInactiveEnabled;
     }
 }
