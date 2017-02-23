@@ -129,7 +129,7 @@ public class AccountDisabledHandlerTest {
 
     }
 
-    @Test(groups = "updateDisabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
+    @Test(groups = "disabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
     public void testUpdateClaimsDisabledUserPUT() throws IdentityStoreException, UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -153,7 +153,7 @@ public class AccountDisabledHandlerTest {
 
     }
 
-    @Test(groups = "updateDisabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
+    @Test(groups = "disabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
     public void testUpdateClaimsDisabledUserPATCH() throws IdentityStoreException, UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -178,7 +178,7 @@ public class AccountDisabledHandlerTest {
 
     }
 
-    @Test(groups = "updateCredentialsDisabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
+    @Test(groups = "disabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
     public void testUpdateCredentialDisabledUserPUT() throws UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -197,7 +197,7 @@ public class AccountDisabledHandlerTest {
 
     }
 
-    @Test(groups = "updateCredentialsDisabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
+    @Test(groups = "disabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
     public void testUpdateCredentialDisabledUserPATCH() throws UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -224,7 +224,7 @@ public class AccountDisabledHandlerTest {
 
     }
 
-    @Test(groups = "deleteDisabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
+    @Test(groups = "disabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
     public void testDeleteDisabledUser() throws UserNotFoundException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -238,7 +238,7 @@ public class AccountDisabledHandlerTest {
 
     }
 
-    @Test(groups = "updateGroupsDisabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
+    @Test(groups = "disabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
     public void testUpdateGroupsForDisabledUserPUT() throws UserNotFoundException, IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -253,7 +253,7 @@ public class AccountDisabledHandlerTest {
 
     }
 
-    @Test(groups = "updateGroupsDisabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
+    @Test(groups = "disabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
     public void testUpdateGroupsForDisabledUserPATCH() throws UserNotFoundException, IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
@@ -269,16 +269,14 @@ public class AccountDisabledHandlerTest {
 
     }
 
-    @Test(groups = "updateUsersOfGroup", dependsOnGroups = {"adminDisabledUserAccount"})
+    @Test(groups = "disabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
     public void testUpdateUsersOfGroupPUT() throws UserNotFoundException, IdentityStoreException {
 
-        addUser("user2");
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<String> userIds = new ArrayList<>();
         userIds.add(users.get(0).getUniqueUserId());
-        userIds.add(users.get(1).getUniqueUserId());
 
         try {
             realmService.getIdentityStore().updateUsersOfGroup(groups.get(3).getUniqueGroupId(), userIds);
@@ -288,10 +286,10 @@ public class AccountDisabledHandlerTest {
 
     }
 
-    @Test(groups = "updateUsersOfGroup", dependsOnGroups = {"adminDisabledUserAccount"})
+    @Test(groups = "disabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
     public void testUpdateUsersOfGroupPATCH() throws UserNotFoundException, IdentityStoreException {
 
-        addUser("user3");
+        addUser("user2");
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
@@ -311,7 +309,7 @@ public class AccountDisabledHandlerTest {
     }
 
     @Test(groups = "enabledUserAccount", dependsOnGroups = {"adminDisabledUserAccount"})
-    public void testEnableUserByAdmin() throws AuthenticationFailure, UserNotFoundException {
+    public void testEnableUserByAdmin() throws AuthenticationFailure, UserNotFoundException, IdentityStoreException {
 
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
@@ -362,6 +360,8 @@ public class AccountDisabledHandlerTest {
 
         Assert.assertNotNull(context, "Test Failed. User not authenticated");
         Assert.assertTrue(context.isAuthenticated(), "Test Passed. User enabled and authenticated");
+        removeUsers();
+
     }
 
     private void addUser(String username) throws IdentityStoreException {
@@ -415,6 +415,16 @@ public class AccountDisabledHandlerTest {
             Assert.assertNotNull(group, "Failed to receive the group.");
             Assert.assertNotNull(group.getUniqueGroupId(), "Invalid group unique id.");
             groups.add(group);
+        }
+    }
+
+    private void removeUsers() throws IdentityStoreException, UserNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        for (User user : users) {
+            realmService.getIdentityStore().deleteUser(user.getUniqueUserId());
         }
     }
 }
