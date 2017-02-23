@@ -21,17 +21,22 @@ package org.wso2.carbon.identity.recovery.username;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.identity.common.base.event.EventContext;
+import org.wso2.carbon.identity.common.base.event.model.Event;
+import org.wso2.carbon.identity.common.base.exception.IdentityException;
+import org.wso2.carbon.identity.event.EventConstants;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryConstants;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
-import org.wso2.carbon.identity.recovery.IdentityRecoveryServerException;
 import org.wso2.carbon.identity.recovery.internal.IdentityRecoveryServiceDataHolder;
 import org.wso2.carbon.identity.recovery.mapping.UsernameConfig;
 import org.wso2.carbon.identity.recovery.util.Utils;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,11 +53,8 @@ public class NotificationUsernameRecoveryManager {
     }
 
     public static NotificationUsernameRecoveryManager getInstance() {
-        try {
-            usernameConfig = Utils.getRecoveryConfigs().getRecovery().getUsername();
-        } catch (IdentityRecoveryServerException e) {
-            log.error("Error while Loading recovery-config file.", e);
-        }
+        // TODO will read from kernel.
+        usernameConfig = new UsernameConfig();
         return instance;
     }
 
@@ -63,24 +65,39 @@ public class NotificationUsernameRecoveryManager {
 
     }
 
+    private void triggerNotification(String userUniqueId, String type, User user)
+            throws IdentityRecoveryException {
+        String eventName = EventConstants.Event.TRIGGER_NOTIFICATION;
+        HashMap<String, Object> properties = new HashMap<>();
+        properties.put(EventConstants.EventProperty.USER_UNIQUE_ID, userUniqueId);
+        properties.put(EventConstants.EventProperty.USER_STORE_DOMAIN, user.getDomainName());
+        properties.put(IdentityRecoveryConstants.TEMPLATE_TYPE, type);
+        Event identityMgtEvent = new Event(eventName, properties);
+        EventContext eventContext = new EventContext();
 
-    // TODO trigger Notification Method
+        try {
+            IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().pushEvent(identityMgtEvent,
+                    eventContext);
+        } catch (IdentityException e) {
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION,
+                    userUniqueId, e);
+        }
+    }
 
-    public boolean recoverUserByClaims(List<Claim> claims)
+    private boolean recoverUserByClaims(List<Claim> claims)
             throws IdentityRecoveryException {
 
         /* No need of checking recovery enable from back end side it is already checked from API side
          And portal side.
 
          */
-
         if (claims == null || claims.isEmpty()) {
 
             if (log.isDebugEnabled()) {
                 log.debug("No claims are recieved");
             }
             return false;
-            //TODO send exception
+            //TODO send exception.
         }
 
         User user;
@@ -92,19 +109,20 @@ public class NotificationUsernameRecoveryManager {
                 log.debug("There are more than one user in the result set : "
                         + user.toString());
             }
-
-            //TODO send the username to the user as an email
+            // Send email an email with the username to the user.
+            if (usernameConfig.isNotificationInternallyManaged()) {
+                triggerNotification(user.getUniqueUserId(),
+                        IdentityRecoveryConstants.NOTIFICATION_ACCOUNT_ID_RECOVERY, user);
+            }
             return true;
+
         } else {
             if (log.isDebugEnabled()) {
                 log.debug("There are more than one user in the result set : "
                         + resultedUserList.toString());
             }
             return false;
-
         }
-
-
     }
 
     private static List<User> getUserList(List<Claim> claims) throws IdentityRecoveryException {
