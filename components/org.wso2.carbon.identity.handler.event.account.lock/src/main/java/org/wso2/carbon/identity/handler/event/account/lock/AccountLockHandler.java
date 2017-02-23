@@ -36,7 +36,6 @@ import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.UserState;
 import org.wso2.carbon.identity.mgt.claim.Claim;
-import org.wso2.carbon.identity.mgt.constant.StoreConstants;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.lcm.core.LifecycleOperationManager;
@@ -53,20 +52,11 @@ import static org.wso2.carbon.identity.mgt.UserState.LOCKED__UNVERIFIED;
 import static org.wso2.carbon.identity.mgt.UserState.LOCKED__VERIFIED;
 import static org.wso2.carbon.identity.mgt.UserState.UNLOCKED__UNVERIFIED;
 import static org.wso2.carbon.identity.mgt.UserState.UNLOCKED__VERIFIED;
-import static org.wso2.carbon.identity.mgt.constant.StoreConstants
-        .IdentityStoreInterceptorConstants.POST_AUTHENTICATE;
-import static org.wso2.carbon.identity.mgt.constant.StoreConstants
-        .IdentityStoreInterceptorConstants.POST_UPDATE_USER_CLAIMS_PATCH;
-import static org.wso2.carbon.identity.mgt.constant.StoreConstants
-        .IdentityStoreInterceptorConstants.POST_UPDATE_USER_CLAIMS_PUT;
-import static org.wso2.carbon.identity.mgt.constant.StoreConstants
-        .IdentityStoreInterceptorConstants.PRE_UPDATE_USER_CLAIMS_PATCH;
-import static org.wso2.carbon.identity.mgt.constant.StoreConstants
-        .IdentityStoreInterceptorConstants.PRE_UPDATE_USER_CLAIMS_PUT;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreConstants;
+import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants;
 import static org.wso2.carbon.identity.mgt.impl.util.IdentityUserMgtUtil.setClaimInIdentityStore;
 import static org.wso2.carbon.identity.mgt.impl.util.IdentityUserMgtUtil.setClaimsInIdentityStore;
 import static org.wso2.carbon.kernel.utils.StringUtils.isNullOrEmpty;
-
 
 /**
  * AccountLockHandler class
@@ -78,26 +68,24 @@ public class AccountLockHandler extends AbstractEventHandler {
     private static String oldAccountLockValue = "account_lock_status";
     private static final String TEMPLATE_TYPE = "TEMPLATE_TYPE";
 
-
     @Override
     public void handle(EventContext eventContext, Event event) throws EventException {
         if (!accountLockBean.isEnabled()) {
             return;
         }
 
-        if (event.getEventName().equals(POST_AUTHENTICATE)) {
+        if (event.getEventName().equals(IdentityStoreInterceptorConstants.POST_AUTHENTICATE)) {
             handlePostAuthentication(event);
-        } else if (event.getEventName().equals(PRE_UPDATE_USER_CLAIMS_PUT)) {
+        } else if (event.getEventName().equals(IdentityStoreInterceptorConstants.PRE_UPDATE_USER_CLAIMS_PUT)) {
             handlePreUpdateUserClaimsPUT(eventContext, event);
-        } else if (event.getEventName().equals(PRE_UPDATE_USER_CLAIMS_PATCH)) {
+        } else if (event.getEventName().equals(IdentityStoreInterceptorConstants.PRE_UPDATE_USER_CLAIMS_PATCH)) {
             handlePreUpdateUserClaimsPATCH(eventContext, event);
-        } else if (event.getEventName().equals(POST_UPDATE_USER_CLAIMS_PATCH) ||
-                event.getEventName().equals(POST_UPDATE_USER_CLAIMS_PUT)) {
+        } else if (event.getEventName().equals(IdentityStoreInterceptorConstants.POST_UPDATE_USER_CLAIMS_PATCH) ||
+                event.getEventName().equals(IdentityStoreInterceptorConstants.POST_UPDATE_USER_CLAIMS_PUT)) {
             //Post update user PUT and Post update user PATCH
             handlePostUpdateUserClaims(eventContext, event);
         }
     }
-
 
     @Override
     public void configure(InitConfig initConfig) throws IdentityException {
@@ -111,7 +99,6 @@ public class AccountLockHandler extends AbstractEventHandler {
         return "account.lock.handler";
     }
 
-
     /**
      * This is used to handle post authentication event in account lock handler
      *
@@ -121,7 +108,7 @@ public class AccountLockHandler extends AbstractEventHandler {
     private void handlePostAuthentication(Event event) throws EventException {
 
         AuthenticationContext authenticationContext = (AuthenticationContext) event.getEventProperties()
-                .get(StoreConstants.IdentityStoreConstants.AUTHENTICATION_CONTEXT);
+                .get(IdentityStoreConstants.AUTHENTICATION_CONTEXT);
 
         if (authenticationContext == null) {
             throw new EventException("No context found for authentication");
@@ -168,7 +155,7 @@ public class AccountLockHandler extends AbstractEventHandler {
                             setUserFailedAttempts(user, userFailedAttemptsCount);
                         }
                     } catch (IdentityStoreException | UserNotFoundException e) {
-                        throw new EventException("Unexpected error : ", e);
+                        throw new EventException("Unexpected error: ", e);
                     }
                 }
 
@@ -271,7 +258,7 @@ public class AccountLockHandler extends AbstractEventHandler {
                         long unlockTime = Long.parseLong(unlockedTimeString);
                         if (unlockTime != 0 && System.currentTimeMillis() >= unlockTime) {
                             if (log.isDebugEnabled()) {
-                                log.debug("Unlocked user account :" + user.getUniqueUserId());
+                                log.debug("Unlocked user account: " + user.getUniqueUserId());
                             }
 
                             //Account state and  unlock email will be sent in post update claim handler.
@@ -281,14 +268,14 @@ public class AccountLockHandler extends AbstractEventHandler {
                         }
                     }
                 } catch (IdentityStoreException | UserNotFoundException e) {
-                    throw new EventException("Error reading account lock claim, user :" + user.getUniqueUserId(), e);
+                    throw new EventException("Error reading account lock claim, user: " + user.getUniqueUserId(), e);
                 }
             }
 
             if (log.isDebugEnabled()) {
-                log.debug("User Account is locked :" + user.getUniqueUserId());
+                log.debug("User Account is locked: " + user.getUniqueUserId());
             }
-            throw new EventException("User Account is locked :" + user.getUniqueUserId());
+            throw new EventException("User Account is locked: " + user.getUniqueUserId());
         }
     }
 
@@ -340,7 +327,7 @@ public class AccountLockHandler extends AbstractEventHandler {
             }
 
         } catch (LifecycleException | UserNotFoundException | IdentityStoreException e) {
-            throw new EventException("Error while executing lifecycle event for user :" + user
+            throw new EventException("Error while executing lifecycle event for user: " + user
                     .getUniqueUserId(), e);
         }
     }
@@ -400,10 +387,9 @@ public class AccountLockHandler extends AbstractEventHandler {
             setClaimInIdentityStore(user.getUniqueUserId(), AccountConstants
                     .FAILED_LOGIN_ATTEMPTS_CLAIM, String.valueOf(userFailedAttemptsCount), null);
         } catch (IdentityStoreException | UserNotFoundException e) {
-            throw new EventException("Error while setting failed attempts, user  :" + user.getUniqueUserId(), e);
+            throw new EventException("Error while setting failed attempts, user: " + user.getUniqueUserId(), e);
         }
     }
-
 
     /**
      * This is used to handle pre update user claims PUT
@@ -414,9 +400,9 @@ public class AccountLockHandler extends AbstractEventHandler {
      */
     private void handlePreUpdateUserClaimsPUT(EventContext eventContext, Event event) throws EventException {
         String uniqueUserId = (String) event.getEventProperties()
-                .get(StoreConstants.IdentityStoreConstants.UNIQUE_USED_ID);
+                .get(IdentityStoreConstants.UNIQUE_USED_ID);
         List<Claim> claims = (List<Claim>) event.getEventProperties()
-                .get(StoreConstants.IdentityStoreConstants.CLAIM_LIST);
+                .get(IdentityStoreConstants.CLAIM_LIST);
 
         Optional<Claim> optional = claims.stream()
                 .filter(claim -> AccountConstants.ACCOUNT_LOCKED_CLAIM.equals(claim.getClaimUri()))
@@ -431,12 +417,10 @@ public class AccountLockHandler extends AbstractEventHandler {
                 }
 
             } catch (IdentityStoreException | UserNotFoundException e) {
-                throw new EventException("Error while reading claims of user :" + uniqueUserId);
+                throw new EventException("Error while reading claims of user: " + uniqueUserId);
             }
         }
-
     }
-
 
     /**
      * This is used to handle pre update user claims PATCH
@@ -447,9 +431,9 @@ public class AccountLockHandler extends AbstractEventHandler {
      */
     private void handlePreUpdateUserClaimsPATCH(EventContext eventContext, Event event) throws EventException {
         String uniqueUserId = (String) event.getEventProperties()
-                .get(StoreConstants.IdentityStoreConstants.UNIQUE_USED_ID);
+                .get(IdentityStoreConstants.UNIQUE_USED_ID);
         List<Claim> claimsToAdd = (List<Claim>) event.getEventProperties()
-                .get(StoreConstants.IdentityStoreConstants.CLAIM_LIST_TO_ADD);
+                .get(IdentityStoreConstants.CLAIM_LIST_TO_ADD);
 
         Optional<Claim> optional = claimsToAdd.stream()
                 .filter(claim -> AccountConstants.ACCOUNT_LOCKED_CLAIM.equals(claim.getClaimUri()))
@@ -464,7 +448,7 @@ public class AccountLockHandler extends AbstractEventHandler {
                 }
 
             } catch (IdentityStoreException | UserNotFoundException e) {
-                throw new EventException("Error while reading claims of user :" + uniqueUserId);
+                throw new EventException("Error while reading claims of user: " + uniqueUserId);
             }
         }
     }
@@ -482,8 +466,7 @@ public class AccountLockHandler extends AbstractEventHandler {
         if (accountLockObject != null) {
             boolean oldAccountLockValue = (boolean) accountLockObject;
 
-            String uniqueUserId = (String) event.getEventProperties()
-                    .get(StoreConstants.IdentityStoreConstants.UNIQUE_USED_ID);
+            String uniqueUserId = (String) event.getEventProperties().get(IdentityStoreConstants.UNIQUE_USED_ID);
 
             try {
                 boolean newAccountLockClaimValue = Boolean.parseBoolean(getUserClaimValue(uniqueUserId,
@@ -500,9 +483,8 @@ public class AccountLockHandler extends AbstractEventHandler {
                     }
                 }
             } catch (IdentityStoreException | UserNotFoundException e) {
-                throw new EventException("Error while reading claims of user :" + uniqueUserId);
+                throw new EventException("Error while reading claims of user: " + uniqueUserId);
             }
-
         }
     }
 
@@ -557,14 +539,14 @@ public class AccountLockHandler extends AbstractEventHandler {
             User user = identityStore.getUser(uniqueUserId);
             return user.getState();
         } catch (IdentityStoreException | UserNotFoundException e) {
-            throw new EventException("Error while reading user state :" + uniqueUserId);
+            throw new EventException("Error while reading user state:" + uniqueUserId);
         }
     }
 
     private void triggerNotification(String userUniqueId, String type)
             throws EventException {
         String eventName = EventConstants.Event.TRIGGER_NOTIFICATION;
-        HashMap<String, Object> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(EventConstants.EventProperty.USER_UNIQUE_ID, userUniqueId);
 
         properties.put(TEMPLATE_TYPE, type);
@@ -575,7 +557,7 @@ public class AccountLockHandler extends AbstractEventHandler {
             AccountServiceDataHolder.getInstance().getIdentityEventService().pushEvent(identityMgtEvent,
                     eventContext);
         } catch (IdentityException e) {
-            log.warn("Error while sending email : " + type + " for user :" + userUniqueId);
+            log.warn("Error while sending email : " + type + " for user: " + userUniqueId);
         }
     }
 
