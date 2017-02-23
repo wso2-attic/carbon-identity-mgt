@@ -38,6 +38,7 @@ import org.wso2.carbon.identity.recovery.util.Utils;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * Manager class which can be used to recover passwords using a notification.
@@ -114,7 +115,14 @@ public class NotificationUsernameRecoveryManager {
 
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Can not identify a unique user, instead found: " + resultedUserList.toString());
+
+                StringJoiner joiner = new StringJoiner(",");
+
+                resultedUserList.forEach((user1) -> {
+                    joiner.add(user1.getUniqueUserId());
+                });
+
+                log.debug("Can not identify a unique user, instead found: " + joiner.toString());
             }
             return false;
         }
