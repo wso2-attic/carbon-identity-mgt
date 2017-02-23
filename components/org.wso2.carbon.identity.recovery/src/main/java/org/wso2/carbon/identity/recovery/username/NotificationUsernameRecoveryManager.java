@@ -114,8 +114,7 @@ public class NotificationUsernameRecoveryManager {
 
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Can not identify a unique user, instead found: "
-                        + resultedUserList.toString());
+                log.debug("Can not identify a unique user, instead found: " + resultedUserList.toString());
             }
             return false;
         }
