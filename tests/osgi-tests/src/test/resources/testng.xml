@@ -22,6 +22,8 @@ limitations under the License.
             <class name="org.wso2.carbon.identity.mgt.test.osgi.ProfileMgtServiceTest"/>
             <!--<class name="org.wso2.carbon.identity.mgt.test.osgi.AuthorizationStoreTests"/>-->
             <class name="org.wso2.carbon.identity.mgt.test.osgi.SecurityQuestionPasswordRecoveryManagerTest"/>
+            <class name="org.wso2.carbon.identity.mgt.test.osgi.AccountDisabledHandlerTest"/>
+            <class name="org.wso2.carbon.identity.mgt.test.osgi.AccountLockHandlerTest"/>
 
         </classes>
     </test>
