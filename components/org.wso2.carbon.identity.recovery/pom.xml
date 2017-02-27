@@ -92,6 +92,7 @@
             org.osgi.service.jndi.*; version="${carbon.jndi.version}",
             javax.naming.*,
             javax.sql.*,
+            javax.security.auth.*,
         </import.package>
     </properties>
 </project>
