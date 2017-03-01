@@ -300,37 +300,4 @@ public class Utils {
 
         return challengeQuestionFile.getChallengeQuestions();
     }
-
-    public static void deleteChallengeQuestions(List<ChallengeQuestion> challengeQuestionList, String locale)
-            throws IdentityRecoveryException {
-        List<ChallengeQuestion> challengeQuestionFullList = readChallengeQuestionsFromYAML(locale);
-        challengeQuestionFullList.removeAll(challengeQuestionList);
-        updateChallengeQuestionsYAML(challengeQuestionFullList, locale);
-    }
-
-    public static void deleteChallengeQuestions(List<ChallengeQuestion> challengeQuestionList)
-            throws IdentityRecoveryException {
-
-        final boolean[] error = { false };
-        Map<String, List<ChallengeQuestion>> groupedByLocale =
-                challengeQuestionList.stream().collect(
-                        Collectors.groupingBy(
-                                challengeQuestion -> challengeQuestion.getLocale()
-                        )
-                );
-        groupedByLocale.forEach((key, value) -> {
-            try {
-                deleteChallengeQuestions(value, key);
-            } catch (IdentityRecoveryException e) {
-                log.error(String.format("Error while deleting challenge questions from locale file %s", key));
-                error[0] = true;
-            }
-        });
-
-        if (error[0]) {
-            throw new IdentityRecoveryException("Error while updating challenge questions");
-        }
-
-    }
-
 }

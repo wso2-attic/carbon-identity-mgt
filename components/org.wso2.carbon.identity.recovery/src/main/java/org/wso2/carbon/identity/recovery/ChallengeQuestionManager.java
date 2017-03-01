@@ -171,22 +171,6 @@ public class ChallengeQuestionManager {
 
     }
 
-
-    /**
-     * Delete challenge questions.
-     *
-     * @param challengeQuestions
-     * @throws IdentityRecoveryException
-     */
-    public void deleteChallengeQuestions(ChallengeQuestion[] challengeQuestions) throws IdentityRecoveryException {
-
-        try {
-            Utils.deleteChallengeQuestions(Arrays.asList(challengeQuestions));
-        } catch (IdentityRecoveryException e) {
-            throw new IdentityRecoveryServerException("Error when deleting challenge questions.", e);
-        }
-    }
-
     /**
      * Get challenge questions answered by a user.
      *
