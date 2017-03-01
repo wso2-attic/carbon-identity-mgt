@@ -61,13 +61,6 @@ public class SecurityQuestionPasswordRecoveryManager {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityQuestionPasswordRecoveryManager.class);
 
-//    private static final String PROPERTY_ACCOUNT_LOCK_ON_FAILURE = "account.lock.handler.enable";
-//
-//    private static final String PROPERTY_ACCOUNT_LOCK_ON_FAILURE_MAX = "account.lock.handler.On.Failure.Max.Attempts";
-
-
-//    private static SecurityQuestionPasswordRecoveryManager instance = new SecurityQuestionPasswordRecoveryManager();
-
     private static SecurityQuestionsConfig securityQuestionsConfig = new SecurityQuestionsConfig();
     ChallengeQuestionManager challengeQuestionManager;
     UserRecoveryDataStore userRecoveryDataStore;
@@ -77,11 +70,6 @@ public class SecurityQuestionPasswordRecoveryManager {
         this.userRecoveryDataStore = userRecoveryDataStore;
         this.challengeQuestionManager = challengeQuestionManager;
     }
-
-//    public static SecurityQuestionPasswordRecoveryManager getInstance() {
-//        securityQuestionsConfig = new SecurityQuestionsConfig();
-//        return instance;
-//    }
 
     /**
      * To initiate challenge question based password recovery, answer questions one by one
@@ -399,23 +387,6 @@ public class SecurityQuestionPasswordRecoveryManager {
         }
     }
 
-//    private void getValidatedQuestion(String[] requestedQuestions, List<UserChallengeAnswer> userChallengeAnswers)
-//            throws IdentityRecoveryException {
-//        List<String> userChallengeIds = new ArrayList<>();
-////        for (int i = 0; i < userChallengeAnswer.length; i++) {
-////            userChallengeIds.add(userChallengeAnswer[i].getQuestion().getQuestionSetId().toLowerCase());
-////        }
-//        userChallengeIds.addAll(userChallengeAnswers.stream().map(answer -> answer.getQuestion().getQuestionSetId()
-//                .toLowerCase()).collect(Collectors.toList()));
-//
-//        for (int i = 0; i < requestedQuestions.length; i++) {
-//            if (!userChallengeIds.contains(StringUtils.lowerCase(requestedQuestions[i]))) {
-//                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-//                        .ERROR_CODE_NEED_TO_ANSWER_TO_REQUESTED_QUESTIONS, null);
-//            }
-//        }
-//    }
-
     /**
      * Validate requested questions with answered questions
      *
@@ -478,21 +449,6 @@ public class SecurityQuestionPasswordRecoveryManager {
         return new ChallengeQuestion(userChallengeAnswer.getQuestion().getQuestionSetId(), question);
     }
 
-//    private void getValidatedQuestion(String[] requestedQuestions, UserChallengeAnswer[] userChallengeAnswer)
-//            throws IdentityRecoveryException {
-//        List<String> userChallengeIds = new ArrayList<>();
-//        for (int i = 0; i < userChallengeAnswer.length; i++) {
-//            userChallengeIds.add(userChallengeAnswer[i].getQuestion().getQuestionSetId().toLowerCase());
-//        }
-//
-//        for (int i = 0; i < requestedQuestions.length; i++) {
-//            if (!userChallengeIds.contains(requestedQuestions[i].toLowerCase())) {
-//                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-//                        .ERROR_CODE_NEED_TO_ANSWER_TO_REQUESTED_QUESTIONS, null);
-//            }
-//        }
-//    }
-
     /**
      * Select random list from provided list
      *
@@ -511,29 +467,6 @@ public class SecurityQuestionPasswordRecoveryManager {
         }
         return selectedQuestions;
     }
-
-//    private void triggerNotification(User user, String type, String code) throws IdentityRecoveryException {
-//
-//        String eventName = IdentityEventConstants.Event.TRIGGER_NOTIFICATION;
-//
-//        HashMap<String, Object> properties = new HashMap<>();
-//        properties.put(IdentityEventConstants.EventProperty.USER_NAME, user.getUserName());
-//        properties.put(IdentityEventConstants.EventProperty.TENANT_DOMAIN, user.getTenantDomain());
-//        properties.put(IdentityEventConstants.EventProperty.USER_STORE_DOMAIN, user.getUserStoreDomain());
-//
-//        if (StringUtils.isNotBlank(code)) {
-//            properties.put(IdentityRecoveryConstants.CONFIRMATION_CODE, code);
-//        }
-//        properties.put(IdentityRecoveryConstants.TEMPLATE_TYPE, type);
-//        Event identityMgtEvent = new Event(eventName, properties);
-//        try {
-//            IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().handleEvent(identityMgtEvent);
-//        } catch (IdentityEventException e) {
-//            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages
-//.ERROR_CODE_TRIGGER_NOTIFICATION, user
-//                    .getUserName(), e);
-//        }
-//    }
 
     private void triggerNotification(String userUniqueId, String type, String code)
             throws IdentityRecoveryException {
