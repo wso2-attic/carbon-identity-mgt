@@ -34,7 +34,7 @@ public class UsernameRecoveryTests {
     private static NotificationUsernameRecoveryManager instance = NotificationUsernameRecoveryManager.getInstance();
 
     @Test
-    public void testInitRecoverUsername() throws IdentityRecoveryException {
+    public void testVerifyUsername() throws IdentityRecoveryException {
         List<Claim> claims;
         boolean result;
 

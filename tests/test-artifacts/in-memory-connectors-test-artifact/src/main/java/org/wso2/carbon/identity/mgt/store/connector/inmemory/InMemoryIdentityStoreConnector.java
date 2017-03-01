@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+* Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -241,18 +241,14 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public List<String> getUsers(List<Attribute> attributes, int offset, int length)
             throws IdentityStoreConnectorException {
-
         List<String> newUserIds = new ArrayList<>();
-
-        for (Map.Entry<String, List<Attribute>> entry : userStoreMap.entrySet()) {
-
+        userStoreMap.entrySet().forEach(entry -> {
             if (!entry.getValue().isEmpty()) {
                 if (!Collections.disjoint(attributes, entry.getValue())) {
                     newUserIds.add(entry.getKey());
                 }
             }
-        }
-
+        });
         return newUserIds;
     }
 

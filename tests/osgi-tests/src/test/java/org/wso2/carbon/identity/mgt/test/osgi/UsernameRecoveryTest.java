@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -31,6 +31,7 @@ import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.username.NotificationUsernameRecoveryManager;
 
@@ -65,7 +66,8 @@ public class UsernameRecoveryTest {
     @Test(groups = "usernameRecovery")
     public void verifyUsernameWithLessClaims() throws IdentityStoreException, IdentityRecoveryException {
         addUser();
-        Claim claim1 = new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "dinali");
+        Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI, "dinali");
         List<Claim> claims1 = new ArrayList<>();
         claims1.add(claim1);
         boolean result = instance.verifyUsername(claims1);
@@ -76,7 +78,8 @@ public class UsernameRecoveryTest {
     @Test(groups = "usernameRecovery")
     public void verifyUsernameWithWrongClaims() throws IdentityStoreException, IdentityRecoveryException {
         addUser();
-        Claim claim1 = new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "mala");
+        Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI, "mala");
         claims.clear();  claims.add(claim1);
         boolean result = instance.verifyUsername(claims);
         Assert.assertEquals(result, false, "There should be no user with given claim.");
@@ -89,10 +92,14 @@ public class UsernameRecoveryTest {
 
         UserBean userBean = new UserBean();
         List<Claim> claims = Arrays
-                .asList(new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "dinali123 "),
-                        new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "dinali"),
-                        new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "dabarera"),
-                        new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "dinali@wso2.com"));
+                .asList(new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                                IdentityMgtOSGITestConstants.ClaimURIs.USERNAME_CLAIM_URI, "dinali123 "),
+                        new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                                IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI, "dinali"),
+                        new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                                IdentityMgtOSGITestConstants.ClaimURIs.LAST_NAME_CLAIM_URI, "dabarera"),
+                        new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                                IdentityMgtOSGITestConstants.ClaimURIs.EMAIL_CLAIM_URI, "dinali@wso2.com"));
         userBean.setClaims(claims);
         User user = realmService.getIdentityStore().addUser(userBean);
 
