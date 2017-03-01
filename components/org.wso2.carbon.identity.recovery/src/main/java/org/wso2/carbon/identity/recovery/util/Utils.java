@@ -35,7 +35,6 @@ import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryServerException;
 import org.wso2.carbon.identity.recovery.internal.IdentityRecoveryServiceDataHolder;
 import org.wso2.carbon.identity.recovery.mapping.ChallengeQuestionsFile;
-import org.wso2.carbon.identity.recovery.mapping.RecoveryFile;
 import org.wso2.carbon.identity.recovery.model.ChallengeQuestion;
 
 import java.io.File;
@@ -49,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -58,60 +56,9 @@ import java.util.stream.Collectors;
 public class Utils {
     private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
-    //This is used to pass the arbitrary properties from self user manager to self handler
-    private static ThreadLocal<org.wso2.carbon.identity.recovery.model.Property[]> arbitraryProperties = new
-            ThreadLocal<>();
-
-    //This is used to pass the verifyEmail or askPassword claim from preAddUser to postAddUser
-    private static ThreadLocal<Claim> emailVerifyTemporaryClaim = new ThreadLocal<>();
     private static final String CHALLENGE_QUESTIONS_FOLDER_PATH =
             System.getProperty(IdentityRecoveryConstants.CARBON_HOME) +
             IdentityRecoveryConstants.CHALLAENGE_QUESTION_FOLDER_LOCATION;
-    private static final String RECOVERY_CONFIG_LOCATION = System.getProperty(IdentityRecoveryConstants.CARBON_HOME) +
-                                                           IdentityRecoveryConstants.RECOVERY_CONFIG_LOCATION;
-
-    /**
-     * @return
-     */
-    public static org.wso2.carbon.identity.recovery.model.Property[] getArbitraryProperties() {
-        if (arbitraryProperties.get() == null) {
-            return new org.wso2.carbon.identity.recovery.model.Property[0];
-        }
-        return arbitraryProperties.get();
-    }
-
-    /**
-     * @param properties
-     */
-    public static void setArbitraryProperties(org.wso2.carbon.identity.recovery.model.Property[] properties) {
-        arbitraryProperties.set(properties);
-    }
-
-    public static void clearArbitraryProperties() {
-        arbitraryProperties.remove();
-    }
-
-
-    /**
-     * @return
-     */
-    public static Claim getEmailVerifyTemporaryClaim() {
-        if (emailVerifyTemporaryClaim.get() == null) {
-            return null;
-        }
-        return emailVerifyTemporaryClaim.get();
-    }
-
-    /**
-     * @param claim
-     */
-    public static void setEmailVerifyTemporaryClaim(Claim claim) {
-        emailVerifyTemporaryClaim.set(claim);
-    }
-
-    public static void clearEmailVerifyTemporaryClaim() {
-        emailVerifyTemporaryClaim.remove();
-    }
 
     /**
      * Get user claim value from identity store manager
@@ -144,23 +91,8 @@ public class Utils {
 
     }
 
-    public static IdentityRecoveryServerException handleServerException(IdentityRecoveryConstants.ErrorMessages error,
-                                                                        String data)
-            throws IdentityRecoveryServerException {
-
-        String errorDescription;
-        if (StringUtils.isNotBlank(data)) {
-            errorDescription = String.format(error.getMessage(), data);
-        } else {
-            errorDescription = error.getMessage();
-        }
-
-        return new IdentityRecoveryServerException(error.getCode(), errorDescription);
-    }
-
     public static IdentityRecoveryServerException handleServerException(IdentityRecoveryConstants.ErrorMessages
-                                                                                error, String data, Throwable e)
-            throws IdentityRecoveryServerException {
+                                                                                error, String data, Throwable e) {
 
         String errorDescription;
         if (StringUtils.isNotBlank(data)) {
@@ -173,9 +105,7 @@ public class Utils {
     }
 
     public static IdentityRecoveryClientException handleClientException(IdentityRecoveryConstants.ErrorMessages error,
-                                                                        String data)
-            throws IdentityRecoveryClientException {
-
+                                                                        String data) {
         String errorDescription;
         if (StringUtils.isNotBlank(data)) {
             errorDescription = String.format(error.getMessage(), data);
@@ -183,19 +113,6 @@ public class Utils {
             errorDescription = error.getMessage();
         }
         return new IdentityRecoveryClientException(error.getCode(), errorDescription);
-    }
-
-    public static IdentityRecoveryClientException handleClientException(IdentityRecoveryConstants.ErrorMessages error,
-                                                                        String data, Throwable e)
-            throws IdentityRecoveryClientException {
-
-        String errorDescription;
-        if (StringUtils.isNotBlank(data)) {
-            errorDescription = String.format(error.getMessage(), data);
-        } else {
-            errorDescription = error.getMessage();
-        }
-        return new IdentityRecoveryClientException(error.getCode(), errorDescription, e);
     }
 
     /**
@@ -253,44 +170,6 @@ public class Utils {
         }
     }
 
-
-    public static RecoveryFile getRecoveryConfigs() throws IdentityRecoveryServerException {
-
-        try {
-            return FileUtil.readConfigFile(RECOVERY_CONFIG_LOCATION, RecoveryFile.class);
-        } catch (IdentityRecoveryException e) {
-            throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_ISSUE_IN_LOADING_RECOVERY_CONFIGS, null, e);
-            }
-    }
-
-//    public static String getSignUpConfigs(String key) throws IdentityRecoveryServerException {
-////        try {
-////            Property[] connectorConfigs;
-////            IdentityGovernanceService identityGovernanceService = IdentityRecoveryServiceDataHolder.getInstance()
-////                    .getIdentityGovernanceService();
-////            connectorConfigs = identityGovernanceService.getConfiguration(new String[]{key} , "");
-////            return connectorConfigs[0].getValue();
-////        } catch (IdentityGovernanceException e) {
-////            throw Utils.handleServerException(
-////                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_ISSUE_IN_LOADING_SIGNUP_CONFIGS, null, e);
-////        }
-//        return null;
-//    }
-//
-//    public static String getConnectorConfig(String key) throws EventException {
-////        try {
-////            Property[] connectorConfigs;
-////            IdentityGovernanceService identityGovernanceService = IdentityRecoveryServiceDataHolder.getInstance()
-////                    .getIdentityGovernanceService();
-////            connectorConfigs = identityGovernanceService.getConfiguration(new String[]{key} , "");
-////            return connectorConfigs[0].getValue();
-////        } catch (IdentityGovernanceException e) {
-////            throw new EventException("Error while getting connector configurations", e);
-////        }
-//        return null;
-//    }
-
     public static ChallengeQuestion[] getDefaultChallengeQuestions() {
         List<ChallengeQuestion> challengeQuestions = new ArrayList<>();
         // locale en_US, challengeSet1
@@ -339,10 +218,6 @@ public class Utils {
         }
         return UserState.valueOf(state).isInGroup(group);
 
-    }
-
-    public static String generateUUID() {
-        return UUID.randomUUID().toString();
     }
 
     public static void updateChallengeQuestionsYAML(List<ChallengeQuestion> challengeQuestions)

@@ -25,27 +25,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryIteratorException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * File util to write read yaml configurations
  */
 public class FileUtil {
     private FileUtil() {
-    }
-
-    public static <T> T readConfigFile(String filePath, Class<T> classType) throws IdentityRecoveryException {
-        Path file = Paths.get(filePath, new String[0]);
-        return readConfigFile(file, classType);
     }
 
     public static <T> T readConfigFile(Path file, Class<T> classType) throws IdentityRecoveryException {
@@ -59,56 +47,6 @@ public class FileUtil {
             throw new IdentityRecoveryException(
                     String.format("Error in reading file %s", file.toString()), e);
         }
-    }
-
-    public static <T> List<T> readConfigFiles(Path path, Class<T> classType, String fileNameRegex)
-            throws IdentityRecoveryException {
-
-        ArrayList configEntries = new ArrayList();
-        if (Files.exists(path, new LinkOption[0])) {
-            try {
-                DirectoryStream directoryStream = Files.newDirectoryStream(path, fileNameRegex);
-                Throwable ex = null;
-
-                try {
-                    Iterator iterator = directoryStream.iterator();
-
-                    while (iterator.hasNext()) {
-                        Path file = (Path) iterator.next();
-                        InputStreamReader in =
-                                new InputStreamReader(
-                                        Files.newInputStream(file, new OpenOption[0]), StandardCharsets.UTF_8);
-                        Yaml yaml = new Yaml();
-                        yaml.setBeanAccess(BeanAccess.FIELD);
-                        configEntries.add(yaml.loadAs(in, classType));
-                    }
-                } catch (Throwable e) {
-                    ex = e;
-                    throw e;
-                } finally {
-                    if (directoryStream != null) {
-                        if (ex != null) {
-                            try {
-                                directoryStream.close();
-                            } catch (Throwable throwable) {
-                                throw new IdentityRecoveryException(
-                                        String.format("Error in reading file %s", new Object[]{path.getFileName()}),
-                                        throwable);
-                            }
-                        } else {
-                            directoryStream.close();
-                        }
-                    }
-
-                }
-            } catch (IOException | DirectoryIteratorException e) {
-                throw new IdentityRecoveryException(
-                        String.format("Failed to read identity connector files from path: %s",
-                                      new Object[]{path.toString()}), e);
-            }
-        }
-
-        return configEntries;
     }
 
     public static <T> void writeConfigFiles(Path file, Object data)
