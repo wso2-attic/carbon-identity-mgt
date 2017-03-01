@@ -49,12 +49,14 @@ public class ChallengeQuestionManager {
     private static ChallengeQuestionManager instance = new ChallengeQuestionManager();
 
     private static SecurityQuestionsConfig recoveryConfig;
+    private static String separator;
 
     private ChallengeQuestionManager() {
     }
 
     public static ChallengeQuestionManager getInstance() {
         recoveryConfig = new SecurityQuestionsConfig();
+        separator = recoveryConfig.getQuestionSeparator();
         return instance;
     }
 
@@ -216,10 +218,7 @@ public class ChallengeQuestionManager {
                         uniqueUserID, e);
             }
 
-            // TODO: Add the correct separator.
-            String challengeQuestionSeparator = recoveryConfig.getQuestionSeparator();
-
-            String[] challengeValues = challengeValue.split(challengeQuestionSeparator);
+            String[] challengeValues = challengeValue.split(separator);
             if (challengeValues.length == 2) {
                 ChallengeQuestion userChallengeQuestion = new ChallengeQuestion(challengesUri,
                         challengeValues[0].trim());
@@ -277,10 +276,7 @@ public class ChallengeQuestionManager {
 
         if (challengeValue != null) {
 
-            //TODO might want to get rid of separator
-            String challengeQuestionSeparator = recoveryConfig.getQuestionSeparator();
-
-            String[] challengeValues = challengeValue.split(challengeQuestionSeparator);
+            String[] challengeValues = challengeValue.split(separator);
             if (challengeValues.length == 2) {
                 userChallengeQuestion = new ChallengeQuestion(challengesUri, challengeValues[0].trim());
             }
@@ -343,18 +339,8 @@ public class ChallengeQuestionManager {
 
         if (claimValue != null) {
 
-            // TODO: Get the correct challenge question separator.
-            String challengeQuestionSeparator = "";
-            // IdentityRecoveryConstants.ConnectorConfig.QUESTION_CHALLENGE_SEPARATOR;
-//            String challengeQuestionSeparator = IdentityUtil.getProperty(IdentityRecoveryConstants.ConnectorConfig
-//                    .QUESTION_CHALLENGE_SEPARATOR);
-
-            if (StringUtils.isEmpty(challengeQuestionSeparator)) {
-                challengeQuestionSeparator = IdentityRecoveryConstants.DEFAULT_CHALLENGE_QUESTION_SEPARATOR;
-            }
-
-            if (claimValue.contains(challengeQuestionSeparator)) {
-                challengesUris = claimValue.split(challengeQuestionSeparator);
+            if (claimValue.contains(separator)) {
+                challengesUris = claimValue.split(separator);
             } else {
                 challengesUris = new String[]{claimValue.trim()};
             }
@@ -394,15 +380,6 @@ public class ChallengeQuestionManager {
             List<String> challengesUris = new ArrayList<String>();
             String challengesUrisValue = "";
 
-            // TODO: Get the correct challenge question separator.
-            String separator = ""; // IdentityRecoveryConstants.ConnectorConfig.QUESTION_CHALLENGE_SEPARATOR;
-//            String separator = IdentityUtil.getProperty(IdentityRecoveryConstants.ConnectorConfig
-//                    .QUESTION_CHALLENGE_SEPARATOR);
-
-            if (StringUtils.isEmpty(separator)) {
-                separator = IdentityRecoveryConstants.DEFAULT_CHALLENGE_QUESTION_SEPARATOR;
-            }
-
             if (!userChallengeAnswers.isEmpty()) {
 
                 for (UserChallengeAnswer userChallengeAnswer : userChallengeAnswers) {
@@ -436,8 +413,7 @@ public class ChallengeQuestionManager {
                     if ("".equals(challengesUrisValue)) {
                         challengesUrisValue = challengesUri;
                     } else {
-                        challengesUrisValue = challengesUrisValue +
-                                separator + challengesUri;
+                        challengesUrisValue = challengesUrisValue + separator + challengesUri;
                     }
                 }
                 Utils.setClaimInIdentityStore(user, IdentityRecoveryConstants.CHALLENGE_QUESTION_URI,
