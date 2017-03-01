@@ -24,7 +24,7 @@ limitations under the License.
             <class name="org.wso2.carbon.identity.mgt.test.osgi.SecurityQuestionPasswordRecoveryManagerTest"/>
             <class name="org.wso2.carbon.identity.mgt.test.osgi.AccountDisabledHandlerTest"/>
             <class name="org.wso2.carbon.identity.mgt.test.osgi.AccountLockHandlerTest"/>
-
+            <class name="org.wso2.carbon.identity.mgt.test.osgi.UsernameRecoveryTest"/>
         </classes>
     </test>
 </suite>

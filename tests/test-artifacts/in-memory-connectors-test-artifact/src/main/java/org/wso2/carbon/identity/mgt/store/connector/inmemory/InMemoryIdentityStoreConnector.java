@@ -241,8 +241,19 @@ public class InMemoryIdentityStoreConnector implements IdentityStoreConnector {
     @Override
     public List<String> getUsers(List<Attribute> attributes, int offset, int length)
             throws IdentityStoreConnectorException {
-        List<String> users = new ArrayList<>();
-        return users;
+
+        List<String> newUserIds = new ArrayList<>();
+
+        for (Map.Entry<String, List<Attribute>> entry : userStoreMap.entrySet()) {
+
+            if (!entry.getValue().isEmpty()) {
+                if (!Collections.disjoint(attributes, entry.getValue())) {
+                    newUserIds.add(entry.getKey());
+                }
+            }
+        }
+
+        return newUserIds;
     }
 
     @Override

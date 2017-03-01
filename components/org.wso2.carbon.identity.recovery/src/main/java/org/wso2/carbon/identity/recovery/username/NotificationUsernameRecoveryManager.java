@@ -94,7 +94,6 @@ public class NotificationUsernameRecoveryManager {
                 log.debug("No claims are recieved.");
             }
             return false;
-            //TODO send exception.
         }
 
         User user;
