@@ -40,7 +40,8 @@ public class Attribute {
         if (this == obj) {
             return true;
         }
-        if (this.getClass() != obj.getClass() || obj == null) {
+
+        if (obj == null || this.getClass() != obj.getClass()) {
             return false;
         }
         Attribute attr = (Attribute) obj;
