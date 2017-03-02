@@ -18,6 +18,7 @@ import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
@@ -416,10 +417,14 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
 
         UserBean userBean = new UserBean();
         List<Claim> claims = Arrays
-                .asList(new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "Ayesha "),
-                        new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Ayesha"),
-                        new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Dissanayaka"),
-                        new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "ayesha@wso2.com"));
+                .asList(new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                                IdentityMgtOSGITestConstants.ClaimURIs.USERNAME_CLAIM_URI, "Ayesha "),
+                        new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                                IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI, "Ayesha"),
+                        new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                                IdentityMgtOSGITestConstants.ClaimURIs.LAST_NAME_CLAIM_URI, "Dissanayaka"),
+                        new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                                IdentityMgtOSGITestConstants.ClaimURIs.EMAIL_CLAIM_URI, "ayesha@wso2.com"));
         userBean.setClaims(claims);
         User user = realmService.getIdentityStore().addUser(userBean);
 
