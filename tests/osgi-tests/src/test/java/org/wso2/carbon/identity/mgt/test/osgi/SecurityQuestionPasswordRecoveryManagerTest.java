@@ -30,7 +30,9 @@ import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -73,11 +75,39 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
         return optionList.toArray(new Option[optionList.size()]);
     }
 
-    @Test(groups = "getRecoveryQuestions")
-    public void getUserChallengeQuestion() throws IdentityRecoveryException, IdentityStoreException {
+    @Test(groups = "getRecoveryQuestionsWithNoQuestions")
+    public void getUserChallengeQuestionOneByOneWhenNoQuestionsAnswered() throws IdentityRecoveryException,
+            IdentityStoreException {
 
         addUser();
-        getAllChallangeQuestionsForUser();
+        getAllChallengeQuestionsForUser();
+
+        challengeQuestionsResponse = securityQuestionPasswordRecoveryManager.initiateUserChallengeQuestion
+                (users.get(0));
+        Assert.assertNotNull(challengeQuestionsResponse, "Failed to start challenge question based password recovery " +
+                "for the user");
+        Assert.assertTrue(challengeQuestionsResponse.getQuestions().size() == 0, "ChallengeQuestions Response does " +
+                " contain questions to be answered");
+    }
+
+    @Test(groups = "getRecoveryQuestionsWithNoQuestions")
+    public void getUserChallengeQuestionAtOnceWhenNoQuestionsAnswered() throws IdentityRecoveryException,
+            IdentityStoreException {
+
+        addUser();
+        getAllChallengeQuestionsForUser();
+
+        challengeQuestionsResponse = securityQuestionPasswordRecoveryManager.initiateUserChallengeQuestionAtOnce
+                (users.get(0));
+        Assert.assertNotNull(challengeQuestionsResponse, "Failed to start challenge question based password recovery " +
+                "for the user");
+        Assert.assertTrue(challengeQuestionsResponse.getQuestions().size() == 0, "ChallengeQuestions Response does " +
+                " contain questions to be answered");
+    }
+
+    @Test(groups = "getRecoveryQuestions", dependsOnGroups = "getRecoveryQuestionsWithNoQuestions")
+    public void getUserChallengeQuestion() throws IdentityRecoveryException, IdentityStoreException {
+
         ChallengeQuestion question = challengeQuestions.get(0);
         List<UserChallengeAnswer> answers = new ArrayList<>();
         UserChallengeAnswer answer = new UserChallengeAnswer(question, "Answer1");
@@ -119,8 +149,68 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
 
     }
 
+    @Test(groups = "answerRecoveryQuestions", dependsOnMethods = {"answerChallengeQuestion"})
+    public void answerMultipleChallengeQuestionOneByOne() throws IdentityRecoveryException {
+
+        Map<String, String> answeredList = new HashMap<>();
+        List<UserChallengeAnswer> answersToSet = new ArrayList<>();
+
+        ChallengeQuestion question1 = challengeQuestions.get(0);
+        String ansValue1 = "Answer1";
+        UserChallengeAnswer answer1 = new UserChallengeAnswer(question1, ansValue1);
+        answersToSet.add(answer1);
+        answeredList.put(answer1.getQuestion().getQuestionSetId(), ansValue1);
+
+        ChallengeQuestion question2 = challengeQuestions.get(7);
+        String ansValue2 = "Answer2";
+        UserChallengeAnswer answer2 = new UserChallengeAnswer(question2, ansValue2);
+        answersToSet.add(answer2);
+        answeredList.put(answer2.getQuestion().getQuestionSetId(), ansValue2);
+
+        addChallengeQuestionForUser(answersToSet);
+
+        challengeQuestionsResponse = startQuestionBasedPasswordRecovery(users.get(0));
+
+        List<UserChallengeAnswer> answersToSubmit = new ArrayList<>();
+        String questionSetId = challengeQuestionsResponse.getQuestions().get(0).getQuestionSetId();
+        ChallengeQuestion question = new ChallengeQuestion(questionSetId, "");
+        answersToSubmit.add(new UserChallengeAnswer(question, answeredList.get(questionSetId)));
+
+        challengeQuestionsResponse = securityQuestionPasswordRecoveryManager
+                .validateUserChallengeQuestions(answersToSubmit, challengeQuestionsResponse.getCode());
+        Assert.assertNotNull(challengeQuestionsResponse, "Failed to answer challenge question for password recovery");
+        Assert.assertNotNull(challengeQuestionsResponse.getCode(), "ChallengeQuestions Response does not have a " +
+                "confirmation code");
+        Assert.assertNotNull(challengeQuestionsResponse.getStatus(), "ChallengeQuestions Response does not" +
+                " contain status");
+        Assert.assertTrue(challengeQuestionsResponse.getQuestions().size() > 0, "ChallengeQuestions Response does " +
+                "not contain next Question");
+        Assert.assertEquals(challengeQuestionsResponse.getStatus(), "INCOMPLETE", "Challenge Question answer not " +
+                "validated and recovery step is incorrect");
+
+        questionSetId = challengeQuestionsResponse.getQuestions().get(0).getQuestionSetId();
+        question = new ChallengeQuestion(questionSetId, "");
+        answersToSubmit.clear();
+        answersToSubmit.add(new UserChallengeAnswer(question, answeredList.get(questionSetId)));
+
+        challengeQuestionsResponse = securityQuestionPasswordRecoveryManager.validateUserChallengeQuestions
+                (answersToSubmit, challengeQuestionsResponse.getCode());
+        Assert.assertNotNull(challengeQuestionsResponse, "Failed to answer challenge question for password recovery");
+        Assert.assertNotNull(challengeQuestionsResponse.getCode(), "ChallengeQuestions Response does not have a " +
+                "confirmation code");
+        Assert.assertNotNull(challengeQuestionsResponse.getStatus(), "ChallengeQuestions Response does not" +
+                " contain status");
+        Assert.assertEquals(challengeQuestionsResponse.getStatus(), "COMPLETE", "Challenge Question answer not " +
+                "validated");
+
+    }
+
     @Test(groups = "answerRecoveryQuestions", dependsOnGroups = {"getRecoveryQuestions"})
     public void answerChallengeQuestionWrongAnswer() throws IdentityRecoveryException {
+        List<UserChallengeAnswer> answersToSet = new ArrayList<>();
+        UserChallengeAnswer answer = new UserChallengeAnswer(challengeQuestions.get(0), "Answer1");
+        answersToSet.add(answer);
+        addChallengeQuestionForUser(answersToSet);
 
         ChallengeQuestionsResponse challengeQuestionsResponse1 = startQuestionBasedPasswordRecovery(users.get(0));
         List<UserChallengeAnswer> answers = new ArrayList<>();
@@ -147,6 +237,62 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
 
     }
 
+    @Test(groups = "answerRecoveryQuestions", dependsOnMethods = {"answerChallengeQuestionWrongAnswer"})
+    public void answerWrongQuestion() throws IdentityRecoveryException {
+
+        ChallengeQuestionsResponse challengeQuestionsResponse1 = startQuestionBasedPasswordRecovery(users.get(0));
+        List<UserChallengeAnswer> answers = new ArrayList<>();
+        answers.add(new UserChallengeAnswer(challengeQuestions.get(7), answer1));
+
+        boolean wrongQuestionsDetected = false;
+        try {
+            challengeQuestionsResponse = securityQuestionPasswordRecoveryManager.validateUserChallengeQuestions
+                    (answers, challengeQuestionsResponse1.getCode());
+        } catch (IdentityRecoveryException e) {
+            if (e.getErrorCode().equals("20036")) {
+                wrongQuestionsDetected = true;
+            }
+            Assert.assertEquals(e.getErrorCode(), "20036", "Need to answer to asked security question error code is " +
+                    "not returned");
+        }
+        Assert.assertTrue(wrongQuestionsDetected, "Answered to Wrong questions exception is not thrown.");
+    }
+
+    @Test(groups = "answerRecoveryQuestions", dependsOnMethods = {"answerChallengeQuestionWrongAnswer"})
+    public void answerWithWrongCode() throws IdentityRecoveryException {
+
+        ChallengeQuestionsResponse challengeQuestionsResponse1 = startQuestionBasedPasswordRecovery(users.get(0));
+        List<UserChallengeAnswer> answers = new ArrayList<>();
+        answers.add(new UserChallengeAnswer(challengeQuestions.get(0), answer1));
+
+        challengeQuestionsResponse = securityQuestionPasswordRecoveryManager.validateUserChallengeQuestions
+                    (answers, challengeQuestionsResponse1.getCode() + "4561");
+        Assert.assertEquals(challengeQuestionsResponse.getStatus(), "18001", "Invalid recovery code provided " +
+                "status is not returned.");
+    }
+
+    @Test(groups = "answerRecoveryQuestions", dependsOnMethods = {"answerChallengeQuestionWrongAnswer"})
+    public void answerWrongNumberOfQuestion() throws IdentityRecoveryException {
+
+        ChallengeQuestionsResponse challengeQuestionsResponse1 = startQuestionBasedPasswordRecovery(users.get(0));
+        List<UserChallengeAnswer> answers = new ArrayList<>();
+        answers.add(new UserChallengeAnswer(challengeQuestions.get(0), answer1));
+        answers.add(new UserChallengeAnswer(challengeQuestions.get(1), answer1));
+
+        boolean wrongQuestionsDetected = false;
+        try {
+            challengeQuestionsResponse = securityQuestionPasswordRecoveryManager.validateUserChallengeQuestions
+                    (answers, challengeQuestionsResponse1.getCode());
+        } catch (IdentityRecoveryException e) {
+            if (e.getErrorCode().equals("20029")) {
+                wrongQuestionsDetected = true;
+                Assert.assertEquals(e.getErrorCode(), "20029", "Multiple question Answers not allowed error code is " +
+                        "not returned");
+            }
+        }
+        Assert.assertTrue(wrongQuestionsDetected, "Multiple question Answers not allowed is not thrown.");
+    }
+
     @Test(groups = "answerRecoveryQuestionsAtOnce", dependsOnGroups = {"answerRecoveryQuestions"})
     public void startChallengeQuestionAtOnce() throws IdentityRecoveryException {
 
@@ -169,6 +315,62 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
         Assert.assertTrue(challengeQuestionsResponse.getQuestions().size() == 2, "ChallengeQuestions Response does " +
                 "not contain multiple questions to be answered");
 
+    }
+
+    @Test(groups = "answerRecoveryQuestionsAtOnce", dependsOnMethods = {"startChallengeQuestionAtOnce"})
+    public void answerQuestionAtOnceWhenMoreThanMinNumberOfQuestionsAnswered() throws
+            IdentityRecoveryException {
+
+        Map<String, String> answeredList = new HashMap<>();
+        List<UserChallengeAnswer> answersToSet = new ArrayList<>();
+
+        ChallengeQuestion question1 = challengeQuestions.get(0);
+        String ansValue1 = "Answer1";
+        UserChallengeAnswer answer1 = new UserChallengeAnswer(question1, ansValue1);
+        answersToSet.add(answer1);
+        answeredList.put(answer1.getQuestion().getQuestionSetId(), ansValue1);
+
+        ChallengeQuestion question2 = challengeQuestions.get(7);
+        String ansValue2 = "Answer2";
+        UserChallengeAnswer answer2 = new UserChallengeAnswer(question2, ansValue2);
+        answersToSet.add(answer2);
+        answeredList.put(answer2.getQuestion().getQuestionSetId(), ansValue2);
+
+        ChallengeQuestion question3 = challengeQuestions.get(8);
+        String ansValue3 = "Answer3";
+        UserChallengeAnswer answer3 = new UserChallengeAnswer(question3, ansValue3);
+        answersToSet.add(answer3);
+        answeredList.put(answer3.getQuestion().getQuestionSetId(), ansValue3);
+
+        addChallengeQuestionForUser(answersToSet);
+        challengeQuestionsResponse = securityQuestionPasswordRecoveryManager.initiateUserChallengeQuestionAtOnce
+                (users.get(0));
+        Assert.assertNotNull(challengeQuestionsResponse, "Failed to start challenge question based password recovery " +
+                "for the user");
+        Assert.assertNotNull(challengeQuestionsResponse.getCode(), "ChallengeQuestions Response does not have a " +
+                "confirmation code");
+        Assert.assertTrue(challengeQuestionsResponse.getQuestions().size() > 0, "ChallengeQuestions Response does not" +
+                " contain questions to be answered");
+        Assert.assertTrue(challengeQuestionsResponse.getQuestions().size() == 2,
+                "Number of ChallengeQuestions in the Response does is not equal to minimum number of questions to be " +
+                        "answered");
+
+        List<UserChallengeAnswer> answersToSubmit = new ArrayList<>();
+        for (ChallengeQuestion questionAsked : challengeQuestionsResponse.getQuestions()) {
+            String questionSetId = questionAsked.getQuestionSetId();
+            ChallengeQuestion question = new ChallengeQuestion(questionSetId, "");
+            answersToSubmit.add(new UserChallengeAnswer(question, answeredList.get(questionSetId)));
+        }
+        challengeQuestionsResponse = securityQuestionPasswordRecoveryManager.validateUserChallengeQuestions
+                (answersToSubmit, challengeQuestionsResponse.getCode());
+
+        Assert.assertNotNull(challengeQuestionsResponse, "Failed to answer challenge question for password recovery");
+        Assert.assertNotNull(challengeQuestionsResponse.getCode(), "ChallengeQuestions Response does not have a " +
+                "confirmation code");
+        Assert.assertNotNull(challengeQuestionsResponse.getStatus(), "ChallengeQuestions Response does not" +
+                " contain status");
+        Assert.assertEquals(challengeQuestionsResponse.getStatus(), "COMPLETE", "Challenge Question answer not " +
+                "validated");
     }
 
     @Test(groups = "startChallengeQuestionWhenAccountLocked", dependsOnGroups = {"answerRecoveryQuestionsAtOnce"})
@@ -227,7 +429,7 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
         users.add(user);
     }
 
-    private void getAllChallangeQuestionsForUser() throws IdentityRecoveryException {
+    private void getAllChallengeQuestionsForUser() throws IdentityRecoveryException {
         ChallengeQuestionManager challengeQuestionManager =
                 bundleContext.getService(bundleContext.getServiceReference
                         (ChallengeQuestionManager.class));
@@ -259,8 +461,7 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
         return securityQuestionPasswordRecoveryManager.initiateUserChallengeQuestion(user);
     }
 
-    private void updateUserState(String uniqueUserId, String state) throws UserNotFoundException,
-            IdentityStoreException {
+    private void updateUserState(String uniqueUserId, String state) throws UserNotFoundException {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
 
         try {
