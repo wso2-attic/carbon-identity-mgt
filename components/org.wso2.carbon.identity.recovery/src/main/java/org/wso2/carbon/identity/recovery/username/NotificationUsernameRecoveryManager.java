@@ -97,7 +97,7 @@ public class NotificationUsernameRecoveryManager {
         }
 
         User user;
-        List<User> resultedUserList = getUserList(claims);
+        List<User> resultedUserList = getUserList(claims, 0, 2);
 
         if (resultedUserList.size() == 1) {
             user = resultedUserList.get(0);
@@ -127,13 +127,13 @@ public class NotificationUsernameRecoveryManager {
         }
     }
 
-    private static List<User> getUserList(List<Claim> claims) throws IdentityRecoveryException {
+    private static List<User> getUserList(List<Claim> claims, int offset, int length) throws IdentityRecoveryException {
 
         RealmService realmService = IdentityRecoveryServiceDataHolder.getInstance().getRealmService();
         IdentityStore identityStore = realmService.getIdentityStore();
 
         try {
-            return identityStore.listUsers(claims, 0, 100);
+            return identityStore.listUsers(claims, offset, length);
         } catch (IdentityStoreException e) {
             String msg = "Unable to retrieve the user list from claim.";
             throw new IdentityRecoveryException(msg, e);

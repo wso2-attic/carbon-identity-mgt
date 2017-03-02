@@ -56,7 +56,7 @@ public class UsernameRecoveryTest {
 
     @Test(groups = "usernameRecovery")
     public void verifyUsernameWithZeroClaims() throws IdentityStoreException, IdentityRecoveryException {
-        addUser();
+        addUser("dinali123", "dinali", "dabarera", "dinali@wso2.com");
         claims = null;
         boolean result = instance.verifyUsername(claims);
         Assert.assertEquals(result, false, "No user should be recovered with no claims.");
@@ -64,8 +64,8 @@ public class UsernameRecoveryTest {
     }
 
     @Test(groups = "usernameRecovery")
-    public void verifyUsernameWithLessClaims() throws IdentityStoreException, IdentityRecoveryException {
-        addUser();
+    public void verifyUsernameWithOneClaims() throws IdentityStoreException, IdentityRecoveryException {
+        addUser("dinali123", "dinali", "dabarera", "dinali@wso2.com");
         Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
                 IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI, "dinali");
         List<Claim> claims1 = new ArrayList<>();
@@ -77,7 +77,7 @@ public class UsernameRecoveryTest {
 
     @Test(groups = "usernameRecovery")
     public void verifyUsernameWithWrongClaims() throws IdentityStoreException, IdentityRecoveryException {
-        addUser();
+        addUser("dinali123", "dinali", "dabarera", "dinali@wso2.com");
         Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
                 IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI, "mala");
         claims.clear();  claims.add(claim1);
@@ -86,20 +86,34 @@ public class UsernameRecoveryTest {
 
     }
 
-    private void addUser() throws IdentityStoreException {
+    @Test(groups = "usernameRecovery")
+    public void verifyUsernameWithmultipleUsers() throws IdentityStoreException, IdentityRecoveryException {
+        addUser("dinali123", "dinali", "dabarera", "dinali@wso2.com");
+        addUser("dinaliDuplicate", "dinali", "silva", "dinali@wso2.com");
+        Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                IdentityMgtOSGITestConstants.ClaimURIs.EMAIL_CLAIM_URI, "dinali@wso2.com");
+        List<Claim> claimList = new ArrayList<>();
+        claimList.add(claim1);
+        boolean result = instance.verifyUsername(claimList);
+        Assert.assertEquals(result, false, "There should be multiple users with given claim.");
+
+    }
+
+    private void addUser(String username, String firstName, String lastName, String email)
+            throws IdentityStoreException {
         RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         UserBean userBean = new UserBean();
         List<Claim> claims = Arrays
                 .asList(new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
-                                IdentityMgtOSGITestConstants.ClaimURIs.USERNAME_CLAIM_URI, "dinali123 "),
+                                IdentityMgtOSGITestConstants.ClaimURIs.USERNAME_CLAIM_URI, username),
                         new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
-                                IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI, "dinali"),
+                                IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI, firstName),
                         new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
-                                IdentityMgtOSGITestConstants.ClaimURIs.LAST_NAME_CLAIM_URI, "dabarera"),
+                                IdentityMgtOSGITestConstants.ClaimURIs.LAST_NAME_CLAIM_URI, lastName),
                         new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
-                                IdentityMgtOSGITestConstants.ClaimURIs.EMAIL_CLAIM_URI, "dinali@wso2.com"));
+                                IdentityMgtOSGITestConstants.ClaimURIs.EMAIL_CLAIM_URI, email));
         userBean.setClaims(claims);
         User user = realmService.getIdentityStore().addUser(userBean);
 
