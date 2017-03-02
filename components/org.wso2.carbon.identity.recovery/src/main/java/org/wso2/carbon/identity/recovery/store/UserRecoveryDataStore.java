@@ -28,9 +28,6 @@ public interface UserRecoveryDataStore {
     /*
      * returns UserRecoveryData if the code is validated. Otherwise returns an exception.
      */
-    UserRecoveryData load(String userUniqueId, Enum recoveryScenario, Enum recoveryStep, String code)
-            throws IdentityRecoveryException;
-
     UserRecoveryData loadByCode(String code) throws IdentityRecoveryException;
 
     UserRecoveryData loadByUserUniqueId(String userUniqueId) throws IdentityRecoveryException;

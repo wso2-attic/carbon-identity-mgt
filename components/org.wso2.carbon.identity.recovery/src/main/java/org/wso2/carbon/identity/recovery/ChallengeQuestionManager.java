@@ -32,7 +32,6 @@ import org.wso2.carbon.identity.recovery.util.Utils;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -145,12 +144,12 @@ public class ChallengeQuestionManager {
             return;
         }
 
-        ChallengeQuestion[] questions = Utils.getDefaultChallengeQuestions();
+        List<ChallengeQuestion> questions = Utils.getDefaultChallengeQuestions();
         addChallengeQuestions(questions);
 
         if (log.isDebugEnabled()) {
             String errorMsg = "%d default challenge questions added.";
-            log.debug(String.format(errorMsg, questions.length));
+            log.debug(String.format(errorMsg, questions.size()));
         }
     }
 
@@ -160,10 +159,10 @@ public class ChallengeQuestionManager {
      * @param questions
      * @throws IdentityRecoveryException
      */
-    public void addChallengeQuestions(ChallengeQuestion[] questions) throws IdentityRecoveryException {
+    public void addChallengeQuestions(List<ChallengeQuestion> questions) throws IdentityRecoveryException {
 
         try {
-            Utils.updateChallengeQuestionsYAML(Arrays.asList(questions));
+            Utils.updateChallengeQuestionsYAML(questions);
         } catch (IdentityRecoveryException e) {
             throw Utils.handleServerException(
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_EXCEPTION_SET_CHALLENGE_QUESTIONS, null, e);

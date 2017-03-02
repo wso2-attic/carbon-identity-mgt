@@ -170,7 +170,7 @@ public class Utils {
         }
     }
 
-    public static ChallengeQuestion[] getDefaultChallengeQuestions() {
+    public static List<ChallengeQuestion> getDefaultChallengeQuestions() {
         List<ChallengeQuestion> challengeQuestions = new ArrayList<>();
         // locale en_US, challengeSet1
         int count = 0;
@@ -189,7 +189,7 @@ public class Utils {
                     new ChallengeQuestion(setId, questionId, question, IdentityRecoveryConstants.LOCALE_EN_US));
         }
 
-        return challengeQuestions.toArray(new ChallengeQuestion[challengeQuestions.size()]);
+        return challengeQuestions;
     }
 
     public static boolean isAccountLocked(String uniqueUserId) throws IdentityRecoveryException {

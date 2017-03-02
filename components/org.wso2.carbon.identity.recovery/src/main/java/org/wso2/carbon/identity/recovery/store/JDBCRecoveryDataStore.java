@@ -81,43 +81,6 @@ public class JDBCRecoveryDataStore implements UserRecoveryDataStore {
     }
 
     @Override
-    public UserRecoveryData load(String userUniqueId, Enum recoveryScenario, Enum recoveryStep, String code)
-            throws IdentityRecoveryException {
-        final String loadRecoveryData =
-                "SELECT " + "* FROM IDN_RECOVERY_DATA WHERE USER_UNIQUE_ID = :" + USER_UNIQUE_ID + "; AND CODE = :" +
-                        CODE + "; " + "AND " + "SCENARIO = :" + SCENARIO + "; AND STEP = :" + STEP + ";";
-        UserRecoveryData userRecoveryDataObject = null;
-
-        try {
-            userRecoveryDataObject = jdbcTemplate.fetchSingleRecord(loadRecoveryData, (resultSet, rowNumber) -> {
-                UserRecoveryData userRecoveryData = new UserRecoveryData(userUniqueId, code, recoveryScenario,
-                        recoveryStep);
-                if (StringUtils.isNotBlank(resultSet.getString("REMAINING_SETS"))) {
-                    userRecoveryData.setRemainingSetIds(resultSet.getString("REMAINING_SETS"));
-                }
-
-                userRecoveryData.setTimeCreated(resultSet.getTimestamp("TIME_CREATED"));
-
-                return userRecoveryData;
-            }, namedPreparedStatement -> {
-                namedPreparedStatement.setString(USER_UNIQUE_ID, userUniqueId);
-                namedPreparedStatement.setString(CODE, code);
-                namedPreparedStatement.setString(SCENARIO, String.valueOf(recoveryScenario));
-                namedPreparedStatement.setString(STEP, String.valueOf(recoveryStep));
-            });
-        } catch (DataAccessException e) {
-
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED, null, e);
-        }
-
-        if (isCodeExpired(userRecoveryDataObject)) {
-            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_EXPIRED_CODE, code);
-        }
-
-        return userRecoveryDataObject;
-    }
-
-    @Override
     public UserRecoveryData loadByCode(String code) throws IdentityRecoveryException {
         final String loadRecoveryDataFromCode = "SELECT * FROM IDN_RECOVERY_DATA WHERE CODE = :" + CODE + ";";
         UserRecoveryData userRecoveryDataObject = null;
