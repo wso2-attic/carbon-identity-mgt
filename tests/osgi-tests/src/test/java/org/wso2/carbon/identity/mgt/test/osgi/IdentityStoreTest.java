@@ -404,9 +404,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(realmService, "Failed to get realm service instance.");
 
         List<Claim> claims = new ArrayList<>();
-        Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI, IdentityMgtOSGITestConstants.ClaimURIs.LAST_NAME_CLAIM_URI, "Lopez");
+        Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                IdentityMgtOSGITestConstants.ClaimURIs.LAST_NAME_CLAIM_URI, "Lopez");
         claims.add(claim1);
-        Claim claim2 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI, IdentityMgtOSGITestConstants.ClaimURIs.EMAIL_CLAIM_URI, "ella@wso2.com");
+        Claim claim2 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                IdentityMgtOSGITestConstants.ClaimURIs.EMAIL_CLAIM_URI, "ella@wso2.com");
         claims.add(claim2);
 
         List<User> users = realmService.getIdentityStore().listUsers(claims, 1, 1);
