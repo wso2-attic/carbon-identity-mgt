@@ -37,6 +37,7 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.test.identity.store.handler.TestIdentityStoreHandler;
+import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
@@ -403,15 +404,17 @@ public class IdentityStoreTest {
         Assert.assertNotNull(realmService, "Failed to get realm service instance.");
 
         List<Claim> claims = new ArrayList<>();
-        Claim claim1 = new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Lopez");
+        Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                IdentityMgtOSGITestConstants.ClaimURIs.LAST_NAME_CLAIM_URI, "Lopez");
         claims.add(claim1);
-        Claim claim2 = new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "ella@wso2.com");
+        Claim claim2 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+                IdentityMgtOSGITestConstants.ClaimURIs.EMAIL_CLAIM_URI, "ella@wso2.com");
         claims.add(claim2);
 
         List<User> users = realmService.getIdentityStore().listUsers(claims, 1, 1);
 
         Assert.assertNotNull(users, "Failed to list the users.");
-        Assert.assertTrue(users.isEmpty() && users.size() == 0 , "Number of users received in the response " +
+        Assert.assertTrue(!users.isEmpty() && users.size() == 1 , "Number of users received in the response " +
                 "is invalid.");
     }
 

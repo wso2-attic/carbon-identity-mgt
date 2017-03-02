@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,26 @@ public class Attribute {
         this.attributeValue = attributeValue;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || this.getClass() != obj.getClass()) {
+            return false;
+        }
+        Attribute attr = (Attribute) obj;
+        return this.attributeName.equals(attr.attributeName) && this.getAttributeValue().equals(attr.attributeValue);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = attributeName != null ? attributeName.hashCode() : 0;
+        result = 31 * result + (attributeValue != null ? attributeValue.hashCode() : 0);
+        return result;
+    }
+
     public String getAttributeName() {
         return attributeName;
     }
@@ -50,4 +70,5 @@ public class Attribute {
     public void setAttributeValue(String attributeValue) {
         this.attributeValue = attributeValue;
     }
+
 }
