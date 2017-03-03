@@ -40,11 +40,11 @@ public class UsernameRecoveryTests {
 
         claims = null;
         result = instance.verifyUsername(claims);
-        Assert.assertEquals(result , "false");
+        Assert.assertEquals(result , false, "There should be no user with null claims.");
 
         claims = Collections.emptyList();
         result = instance.verifyUsername(claims);
-        Assert.assertEquals(result , "false");
+        Assert.assertEquals(result , false, "There should be no user with empty claims.");
 
     }
 }

@@ -18,6 +18,8 @@ limitations under the License.
     <test name="carbon-security-tests" preserve-order="true" parallel="false">
         <classes>
             <class name="org.wso2.carbon.identity.mgt.store.test.unit.IdentityStoreTests"/>
+            <class name="org.wso2.carbon.identity.mgt.store.test.unit.AttributeTests"/>
+            <class name="org.wso2.carbon.identity.mgt.store.test.unit.FileUtilTests"/>
         </classes>
     </test>
 </suite>

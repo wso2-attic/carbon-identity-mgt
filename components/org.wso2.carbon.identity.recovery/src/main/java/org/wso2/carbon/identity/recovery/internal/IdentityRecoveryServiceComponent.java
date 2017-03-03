@@ -74,33 +74,13 @@ public class IdentityRecoveryServiceComponent {
         try {
             bundleContext.registerService(NotificationPasswordRecoveryManager.class.getName(),
                     NotificationPasswordRecoveryManager.getInstance(), null);
-//            bundleContext.registerService(SecurityQuestionPasswordRecoveryManager.class.getName(),
-//                    SecurityQuestionPasswordRecoveryManager.getInstance(), null);
             bundleContext.registerService(NotificationUsernameRecoveryManager.class.getName(),
                     NotificationUsernameRecoveryManager.getInstance(), null);
             bundleContext.registerService(SecurityQuestionPasswordRecoveryManager.class.getName(),
                     new SecurityQuestionPasswordRecoveryManager(JDBCRecoveryDataStore.getInstance(),
                             ChallengeQuestionManager.getInstance()), null);
-//            bundleContext.registerService(NotificationUsernameRecoveryManager.class.getName(),
-//                    NotificationUsernameRecoveryManager.getInstance(), null);
-//            bundleContext.registerService(UserSelfRegistrationManager.class.getName(),
-//                    UserSelfRegistrationManager.getInstance(), null);
             bundleContext.registerService(ChallengeQuestionManager.class.getName(),
                     ChallengeQuestionManager.getInstance(), null);
-//            bundleContext.registerService(AbstractEventHandler.class.getName(),
-//                    new AccountConfirmationValidationHandler(), null);
-//            bundleContext.registerService(AbstractEventHandler.class.getName(),
-//                    new UserSelfRegistrationHandler(), null);
-//            bundleContext.registerService(AbstractEventHandler.class.getName(),
-//                    new UserEmailVerificationHandler(), null);
-//            bundleContext.registerService(AbstractEventHandler.class.getName(),
-//                    new AdminForcedPasswordResetHandler(), null);
-//            bundleContext.registerService(IdentityConnectorConfig.class.getName(),
-//                    new SelfRegistrationConfigImpl(), null);
-//            bundleContext.registerService(IdentityConnectorConfig.class.getName(),
-//                    new UserEmailVerificationConfigImpl(), null);
-//            bundleContext.registerService(IdentityConnectorConfig.class.getName(),
-//                    new AdminForcedPasswordResetConfigImpl(), null);
             IdentityRecoveryServiceDataHolder.getInstance().setRecoveryLinkConfig(new RecoveryLinkConfig());
 
         } catch (Exception e) {
@@ -110,12 +90,11 @@ public class IdentityRecoveryServiceComponent {
         // register default challenge questions
         try {
             if (log.isDebugEnabled()) {
-                log.debug("Loading default challenge questions for super tenant.");
+                log.debug("Loading default challenge questions for the server");
             }
             loadDefaultChallengeQuestions();
-            //   new ChallengeQuestionManager().getAllChallengeQuestions("carbon.super", "lk_LK");
         } catch (IdentityRecoveryException e) {
-            log.error("Error persisting challenge question for super tenant.", e);
+            log.error("Error persisting challenge question for the server.", e);
         }
     }
 

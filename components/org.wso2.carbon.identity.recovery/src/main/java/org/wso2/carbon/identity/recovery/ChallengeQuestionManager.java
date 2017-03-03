@@ -32,7 +32,6 @@ import org.wso2.carbon.identity.recovery.util.Utils;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -49,12 +48,14 @@ public class ChallengeQuestionManager {
     private static ChallengeQuestionManager instance = new ChallengeQuestionManager();
 
     private static SecurityQuestionsConfig recoveryConfig;
+    private static String separator;
 
     private ChallengeQuestionManager() {
     }
 
     public static ChallengeQuestionManager getInstance() {
         recoveryConfig = new SecurityQuestionsConfig();
+        separator = recoveryConfig.getQuestionSeparator();
         return instance;
     }
 
@@ -143,12 +144,12 @@ public class ChallengeQuestionManager {
             return;
         }
 
-        ChallengeQuestion[] questions = Utils.getDefaultChallengeQuestions();
+        List<ChallengeQuestion> questions = Utils.getDefaultChallengeQuestions();
         addChallengeQuestions(questions);
 
         if (log.isDebugEnabled()) {
             String errorMsg = "%d default challenge questions added.";
-            log.debug(String.format(errorMsg, questions.length));
+            log.debug(String.format(errorMsg, questions.size()));
         }
     }
 
@@ -158,31 +159,15 @@ public class ChallengeQuestionManager {
      * @param questions
      * @throws IdentityRecoveryException
      */
-    public void addChallengeQuestions(ChallengeQuestion[] questions) throws IdentityRecoveryException {
+    public void addChallengeQuestions(List<ChallengeQuestion> questions) throws IdentityRecoveryException {
 
         try {
-            Utils.updateChallengeQuestionsYAML(Arrays.asList(questions));
+            Utils.updateChallengeQuestionsYAML(questions);
         } catch (IdentityRecoveryException e) {
             throw Utils.handleServerException(
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_EXCEPTION_SET_CHALLENGE_QUESTIONS, null, e);
         }
 
-    }
-
-
-    /**
-     * Delete challenge questions.
-     *
-     * @param challengeQuestions
-     * @throws IdentityRecoveryException
-     */
-    public void deleteChallengeQuestions(ChallengeQuestion[] challengeQuestions) throws IdentityRecoveryException {
-
-        try {
-            Utils.deleteChallengeQuestions(Arrays.asList(challengeQuestions));
-        } catch (IdentityRecoveryException e) {
-            throw new IdentityRecoveryServerException("Error when deleting challenge questions.", e);
-        }
     }
 
     /**
@@ -216,10 +201,7 @@ public class ChallengeQuestionManager {
                         uniqueUserID, e);
             }
 
-            // TODO: Add the correct separator.
-            String challengeQuestionSeparator = recoveryConfig.getQuestionSeparator();
-
-            String[] challengeValues = challengeValue.split(challengeQuestionSeparator);
+            String[] challengeValues = challengeValue.split(separator);
             if (challengeValues.length == 2) {
                 ChallengeQuestion userChallengeQuestion = new ChallengeQuestion(challengesUri,
                         challengeValues[0].trim());
@@ -277,10 +259,7 @@ public class ChallengeQuestionManager {
 
         if (challengeValue != null) {
 
-            //TODO might want to get rid of separator
-            String challengeQuestionSeparator = recoveryConfig.getQuestionSeparator();
-
-            String[] challengeValues = challengeValue.split(challengeQuestionSeparator);
+            String[] challengeValues = challengeValue.split(separator);
             if (challengeValues.length == 2) {
                 userChallengeQuestion = new ChallengeQuestion(challengesUri, challengeValues[0].trim());
             }
@@ -343,18 +322,8 @@ public class ChallengeQuestionManager {
 
         if (claimValue != null) {
 
-            // TODO: Get the correct challenge question separator.
-            String challengeQuestionSeparator = "";
-            // IdentityRecoveryConstants.ConnectorConfig.QUESTION_CHALLENGE_SEPARATOR;
-//            String challengeQuestionSeparator = IdentityUtil.getProperty(IdentityRecoveryConstants.ConnectorConfig
-//                    .QUESTION_CHALLENGE_SEPARATOR);
-
-            if (StringUtils.isEmpty(challengeQuestionSeparator)) {
-                challengeQuestionSeparator = IdentityRecoveryConstants.DEFAULT_CHALLENGE_QUESTION_SEPARATOR;
-            }
-
-            if (claimValue.contains(challengeQuestionSeparator)) {
-                challengesUris = claimValue.split(challengeQuestionSeparator);
+            if (claimValue.contains(separator)) {
+                challengesUris = claimValue.split(separator);
             } else {
                 challengesUris = new String[]{claimValue.trim()};
             }
@@ -394,15 +363,6 @@ public class ChallengeQuestionManager {
             List<String> challengesUris = new ArrayList<String>();
             String challengesUrisValue = "";
 
-            // TODO: Get the correct challenge question separator.
-            String separator = ""; // IdentityRecoveryConstants.ConnectorConfig.QUESTION_CHALLENGE_SEPARATOR;
-//            String separator = IdentityUtil.getProperty(IdentityRecoveryConstants.ConnectorConfig
-//                    .QUESTION_CHALLENGE_SEPARATOR);
-
-            if (StringUtils.isEmpty(separator)) {
-                separator = IdentityRecoveryConstants.DEFAULT_CHALLENGE_QUESTION_SEPARATOR;
-            }
-
             if (!userChallengeAnswers.isEmpty()) {
 
                 for (UserChallengeAnswer userChallengeAnswer : userChallengeAnswers) {
@@ -436,8 +396,7 @@ public class ChallengeQuestionManager {
                     if ("".equals(challengesUrisValue)) {
                         challengesUrisValue = challengesUri;
                     } else {
-                        challengesUrisValue = challengesUrisValue +
-                                separator + challengesUri;
+                        challengesUrisValue = challengesUrisValue + separator + challengesUri;
                     }
                 }
                 Utils.setClaimInIdentityStore(user, IdentityRecoveryConstants.CHALLENGE_QUESTION_URI,
