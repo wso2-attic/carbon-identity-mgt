@@ -88,6 +88,12 @@
                                                 <fileset dir="../osgi-tests/target">
                                                     <include name="jacoco.exec" />
                                                 </fileset>
+                                                <fileset dir="../../components/org.wso2.carbon.identity.recovery/target">
+                                                    <include name="jacoco.exec" />
+                                                </fileset>
+                                                <fileset dir="../../components/org.wso2.carbon.identity.mgt/target">
+                                                    <include name="jacoco.exec" />
+                                                </fileset>
                                             </executiondata>
                                             <structure name="Carbon Identity Management - Coverage Report">
 
@@ -95,6 +101,16 @@
                                                     <fileset dir="../../components/org.wso2.carbon.identity.mgt/target/classes">
                                                         <exclude name="**/*Constants.class" />
                                                         <exclude name="**/*Exception.class" />
+                                                        <exclude name="**/AuthenticationFailure.class"/><!--Exception-->
+                                                        <exclude name="**/*Config.class" />
+                                                        <exclude name="**/*File.class" />
+                                                        <exclude name="**/FileUtil.class" />
+                                                        <exclude name="**/*SQLPlaceholders.class" />
+                                                        <exclude name="**/*ColumnNames.class" />
+                                                        <exclude name="**/*Reader.class" />
+                                                        <exclude name="**/*Entry.class" /><!--Not yet used in the code, enable when start using-->
+                                                        <exclude name="**/Resource.class" /><!--Not yet used in the code, enable when start using-->
+                                                        <exclude name="**/*ResourceBuilder.class"/><!--Not yet used in the code, enable when start using-->
                                                     </fileset>
                                                     <fileset dir="../../components/org.wso2.carbon.identity.claim/target/classes">
                                                         <exclude name="**/*Constants.class" />
@@ -103,10 +119,15 @@
                                                     <fileset dir="../../components/org.wso2.carbon.identity.mgt.login.interceptor/target/classes">
                                                         <exclude name="**/*Constants.class" />
                                                         <exclude name="**/*Exception.class" />
+                                                        <exclude name="**/*AuthInterceptor.class" />
                                                     </fileset>
                                                     <fileset dir="../../components/org.wso2.carbon.identity.recovery/target/classes">
                                                         <exclude name="**/*Constants.class" />
                                                         <exclude name="**/*Exception.class" />
+                                                        <exclude name="**/*Config.class" />
+                                                        <exclude name="**/*File.class" />
+                                                        <exclude name="**/UserClaim.class"/><!--Not yet used in the code, enable when start using-->
+                                                        <exclude name="**/Property.class"/><!--Not yet used in the code, enable when start using-->
                                                     </fileset>
                                                 </classfiles>
                                                 <sourcefiles encoding="UTF-8">
