@@ -25,8 +25,8 @@ public class RecoveryLinkConfig {
     private boolean enableAPI = false;
     private boolean enablePortal = true;
     private int notificationExpiryTime = 3; //expiry time in minutes
-    private boolean isNotificationInternallyManage = false;
-    private boolean sendRecoveryNotificationSuccess = true;
+    private boolean isNotificationInternallyManage = true;
+    private boolean sendRecoveryNotificationSuccess = false;
 
     public boolean isEnableAPI() {
         return enableAPI;

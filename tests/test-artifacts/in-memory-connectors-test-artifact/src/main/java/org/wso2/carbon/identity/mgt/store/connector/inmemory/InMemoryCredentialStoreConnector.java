@@ -111,7 +111,15 @@ public class InMemoryCredentialStoreConnector implements CredentialStoreConnecto
     @Override
     public String updateCredentials(String username, List<Callback> credentialCallbacks) throws
             CredentialStoreConnectorException {
-        return null;
+
+        for (Callback callback : credentialCallbacks) {
+            if (callback instanceof PasswordCallback) {
+                char[] credential = ((PasswordCallback) callback).getPassword();
+                credentialMap.replace(username, credential);
+            }
+
+        }
+        return username;
     }
 
     @Override
