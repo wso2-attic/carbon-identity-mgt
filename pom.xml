@@ -434,10 +434,10 @@
         <module>components/org.wso2.carbon.identity.mgt.login.interceptor</module>
         <module>components/org.wso2.carbon.identity.recovery</module>
         <module>components/org.wso2.carbon.identity.handler.event.account.lock</module>
-        <module>feature/org.wso2.carbon.identity.mgt.feature</module>
-        <module>feature/org.wso2.carbon.identity.claim.feature</module>
-        <module>feature/org.wso2.carbon.identity.mgt.login.feature</module>
-        <module>feature/org.wso2.carbon.identity.recovery.server.feature</module>
+        <module>features/org.wso2.carbon.identity.mgt.feature</module>
+        <module>features/org.wso2.carbon.identity.claim.feature</module>
+        <module>features/org.wso2.carbon.identity.mgt.login.feature</module>
+        <module>features/org.wso2.carbon.identity.recovery.feature</module>
         <module>tests</module>
     </modules>
 
