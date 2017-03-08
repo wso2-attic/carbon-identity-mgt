@@ -375,6 +375,12 @@
                 <groupId>org.wso2.carbon.lcm</groupId>
                 <artifactId>org.wso2.carbon.lcm.core</artifactId>
                 <version>${org.wso2.carbon.lcm.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.h2database.wso2</groupId>
+                        <artifactId>h2-database-engine</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.lcm</groupId>
@@ -434,10 +440,10 @@
         <module>components/org.wso2.carbon.identity.mgt.login.interceptor</module>
         <module>components/org.wso2.carbon.identity.recovery</module>
         <module>components/org.wso2.carbon.identity.handler.event.account.lock</module>
-        <module>feature/org.wso2.carbon.identity.mgt.feature</module>
-        <module>feature/org.wso2.carbon.identity.claim.feature</module>
-        <module>feature/org.wso2.carbon.identity.mgt.login.feature</module>
-        <module>feature/org.wso2.carbon.identity.recovery.server.feature</module>
+        <module>features/org.wso2.carbon.identity.mgt.feature</module>
+        <module>features/org.wso2.carbon.identity.claim.feature</module>
+        <module>features/org.wso2.carbon.identity.mgt.login.feature</module>
+        <module>features/org.wso2.carbon.identity.recovery.feature</module>
         <module>tests</module>
     </modules>
 
