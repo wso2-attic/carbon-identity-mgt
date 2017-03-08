@@ -375,6 +375,12 @@
                 <groupId>org.wso2.carbon.lcm</groupId>
                 <artifactId>org.wso2.carbon.lcm.core</artifactId>
                 <version>${org.wso2.carbon.lcm.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.h2database.wso2</groupId>
+                        <artifactId>h2-database-engine</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.lcm</groupId>
