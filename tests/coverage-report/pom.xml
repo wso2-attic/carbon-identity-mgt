@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.wso2.carbon.identity.mgt</groupId>
         <artifactId>carbon-identity-mgt-tests</artifactId>
-        <version>0.1.37-SNAPSHOT</version>
+        <version>0.1.37</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -101,7 +101,7 @@
                                                     <fileset dir="../../components/org.wso2.carbon.identity.mgt/target/classes">
                                                         <exclude name="**/*Constants.class" />
                                                         <exclude name="**/*Exception.class" />
-                                                        <exclude name="**/AuthenticationFailure.class"/><!--Exception-->
+                                                        <exclude name="**/AuthenticationFailure.class" /><!--Exception-->
                                                         <exclude name="**/*Config.class" />
                                                         <exclude name="**/*File.class" />
                                                         <exclude name="**/FileUtil.class" />
@@ -110,7 +110,7 @@
                                                         <exclude name="**/*Reader.class" />
                                                         <exclude name="**/*Entry.class" /><!--Not yet used in the code, enable when start using-->
                                                         <exclude name="**/Resource.class" /><!--Not yet used in the code, enable when start using-->
-                                                        <exclude name="**/*ResourceBuilder.class"/><!--Not yet used in the code, enable when start using-->
+                                                        <exclude name="**/*ResourceBuilder.class" /><!--Not yet used in the code, enable when start using-->
                                                     </fileset>
                                                     <fileset dir="../../components/org.wso2.carbon.identity.claim/target/classes">
                                                         <exclude name="**/*Constants.class" />
@@ -126,8 +126,8 @@
                                                         <exclude name="**/*Exception.class" />
                                                         <exclude name="**/*Config.class" />
                                                         <exclude name="**/*File.class" />
-                                                        <exclude name="**/UserClaim.class"/><!--Not yet used in the code, enable when start using-->
-                                                        <exclude name="**/Property.class"/><!--Not yet used in the code, enable when start using-->
+                                                        <exclude name="**/UserClaim.class" /><!--Not yet used in the code, enable when start using-->
+                                                        <exclude name="**/Property.class" /><!--Not yet used in the code, enable when start using-->
                                                     </fileset>
                                                 </classfiles>
                                                 <sourcefiles encoding="UTF-8">
