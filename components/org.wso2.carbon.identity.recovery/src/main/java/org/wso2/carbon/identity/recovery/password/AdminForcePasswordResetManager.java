@@ -35,6 +35,8 @@ public class AdminForcePasswordResetManager {
     }
 
     /**
+     * get the generated one time password
+     *
      * @return auto-generated one time password
      */
     public String generateOTPValue() {
@@ -42,6 +44,8 @@ public class AdminForcePasswordResetManager {
     }
 
     /**
+     * pass the otp to the store to persist it in the database
+     *
      * @param userUniqueId selected user id
      * @param otp          generated code
      * @throws IdentityRecoveryException
