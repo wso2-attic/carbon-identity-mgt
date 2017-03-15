@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package org.wso2.carbon.identity.recovery.forced;
+package org.wso2.carbon.identity.recovery.password;
 
 import org.wso2.carbon.identity.common.util.IdentityUtils;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
@@ -38,7 +38,7 @@ public class AdminForcePasswordResetManager {
      * @return auto-generated one time password
      */
     public String generateOTPValue() {
-        return IdentityUtils.getInstance().generateOTPValue();
+        return IdentityUtils.generateOTPValue();
     }
 
     /**
@@ -46,7 +46,7 @@ public class AdminForcePasswordResetManager {
      * @param otp          generated code
      * @throws IdentityRecoveryException
      */
-    public void insertOTPValue(String userUniqueId, String otp) throws IdentityRecoveryException {
+    public void persistOTP(String userUniqueId, String otp) throws IdentityRecoveryException {
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, otp,
                 RecoveryScenarios.ADMIN_FORCED_PASSWORD_RESET_VIA_OTP, RecoverySteps.UPDATE_PASSWORD);
