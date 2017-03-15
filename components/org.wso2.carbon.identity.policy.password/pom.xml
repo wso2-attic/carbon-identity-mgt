@@ -99,14 +99,9 @@
 
         <!-- OSGi API version range-->
         <osgi.framework.package.import.version.range>[1.8.0, 2.0.0)</osgi.framework.package.import.version.range>
-        <org.osgi.service.permissionadmin.import.version.range>[1.2.0, 1.3.0)
-        </org.osgi.service.permissionadmin.import.version.range>
         <org.osgi.service.component.version.range>[1.2.0, 1.3.0)</org.osgi.service.component.version.range>
 
         <!-- Dependency package version ranges -->
-        <com.nimbusds.package.import.version.range>[2.26.1, 2.27)</com.nimbusds.package.import.version.range>
-        <asm.package.version.range>[1.0.2, 2.0.0)</asm.package.version.range>
-        <org.wso2.carbon.security.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.security.version.range>
         <org.wso2.carbon.datasource.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.datasource.version.range>
         <org.wso2.carbon.identity.common.import.version.range>[0.1.0,1.0.0)</org.wso2.carbon.identity.common.import.version.range>
         <org.wso2.carbon.lcm.version.range>[1.0.0, 2.0.0)</org.wso2.carbon.lcm.version.range>

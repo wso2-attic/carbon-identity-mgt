@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.identity.policy.password.history;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.base.event.EventContext;
@@ -94,18 +95,14 @@ public class PasswordHistoryHandler extends AbstractEventHandler {
      */
     private void handlePreUpdateCredentials(Event event) throws IdentityException {
 
-        List<Callback> credentials = (List<Callback>) event.getEventProperties()
-                .get(StoreConstants.IdentityStoreConstants.CREDENTIAL_LIST);
+        char[] password = getPassword(event);
 
-        if (credentials == null || credentials.isEmpty()) {
+        if (ArrayUtils.isEmpty(password)) {
             return;
         }
 
         String uniqueUserId = (String) event.getEventProperties().get(
                 StoreConstants.IdentityStoreConstants.UNIQUE_USED_ID);
-
-        //extract new password from credentials call back list
-        char[] password = ((PasswordCallback) credentials.get(0)).getPassword();
 
         try {
             ValidationResult validationResult = passwordHistoryDataStore.validate(uniqueUserId, password);
@@ -137,18 +134,14 @@ public class PasswordHistoryHandler extends AbstractEventHandler {
      */
     private void handlePostUpdateCredentials(Event event) throws EventException {
 
-        List<Callback> credentials = (List<Callback>) event.getEventProperties()
-                .get(StoreConstants.IdentityStoreConstants.CREDENTIAL_LIST);
+        char[] password = getPassword(event);
 
-        if (credentials == null || credentials.isEmpty()) {
+        if (ArrayUtils.isEmpty(password)) {
             return;
         }
 
         String uniqueUserId = (String) event.getEventProperties().get(
                 StoreConstants.IdentityStoreConstants.UNIQUE_USED_ID);
-
-        //extract new password from credentials call back list
-        char[] password = ((PasswordCallback) credentials.get(0)).getPassword();
 
         try {
             passwordHistoryDataStore.store(uniqueUserId, password);
@@ -176,6 +169,23 @@ public class PasswordHistoryHandler extends AbstractEventHandler {
 
     }
 
+    /**
+     * Extract password from event properties
+     * @param event : event object
+     * @return : password as char array
+     */
+    private char[] getPassword (Event event) {
+
+        List<Callback> credentials = (List<Callback>) event.getEventProperties()
+                .get(StoreConstants.IdentityStoreConstants.CREDENTIAL_LIST);
+
+        if (credentials == null || credentials.isEmpty()) {
+            return new char[0];
+        }
+
+        return ((PasswordCallback) credentials.get(0)).getPassword();
+
+    }
 
 }
 
