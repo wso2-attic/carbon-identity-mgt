@@ -23,6 +23,7 @@ import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.event.ResultReturningHandler;
 import org.wso2.carbon.identity.mgt.event.IdentityMgtMessageContext;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.kernel.utils.StringUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -110,7 +111,12 @@ public class EventInterceptorTemplate<T extends Object, X extends Exception> {
             eventService.pushEvent(event, messageContext);
         } catch (IdentityException e) {
             String message = String.format("Error while handling %s event.", eventId);
-            throw new IdentityStoreException(message, e);
+            String errorCode = e.getErrorCode();
+            IdentityStoreException identityStoreException = new IdentityStoreException(message, e);
+            if (StringUtils.isNullOrEmpty(errorCode)) {
+                identityStoreException.setErrorCode(Integer.parseInt(errorCode));
+            }
+            throw identityStoreException;
         }
         return this;
     }
