@@ -15,8 +15,8 @@
  */
 package org.wso2.carbon.identity.policy.password.history.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,7 +28,7 @@ import java.sql.SQLException;
  */
 public class DatabaseUtil {
 
-    private static final Log log = LogFactory.getLog(DatabaseUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(DatabaseUtil.class);
 
     public static void closeAllConnections(Connection dbConnection, ResultSet rs, PreparedStatement prepStmt) {
 
@@ -71,13 +71,4 @@ public class DatabaseUtil {
 
     }
 
-    public static void rollBack(Connection dbConnection) {
-        try {
-            if (dbConnection != null) {
-                dbConnection.rollback();
-            }
-        } catch (SQLException e1) {
-            log.error("An error occurred while rolling back transactions. ", e1);
-        }
-    }
 }
