@@ -22,13 +22,25 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.ops4j.pax.exam.testng.listener.PaxExam;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
+import org.wso2.carbon.identity.recovery.model.UserRecoveryData;
 import org.wso2.carbon.identity.recovery.password.AdminForcePasswordResetManager;
+import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
+import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
+import org.wso2.carbon.kernel.utils.CarbonServerInfo;
+
+
 import java.nio.file.Paths;
 import java.util.List;
+import javax.inject.Inject;
+
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 /**
@@ -38,6 +50,13 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 @Listeners(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
 public class AdminForcedPasswordResetTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminForcedPasswordResetTest.class);
+
+    @Inject
+    private BundleContext bundleContext;
+
+    @Inject
+    private CarbonServerInfo carbonServerInfo;
 
     @Configuration
     public Option[] createConfiguration() {
@@ -58,6 +77,25 @@ public class AdminForcedPasswordResetTest {
 
     }
 
+    @Test(groups = {"persistOTP"})
+    public void testPersistOTP() throws IdentityRecoveryException {
+        AdminForcePasswordResetManager.getInstance().persistOTP("user3", "otp3");
+        UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
+        UserRecoveryData userRecoveryData = userRecoveryDataStore.loadByUserUniqueId("user3");
+        Assert.assertNotNull(userRecoveryData, "Failed to persist OTP");
+    }
 
+    @Test(groups = "invalidateOldOTP")
+    public void testInvalidateOldOTP() throws IdentityRecoveryException {
+        UserRecoveryData userRecoveryData = null;
+        try {
+            AdminForcePasswordResetManager.getInstance().persistOTP("user2", "otp2");
+            AdminForcePasswordResetManager.getInstance().persistOTP("user2", "otp3");
+            UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
+            userRecoveryData = userRecoveryDataStore.loadByUserUniqueId("user2");
+        } catch (Exception e) {
+            Assert.assertNull(userRecoveryData, "Failed to overwirte the existing OTP");
+        }
+    }
 
 }
