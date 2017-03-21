@@ -133,6 +133,10 @@ public class IdentityMgtOSGiTestUtils {
                 .groupId("org.wso2.carbon.lcm")
                 .artifactId("org.wso2.carbon.lcm.sql")
                 .versionAsInProject());
+        defaultOptionList.add(mavenBundle()
+                .groupId("org.wso2.carbon.identity.mgt")
+                .artifactId("org.wso2.carbon.identity.policy.password")
+                .versionAsInProject());
 
         CarbonSysPropConfiguration sysPropConfiguration = new CarbonSysPropConfiguration();
         sysPropConfiguration.setCarbonHome(getCarbonHome());
