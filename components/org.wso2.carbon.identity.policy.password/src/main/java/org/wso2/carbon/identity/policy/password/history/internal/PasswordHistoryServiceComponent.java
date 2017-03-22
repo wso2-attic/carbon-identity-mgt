@@ -33,6 +33,9 @@ import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.policy.password.history.PasswordHistoryHandler;
 import org.wso2.carbon.identity.policy.password.history.store.PasswordHistoryDataStore;
 import org.wso2.carbon.identity.policy.password.history.store.impl.DefaultPasswordHistoryDataStore;
+import org.wso2.carbon.identity.policy.password.validation.PasswordValidationService;
+import org.wso2.carbon.identity.policy.password.validation.impl.PasswordValidationServiceImpl;
+
 import java.util.Map;
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -62,9 +65,10 @@ PasswordHistoryServiceComponent {
         if (passwordHistoryDataStore == null) {
             passwordHistoryDataStore = new DefaultPasswordHistoryDataStore(jdbcTemplate, dataSourceService);
         }
-
+        PasswordValidationService passwordValidationService = new PasswordValidationServiceImpl();
         context.getBundleContext().registerService(AbstractEventHandler.class.getName(),
                 new PasswordHistoryHandler(passwordHistoryDataStore), null);
+        context.getBundleContext().registerService(PasswordValidationService.class, passwordValidationService, null);
         if (log.isDebugEnabled()) {
             log.debug("PasswordHistoryHandler is registered");
         }
