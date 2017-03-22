@@ -32,6 +32,9 @@ public interface UserRecoveryDataStore {
 
     UserRecoveryData loadByUserUniqueId(String userUniqueId) throws IdentityRecoveryException;
 
+    UserRecoveryData loadByScenarioUserUniqueId(String userUniqueId, String scenario) throws
+            IdentityRecoveryException;
+
     void invalidateByCode(String code) throws IdentityRecoveryException;
 
     void invalidateByUserUniqueId(String userUniqueId) throws IdentityRecoveryException;

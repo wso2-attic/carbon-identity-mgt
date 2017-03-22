@@ -70,27 +70,27 @@ public class AdminForcedPasswordResetTest {
         return optionList.toArray(new Option[optionList.size()]);
     }
 
-    @Test(groups = {"getGeneratedOTP"})
-    public void testGetGeneratedOTP() {
-        String otp = AdminForcePasswordResetManager.getInstance().generateOTPValue();
-        Assert.assertNotNull(otp, "Failed to Generate the OTP");
+    @Test(groups = {"getGeneratedpassCode"})
+    public void testGetGeneratedpassCode() {
+        String otp = AdminForcePasswordResetManager.getInstance().generatePassode();
+        Assert.assertNotNull(otp, "Failed to Generate the passcode");
 
     }
 
-    @Test(groups = {"persistOTP"})
+    @Test(groups = {"persistpasscode"})
     public void testPersistOTP() throws IdentityRecoveryException {
-        AdminForcePasswordResetManager.getInstance().persistOTP("user3", "otp3");
+        AdminForcePasswordResetManager.getInstance().persistPasscode("user3", "otp3");
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         UserRecoveryData userRecoveryData = userRecoveryDataStore.loadByUserUniqueId("user3");
         Assert.assertNotNull(userRecoveryData, "Failed to persist OTP");
     }
 
-    @Test(groups = "invalidateOldOTP")
+    @Test(groups = "invalidateOldpasscode")
     public void testInvalidateOldOTP() throws IdentityRecoveryException {
         UserRecoveryData userRecoveryData = null;
         try {
-            AdminForcePasswordResetManager.getInstance().persistOTP("user2", "otp2");
-            AdminForcePasswordResetManager.getInstance().persistOTP("user2", "otp3");
+            AdminForcePasswordResetManager.getInstance().persistPasscode("user2", "otp2");
+            AdminForcePasswordResetManager.getInstance().persistPasscode("user2", "otp3");
             UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
             userRecoveryData = userRecoveryDataStore.loadByUserUniqueId("user2");
         } catch (Exception e) {

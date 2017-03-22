@@ -161,6 +161,36 @@ public class JDBCRecoveryDataStore implements UserRecoveryDataStore {
     }
 
     @Override
+    public UserRecoveryData loadByScenarioUserUniqueId(String userUniqueId, RecoveryScenarios scenario)
+            throws IdentityRecoveryException {
+        final String loadRecoveryDataOfUser =
+                "SELECT " + "* FROM IDN_RECOVERY_DATA WHERE USER_UNIQUE_ID = :" + USER_UNIQUE_ID + "; AND SCENARIO = :"
+                        + SCENARIO + ";";
+        UserRecoveryData userRecoveryDataObject = null;
+
+        try {
+            userRecoveryDataObject = jdbcTemplate
+                    .fetchSingleRecord(loadRecoveryDataOfUser, (resultSet, rowNumber) -> {
+                        UserRecoveryData userRecoveryData = new UserRecoveryData(userUniqueId,
+                                resultSet.getString("CODE"), scenario,
+                                RecoverySteps.valueOf(resultSet.getString("STEP")));
+                        if (StringUtils.isNotBlank(resultSet.getString("REMAINING_SETS"))) {
+                            userRecoveryData.setRemainingSetIds(resultSet.getString("REMAINING_SETS"));
+                        }
+
+                        return userRecoveryData;
+
+                    }, namedPreparedStatement -> {
+                        namedPreparedStatement.setString(USER_UNIQUE_ID, userUniqueId);
+                    });
+        } catch (DataAccessException e) {
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED, null, e);
+        }
+
+        return userRecoveryDataObject;
+    }
+
+    @Override
     public void invalidateByUserUniqueId(String userUniqueId) throws IdentityRecoveryException {
         final String invalidateUserCodes = "DELETE FROM IDN_RECOVERY_DATA WHERE USER_UNIQUE_ID = :" +
                 USER_UNIQUE_ID + ";";

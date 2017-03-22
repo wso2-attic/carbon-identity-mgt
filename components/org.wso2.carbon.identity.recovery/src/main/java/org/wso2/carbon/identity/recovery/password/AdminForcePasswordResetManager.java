@@ -39,22 +39,25 @@ public class AdminForcePasswordResetManager {
      *
      * @return auto-generated one time password
      */
-    public String generateOTPValue() {
-        return IdentityUtils.generateOTPValue();
+    public String generatePassode() {
+        return IdentityUtils.generatePasscode(6);
     }
 
     /**
      * pass the otp to the store to persist it in the database
      *
      * @param userUniqueId selected user id
-     * @param otp          generated code
+     * @param passCode     generated code
      * @throws IdentityRecoveryException
      */
-    public void persistOTP(String userUniqueId, String otp) throws IdentityRecoveryException {
+    public void persistPasscode(String userUniqueId, String passCode) throws IdentityRecoveryException {
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
-        UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, otp,
+        UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, passCode,
                 RecoveryScenarios.ADMIN_FORCED_PASSWORD_RESET_VIA_OTP, RecoverySteps.UPDATE_PASSWORD);
+        UserRecoveryData loadRecoveryDataDO = userRecoveryDataStore.loadByCode(userUniqueId);
+        if (loadRecoveryDataDO != null) {
+            userRecoveryDataStore.invalidateByCode(passCode);
+        }
         userRecoveryDataStore.store(recoveryDataDO);
     }
-
 }
