@@ -215,7 +215,19 @@
 
             <dependency>
                 <groupId>org.wso2.carbon.identity.mgt</groupId>
+                <artifactId>org.wso2.carbon.identity.policy.password</artifactId>
+                <version>${carbon.identity.mgt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.identity.mgt</groupId>
                 <artifactId>org.wso2.carbon.identity.handler.event.account.lock</artifactId>
+                <version>${carbon.identity.mgt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.identity.mgt</groupId>
+                <artifactId>org.wso2.carbon.identity.policy.password</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
             </dependency>
 
@@ -434,10 +446,12 @@
         <module>components/org.wso2.carbon.identity.mgt.login.interceptor</module>
         <module>components/org.wso2.carbon.identity.recovery</module>
         <module>components/org.wso2.carbon.identity.handler.event.account.lock</module>
+        <module>components/org.wso2.carbon.identity.policy.password</module>
         <module>feature/org.wso2.carbon.identity.mgt.feature</module>
         <module>feature/org.wso2.carbon.identity.claim.feature</module>
         <module>feature/org.wso2.carbon.identity.mgt.login.feature</module>
         <module>feature/org.wso2.carbon.identity.recovery.server.feature</module>
+        <module>feature/org.wso2.carbon.identity.policy.password.feature</module>
         <module>tests</module>
     </modules>
 

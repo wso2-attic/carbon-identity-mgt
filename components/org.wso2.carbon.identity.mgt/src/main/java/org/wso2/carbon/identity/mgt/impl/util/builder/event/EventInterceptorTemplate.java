@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.identity.mgt.impl.util.builder.event;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.base.event.EventContext;
 import org.wso2.carbon.identity.common.base.event.model.Event;
 import org.wso2.carbon.identity.common.base.exception.IdentityException;
@@ -23,6 +25,7 @@ import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.event.ResultReturningHandler;
 import org.wso2.carbon.identity.mgt.event.IdentityMgtMessageContext;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
+import org.wso2.carbon.kernel.utils.StringUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +43,7 @@ public class EventInterceptorTemplate<T extends Object, X extends Exception> {
     private EventService eventService;
     private IdentityMgtMessageContext messageContext;
     private T result;
+    private static final Logger log = LoggerFactory.getLogger(EventInterceptorTemplate.class);
 
     public EventInterceptorTemplate(EventService eventService, IdentityMgtMessageContext messageContext) {
         this.messageContext = messageContext;
@@ -110,7 +114,16 @@ public class EventInterceptorTemplate<T extends Object, X extends Exception> {
             eventService.pushEvent(event, messageContext);
         } catch (IdentityException e) {
             String message = String.format("Error while handling %s event.", eventId);
-            throw new IdentityStoreException(message, e);
+            String errorCode = e.getErrorCode();
+            IdentityStoreException identityStoreException = new IdentityStoreException(message, e);
+            if (StringUtils.isNullOrEmpty(errorCode)) {
+                try {
+                    identityStoreException.setErrorCode(Integer.parseInt(errorCode));
+                } catch (NumberFormatException nfe) {
+                    log.error("Error code from IdentityException not in Number format", nfe);
+                }
+            }
+            throw identityStoreException;
         }
         return this;
     }
