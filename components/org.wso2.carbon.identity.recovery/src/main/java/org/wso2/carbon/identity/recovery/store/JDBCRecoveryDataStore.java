@@ -203,6 +203,20 @@ public class JDBCRecoveryDataStore implements UserRecoveryDataStore {
         }
     }
 
+    @Override
+    public void invalidateUserScenario(String userUniqueId, String scenario) throws IdentityRecoveryException {
+        final String invalidateUserCodes = "DELETE FROM IDN_RECOVERY_DATA WHERE USER_UNIQUE_ID = :" +
+                USER_UNIQUE_ID + "; AND SCENARIO = :" + SCENARIO + ";";
+        try {
+            jdbcTemplate.executeUpdate(invalidateUserCodes, (namedPreparedStatement) -> {
+                namedPreparedStatement.setString(USER_UNIQUE_ID, userUniqueId);
+                namedPreparedStatement.setString(SCENARIO, scenario);
+            });
+        } catch (DataAccessException e) {
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED, null, e);
+        }
+    }
+
     private boolean isCodeExpired(UserRecoveryData userRecoveryDataObject) throws IdentityRecoveryClientException {
         long createdTimeStamp = userRecoveryDataObject.getTimeCreated().getTime();
         int notificationExpiryTimeInMinutes = IdentityRecoveryServiceDataHolder.getInstance().getRecoveryLinkConfig()

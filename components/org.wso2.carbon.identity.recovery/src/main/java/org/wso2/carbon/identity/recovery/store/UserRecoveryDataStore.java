@@ -40,5 +40,7 @@ public interface UserRecoveryDataStore {
 
     void invalidateByUserUniqueId(String userUniqueId) throws IdentityRecoveryException;
 
+    void invalidateUserScenario(String userUniqueId, String scenario) throws IdentityRecoveryException;
+
     void setJdbcTemplate(JdbcTemplate jdbcTemplate);
 }
