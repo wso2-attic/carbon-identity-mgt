@@ -17,6 +17,7 @@ package org.wso2.carbon.identity.recovery.store;
 
 import org.wso2.carbon.identity.common.jdbc.JdbcTemplate;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
+import org.wso2.carbon.identity.recovery.RecoveryScenarios;
 import org.wso2.carbon.identity.recovery.model.UserRecoveryData;
 
 /**
@@ -32,7 +33,7 @@ public interface UserRecoveryDataStore {
 
     UserRecoveryData loadByUserUniqueId(String userUniqueId) throws IdentityRecoveryException;
 
-    UserRecoveryData loadByScenarioUserUniqueId(String userUniqueId, String scenario) throws
+    UserRecoveryData loadByScenarioUserUniqueId(String userUniqueId, RecoveryScenarios scenario) throws
             IdentityRecoveryException;
 
     void invalidateByCode(String code) throws IdentityRecoveryException;
