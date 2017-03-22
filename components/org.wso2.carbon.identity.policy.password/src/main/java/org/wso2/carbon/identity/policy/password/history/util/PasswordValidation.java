@@ -99,7 +99,7 @@ public class PasswordValidation {
     /**
      * Method to check wether the password contains the specified special characters.
      *
-     * @param password
+     * @param password passowrd to be validated
      * @return boolean
      */
     private static boolean hasSymbol(String password) {
@@ -114,7 +114,7 @@ public class PasswordValidation {
     /**
      * Method to check wether the password contains any uppercase characters
      *
-     * @param password
+     * @param password passowrd to be validated
      * @return boolean
      */
     private static boolean hasUpperCase(String password) {
@@ -125,7 +125,7 @@ public class PasswordValidation {
     /**
      * Method to check wether the password contains any lowercase characters
      *
-     * @param password
+     * @param password passowrd to be validated
      * @return boolean
      */
     private static boolean hasLowerCase(String password) {
