@@ -54,10 +54,7 @@ public class AdminForcePasswordResetManager {
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, passCode,
                 RecoveryScenarios.ADMIN_FORCED_PASSWORD_RESET_VIA_OTP, RecoverySteps.UPDATE_PASSWORD);
-        UserRecoveryData loadRecoveryDataDO = userRecoveryDataStore.loadByCode(userUniqueId);
-        if (loadRecoveryDataDO != null) {
-            userRecoveryDataStore.invalidateByCode(loadRecoveryDataDO.getSecret());
-        }
+        userRecoveryDataStore.invalidateUserScenario(userUniqueId, "ADMIN_FORCED_PASSWORD_RESET_VIA_OTP");
         userRecoveryDataStore.store(recoveryDataDO);
     }
 }
