@@ -55,6 +55,5 @@ public class ClaimTest {
         claim.setDialectUri(dialectURI);
 
         Assert.assertEquals(claim.getDialectUri(), dialectURI);
-
     }
 }

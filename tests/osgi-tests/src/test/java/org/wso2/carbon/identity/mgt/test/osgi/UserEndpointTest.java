@@ -273,8 +273,8 @@ public class UserEndpointTest {
         payload.put("properties", properties);
 
         post.getOutputStream().write(payload.toString().getBytes(StandardCharsets.UTF_8));
-        Assert.assertEquals(post.getResponseCode(), Response.Status.ACCEPTED.getStatusCode(), "Invalid response code" +
-                                                                                              ".");
+        Assert.assertEquals(post.getResponseCode(), Response.Status.ACCEPTED.getStatusCode(),
+                            "Invalid response code.");
         post.disconnect();
     }
 

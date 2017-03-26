@@ -56,7 +56,5 @@ public class IdentityMgtComponentTest {
 
         identityMgtComponent.unregisterUniqueIdResolverFactory(resolverFactory);
         Assert.assertNull(IdentityMgtDataHolder.getInstance().getUniqueIdResolverFactoryMap().get("test"));
-
     }
-
 }

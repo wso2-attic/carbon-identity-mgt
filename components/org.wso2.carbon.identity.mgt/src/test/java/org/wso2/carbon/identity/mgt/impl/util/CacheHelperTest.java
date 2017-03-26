@@ -48,7 +48,6 @@ public class CacheHelperTest {
 
         cacheConfig.setEnable(false);
         Assert.assertFalse(CacheHelper.isCacheEnabled(cacheConfigMap, cacheName), "Cache should be disabled.");
-
     }
 
     @Test
@@ -68,7 +67,6 @@ public class CacheHelperTest {
 
         cacheConfig.setExpireTime(expiryTime);
         Assert.assertEquals(CacheHelper.getExpireTime(cacheConfigMap, cacheName, defaultExpiryTime), expiryTime);
-
     }
 
     @Test

@@ -58,5 +58,4 @@ public class ValidateCodeApiServiceImplTest {
         response = new ValidateCodeApiServiceImpl().validateCodePost(dto);
         Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
     }
-
 }

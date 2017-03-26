@@ -32,7 +32,6 @@ import org.wso2.carbon.identity.recovery.signup.UserSelfSignUpManager;
 )
 public class UserEndpointServiceComponent {
 
-
     @Reference(
             name = "userSelfSignUpManager",
             service = UserSelfSignUpManager.class,
@@ -48,5 +47,4 @@ public class UserEndpointServiceComponent {
 
         UserEndpointServiceDataHolder.getInstance().setUserSelfSignUpManager(null);
     }
-
 }

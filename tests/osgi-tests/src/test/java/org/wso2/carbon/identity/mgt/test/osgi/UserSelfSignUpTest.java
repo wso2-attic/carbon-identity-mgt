@@ -111,7 +111,6 @@ public class UserSelfSignUpTest {
         Assert.assertNotNull(user, String.format("User: %s not found.", responseBean.getUserUniqueId()));
 
         // Try to authenticate locked user.
-
         try {
             realmService.getIdentityStore().authenticate(claim, new Callback[] {passwordCallback}, null);
             Assert.fail("Authenticated unconfirmed user.");
@@ -172,7 +171,6 @@ public class UserSelfSignUpTest {
             NotificationResponseBean response = selfSignUpManager.resendConfirmationCode(claim, null, null);
             Assert.assertNull(response, "Cannot have a valid response for invalid user.");
         } catch (IdentityRecoveryException e) {
-            //TODO: Check error code.
             Assert.assertTrue(true);
         }
     }
@@ -186,7 +184,6 @@ public class UserSelfSignUpTest {
             selfSignUpManager.confirmUserSelfSignUp("invalid");
             Assert.assertTrue(false, "Invalid code code confirmed.");
         } catch (IdentityRecoveryException e) {
-            //TODO: Check error code.
             Assert.assertTrue(true);
         }
     }
@@ -203,6 +200,5 @@ public class UserSelfSignUpTest {
         } catch (IdentityRecoveryException e) {
             Assert.assertTrue(true);
         }
-
     }
 }

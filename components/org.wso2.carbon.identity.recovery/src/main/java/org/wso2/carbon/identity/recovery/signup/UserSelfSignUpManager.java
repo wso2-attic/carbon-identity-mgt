@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.identity.recovery.signup;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +33,7 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryClientException;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.RecoveryScenarios;
 import org.wso2.carbon.identity.recovery.RecoverySteps;
@@ -84,7 +84,6 @@ public class UserSelfSignUpManager {
         this.eventService = eventService;
     }
 
-
     public NotificationResponseBean registerUser(UserBean userBean, String domainName, Property[] properties) throws
             IdentityRecoveryException {
 
@@ -128,9 +127,6 @@ public class UserSelfSignUpManager {
             throw Utils.handleServerException(ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION,
                                               user.getUniqueUserId(), e);
         }
-
-
-
         return notificationResponseBean;
     }
 
@@ -144,11 +140,9 @@ public class UserSelfSignUpManager {
     public boolean isUserConfirmed(String uniqueUserId) throws IdentityRecoveryException {
 
         if (StringUtils.isBlank(uniqueUserId)) {
-            throw Utils.handleServerException(ErrorMessages.ERROR_CODE_UNEXPECTED,
-                                              uniqueUserId,
-                                              new IdentityRecoveryException("ConfirmUserSelfRegistration : " +
-                                                                            "Domain is not in the request." +
-                                                                            uniqueUserId));
+
+            throw new IdentityRecoveryClientException(ErrorMessages.ERROR_CODE_INVALID_USER_ID.getCode(),
+                                                      ErrorMessages.ERROR_CODE_INVALID_USER_ID.getMessage());
         }
 
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
@@ -166,7 +160,7 @@ public class UserSelfSignUpManager {
 
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
 
-        //if return data from load method, it means the code is validated. Otherwise it returns exceptions.
+        // If load method returns data, it means the code is validated. Otherwise it returns exceptions.
         UserRecoveryData recoveryData = userRecoveryDataStore.loadByCode(code);
         String uniqueId = recoveryData.getUserUniqueId();
 
@@ -189,12 +183,11 @@ public class UserSelfSignUpManager {
             //String domainUID = getDecodedUserEntityId(uniqueId);
             if (config.isNotificationInternallyManaged()) {
                 claims.put(EMAIL_VERIFIED_CLAIM, Boolean.TRUE.toString());
-
             }
 
             Utils.setClaimsInIdentityStore(uniqueId, claims, null);
 
-            //Invalidate code
+            // Invalidate code
             userRecoveryDataStore.invalidateByCode(code);
         } catch (UserNotFoundException | IdentityStoreException e) {
             throw Utils.handleServerException(ErrorMessages.ERROR_CODE_UNLOCK_USER,
@@ -220,7 +213,7 @@ public class UserSelfSignUpManager {
                 .CONFIRM_SIGN_UP.equals(userRecoveryData.getRecoveryStep())) {
             throw Utils.handleClientException(ErrorMessages.ERROR_CODE_OLD_CODE_NOT_FOUND, null);
         }
-        //Invalid old code
+        // Invalid old code
         userRecoveryDataStore.invalidateByCode(userRecoveryData.getSecret());
 
         String secretKey = Utils.generateUUID();
@@ -235,16 +228,13 @@ public class UserSelfSignUpManager {
             notificationResponseBean.setUserUniqueId(uniqueUserId);
             notificationResponseBean.setKey(secretKey);
         }
-
         return notificationResponseBean;
     }
 
     private String getSelfSignUpGroupId(String domainName) throws IdentityRecoveryException {
 
-
         Claim claim = new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, IdentityMgtConstants.GROUP_NAME_CLAIM,
                                 config.getSelfSignUpGroupName());
-
         Group ssuGroup;
         try {
             ssuGroup = realmService.getIdentityStore().getGroup(claim, domainName);
@@ -287,7 +277,6 @@ public class UserSelfSignUpManager {
                                                   config.getSelfSignUpGroupName() + " to domain: " + domainName, e);
             }
         }
-
         return ssuGroup.getUniqueGroupId();
     }
 }

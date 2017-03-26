@@ -117,7 +117,6 @@ public class UtilsTests {
             @Override
             public void pushEvent(Event event, EventContext eventContext, IdentityEventHandler identityEventHandler)
                     throws IdentityException {
-
             }
         };
 
@@ -141,6 +140,5 @@ public class UtilsTests {
         } catch (IdentityRecoveryException e) {
             Assert.assertTrue(true);
         }
-
     }
 }

@@ -26,7 +26,6 @@ public class UserEndpointServiceDataHolder {
     private UserSelfSignUpManager userSelfSignUpManager;
 
     private UserEndpointServiceDataHolder() {
-
     }
 
     private static final UserEndpointServiceDataHolder INSTANCE = new UserEndpointServiceDataHolder();

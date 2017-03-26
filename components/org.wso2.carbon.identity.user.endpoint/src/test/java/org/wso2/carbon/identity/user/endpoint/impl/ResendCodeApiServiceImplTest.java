@@ -70,5 +70,4 @@ public class ResendCodeApiServiceImplTest {
         response = new ResendCodeApiServiceImpl().resendCodePost(dto);
         Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
     }
-
 }

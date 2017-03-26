@@ -185,9 +185,7 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
                 if (UserState.LOCKED_SELF_SIGN_UP.toString().equals(user.getState())) {
                     throw Utils.handleClientException(ERROR_CODE_ACCOUNT_UNVERIFIED, null);
                 }
-
             }
-
         }
     }
 
@@ -212,7 +210,6 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
 
             throw new EventException("Invalid unique user id.");
         }
-
         return decodedUniqueEntityIdParts[1];
     }
 

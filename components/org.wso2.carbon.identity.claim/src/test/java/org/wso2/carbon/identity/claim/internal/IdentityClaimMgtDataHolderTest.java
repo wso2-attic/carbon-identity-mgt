@@ -51,5 +51,4 @@ public class IdentityClaimMgtDataHolderTest {
         getInstance().setProfileMgtService(null);
         Assert.assertNull(getInstance().getProfileMgtService());
     }
-
 }

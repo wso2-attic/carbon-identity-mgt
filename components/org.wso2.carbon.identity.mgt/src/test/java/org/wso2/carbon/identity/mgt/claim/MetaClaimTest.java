@@ -49,6 +49,5 @@ public class MetaClaimTest {
 
         Assert.assertFalse(metaClaim.getProperties().isEmpty());
         Assert.assertEquals(metaClaim.getProperty("K"), "V");
-
     }
 }

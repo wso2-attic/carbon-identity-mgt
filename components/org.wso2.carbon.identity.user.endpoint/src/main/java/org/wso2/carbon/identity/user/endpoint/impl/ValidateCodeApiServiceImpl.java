@@ -64,7 +64,6 @@ public class ValidateCodeApiServiceImpl extends ValidateCodeApiService {
                                                                   e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
         }
-
         return Response.accepted().build();
     }
 }

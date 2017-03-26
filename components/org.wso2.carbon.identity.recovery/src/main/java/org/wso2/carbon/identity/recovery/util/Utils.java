@@ -69,10 +69,6 @@ import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.TEMPLA
 public class Utils {
     private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
-    //This is used to pass the arbitrary properties from self user manager to self handler
-    private static ThreadLocal<org.wso2.carbon.identity.recovery.model.Property[]> arbitraryProperties = new
-            ThreadLocal<>();
-
     private static final String CHALLENGE_QUESTIONS_FOLDER_PATH =
             System.getProperty(IdentityRecoveryConstants.CARBON_HOME) +
             IdentityRecoveryConstants.CHALLAENGE_QUESTION_FOLDER_LOCATION;
@@ -105,7 +101,6 @@ public class Utils {
             }
         }
         return claimValue;
-
     }
 
     public static IdentityRecoveryServerException handleServerException(IdentityRecoveryConstants.ErrorMessages error,
@@ -117,7 +112,6 @@ public class Utils {
         } else {
             errorDescription = error.getMessage();
         }
-
         return new IdentityRecoveryServerException(error.getCode(), errorDescription);
     }
 
@@ -130,7 +124,6 @@ public class Utils {
         } else {
             errorDescription = error.getMessage();
         }
-
         return new IdentityRecoveryServerException(error.getCode(), errorDescription, e);
     }
 
@@ -167,7 +160,6 @@ public class Utils {
             errorDescription = error.getMessage();
         }
         return new IdentityRecoveryRuntimeException(error.getCode(), errorDescription, e);
-
     }
 
     public static IdentityRecoveryRuntimeException handleRuntimeException(IdentityRecoveryConstants.ErrorMessages error,
@@ -180,7 +172,6 @@ public class Utils {
             errorDescription = error.getMessage();
         }
         return new IdentityRecoveryRuntimeException(error.getCode(), errorDescription);
-
     }
 
     /**
@@ -245,7 +236,6 @@ public class Utils {
 
         if (identityStore == null) {
             throw handleRuntimeException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_IDENTITY_STORE_ERROR, null);
-
         }
 
         if (claimDialect == null) {
@@ -319,7 +309,6 @@ public class Utils {
             challengeQuestions.add(
                     new ChallengeQuestion(setId, questionId, question, IdentityRecoveryConstants.LOCALE_EN_US));
         }
-
         return challengeQuestions;
     }
 
@@ -348,7 +337,6 @@ public class Utils {
                     IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
         }
         return UserState.valueOf(state).isInGroup(group);
-
     }
 
     public static void updateChallengeQuestionsYAML(List<ChallengeQuestion> challengeQuestions)
@@ -373,7 +361,6 @@ public class Utils {
         if (error[0]) {
             throw new IdentityRecoveryException("Error while updating challenge questions");
         }
-
     }
 
 
@@ -385,7 +372,6 @@ public class Utils {
 
         FileUtil.writeConfigFiles(Paths.get(CHALLENGE_QUESTIONS_FOLDER_PATH + File.separator + locale + ".yaml"),
                                   challengeQuestionFile);
-
     }
 
     public static List<ChallengeQuestion> readChallengeQuestionsFromYAML() throws IdentityRecoveryException {
@@ -415,7 +401,6 @@ public class Utils {
         if (error[0]) {
             throw new IdentityRecoveryException("Error while updating challenge questions");
         }
-
         return challengeQuestionsInAllLocales;
     }
 
@@ -428,7 +413,6 @@ public class Utils {
         challengeQuestionFile.getChallengeQuestions().forEach(challengeQuestion -> {
             challengeQuestion.setLocale(locale);
         });
-
         return challengeQuestionFile.getChallengeQuestions();
     }
 
