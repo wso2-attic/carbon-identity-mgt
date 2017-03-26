@@ -33,8 +33,8 @@ public class IdentityRecoveryConstants {
     public static final String NOTIFICATION_TYPE_ADMIN_FORCED_PASSWORD_RESET = "adminforcedpasswordreset";
     public static final String NOTIFICATION_TYPE_ADMIN_FORCED_PASSWORD_RESET_WITH_OTP =
             "adminforcedpasswordresetwithotp";
-    public static final String NOTIFICATION_TYPE_ACCOUNT_CONFIRM = "accountconfirmation";
-    public static final String NOTIFICATION_TYPE_RESEND_ACCOUNT_CONFIRM = "resendaccountconfirmation";
+    public static final String NOTIFICATION_TYPE_ACCOUNT_CONFIRM = "accountConfirmation";
+    public static final String NOTIFICATION_TYPE_RESEND_ACCOUNT_CONFIRM = "resendAccountConfirmation";
     public static final String NOTIFICATION_TYPE_EMAIL_CONFIRM = "emailconfirm";
     public static final String NOTIFICATION_TYPE_ASK_PASSWORD = "askPassword";
     public static final String NOTIFICATION_TYPE_PASSWORD_RESET_SUCCESS = "passwordresetsucess";
@@ -54,11 +54,12 @@ public class IdentityRecoveryConstants {
             "http://wso2.org/claims/adminForcedPasswordReset";
     public static final String OTP_PASSWORD_CLAIM = "http://wso2.org/claims/oneTimePassword";
     public static final String DEFAULT_CHALLENGE_QUESTION_SEPARATOR = "!";
-
+    public static final String SELF_SIGN_UP_EVENT = "SELF_SIGN_UP_EVENT";
 
     public static final String PASSWORD_RESET_FAIL_ATTEMPTS_CLAIM = "http://wso2" +
             ".org/claims/identity/failedPasswordRecoveryAttempts";
     public static final String SIGN_UP_ROLE_SEPARATOR = ",";
+    public static final String SELF_SIGN_UP_PROPERTIES = "SELF_SIGN_UP_PROPERTIES";
 
 
     public static final String LOCALE_EN_US = "en_US";
@@ -110,11 +111,11 @@ public class IdentityRecoveryConstants {
         ERROR_CODE_LOCK_USER_USER("20020", "Error while lock user"),
         ERROR_CODE_DISABLE_SELF_SIGN_UP("20021", "Self sign up feature is disabled"),
         ERROR_CODE_LOCK_USER_ACCOUNT("20022", "Error while lock user account"),
-        ERROR_CODE_UNLOCK_USER_USER("20023", "Error while unlock user"),
+        ERROR_CODE_UNLOCK_USER("20023", "Error while unlock user account."),
         ERROR_CODE_OLD_CODE_NOT_FOUND("20024", "Old confirmation code not found"),
         ERROR_CODE_FAILED_TO_LOAD_REALM_SERVICE("20025", "Failed to retrieve user realm from tenant id : %s"),
         ERROR_CODE_FAILED_TO_LOAD_USER_STORE_MANAGER("20026", "Failed to retrieve user store manager."),
-        ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS("20027", "Error occurred while retrieving user claims"),
+        ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS("20027", "Error occurred while retrieving user claims."),
         ERROR_CODE_FAILED_TO_LOAD_GOV_CONFIGS(
                 "20028", "Error occurred while retrieving account lock connector configuration"),
         ERROR_CODE_HISTORY_VIOLATE(
@@ -124,12 +125,23 @@ public class IdentityRecoveryConstants {
                 "20030", "User %s already exists in the system. Please use a different username."),
         ERROR_CODE_USERNAME_RECOVERY_NOT_ENABLE("20031", "Username recovery is not enabled"),
         ERROR_CODE_MULTIPLE_USERS_MATCHING("20032", "Multiple users found"),
-        ERROR_CODE_ISSUE_IN_LOADING_SIGNUP_CONFIGS("20033", "Error loading signup configs"),
+        ERROR_CODE_ISSUE_IN_LOADING_SIGNUP_CONFIGS("20033", "Error loading sign-up configs."),
         ERROR_CODE_FAILED_TO_UPDATE_USER_CLAIMS("20034", "Error occurred while updating user claims"),
         ERROR_CODE_POLICY_VIOLATION("20035", "Password Policy Violate"),
         ERROR_CODE_NEED_TO_ANSWER_TO_ASKED_SECURITY_QUESTION("20036", "Need to answer to asked security question"),
-        ;
-
+        ERROR_CODE_SELF_SIGN_UP_STORE_ERROR("20037", "Identity store error occurred while user sign-up."),
+        ERROR_CODE_FAILED_USER_SEARCH("20038", "Error occurred while searching for the user."),
+        ERROR_CODE_NON_UNIQUE_USER("20039", "Multiple users exist with the given user name: %s."),
+        ERROR_CODE_IDENTITY_STORE_ERROR("20040", "Error while obtaining the identity store."),
+        ERROR_CODE_MISSING_EVENT_PROPERTY("20041", "The event property %s is not available in the event properties."),
+        ERROR_CODE_FAILED_LIFECYCLE_EVENT("20042", "Error occurred while executing lifecycle event."),
+        ERROR_CODE_USER_NOT_FOUND("20043", "A user cannot be found for the given ID."),
+        ERROR_CODE_FAILED_USER_STATE_UPDATE("20045", "Error occurred while updating user life cycle state."),
+        ERROR_CODE_FAILED_ACCOUNT_LOCK("20046", "Error occurred during account lock for user: %s"),
+        ERROR_CODE_FAILED_SSU_GROUP_SEARCH("20047", "Error occurred while searching for self sig-up role: %s."),
+        ERROR_CODE_FAILED_SSU_GROUP_ADD("20048", "Error occurred while creating self sign-up group %s."),
+        ERROR_CODE_ACCOUNT_UNVERIFIED("20049", "User account is unverified."),
+        ERROR_CODE_INVALID_USER_ID("20050", "Invalid unique user id: %s.");
 
         private final String code;
         private final String message;

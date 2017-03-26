@@ -44,6 +44,8 @@ public class IdentityMgtConstants {
     public static final String CLAIM_ROOT_DIALECT = "http://wso2.org/claims";
 
     public static final String USERNAME_CLAIM = "http://wso2.org/claims/username";
+    public static final String GROUP_NAME_CLAIM = "http://wso2.org/claims/groupName";
+    public static final String ACCOUNT_LOCKED_CLAIM_URI = "http://wso2.org/claims/accountLocked";
 
     public static final String HTTP_AUTHORIZATION_PREFIX_BEARER = "Bearer";
     public static final String HTTP_AUTHORIZATION_PREFIX_BASIC = "Basic";

@@ -147,6 +147,11 @@ public class StoreConstants {
         public static final String POST_ADD_USER = "POST_ADD_USER";
         public static final String PRE_ADD_USER_BY_DOMAIN = "PRE_ADD_USER_BY_DOMAIN";
         public static final String POST_ADD_USER_BY_DOMAIN = "POST_ADD_USER_BY_DOMAIN";
+        public static final String PRE_ADD_USER_TO_GROUPS = "PRE_ADD_USER_TO_GROUPS";
+        public static final String POST_ADD_USER_TO_GROUPS = "POST_ADD_USER_TO_GROUPS";
+        public static final String PRE_ADD_USER_TO_GROUPS_BY_DOMAIN = "PRE_ADD_USER_TO_GROUPS_BY_DOMAIN";
+        public static final String POST_ADD_USER_TO_GROUPS_BY_DOMAIN = "POST_ADD_USER_TO_GROUPS_BY_DOMAIN";
+
         public static final String PRE_ADD_USERS = "PRE_ADD_USERS";
         public static final String POST_ADD_USERS = "POST_ADD_USERS";
         public static final String PRE_ADD_USERS_BY_DOMAIN = "PRE_ADD_USERS_BY_DOMAIN";

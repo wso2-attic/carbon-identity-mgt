@@ -98,6 +98,10 @@
             <groupId>org.wso2.carbon.identity.commons</groupId>
             <artifactId>org.wso2.carbon.identity.event</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.mgt</groupId>
+            <artifactId>org.wso2.carbon.identity.user.endpoint</artifactId>
+        </dependency>
 
         <!-- Pax Exam Dependencies-->
         <dependency>
@@ -175,7 +179,114 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <version>${pax.logging.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-log4j2</artifactId>
+            <version>${pax.logging.log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-pool.wso2</groupId>
+            <artifactId>commons-pool</artifactId>
+            <version>${commons-pool.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.transport</groupId>
+            <artifactId>org.wso2.carbon.transport.http.netty</artifactId>
+            <version>${carbon.transport.http.netty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport</artifactId>
+            <version>${netty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>${netty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+            <version>${netty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+            <version>${netty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+            <version>${netty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+            <version>${netty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>${rs-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.orbit.com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>${disruptor.wso2.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang.wso2</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons.lang1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.msf4j</groupId>
+            <artifactId>msf4j-core</artifactId>
+            <version>${msf4j.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.msf4j</groupId>
+            <artifactId>jaxrs-delegates</artifactId>
+            <version>${msf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec.wso2</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons.codec.version}</version>
+        </dependency>
     </dependencies>
+
+    <properties>
+        <pax.logging.version>1.8.5</pax.logging.version>
+        <commons-pool.version>1.5.6.wso2v1</commons-pool.version>
+        <gson.version>2.2.4</gson.version>
+        <json.version>20160810</json.version>
+        <carbon.transport.http.netty.version>2.1.4</carbon.transport.http.netty.version>
+        <disruptor.wso2.version>3.3.2.wso2v2</disruptor.wso2.version>
+        <commons.lang1.version>2.6.0.wso2v1</commons.lang1.version>
+        <msf4j.core.version>2.1.0</msf4j.core.version>
+        <commons.codec.version>1.4.0.wso2v1</commons.codec.version>
+    </properties>
 
     <profiles>
         <profile>
@@ -317,11 +428,16 @@
                                                     <fileset dir="../../components/org.wso2.carbon.identity.mgt/target/classes" />
                                                     <fileset dir="../../components/org.wso2.carbon.identity.claim/target/classes" />
                                                     <fileset dir="../../components/org.wso2.carbon.identity.recovery/target/classes" />
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.user.endpoint/target/classes">
+                                                        <exclude name="**/org/wso2/carbon/identity/user/endpoint/dto/*"/>
+                                                        <exclude name="**/org/wso2/carbon/identity/user/endpoint/*"/>
+                                                    </fileset>
                                                 </classfiles>
                                                 <sourcefiles encoding="UTF-8">
                                                     <fileset dir="../../components/org.wso2.carbon.identity.mgt/src" />
                                                     <fileset dir="../../components/org.wso2.carbon.identity.claim/src" />
                                                     <fileset dir="../../components/org.wso2.carbon.identity.recovery/src" />
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.user.endpoint/src" />
                                                 </sourcefiles>
                                             </structure>
                                             <html destdir="${project.build.directory}/site/jacoco" />

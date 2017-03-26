@@ -110,7 +110,17 @@ public class EventInterceptorTemplate<T extends Object, X extends Exception> {
             eventService.pushEvent(event, messageContext);
         } catch (IdentityException e) {
             String message = String.format("Error while handling %s event.", eventId);
-            throw new IdentityStoreException(message, e);
+            IdentityStoreException identityStoreException = new IdentityStoreException(message, e);
+
+            if (e.getErrorCode() != null) {
+                try {
+                    int errorCode = Integer.parseInt(e.getErrorCode());
+                    identityStoreException.setErrorCode(errorCode);
+                } catch (NumberFormatException e1) {
+                    // Ignore error code.
+                }
+            }
+            throw identityStoreException;
         }
         return this;
     }

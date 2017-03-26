@@ -85,6 +85,15 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.lcm</groupId>
+            <artifactId>org.wso2.carbon.lcm.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.lcm</groupId>
+            <artifactId>org.wso2.carbon.lcm.sql</artifactId>
+        </dependency>
+
         <!-- Dependencies for unit tests -->
         <dependency>
             <groupId>org.testng</groupId>
@@ -118,6 +127,8 @@
             org.wso2.carbon.identity.common.*;version="${carbon.identity.commons.version}",
             org.wso2.carbon.identity.event.*;version="${carbon.identity.commons.version}",
             org.wso2.carbon.identity.mgt.*; version="${carbon.identity.mgt.version}",
+            org.wso2.carbon.lcm.core.*; version="${org.wso2.carbon.lcm.version}",
+            org.wso2.carbon.lcm.sql.*; version="${org.wso2.carbon.lcm.version}",
             org.osgi.service.jndi.*; version="${carbon.jndi.version}",
             javax.naming.*,
             javax.sql.*,

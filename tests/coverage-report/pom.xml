@@ -94,6 +94,12 @@
                                                 <fileset dir="../../components/org.wso2.carbon.identity.mgt/target">
                                                     <include name="jacoco.exec" />
                                                 </fileset>
+                                                <fileset dir="../../components/org.wso2.carbon.identity.claim/target">
+                                                    <include name="jacoco.exec" />
+                                                </fileset>
+                                                <fileset dir="../../components/org.wso2.carbon.identity.user.endpoint/target">
+                                                    <include name="jacoco.exec" />
+                                                </fileset>
                                             </executiondata>
                                             <structure name="Carbon Identity Management - Coverage Report">
 
@@ -129,12 +135,17 @@
                                                         <exclude name="**/UserClaim.class" /><!--Not yet used in the code, enable when start using-->
                                                         <exclude name="**/Property.class" /><!--Not yet used in the code, enable when start using-->
                                                     </fileset>
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.user.endpoint/target/classes">
+                                                        <exclude name="**/org/wso2/carbon/identity/user/endpoint/dto/*"/>
+                                                        <exclude name="**/org/wso2/carbon/identity/user/endpoint/*"/>
+                                                    </fileset>
                                                 </classfiles>
                                                 <sourcefiles encoding="UTF-8">
                                                     <fileset dir="../../components/org.wso2.carbon.identity.mgt/src" />
                                                     <fileset dir="../../components/org.wso2.carbon.identity.claim/src" />
                                                     <fileset dir="../../components/org.wso2.carbon.identity.mgt.login.interceptor/src" />
                                                     <fileset dir="../../components/org.wso2.carbon.identity.recovery/src" />
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.user.endpoint/src" />
                                                 </sourcefiles>
                                             </structure>
                                             <html destdir="${project.build.directory}/site/jacoco" />

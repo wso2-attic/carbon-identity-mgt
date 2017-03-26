@@ -379,14 +379,15 @@ public class ChallengeQuestionManager {
                                 String claimValue = userChallengeAnswer.getQuestion().getQuestion().trim() +
                                         separator + Utils.doHash(userChallengeAnswer.getAnswer().trim()
                                         .toLowerCase(Locale.ENGLISH));
-                                Utils.setClaimInIdentityStore(user, userChallengeAnswer.getQuestion().getQuestionSetId()
-                                                .trim(), claimValue);
+                                Utils.setClaimInIdentityStore(user.getUniqueUserId(), userChallengeAnswer.getQuestion()
+                                                                                        .getQuestionSetId()
+                                                .trim(), claimValue, null);
                             }
                         } else {
                             String claimValue = userChallengeAnswer.getQuestion().getQuestion().trim() + separator +
                                     Utils.doHash(userChallengeAnswer.getAnswer().trim().toLowerCase(Locale.ENGLISH));
-                            Utils.setClaimInIdentityStore(user, userChallengeAnswer.getQuestion().getQuestionSetId()
-                                            .trim(), claimValue);
+                            Utils.setClaimInIdentityStore(user.getUniqueUserId(), userChallengeAnswer.getQuestion()
+                                                                         .getQuestionSetId().trim(), claimValue, null);
                         }
                         challengesUris.add(userChallengeAnswer.getQuestion().getQuestionSetId().trim());
                     }
@@ -399,8 +400,8 @@ public class ChallengeQuestionManager {
                         challengesUrisValue = challengesUrisValue + separator + challengesUri;
                     }
                 }
-                Utils.setClaimInIdentityStore(user, IdentityRecoveryConstants.CHALLENGE_QUESTION_URI,
-                        challengesUrisValue);
+                Utils.setClaimInIdentityStore(user.getUniqueUserId(), IdentityRecoveryConstants.CHALLENGE_QUESTION_URI,
+                        challengesUrisValue, null);
             }
         } catch (NoSuchAlgorithmException | UserNotFoundException | IdentityStoreException e) {
             throw Utils.handleServerException(

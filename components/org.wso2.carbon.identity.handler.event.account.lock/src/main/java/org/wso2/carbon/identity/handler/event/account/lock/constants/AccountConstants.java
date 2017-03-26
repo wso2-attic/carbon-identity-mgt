@@ -25,7 +25,7 @@ public class AccountConstants {
     public static final String ACCOUNT_DISABLED_CLAIM = "http://wso2.org/claims/accountDisabled";
     public static final String ACCOUNT_UNLOCK_TIME_CLAIM = "http://wso2.org/claims/unlockTime";
     public static final String FAILED_LOGIN_ATTEMPTS_CLAIM = "http://wso2.org/claims/failedLoginAttempts";
-    public static final String EMAIL_VERIFIED_CLAIM = "http://wso2.org/claims/emailVerifed";
+    public static final String EMAIL_VERIFIED_CLAIM = "http://wso2.org/claims/emailVerified";
     public static final String FAILED_LOGIN_LOCKOUT_COUNT_CLAIM = "http://wso2.org/claims/failedLoginLockoutCount";
 
 

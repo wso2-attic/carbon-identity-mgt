@@ -297,6 +297,19 @@ public class CacheBackedIdentityStore implements IdentityStore {
     }
 
     @Override
+    public User addUser(UserBean userBean, List<String> uniqueGroupIds) throws IdentityStoreException {
+
+        return identityStore.addUser(userBean, uniqueGroupIds);
+    }
+
+    @Override
+    public User addUser(UserBean userBean, List<String> uniqueGroupIds, String domainName)
+            throws IdentityStoreException {
+
+        return identityStore.addUser(userBean, uniqueGroupIds, domainName);
+    }
+
+    @Override
     public List<User> addUsers(List<UserBean> userBeen) throws IdentityStoreException {
 
         return identityStore.addUsers(userBeen);

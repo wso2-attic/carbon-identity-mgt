@@ -53,7 +53,7 @@ import javax.inject.Inject;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 /**
- * Identity store and identity store related OSGI tests.
+ * Identity store and identity store handlers related OSGi tests.
  */
 
 @Listeners(PaxExam.class)

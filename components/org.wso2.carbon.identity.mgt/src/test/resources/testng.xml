@@ -20,6 +20,10 @@ limitations under the License.
             <class name="org.wso2.carbon.identity.mgt.store.test.unit.IdentityStoreTests"/>
             <class name="org.wso2.carbon.identity.mgt.store.test.unit.AttributeTests"/>
             <class name="org.wso2.carbon.identity.mgt.store.test.unit.FileUtilTests"/>
+            <class name="org.wso2.carbon.identity.mgt.impl.util.CacheHelperTest"/>
+            <class name="org.wso2.carbon.identity.mgt.claim.ClaimTest"/>
+            <class name="org.wso2.carbon.identity.mgt.claim.MetaClaimTest"/>
+            <class name="org.wso2.carbon.identity.mgt.impl.internal.IdentityMgtComponentTest"/>
         </classes>
     </test>
 </suite>
