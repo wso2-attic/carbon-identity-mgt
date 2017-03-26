@@ -987,6 +987,62 @@ public class IdentityStoreTest {
         TestIdentityStoreHandler.POST.set(false);
     }
 
+    @Test(dependsOnGroups = {"addGroups"})
+    public void testAddUserWithGroup() throws IdentityStoreException, UserNotFoundException, GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        UserBean userBean = new UserBean();
+        List<Claim> claims = Arrays.asList(
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "minato"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Minato"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Namikaze"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "minatoe@wso2.com"));
+        userBean.setClaims(claims);
+
+        List<String> groupIds = new ArrayList<>(1);
+        String uniqueGroupId = groups.get(0).getUniqueGroupId();
+        groupIds.add(uniqueGroupId);
+
+        User user = realmService.getIdentityStore().addUser(userBean, groupIds);
+        Assert.assertNotNull(user, "Failed to receive the user.");
+        Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
+
+        Assert.assertTrue(user.isInGroup(uniqueGroupId), "User is not it group.");
+    }
+
+    @Test(dependsOnGroups = {"addGroups"})
+    public void testAddUserWithDomainGroup() throws IdentityStoreException, UserNotFoundException,
+            GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        UserBean userBean = new UserBean();
+        List<Claim> claims = Arrays.asList(
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "kakashi"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Kakashi"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Hatake"),
+                new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "kakashi@wso2.com"));
+        userBean.setClaims(claims);
+
+        List<String> groupIds = new ArrayList<>(1);
+        String uniqueGroupId = groups.get(0).getUniqueGroupId();
+        groupIds.add(uniqueGroupId);
+
+        User user = realmService.getIdentityStore().addUser(userBean, groupIds, "PRIMARY");
+        Assert.assertNotNull(user, "Failed to receive the user.");
+        Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
+
+        Assert.assertTrue(user.isInGroup(uniqueGroupId), "User is not it group.");
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
+    }
+
     @Test
     public void testGetPrimaryDomainName() {
 

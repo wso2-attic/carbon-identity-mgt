@@ -21,6 +21,8 @@
     <test name="claim-management-tests" preserve-order="true" parallel="false">
         <classes>
             <class name="org.wso2.carbon.identity.claim.internal.IdentityClaimMgtDataHolderTest"/>
+            <class name="org.wso2.carbon.identity.claim.mapping.claim.ClaimMappingEntryTest"/>
+            <class name="org.wso2.carbon.identity.claim.mapping.profile.ProfileEntryTest"/>
         </classes>
     </test>
 </suite>
