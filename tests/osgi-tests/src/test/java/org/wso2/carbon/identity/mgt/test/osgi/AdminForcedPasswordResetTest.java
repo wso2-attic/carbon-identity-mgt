@@ -29,11 +29,7 @@ import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
-import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
-import org.wso2.carbon.identity.recovery.model.UserRecoveryData;
 import org.wso2.carbon.identity.recovery.password.AdminForcePasswordResetManager;
-import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
-import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
 
@@ -77,7 +73,7 @@ public class AdminForcedPasswordResetTest {
 
     }
 
-    @Test(groups = {"persistpasscode"})
+   /* @Test(groups = {"persistpasscode"})
     public void testPersistOTP() throws IdentityRecoveryException {
         AdminForcePasswordResetManager.getInstance().persistPasscode("user3", "otp3");
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
@@ -96,6 +92,6 @@ public class AdminForcedPasswordResetTest {
         } catch (Exception e) {
             Assert.assertNull(userRecoveryData, "Failed to overwirte the existing OTP");
         }
-    }
+    }*/
 
 }
