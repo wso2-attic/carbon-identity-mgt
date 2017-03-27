@@ -24,5 +24,5 @@ public interface PasswordValidationService {
      * @param password
      * @return boolean value
      */
-    boolean validatePassword(String password);
+    boolean validatePassword(char[] password);
 }
