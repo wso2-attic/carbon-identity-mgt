@@ -216,8 +216,9 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
         }
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUniqueUser = "SELECT USER_ID, CONNECTOR_TYPE, CONNECTOR_ID, CONNECTOR_USER_ID, STATE " +
-                    "FROM IDM_USER WHERE DOMAIN_ID = :" + SQLPlaceholders.DOMAIN_ID + "; LIMIT :limit; OFFSET :offset;";
+            final String selectUniqueUser = "SELECT USER_ID, STATE " +
+                    "FROM IDM_USER WHERE DOMAIN_ID = :" + SQLPlaceholders.DOMAIN_ID + "; GROUP BY USER_ID " +
+                    "LIMIT :limit; OFFSET :offset;";
 
             Map<String, DomainUser> userMap = new HashMap<>();
             NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
@@ -230,24 +231,13 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
                 while (resultSet.next()) {
-                    UserPartition userPartition = new UserPartition();
                     String userUUID = resultSet.getString(ColumnNames.USER_ID);
-                    userPartition.setConnectorId(resultSet.getString(ColumnNames.CONNECTOR_ID));
-                    userPartition.setConnectorUserId(resultSet.getString(ColumnNames.CONNECTOR_USER_ID));
-                    userPartition.setIdentityStore(UniqueIdResolverConstants.IDENTITY_STORE_CONNECTOR.equals(resultSet
-                            .getString(ColumnNames.CONNECTOR_TYPE)));
                     state = resultSet.getString(SQLPlaceholders.STATE);
 
-                    DomainUser user;
-                    if ((user = userMap.get(userUUID)) != null) {
-                        user.addUserPartition(userPartition);
-                    } else {
-                        user = new DomainUser();
-                        user.setDomainUserId(userUUID);
-                        user.addUserPartition(userPartition);
-                        user.setState(state);
-                        userMap.put(userUUID, user);
-                    }
+                    DomainUser user = new DomainUser();
+                    user.setDomainUserId(userUUID);
+                    user.setState(state);
+                    userMap.put(userUUID, user);
                 }
             }
 
@@ -559,8 +549,8 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
         }
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection())) {
-            final String selectUniqueUser = "SELECT GROUP_ID, CONNECTOR_ID, CONNECTOR_GROUP_ID " +
-                    "FROM IDM_GROUP WHERE DOMAIN_ID = :" + SQLPlaceholders.DOMAIN_ID + "; " +
+            final String selectUniqueUser = "SELECT GROUP_ID FROM IDM_GROUP WHERE " +
+                    "DOMAIN_ID = :" + SQLPlaceholders.DOMAIN_ID + "; GROUP BY GROUP_ID " +
                     "LIMIT :limit; OFFSET :offset;";
 
             Map<String, DomainGroup> groupMap = new HashMap<>();
@@ -573,20 +563,10 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             try (ResultSet resultSet = namedPreparedStatement.getPreparedStatement().executeQuery()) {
 
                 while (resultSet.next()) {
-                    GroupPartition groupPartition = new GroupPartition();
                     String groupUUID = resultSet.getString(ColumnNames.GROUP_ID);
-                    groupPartition.setConnectorId(resultSet.getString(ColumnNames.CONNECTOR_ID));
-                    groupPartition.setConnectorGroupId(resultSet.getString(ColumnNames.CONNECTOR_GROUP_ID));
-
-                    DomainGroup group;
-                    if ((group = groupMap.get(groupUUID)) != null) {
-                        group.addGroupPartition(groupPartition);
-                    } else {
-                        group = new DomainGroup();
-                        group.setDomainGroupId(groupUUID);
-                        group.addGroupPartition(groupPartition);
-                        groupMap.put(groupUUID, group);
-                    }
+                    DomainGroup group = new DomainGroup();
+                    group.setDomainGroupId(groupUUID);
+                    groupMap.put(groupUUID, group);
                 }
             }
 
