@@ -36,8 +36,8 @@ import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+import org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants;
 import org.wso2.carbon.identity.mgt.test.identity.store.handler.TestIdentityStoreHandler;
-import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
@@ -51,6 +51,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants.ClaimURIs;
 
 /**
  * Identity store and identity store handlers related OSGi tests.
@@ -404,11 +405,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(realmService, "Failed to get realm service instance.");
 
         List<Claim> claims = new ArrayList<>();
-        Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
-                IdentityMgtOSGITestConstants.ClaimURIs.LAST_NAME_CLAIM_URI, "Lopez");
+        Claim claim1 = new Claim(ClaimURIs.WSO2_DIALECT_URI,
+                                 ClaimURIs.LAST_NAME_CLAIM_URI, "Lopez");
         claims.add(claim1);
-        Claim claim2 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
-                IdentityMgtOSGITestConstants.ClaimURIs.EMAIL_CLAIM_URI, "ella@wso2.com");
+        Claim claim2 = new Claim(ClaimURIs.WSO2_DIALECT_URI,
+                                 ClaimURIs.EMAIL_CLAIM_URI, "ella@wso2.com");
         claims.add(claim2);
 
         List<User> users = realmService.getIdentityStore().listUsers(claims, 1, 1);
@@ -995,10 +996,10 @@ public class IdentityStoreTest {
 
         UserBean userBean = new UserBean();
         List<Claim> claims = Arrays.asList(
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "minato"),
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Minato"),
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Namikaze"),
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "minatoe@wso2.com"));
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.USERNAME_CLAIM_URI, "minato"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.FIRST_NAME_CLAIM_URI, "Minato"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.LAST_NAME_CLAIM_URI, "Namikaze"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.EMAIL_CLAIM_URI, "minatoe@wso2.com"));
         userBean.setClaims(claims);
 
         List<String> groupIds = new ArrayList<>(1);
@@ -1021,10 +1022,10 @@ public class IdentityStoreTest {
 
         UserBean userBean = new UserBean();
         List<Claim> claims = Arrays.asList(
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/username", "kakashi"),
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/firstName", "Kakashi"),
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Hatake"),
-                new Claim("http://wso2.org/claims", "http://wso2.org/claims/email", "kakashi@wso2.com"));
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.USERNAME_CLAIM_URI, "kakashi"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.FIRST_NAME_CLAIM_URI, "Kakashi"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.LAST_NAME_CLAIM_URI, "Hatake"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.LAST_NAME_CLAIM_URI, "kakashi@wso2.com"));
         userBean.setClaims(claims);
 
         List<String> groupIds = new ArrayList<>(1);

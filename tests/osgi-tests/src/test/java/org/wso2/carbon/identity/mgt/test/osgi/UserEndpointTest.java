@@ -29,6 +29,7 @@ import org.osgi.framework.BundleContext;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
@@ -95,7 +96,7 @@ public class UserEndpointTest {
         JSONArray claims = new JSONArray();
 
         JSONObject claim = new JSONObject();
-        claim.put("uri", "http://wso2.org/claims/givenname");
+        claim.put("uri", IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI);
         claim.put("value", "user");
 
         claims.put(claim);
@@ -104,11 +105,7 @@ public class UserEndpointTest {
 
         JSONArray properties = new JSONArray();
 
-        JSONObject property = new JSONObject();
-        property.put("key", "K1");
-        property.put("value", "V1");
-
-        properties.put(property);
+        properties.put(getProperty());
 
         JSONObject payload = new JSONObject();
         payload.put("user", user);
@@ -140,7 +137,7 @@ public class UserEndpointTest {
         JSONArray claims = new JSONArray();
 
         JSONObject claim = new JSONObject();
-        claim.put("uri", "http://wso2.org/claims/givenname");
+        claim.put("uri", IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI);
         claim.put("value", "user");
 
         claims.put(claim);
@@ -149,11 +146,7 @@ public class UserEndpointTest {
 
         JSONArray properties = new JSONArray();
 
-        JSONObject property = new JSONObject();
-        property.put("key", "K1");
-        property.put("value", "V1");
-
-        properties.put(property);
+        properties.put(getProperty());
 
         JSONObject payload = new JSONObject();
         payload.put("user", user);
@@ -177,11 +170,7 @@ public class UserEndpointTest {
 
         JSONArray properties = new JSONArray();
 
-        JSONObject property = new JSONObject();
-        property.put("key", "K1");
-        property.put("value", "V1");
-
-        properties.put(property);
+        properties.put(getProperty());
 
         JSONObject payload = new JSONObject();
         payload.put("user", user);
@@ -211,11 +200,7 @@ public class UserEndpointTest {
 
         JSONArray properties = new JSONArray();
 
-        JSONObject property = new JSONObject();
-        property.put("key", "K1");
-        property.put("value", "V1");
-
-        properties.put(property);
+        properties.put(getProperty());
 
         JSONObject payload = new JSONObject();
         payload.put("user", user);
@@ -239,11 +224,7 @@ public class UserEndpointTest {
 
         JSONArray properties = new JSONArray();
 
-        JSONObject property = new JSONObject();
-        property.put("key", "K1");
-        property.put("value", "V1");
-
-        properties.put(property);
+        properties.put(getProperty());
 
         JSONObject payload = new JSONObject();
         payload.put("user", user);
@@ -262,11 +243,7 @@ public class UserEndpointTest {
 
         JSONArray properties = new JSONArray();
 
-        JSONObject property = new JSONObject();
-        property.put("key", "K1");
-        property.put("value", "V1");
-
-        properties.put(property);
+        properties.put(getProperty());
 
         JSONObject payload = new JSONObject();
         payload.put("code", confirmationCode);
@@ -285,11 +262,7 @@ public class UserEndpointTest {
 
         JSONArray properties = new JSONArray();
 
-        JSONObject property = new JSONObject();
-        property.put("key", "K1");
-        property.put("value", "V1");
-
-        properties.put(property);
+        properties.put(getProperty());
 
         JSONObject payload = new JSONObject();
         payload.put("code", "invalid-code");
@@ -338,5 +311,14 @@ public class UserEndpointTest {
 
     private String getContent(HttpURLConnection urlConn) throws IOException {
         return new String(IOUtils.toByteArray(urlConn.getInputStream()), StandardCharsets.UTF_8);
+    }
+
+    private JSONObject getProperty() throws JSONException {
+
+        JSONObject property = new JSONObject();
+        property.put("key", "K1");
+        property.put("value", "V1");
+
+        return property;
     }
 }

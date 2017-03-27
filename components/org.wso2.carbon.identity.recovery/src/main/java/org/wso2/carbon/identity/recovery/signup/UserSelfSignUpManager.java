@@ -54,7 +54,7 @@ import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStore
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ACCOUNT_LOCKED_CLAIM;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.CONFIRMATION_CODE;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.EMAIL_VERIFIED_CLAIM;
-import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorMessages;
+import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorCodes;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.NOTIFICATION_TYPE_ACCOUNT_CONFIRM;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.SELF_SIGN_UP_EVENT;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.SELF_SIGN_UP_PROPERTIES;
@@ -84,11 +84,21 @@ public class UserSelfSignUpManager {
         this.eventService = eventService;
     }
 
+    /**
+     * Register self sign-up user.
+     *
+     * @param userBean User to be registered.
+     * @param domainName User domain.
+     * @param properties Properties to be sent to the self sign-up handler.
+     * @return NotificationResponseBean. If notification is internally managed, the confirmation code will be null in
+     * the NotificationResponseBean.
+     * @throws IdentityRecoveryException If error occurs while user registration.
+     */
     public NotificationResponseBean registerUser(UserBean userBean, String domainName, Property[] properties) throws
             IdentityRecoveryException {
 
         if (!config.isSelfSignUpEnabled()) {
-            throw Utils.handleClientException(ErrorMessages.ERROR_CODE_DISABLE_SELF_SIGN_UP, null);
+            throw Utils.handleClientException(ErrorCodes.DISABLE_SELF_SIGN_UP, null);
         }
 
         User user;
@@ -100,11 +110,12 @@ public class UserSelfSignUpManager {
             groupIds.add(getSelfSignUpGroupId(domainName));
             user = realmService.getIdentityStore().addUser(userBean, groupIds, domainName);
         } catch (IdentityStoreException e) {
-            throw Utils.handleServerException(ErrorMessages.ERROR_CODE_SELF_SIGN_UP_STORE_ERROR, null, e);
+            throw Utils.handleServerException(ErrorCodes.SELF_SIGN_UP_STORE_ERROR, null, e);
         }
 
+        //TODO:Add User Object.
         NotificationResponseBean notificationResponseBean = new NotificationResponseBean(user.getUniqueUserId());
-
+        notificationResponseBean.setUser(user);
 
         IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
 
@@ -120,11 +131,10 @@ public class UserSelfSignUpManager {
 
             String confirmationCode = (String) messageContext.getParameter(CONFIRMATION_CODE);
 
-            if (StringUtils.isNotEmpty(confirmationCode)) {
-                notificationResponseBean.setKey(confirmationCode);
-            }
+            // If notification internally managed, the confirmation code will be null.
+            notificationResponseBean.setCode(confirmationCode);
         } catch (IdentityException e) {
-            throw Utils.handleServerException(ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION,
+            throw Utils.handleServerException(ErrorCodes.TRIGGER_NOTIFICATION,
                                               user.getUniqueUserId(), e);
         }
         return notificationResponseBean;
@@ -135,14 +145,14 @@ public class UserSelfSignUpManager {
      *
      * @param uniqueUserId Unique ID of the user.
      * @return True if the user is already confirmed.
-     * @throws IdentityRecoveryException If the
+     * @throws IdentityRecoveryException If error occurs while user registration.
      */
     public boolean isUserConfirmed(String uniqueUserId) throws IdentityRecoveryException {
 
         if (StringUtils.isBlank(uniqueUserId)) {
 
-            throw new IdentityRecoveryClientException(ErrorMessages.ERROR_CODE_INVALID_USER_ID.getCode(),
-                                                      ErrorMessages.ERROR_CODE_INVALID_USER_ID.getMessage());
+            throw new IdentityRecoveryClientException(ErrorCodes.INVALID_USER_ID.getCode(),
+                                                      ErrorCodes.INVALID_USER_ID.getMessage());
         }
 
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
@@ -156,7 +166,17 @@ public class UserSelfSignUpManager {
         return isUserConfirmed;
     }
 
+    /**
+     * Confirm self sign-up of a user.
+     *
+     * @param code Confirmation code to be validated.
+     * @throws IdentityRecoveryException If error occurs while user registration.
+     */
     public void confirmUserSelfSignUp(String code) throws IdentityRecoveryException {
+
+        if (!config.isSelfSignUpEnabled()) {
+            throw Utils.handleClientException(ErrorCodes.DISABLE_SELF_SIGN_UP);
+        }
 
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
 
@@ -164,43 +184,41 @@ public class UserSelfSignUpManager {
         UserRecoveryData recoveryData = userRecoveryDataStore.loadByCode(code);
         String uniqueId = recoveryData.getUserUniqueId();
 
-        if (!config.isSelfSignUpEnabled()) {
-            throw Utils.handleClientException(ErrorMessages.ERROR_CODE_DISABLE_SELF_SIGN_UP,
-                                              uniqueId);
-        }
-
         if (!RecoverySteps.CONFIRM_SIGN_UP.equals(recoveryData.getRecoveryStep())) {
-            throw Utils.handleClientException(
-                    ErrorMessages.ERROR_CODE_INVALID_CODE, null);
+            throw Utils.handleClientException(ErrorCodes.INVALID_CODE);
         }
 
         try {
 
             Map<String, String> claims = new HashMap<>();
-
             claims.put(ACCOUNT_LOCKED_CLAIM, Boolean.FALSE.toString());
 
-            //String domainUID = getDecodedUserEntityId(uniqueId);
             if (config.isNotificationInternallyManaged()) {
                 claims.put(EMAIL_VERIFIED_CLAIM, Boolean.TRUE.toString());
             }
-
-            Utils.setClaimsInIdentityStore(uniqueId, claims, null);
-
+            Utils.setClaimsInIdentityStore(realmService.getIdentityStore(), uniqueId, claims, null);
             // Invalidate code
             userRecoveryDataStore.invalidateByCode(code);
         } catch (UserNotFoundException | IdentityStoreException e) {
-            throw Utils.handleServerException(ErrorMessages.ERROR_CODE_UNLOCK_USER,
-                                              uniqueId, e);
+            throw Utils.handleServerException(ErrorCodes.UNLOCK_USER, uniqueId, e);
         }
-
     }
 
+    /**
+     * Resend account confirmation code.
+     *
+     * @param claim A unique user claim.
+     * @param domainName User domain.
+     * @param properties Properties to be sent to the self sign-up handler.
+     * @return NotificationResponseBean. If notification is internally managed, the confirmation code will be null in
+     * the NotificationResponseBean.
+     * @throws IdentityRecoveryException
+     */
     public NotificationResponseBean resendConfirmationCode(Claim claim, String domainName, Property[] properties) throws
             IdentityRecoveryException {
 
         if (!config.isSelfSignUpEnabled()) {
-            throw Utils.handleClientException(ErrorMessages.ERROR_CODE_DISABLE_SELF_SIGN_UP, claim.getValue());
+            throw Utils.handleClientException(ErrorCodes.DISABLE_SELF_SIGN_UP, claim.getValue());
         }
 
         String uniqueUserId = Utils.getUniqueUserId(claim, domainName);
@@ -209,24 +227,25 @@ public class UserSelfSignUpManager {
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         UserRecoveryData userRecoveryData = userRecoveryDataStore.loadByUserUniqueId(uniqueUserId);
 
-        if (userRecoveryData == null || StringUtils.isBlank(userRecoveryData.getSecret()) || !RecoverySteps
+        if (userRecoveryData == null || StringUtils.isBlank(userRecoveryData.getCode()) || !RecoverySteps
                 .CONFIRM_SIGN_UP.equals(userRecoveryData.getRecoveryStep())) {
-            throw Utils.handleClientException(ErrorMessages.ERROR_CODE_OLD_CODE_NOT_FOUND, null);
+            throw Utils.handleClientException(ErrorCodes.OLD_CODE_NOT_FOUND);
         }
         // Invalid old code
-        userRecoveryDataStore.invalidateByCode(userRecoveryData.getSecret());
+        userRecoveryDataStore.invalidateByCode(userRecoveryData.getCode());
 
-        String secretKey = Utils.generateUUID();
-        UserRecoveryData recoveryDataDO = new UserRecoveryData(uniqueUserId, secretKey, RecoveryScenarios
+        String code = Utils.generateUUID();
+        UserRecoveryData recoveryDataDO = new UserRecoveryData(uniqueUserId, code, RecoveryScenarios
                 .SELF_SIGN_UP, RecoverySteps.CONFIRM_SIGN_UP);
 
         userRecoveryDataStore.store(recoveryDataDO);
 
         if (config.isNotificationInternallyManaged()) {
-            Utils.triggerNotification(uniqueUserId, NOTIFICATION_TYPE_ACCOUNT_CONFIRM, secretKey, properties);
+            Utils.triggerNotification(eventService, uniqueUserId, NOTIFICATION_TYPE_ACCOUNT_CONFIRM, code,
+                                      properties);
         } else {
             notificationResponseBean.setUserUniqueId(uniqueUserId);
-            notificationResponseBean.setKey(secretKey);
+            notificationResponseBean.setCode(code);
         }
         return notificationResponseBean;
     }
@@ -235,11 +254,11 @@ public class UserSelfSignUpManager {
 
         Claim claim = new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, IdentityMgtConstants.GROUP_NAME_CLAIM,
                                 config.getSelfSignUpGroupName());
-        Group ssuGroup;
+        Group ssuGroup = null;
         try {
             ssuGroup = realmService.getIdentityStore().getGroup(claim, domainName);
         } catch (IdentityStoreException e) {
-            throw Utils.handleServerException(ErrorMessages.ERROR_CODE_FAILED_SSU_GROUP_SEARCH,
+            throw Utils.handleServerException(ErrorCodes.FAILED_SSU_GROUP_SEARCH,
                                               config.getSelfSignUpGroupName() + " in domain: " + domainName, e);
         } catch (GroupNotFoundException e) {
 
@@ -247,7 +266,6 @@ public class UserSelfSignUpManager {
                 log.error("Self sign-up group: " + config.getSelfSignUpGroupName() + " not found in domain: " +
                           domainName, e);
             }
-            ssuGroup = null;
         }
 
         if (ssuGroup == null) {
@@ -258,7 +276,6 @@ public class UserSelfSignUpManager {
             }
 
             GroupBean groupBean = new GroupBean();
-
             List<Claim> claims = new ArrayList<>();
             claims.add(claim);
             groupBean.setClaims(claims);
@@ -271,9 +288,8 @@ public class UserSelfSignUpManager {
                     log.debug("Self sign-up group: " + config.getSelfSignUpGroupName() + " created in domain: " +
                               domainName);
                 }
-
             } catch (IdentityStoreException e) {
-                throw Utils.handleServerException(ErrorMessages.ERROR_CODE_FAILED_SSU_GROUP_ADD,
+                throw Utils.handleServerException(ErrorCodes.FAILED_SSU_GROUP_ADD,
                                                   config.getSelfSignUpGroupName() + " to domain: " + domainName, e);
             }
         }

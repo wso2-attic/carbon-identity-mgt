@@ -26,6 +26,7 @@ import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.common.base.message.MessageContext;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.event.EventException;
+import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
@@ -53,8 +54,8 @@ import java.util.Map;
 import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreConstants;
 import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreInterceptorConstants;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.CONFIRMATION_CODE;
-import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorMessages;
-import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_ACCOUNT_UNVERIFIED;
+import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorCodes;
+import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorCodes.ACCOUNT_UNVERIFIED;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.NOTIFICATION_TYPE_ACCOUNT_CONFIRM;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.SELF_SIGN_UP_EVENT;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.SELF_SIGN_UP_PROPERTIES;
@@ -68,6 +69,7 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
 
     private SelfSignUpConfig config;
     private RealmService realmService;
+    private EventService eventService;
 
     @Override
     public void configure(InitConfig initConfig) throws IdentityException {
@@ -80,16 +82,21 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
     @Override
     public void handle(EventContext eventContext, Event event) throws IdentityException {
 
+        // TODO: Use the new config model.
         config = new SelfSignUpConfig();
         config.setNotificationInternallyManaged(false);
         config.setSelfSignUpEnabled(true);
         config.setAccountLockOnCreation(true);
 
-        if (!config.isSelfSignUpEnabled()) {
-            return;
-        }
-
         if (SELF_SIGN_UP_EVENT.equals(event.getEventName())) {
+
+            if (!config.isSelfSignUpEnabled()) {
+
+                if (log.isDebugEnabled()) {
+                    log.debug("Self sign-up is disabled in the configuration.");
+                }
+                return;
+            }
 
             Map<String, Object> eventProperties = event.getEventProperties();
             User user = (User) eventProperties.get(IdentityStoreConstants.USER);
@@ -97,9 +104,9 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
             if (user == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Event property: {} cannot be found in event: {}.", IdentityStoreConstants.USER,
-                              ErrorMessages.ERROR_CODE_MISSING_EVENT_PROPERTY);
+                              ErrorCodes.MISSING_EVENT_PROPERTY);
                 }
-                throw Utils.handleServerException(ErrorMessages.ERROR_CODE_MISSING_EVENT_PROPERTY,
+                throw Utils.handleServerException(ErrorCodes.MISSING_EVENT_PROPERTY,
                                                   IdentityStoreConstants.USER);
             }
 
@@ -131,7 +138,7 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
 
                         identityStore.updateUserClaims(user.getUniqueUserId(), claims, null);
                     } catch (IdentityStoreException e) {
-                        throw Utils.handleServerException(ErrorMessages.ERROR_CODE_FAILED_ACCOUNT_LOCK, user
+                        throw Utils.handleServerException(ErrorCodes.FAILED_ACCOUNT_LOCK, user
                                 .getUniqueUserId(), e);
                     }
 
@@ -147,7 +154,9 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
                     if (config.isNotificationInternallyManaged()) {
 
                         Property[] arbitraryProperties = (Property[]) eventProperties.get(SELF_SIGN_UP_PROPERTIES);
-                        Utils.triggerNotification(user.getUniqueUserId(), NOTIFICATION_TYPE_ACCOUNT_CONFIRM, secretKey,
+                        Utils.triggerNotification(eventService, user.getUniqueUserId(),
+                                                  NOTIFICATION_TYPE_ACCOUNT_CONFIRM,
+                                                  secretKey,
                                                 arbitraryProperties);
                     } else {
                         eventContext.addParameter(IdentityStoreConstants.UNIQUE_USED_ID, user.getUniqueUserId());
@@ -164,11 +173,11 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
                     identityStore.setUserState(user.getUniqueUserId(), UserState.UNLOCKED__UNVERIFIED.toString());
                 }
             } catch (LifecycleException e) {
-                throw Utils.handleServerException(ErrorMessages.ERROR_CODE_FAILED_LIFECYCLE_EVENT, null, e);
+                throw Utils.handleServerException(ErrorCodes.FAILED_LIFECYCLE_EVENT, null, e);
             } catch (UserNotFoundException e) {
-                throw Utils.handleServerException(ErrorMessages.ERROR_CODE_USER_NOT_FOUND, null, e);
+                throw Utils.handleServerException(ErrorCodes.USER_NOT_FOUND, null, e);
             } catch (IdentityStoreException e) {
-                throw Utils.handleServerException(ErrorMessages.ERROR_CODE_FAILED_USER_STATE_UPDATE, null, e);
+                throw Utils.handleServerException(ErrorCodes.FAILED_USER_STATE_UPDATE, null, e);
             }
         }
 
@@ -183,7 +192,7 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
 
                 User user = authenticationContext.getUser();
                 if (UserState.LOCKED_SELF_SIGN_UP.toString().equals(user.getState())) {
-                    throw Utils.handleClientException(ERROR_CODE_ACCOUNT_UNVERIFIED, null);
+                    throw Utils.handleClientException(ACCOUNT_UNVERIFIED, null);
                 }
             }
         }
@@ -215,5 +224,9 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
 
     public void setRealmService(RealmService realmService) {
         this.realmService = realmService;
+    }
+
+    public void setEventService(EventService eventService) {
+        this.eventService = eventService;
     }
 }

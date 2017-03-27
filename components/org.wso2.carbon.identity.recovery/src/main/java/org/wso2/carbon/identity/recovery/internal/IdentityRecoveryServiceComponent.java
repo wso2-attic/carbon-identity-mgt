@@ -90,11 +90,12 @@ public class IdentityRecoveryServiceComponent {
 
             UserSelfSignUpHandler selfSignUpHandler = new UserSelfSignUpHandler();
             selfSignUpHandler.setRealmService(dataHolder.getRealmService());
+            selfSignUpHandler.setEventService(dataHolder.getIdentityEventService());
 
             bundleContext.registerService(AbstractEventHandler.class.getName(), selfSignUpHandler, null);
             IdentityRecoveryServiceDataHolder.getInstance().setRecoveryLinkConfig(new RecoveryLinkConfig());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Error while activating identity governance component.", e);
         }
 

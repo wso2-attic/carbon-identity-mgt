@@ -32,7 +32,7 @@ import org.wso2.carbon.identity.user.endpoint.util.Utils;
 
 import javax.ws.rs.core.Response;
 
-import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorMessages;
+import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorCodes;
 
 /**
  * Micro service implementation of /me endpoint.
@@ -66,17 +66,16 @@ public class MeApiServiceImpl extends MeApiService {
         } catch (Throwable e) {
 
             log.error("Server error while registering self sign-up user: " + user.getUser().getUsername(), e);
-            ErrorDTO errorDTO = Utils.buildInternalServerErrorDTO(ErrorMessages.ERROR_CODE_UNEXPECTED.getCode(),
-                                                                  e.getMessage());
+            ErrorDTO errorDTO = Utils.buildInternalServerErrorDTO(ErrorCodes.UNEXPECTED.getCode(), e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
         }
 
-        if (StringUtils.isBlank(notificationResponseBean.getKey())) {
+        if (StringUtils.isBlank(notificationResponseBean.getCode())) {
             return Response.status(Response.Status.CREATED).build();
         }
 
         SelfUserRegistrationResponseDTO responseDTO = new SelfUserRegistrationResponseDTO();
-        responseDTO.setCode(notificationResponseBean.getKey());
+        responseDTO.setCode(notificationResponseBean.getCode());
         responseDTO.setUserID(notificationResponseBean.getUserUniqueId());
 
         return Response.status(Response.Status.CREATED).entity(responseDTO).build();

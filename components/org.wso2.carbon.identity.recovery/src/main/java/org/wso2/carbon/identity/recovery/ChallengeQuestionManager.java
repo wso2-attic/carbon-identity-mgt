@@ -71,7 +71,7 @@ public class ChallengeQuestionManager {
             return Utils.readChallengeQuestionsFromYAML();
         } catch (IdentityRecoveryException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_EXCEPTION_GET_CHALLENGE_QUESTIONS, null, e);
+                    IdentityRecoveryConstants.ErrorCodes.GET_CHALLENGE_QUESTIONS, null, e);
         }
 
     }
@@ -93,7 +93,7 @@ public class ChallengeQuestionManager {
             return Utils.readChallengeQuestionsFromYAML(locale);
         } catch (IdentityRecoveryException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_EXCEPTION_GET_CHALLENGE_QUESTIONS, null, e);
+                    IdentityRecoveryConstants.ErrorCodes.GET_CHALLENGE_QUESTIONS, null, e);
         }
     }
 
@@ -165,7 +165,7 @@ public class ChallengeQuestionManager {
             Utils.updateChallengeQuestionsYAML(questions);
         } catch (IdentityRecoveryException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_EXCEPTION_SET_CHALLENGE_QUESTIONS, null, e);
+                    IdentityRecoveryConstants.ErrorCodes.SET_CHALLENGE_QUESTIONS, null, e);
         }
 
     }
@@ -193,11 +193,11 @@ public class ChallengeQuestionManager {
                 challengeValue = Utils.getClaimFromIdentityStore(uniqueUserID, challengesUri);
             } catch (IdentityStoreException e) {
                 throw Utils.handleServerException(
-                        IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_QUESTIONS,
+                        IdentityRecoveryConstants.ErrorCodes.GET_USER_CHALLENGE_QUESTIONS,
                         uniqueUserID, e);
             } catch (UserNotFoundException e) {
                 throw Utils.handleServerException(
-                        IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_QUESTIONS,
+                        IdentityRecoveryConstants.ErrorCodes.GET_USER_CHALLENGE_QUESTIONS,
                         uniqueUserID, e);
             }
 
@@ -249,11 +249,11 @@ public class ChallengeQuestionManager {
             challengeValue = Utils.getClaimFromIdentityStore(uniqueUserID, challengesUri);
         } catch (IdentityStoreException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_QUESTION,
-                   uniqueUserID, e);
+                    IdentityRecoveryConstants.ErrorCodes.GET_USER_CHALLENGE_QUESTION,
+                    uniqueUserID, e);
         } catch (UserNotFoundException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_QUESTION,
+                    IdentityRecoveryConstants.ErrorCodes.GET_USER_CHALLENGE_QUESTION,
                     uniqueUserID, e);
         }
 
@@ -314,10 +314,10 @@ public class ChallengeQuestionManager {
                     IdentityRecoveryConstants.CHALLENGE_QUESTION_URI);
         } catch (IdentityStoreException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_URIS, uniqueUserID, e);
+                    IdentityRecoveryConstants.ErrorCodes.GET_CHALLENGE_URIS, uniqueUserID, e);
         } catch (UserNotFoundException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_GETTING_CHALLENGE_URIS, uniqueUserID, e);
+                    IdentityRecoveryConstants.ErrorCodes.GET_CHALLENGE_URIS, uniqueUserID, e);
         }
 
         if (claimValue != null) {
@@ -380,8 +380,7 @@ public class ChallengeQuestionManager {
                                         separator + Utils.doHash(userChallengeAnswer.getAnswer().trim()
                                         .toLowerCase(Locale.ENGLISH));
                                 Utils.setClaimInIdentityStore(user.getUniqueUserId(), userChallengeAnswer.getQuestion()
-                                                                                        .getQuestionSetId()
-                                                .trim(), claimValue, null);
+                                                                        .getQuestionSetId().trim(), claimValue, null);
                             }
                         } else {
                             String claimValue = userChallengeAnswer.getQuestion().getQuestion().trim() + separator +
@@ -405,7 +404,7 @@ public class ChallengeQuestionManager {
             }
         } catch (NoSuchAlgorithmException | UserNotFoundException | IdentityStoreException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_QUESTION_OF_USER, user.getUniqueUserId(), e);
+                    IdentityRecoveryConstants.ErrorCodes.SET_USER_CHALLENGE_QUESTION, user.getUniqueUserId(), e);
         }
     }
 
@@ -444,8 +443,8 @@ public class ChallengeQuestionManager {
                 try {
                     hashedAnswer = Utils.doHash(userChallengeAnswer.getAnswer().trim().toLowerCase(Locale.ENGLISH));
                 } catch (NoSuchAlgorithmException e) {
-                    throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages
-                            .ERROR_CODE_NO_HASHING_ALGO, null, e);
+                    throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes
+                            .NO_HASHING_ALGO, null, e);
                 }
 
                 if (hashedAnswer.equals(storedAnswer.getAnswer())) {
@@ -488,8 +487,8 @@ public class ChallengeQuestionManager {
                 try {
                     hashedAnswer = Utils.doHash(userChallengeAnswer.getAnswer().trim().toLowerCase(Locale.ENGLISH));
                 } catch (NoSuchAlgorithmException e) {
-                    throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages
-                            .ERROR_CODE_NO_HASHING_ALGO, null, e);
+                    throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes
+                            .NO_HASHING_ALGO, null, e);
                 }
                 if (hashedAnswer.equals(dto.getAnswer())) {
                     verification = true;
@@ -530,7 +529,7 @@ public class ChallengeQuestionManager {
             if (challengeQuestion == null) {
                 String errorMsg = "Challenge question details not provided with the challenge answers.";
                 throw Utils.handleClientException(
-                        IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_CHALLENGE_QUESTION_NOT_FOUND, errorMsg);
+                        IdentityRecoveryConstants.ErrorCodes.CHALLENGE_QUESTION_NOT_FOUND, errorMsg);
             }
 
             if (tmpMap.contains(challengeQuestion.getQuestionSetId())) {
@@ -579,7 +578,7 @@ public class ChallengeQuestionManager {
                 String error = "Error persisting user challenge answers for user. " +
                         "Challenge question answered is not registered with.";
                 throw Utils.handleClientException(
-                        IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_CHALLENGE_QUESTION_NOT_FOUND,
+                        IdentityRecoveryConstants.ErrorCodes.CHALLENGE_QUESTION_NOT_FOUND,
                         String.format(error));
             }
         }
@@ -603,7 +602,7 @@ public class ChallengeQuestionManager {
     private void validateUser(User user) throws IdentityRecoveryException {
         if (user == null || StringUtils.isBlank(user.getUniqueUserId())) {
             throw Utils.handleClientException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_INVALID_USER, "Invalid User Data provided.");
+                    IdentityRecoveryConstants.ErrorCodes.INVALID_USER, "Invalid User Data provided.");
         }
     }
 

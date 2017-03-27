@@ -72,14 +72,14 @@ public class ResendCodeApiServiceImpl extends ResendCodeApiService {
         } catch (Throwable e) {
 
             log.error("Server error while user confirmation.", e);
-            ErrorDTO errorDTO = Utils.buildInternalServerErrorDTO(IdentityRecoveryConstants.ErrorMessages
-                                                                      .ERROR_CODE_UNEXPECTED.getCode(), e.getMessage());
+            ErrorDTO errorDTO = Utils.buildInternalServerErrorDTO(IdentityRecoveryConstants.ErrorCodes
+                                                                      .UNEXPECTED.getCode(), e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
         }
 
         ResendConfirmationCodeResponseDTO responseDTO = new ResendConfirmationCodeResponseDTO();
         responseDTO.setUserID(notificationResponseBean.getUserUniqueId());
-        responseDTO.setCode(notificationResponseBean.getKey());
+        responseDTO.setCode(notificationResponseBean.getCode());
 
         return Response.status(Response.Status.OK).entity(responseDTO).build();
     }

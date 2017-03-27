@@ -82,8 +82,7 @@ public class UtilsTests {
 
     @Test
     public void testHandleServerException() {
-        IdentityRecoveryConstants.ErrorMessages message = IdentityRecoveryConstants.ErrorMessages
-                .ERROR_CODE_INVALID_CODE;
+        IdentityRecoveryConstants.ErrorCodes message = IdentityRecoveryConstants.ErrorCodes.INVALID_CODE;
         String code = UUID.randomUUID().toString();
 
         IdentityRecoveryServerException exception = Utils.handleServerException(message, code, new Throwable());
@@ -128,14 +127,14 @@ public class UtilsTests {
         Property property[] = new Property[]{ new Property("fail", "true")};
 
         try {
-            Utils.triggerNotification(userId, type, null, null);
+            Utils.triggerNotification(eventService, userId, type, null, null);
             Assert.assertTrue(true);
         } catch (IdentityRecoveryException e) {
             Assert.fail("Failed notification event trigger.", e);
         }
 
         try {
-            Utils.triggerNotification(userId, type, code, property);
+            Utils.triggerNotification(eventService, userId, type, code, property);
             Assert.fail("Expected a failed notification trigger.");
         } catch (IdentityRecoveryException e) {
             Assert.assertTrue(true);

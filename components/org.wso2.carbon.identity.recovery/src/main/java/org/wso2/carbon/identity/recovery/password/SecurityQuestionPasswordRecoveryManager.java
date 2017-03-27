@@ -192,10 +192,10 @@ public class SecurityQuestionPasswordRecoveryManager {
     private void handleAccountState(String uniqueUserId) throws IdentityRecoveryException {
         if (Utils.isAccountDisabled(uniqueUserId)) {
             throw Utils.handleClientException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_DISABLED_ACCOUNT, null);
+                    IdentityRecoveryConstants.ErrorCodes.DISABLED_ACCOUNT, null);
         } else if (Utils.isAccountLocked(uniqueUserId)) {
             throw Utils.handleClientException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_LOCKED_ACCOUNT, null);
+                    IdentityRecoveryConstants.ErrorCodes.LOCKED_ACCOUNT, null);
         }
     }
 
@@ -241,27 +241,27 @@ public class SecurityQuestionPasswordRecoveryManager {
         } catch (IdentityRecoveryException e) {
             log.error("Error while loading recovery data with code: " + code, e);
             String errorCode = !StringUtils.isEmpty(e.getErrorCode()) ? e.getErrorCode() : IdentityRecoveryConstants
-                    .ErrorMessages.ERROR_CODE_UNEXPECTED.getCode();
+                    .ErrorCodes.UNEXPECTED.getCode();
             challengeQuestionResponse.setCode(code);
             challengeQuestionResponse.setStatus(errorCode);
             return challengeQuestionResponse;
         }
 
-        String secretKey = userRecoveryData.getSecret();
+        String secretKey = userRecoveryData.getCode();
         challengeQuestionResponse.setCode(secretKey);
 
         try {
             if (userChallengeAnswer == null) {
-                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-                        .ERROR_CODE_CHALLENGE_QUESTION_NOT_FOUND, null);
+                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorCodes
+                        .CHALLENGE_QUESTION_NOT_FOUND, null);
             }
 
             //if validate security questions one by one
             if (RecoverySteps.VALIDATE_CHALLENGE_QUESTION.equals(userRecoveryData.getRecoveryStep())) {
 
                 if (userChallengeAnswer.size() > 1) {
-                    throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-                            .ERROR_CODE_MULTIPLE_QUESTION_NOT_ALLOWED, null);
+                    throw Utils.handleClientException(IdentityRecoveryConstants.ErrorCodes
+                            .MULTIPLE_QUESTION_NOT_ALLOWED, null);
                 }
 
                 //match first question of remaining questions to be answered(asked question), with answered question
@@ -321,8 +321,8 @@ public class SecurityQuestionPasswordRecoveryManager {
                 } else {
                     //TODO handle recovery failed attempts
                     //handleAnswerVerificationFail(userRecoveryData.getUser());
-                    challengeQuestionResponse.setStatus(IdentityRecoveryConstants.ErrorMessages
-                            .ERROR_CODE_INVALID_ANSWER_FOR_SECURITY_QUESTION.getCode());
+                    challengeQuestionResponse.setStatus(IdentityRecoveryConstants.ErrorCodes
+                            .INVALID_ANSWER_FOR_SECURITY_QUESTION.getCode());
                     return challengeQuestionResponse;
                 }
 
@@ -336,8 +336,8 @@ public class SecurityQuestionPasswordRecoveryManager {
                     String[] requestedQuestions = allChallengeQuestions.split(challengeQuestionSeparator);
 
                     if (requestedQuestions.length != userChallengeAnswer.size()) {
-                        throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-                                .ERROR_CODE_NEED_TO_ANSWER_TO_REQUESTED_QUESTIONS, null);
+                        throw Utils.handleClientException(IdentityRecoveryConstants.ErrorCodes
+                                .NEED_TO_ANSWER_TO_REQUESTED_QUESTIONS, null);
                     }
 
                     questions = getValidatedQuestions(requestedQuestions, userChallengeAnswer,
@@ -346,8 +346,8 @@ public class SecurityQuestionPasswordRecoveryManager {
                     //Validate whether user answered all the requested questions
 
                 } else {
-                    throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-                            .ERROR_CODE_CHALLENGE_QUESTION_NOT_FOUND, null);
+                    throw Utils.handleClientException(IdentityRecoveryConstants.ErrorCodes
+                            .CHALLENGE_QUESTION_NOT_FOUND, null);
                 }
                 //verify user answered for the questions
                 for (int i = 0; i < userChallengeAnswer.size(); i++) {
@@ -356,8 +356,8 @@ public class SecurityQuestionPasswordRecoveryManager {
                     if (!verified) {
                         //TODO
                         //handleAnswerVerificationFail(userRecoveryData.getUser());
-                        challengeQuestionResponse.setStatus(IdentityRecoveryConstants.ErrorMessages
-                                .ERROR_CODE_INVALID_ANSWER_FOR_SECURITY_QUESTION.getCode());
+                        challengeQuestionResponse.setStatus(IdentityRecoveryConstants.ErrorCodes
+                                .INVALID_ANSWER_FOR_SECURITY_QUESTION.getCode());
                         return challengeQuestionResponse;
                     }
                 }
@@ -378,8 +378,8 @@ public class SecurityQuestionPasswordRecoveryManager {
 
                 return challengeQuestionResponse;
             } else {
-                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-                        .ERROR_CODE_INVALID_CODE, null);
+                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorCodes
+                        .INVALID_CODE, null);
             }
         } catch (IdentityRecoveryClientException e) {
             //handleAnswerVerificationFail(userRecoveryData.getUser());
@@ -412,8 +412,8 @@ public class SecurityQuestionPasswordRecoveryManager {
         for (int i = 0; i < requestedQuestions.length; i++) {
             //check whether answered question is available in asked question
             if (!userChallengeIds.contains(StringUtils.lowerCase(requestedQuestions[i]))) {
-                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-                        .ERROR_CODE_NEED_TO_ANSWER_TO_REQUESTED_QUESTIONS, null);
+                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorCodes
+                        .NEED_TO_ANSWER_TO_REQUESTED_QUESTIONS, null);
             } else {
                 //if answered question is in asked questions
                 String q = challengeQuestionManager.getUserChallengeQuestion(userUniqueID,
@@ -441,8 +441,8 @@ public class SecurityQuestionPasswordRecoveryManager {
                                                    ChallengeQuestionManager challengeQuestionManager)
             throws IdentityRecoveryException {
         if (!requestedQuestionSetId.equals(userChallengeAnswer.getQuestion().getQuestionSetId())) {
-            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-                    .ERROR_CODE_NEED_TO_ANSWER_TO_ASKED_SECURITY_QUESTION, null);
+            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorCodes
+                    .NEED_TO_ANSWER_TO_ASKED_SECURITY_QUESTION, null);
         }
         String question = challengeQuestionManager.getUserChallengeQuestion(userUniqueID,
                 userChallengeAnswer.getQuestion().getQuestionSetId()).getQuestion();
@@ -486,8 +486,8 @@ public class SecurityQuestionPasswordRecoveryManager {
             IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().pushEvent(identityMgtEvent,
                     eventContext);
         } catch (IdentityException e) {
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION,
-                    userUniqueId, e);
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes.TRIGGER_NOTIFICATION,
+                                              userUniqueId, e);
         }
     }
 
@@ -591,7 +591,7 @@ public class SecurityQuestionPasswordRecoveryManager {
 //                    UserCoreConstants.DEFAULT_PROFILE);
 //        } catch (org.wso2.carbon.user.core.UserStoreException e) {
 //            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages
-//                    .ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
+//                    .FAILED_TO_LOAD_USER_CLAIMS, null, e);
 //        }
 //
 //        if (Boolean.parseBoolean(claimValues.get(IdentityRecoveryConstants.ACCOUNT_LOCKED_CLAIM))) {
@@ -612,7 +612,7 @@ public class SecurityQuestionPasswordRecoveryManager {
 //                userStoreManager.setUserClaimValues(IdentityUtil.addDomainToName(user.getUserName(),
 //                        user.getUserStoreDomain()), updatedClaims, UserCoreConstants.DEFAULT_PROFILE);
 //                throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages
-//                        .ERROR_CODE_LOCKED_ACCOUNT, IdentityUtil.addDomainToName(user.getUserName(),
+//                        .LOCKED_ACCOUNT, IdentityUtil.addDomainToName(user.getUserName(),
 //                        user.getUserStoreDomain()));
 //            } catch (org.wso2.carbon.user.core.UserStoreException e) {
 //                throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages

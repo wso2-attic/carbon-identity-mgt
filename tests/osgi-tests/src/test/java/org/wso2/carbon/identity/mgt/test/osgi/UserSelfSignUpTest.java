@@ -47,7 +47,7 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.PasswordCallback;
 
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_ACCOUNT_UNVERIFIED;
+import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorCodes.ACCOUNT_UNVERIFIED;
 
 /**
  * User self sign-up related OSGi tests.
@@ -101,7 +101,7 @@ public class UserSelfSignUpTest {
 
         NotificationResponseBean responseBean = selfSignUpManager.registerUser(userBean, null, null);
         Assert.assertNotNull(responseBean.getUserUniqueId(), "Unique user ID is null.");
-        Assert.assertNotNull(responseBean.getKey(), "Confirmation code is null.");
+        Assert.assertNotNull(responseBean.getCode(), "Confirmation code is null.");
 
         // Check isUserConfirmed.
         Assert.assertFalse(selfSignUpManager.isUserConfirmed(responseBean.getUserUniqueId()), "User should not be" +
@@ -117,10 +117,10 @@ public class UserSelfSignUpTest {
         } catch (AuthenticationFailure authenticationFailure) {
             Assert.fail("Error occurred while authenticating user.", authenticationFailure);
         } catch (IdentityStoreException e) {
-            if (ERROR_CODE_ACCOUNT_UNVERIFIED.getCode().equals("" + e.getErrorCode())) {
+            if (ACCOUNT_UNVERIFIED.getCode().equals("" + e.getErrorCode())) {
                 Assert.assertTrue(true);
             } else {
-                Assert.fail("Expected error code: " + ERROR_CODE_ACCOUNT_UNVERIFIED.getCode() + " found: " + e
+                Assert.fail("Expected error code: " + ACCOUNT_UNVERIFIED.getCode() + " found: " + e
                         .getErrorCode());
             }
         }
@@ -130,11 +130,11 @@ public class UserSelfSignUpTest {
 
         Assert.assertNotNull(response.getUserUniqueId(), "Unique user ID is null for resend confirmation code " +
                                                          "response.");
-        Assert.assertNotNull(response.getKey(), "Confirmation code is null for resend confirmation code " +
-                                                "response.");
+        Assert.assertNotNull(response.getCode(), "Confirmation code is null for resend confirmation code " +
+                                                 "response.");
         // Confirm user.
         try {
-            selfSignUpManager.confirmUserSelfSignUp(response.getKey());
+            selfSignUpManager.confirmUserSelfSignUp(response.getCode());
             Assert.assertTrue(selfSignUpManager.isUserConfirmed(responseBean.getUserUniqueId()), "User is not " +
                                                                                                  "confirmed.");
             Assert.assertTrue(true);

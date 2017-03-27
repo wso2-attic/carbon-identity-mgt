@@ -19,7 +19,7 @@ package org.wso2.carbon.identity.user.endpoint.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryClientException;
-import org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorMessages;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorCodes;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.signup.UserSelfSignUpManager;
 import org.wso2.carbon.identity.user.endpoint.NotFoundException;
@@ -60,7 +60,7 @@ public class ValidateCodeApiServiceImpl extends ValidateCodeApiService {
         } catch (Throwable e) {
 
             log.error("Server error while user confirmation.", e);
-            ErrorDTO errorDTO = Utils.buildInternalServerErrorDTO(ErrorMessages.ERROR_CODE_UNEXPECTED.getCode(),
+            ErrorDTO errorDTO = Utils.buildInternalServerErrorDTO(ErrorCodes.UNEXPECTED.getCode(),
                                                                   e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
         }

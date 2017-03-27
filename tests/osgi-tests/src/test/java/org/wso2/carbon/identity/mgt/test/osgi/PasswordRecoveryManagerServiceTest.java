@@ -89,7 +89,7 @@ public class PasswordRecoveryManagerServiceTest {
         NotificationResponseBean notificationResponseBean = notificationPasswordRecoveryManager
                 .sendRecoveryNotification(userUniqueId, false);
         Assert.assertNotNull(notificationResponseBean, "Failed to retrieve the notification bean");
-        Assert.assertNotNull(notificationResponseBean.getKey(), "Failed to retrieve the notification code");
+        Assert.assertNotNull(notificationResponseBean.getCode(), "Failed to retrieve the notification code");
     }
 
     @Test(groups = "passwordRecovery")
@@ -105,7 +105,7 @@ public class PasswordRecoveryManagerServiceTest {
         String userUniqueId = realmService.getIdentityStore().getUser(usernameClaim).getUniqueUserId();
         UserRecoveryData userRecoveryData = JDBCRecoveryDataStore.getInstance().loadByUserUniqueId(userUniqueId);
         char[] password = "testpasschange".toCharArray();
-        notificationPasswordRecoveryManager.updatePassword(userRecoveryData.getSecret(), password);
+        notificationPasswordRecoveryManager.updatePassword(userRecoveryData.getCode(), password);
 
         PasswordCallback passwordCallback = new PasswordCallback("password", false);
         passwordCallback.setPassword(password);

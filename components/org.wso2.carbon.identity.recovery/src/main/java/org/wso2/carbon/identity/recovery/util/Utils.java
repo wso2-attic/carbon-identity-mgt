@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.base.event.model.Event;
 import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.event.EventConstants;
+import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
@@ -103,11 +104,11 @@ public class Utils {
         return claimValue;
     }
 
-    public static IdentityRecoveryServerException handleServerException(IdentityRecoveryConstants.ErrorMessages error,
-                                                                String data) throws IdentityRecoveryServerException {
+    public static IdentityRecoveryServerException handleServerException(IdentityRecoveryConstants.ErrorCodes error,
+                                                                String... data) throws IdentityRecoveryServerException {
 
         String errorDescription;
-        if (StringUtils.isNotBlank(data)) {
+        if (data != null) {
             errorDescription = String.format(error.getMessage(), data);
         } else {
             errorDescription = error.getMessage();
@@ -115,7 +116,7 @@ public class Utils {
         return new IdentityRecoveryServerException(error.getCode(), errorDescription);
     }
 
-    public static IdentityRecoveryServerException handleServerException(IdentityRecoveryConstants.ErrorMessages
+    public static IdentityRecoveryServerException handleServerException(IdentityRecoveryConstants.ErrorCodes
                                                                                 error, String data, Throwable e) {
 
         String errorDescription;
@@ -127,10 +128,11 @@ public class Utils {
         return new IdentityRecoveryServerException(error.getCode(), errorDescription, e);
     }
 
-    public static IdentityRecoveryClientException handleClientException(IdentityRecoveryConstants.ErrorMessages error,
-                                                                        String data) {
+    public static IdentityRecoveryClientException handleClientException(IdentityRecoveryConstants.ErrorCodes error,
+                                                                        String... data) {
+
         String errorDescription;
-        if (StringUtils.isNotBlank(data)) {
+        if (data != null) {
             errorDescription = String.format(error.getMessage(), data);
         } else {
             errorDescription = error.getMessage();
@@ -138,7 +140,7 @@ public class Utils {
         return new IdentityRecoveryClientException(error.getCode(), errorDescription);
     }
 
-    public static IdentityRecoveryClientException handleClientException(IdentityRecoveryConstants.ErrorMessages error,
+    public static IdentityRecoveryClientException handleClientException(IdentityRecoveryConstants.ErrorCodes error,
                                                                         String data, Throwable e) {
 
         String errorDescription;
@@ -150,7 +152,7 @@ public class Utils {
         return new IdentityRecoveryClientException(error.getCode(), errorDescription, e);
     }
 
-    public static IdentityRecoveryRuntimeException handleRuntimeException(IdentityRecoveryConstants.ErrorMessages error,
+    public static IdentityRecoveryRuntimeException handleRuntimeException(IdentityRecoveryConstants.ErrorCodes error,
                                                                           String data, Throwable e) {
 
         String errorDescription;
@@ -162,11 +164,11 @@ public class Utils {
         return new IdentityRecoveryRuntimeException(error.getCode(), errorDescription, e);
     }
 
-    public static IdentityRecoveryRuntimeException handleRuntimeException(IdentityRecoveryConstants.ErrorMessages error,
-                                                                          String data) {
+    public static IdentityRecoveryRuntimeException handleRuntimeException(IdentityRecoveryConstants.ErrorCodes error,
+                                                                          String... data) {
 
         String errorDescription;
-        if (StringUtils.isNotBlank(data)) {
+        if (data != null) {
             errorDescription = String.format(error.getMessage(), data);
         } else {
             errorDescription = error.getMessage();
@@ -198,7 +200,6 @@ public class Utils {
      * @throws IdentityStoreException If error occurs while updating the claim.
      * @throws UserNotFoundException If the user does not exist.
      */
-
     public static void setClaimInIdentityStore(String uniqueUserId, String claimUri, String value, @Nullable String
             claimDialect) throws IdentityStoreException, UserNotFoundException {
 
@@ -206,7 +207,7 @@ public class Utils {
         IdentityStore identityStore = realmService.getIdentityStore();
 
         if (identityStore == null) {
-            throw handleRuntimeException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_IDENTITY_STORE_ERROR, null);
+            throw handleRuntimeException(IdentityRecoveryConstants.ErrorCodes.IDENTITY_STORE_ERROR, null);
         }
 
         if (claimDialect == null) {
@@ -220,22 +221,19 @@ public class Utils {
     }
 
     /**
-     * Add/Update multiple claims of a user.
+     * Add/Update a list of claims of a user.
      *
-     * @param uniqueUserId Unique ID of the user.
-     * @param claims Map of claim URIs and values to be updated
+     * @param identityStore Instance of an identity store.
+     * @param claims Map of claim value pairs.
      * @param claimDialect Claim dialect of the claim URI. If dialect is null, root dialect will be used.
      * @throws IdentityStoreException If error occurs while updating the claim.
      * @throws UserNotFoundException If the user does not exist.
      */
-    public static void setClaimsInIdentityStore(String uniqueUserId, Map<String, String> claims, @Nullable String
-            claimDialect) throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = IdentityRecoveryServiceDataHolder.getInstance().getRealmService();
-        IdentityStore identityStore = realmService.getIdentityStore();
+    public static void setClaimsInIdentityStore(IdentityStore identityStore, String uniqueUserId, Map<String, String>
+            claims, @Nullable String claimDialect) throws IdentityStoreException, UserNotFoundException {
 
         if (identityStore == null) {
-            throw handleRuntimeException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_IDENTITY_STORE_ERROR, null);
+            throw handleRuntimeException(IdentityRecoveryConstants.ErrorCodes.IDENTITY_STORE_ERROR, null);
         }
 
         if (claimDialect == null) {
@@ -255,7 +253,7 @@ public class Utils {
         IdentityStore identityStore = realmService.getIdentityStore();
 
         if (identityStore == null) {
-            throw handleRuntimeException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_IDENTITY_STORE_ERROR, null);
+            throw handleRuntimeException(IdentityRecoveryConstants.ErrorCodes.IDENTITY_STORE_ERROR, null);
         }
 
         if (StringUtils.isNotBlank(domainName)) {
@@ -263,10 +261,10 @@ public class Utils {
                 User user = identityStore.getUser(claim, domainName);
                 return user.getUniqueUserId();
             } catch (IdentityStoreException e) {
-                throw handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_USER_SEARCH,
+                throw handleServerException(IdentityRecoveryConstants.ErrorCodes.FAILED_USER_SEARCH,
                                             null, e);
             } catch (UserNotFoundException e) {
-                throw handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_INVALID_USER,
+                throw handleClientException(IdentityRecoveryConstants.ErrorCodes.INVALID_USER,
                                             claim.getValue() + " in domain: " + domainName, e);
             }
         } else {
@@ -277,15 +275,15 @@ public class Utils {
                 List<String> userExist = identityStore.isUserExist(claimList);
 
                 if (userExist.isEmpty()) {
-                    throw handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_INVALID_USER, "");
+                    throw handleClientException(IdentityRecoveryConstants.ErrorCodes.INVALID_USER, "");
                 } else if (userExist.size() > 1) {
-                    throw handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_NON_UNIQUE_USER,
+                    throw handleClientException(IdentityRecoveryConstants.ErrorCodes.NON_UNIQUE_USER,
                                                 claim.getValue());
                 } else {
                     return userExist.get(0);
                 }
             } catch (IdentityStoreException e) {
-                throw handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_USER_SEARCH,
+                throw handleServerException(IdentityRecoveryConstants.ErrorCodes.FAILED_USER_SEARCH,
                                             null, e);
             }
         }
@@ -331,10 +329,10 @@ public class Utils {
             state = identityStore.getUser(uniqueUserId).getState();
         } catch (IdentityStoreException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
+                    IdentityRecoveryConstants.ErrorCodes.FAILED_TO_LOAD_USER_CLAIMS, null, e);
         } catch (UserNotFoundException e) {
             throw Utils.handleServerException(
-                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_FAILED_TO_LOAD_USER_CLAIMS, null, e);
+                    IdentityRecoveryConstants.ErrorCodes.FAILED_TO_LOAD_USER_CLAIMS, null, e);
         }
         return UserState.valueOf(state).isInGroup(group);
     }
@@ -429,13 +427,14 @@ public class Utils {
      * Trigger notification event.
      *
      * @param uniqueUserId Unique ID of the user.
-     * @param type Notification type.
+     * @param templateType ID of the template to be used for the notification. The notification templates can be
+     *                     found in conf/email/
      * @param code Confirmation code.
      * @param props Additional properties to be sent with the event.
      * @throws IdentityRecoveryException If error occurs during the firing the event.
      */
-    public static void triggerNotification(String uniqueUserId, String type, String code, Property[] props) throws
-            IdentityRecoveryException {
+    public static void triggerNotification(EventService eventService, String uniqueUserId, String templateType, String
+            code,  Property[] props) throws IdentityRecoveryException {
 
         String eventName = EventConstants.Event.TRIGGER_NOTIFICATION;
 
@@ -450,13 +449,13 @@ public class Utils {
         if (StringUtils.isNotBlank(code)) {
             properties.put(CONFIRMATION_CODE, code);
         }
-        properties.put(TEMPLATE_TYPE, type);
+        properties.put(TEMPLATE_TYPE, templateType);
         Event event = new Event(eventName, properties);
         IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
         try {
-            IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().pushEvent(event, messageContext);
+            eventService.pushEvent(event, messageContext);
         } catch (IdentityException e) {
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION,
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes.TRIGGER_NOTIFICATION,
                                               uniqueUserId, e);
         }
     }

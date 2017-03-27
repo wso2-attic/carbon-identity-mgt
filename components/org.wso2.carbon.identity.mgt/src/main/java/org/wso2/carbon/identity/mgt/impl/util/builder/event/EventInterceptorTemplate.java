@@ -112,6 +112,7 @@ public class EventInterceptorTemplate<T extends Object, X extends Exception> {
             String message = String.format("Error while handling %s event.", eventId);
             IdentityStoreException identityStoreException = new IdentityStoreException(message, e);
 
+            // TODO: Need to improve with IDENTITY-5768.
             if (e.getErrorCode() != null) {
                 try {
                     int errorCode = Integer.parseInt(e.getErrorCode());

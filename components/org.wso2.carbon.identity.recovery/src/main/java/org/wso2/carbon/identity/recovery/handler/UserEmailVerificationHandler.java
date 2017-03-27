@@ -220,7 +220,7 @@
 //
 //        if (props != null && props.length > 0) {
 //            for (int i = 0; i < props.length; i++) {
-//                properties.put(props[i].getKey(), props[i].getValue());
+//                properties.put(props[i].getCode(), props[i].getValue());
 //            }
 //        }
 //        if (StringUtils.isNotBlank(code)) {
@@ -231,7 +231,7 @@
 //        try {
 //            IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().handleEvent(identityMgtEvent);
 //        } catch (EventException e) {
-//            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION,
+//            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.TRIGGER_NOTIFICATION,
 //                    user.getUniqueUserId(), e);
 //        }
 //    }

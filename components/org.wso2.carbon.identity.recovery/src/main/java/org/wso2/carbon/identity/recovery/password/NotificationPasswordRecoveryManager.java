@@ -74,10 +74,10 @@ public class NotificationPasswordRecoveryManager {
         //todo need to check whether user account is disabled or locked
         //        if (Utils.isAccountDisabled(user)) {
         //            throw Utils.handleClientException(
-        //                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_DISABLED_ACCOUNT, user.getUserName());
+        //                    IdentityRecoveryConstants.ErrorMessages.DISABLED_ACCOUNT, user.getUserName());
         //        } else if (Utils.isAccountLocked(user)) {
         //            throw Utils.handleClientException(
-        //                    IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_LOCKED_ACCOUNT, user.getUserName());
+        //                    IdentityRecoveryConstants.ErrorMessages.LOCKED_ACCOUNT, user.getUserName());
         //        }
 
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
@@ -93,7 +93,7 @@ public class NotificationPasswordRecoveryManager {
         if (isNotificationInternallyManage) {
             triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET, secretKey);
         } else {
-            notificationResponseBean.setKey(secretKey);
+            notificationResponseBean.setCode(secretKey);
         }
 
         return notificationResponseBean;
@@ -106,7 +106,7 @@ public class NotificationPasswordRecoveryManager {
         //if return data from load method, it means the code is validated. Otherwise it returns exceptions
 
         if (!RecoverySteps.UPDATE_PASSWORD.equals(userRecoveryData.getRecoveryStep())) {
-            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_INVALID_CODE, null);
+            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorCodes.INVALID_CODE, null);
         }
 
         try {
@@ -118,9 +118,9 @@ public class NotificationPasswordRecoveryManager {
                     Collections.singletonList(passwordCallback));
 
         } catch (UserNotFoundException e) {
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED, null, e);
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes.UNEXPECTED, null, e);
         } catch (IdentityStoreException e) {
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED, null, e);
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes.UNEXPECTED, null, e);
         }
 
         userRecoveryDataStore.invalidateByCode(code);
@@ -152,9 +152,9 @@ public class NotificationPasswordRecoveryManager {
         //todo need check additional properties
 //        if (metaProperties != null) {
 //            for (Property metaProperty : metaProperties) {
-//                if (StringUtils.isNotBlank(metaProperty.getValue()) && StringUtils.isNotBlank(metaProperty.getKey()))
+//                if (StringUtils.isNotBlank(metaProperty.getValue()) && StringUtils.isNotBlank(metaProperty.getCode()))
 //                {
-//                    properties.put(metaProperty.getKey(), metaProperty.getValue());
+//                    properties.put(metaProperty.getCode(), metaProperty.getValue());
 //                }
 //            }
 //        }
@@ -167,8 +167,8 @@ public class NotificationPasswordRecoveryManager {
             IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().pushEvent(identityMgtEvent,
                                                                                                 eventContext);
         } catch (IdentityException e) {
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION,
-                    userUniqueId, e);
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes.TRIGGER_NOTIFICATION,
+                                              userUniqueId, e);
         }
     }
 
