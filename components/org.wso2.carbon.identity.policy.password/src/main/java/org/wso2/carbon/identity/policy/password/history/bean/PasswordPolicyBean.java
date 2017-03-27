@@ -29,7 +29,7 @@ public class PasswordPolicyBean implements Serializable {
     private boolean includeSymbols = true;
     private int minLength = 6;
     private int maxLength = 12;
-    private String symbols = "!@#$%&*()_+-=[]|,./?><";
+    private String symbols = "-+_!@#$%^&*.,?=";
     private String regex = "";
 
     public int getMaxLength() {

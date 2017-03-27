@@ -10,7 +10,7 @@ import org.wso2.carbon.identity.policy.password.validation.PasswordValidationSer
 public class PasswordValidationServiceImpl implements PasswordValidationService {
 
     @Override
-    public boolean validatePassword(String password) {
+    public boolean validatePassword(char[] password) {
         return PasswordValidation.validatePassword(password);
     }
 }
