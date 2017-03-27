@@ -72,26 +72,4 @@ public class AdminForcedPasswordResetTest {
         Assert.assertNotNull(otp, "Failed to Generate the passcode");
 
     }
-
-   /* @Test(groups = {"persistpasscode"})
-    public void testPersistOTP() throws IdentityRecoveryException {
-        AdminForcePasswordResetManager.getInstance().persistPasscode("user3", "otp3");
-        UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
-        UserRecoveryData userRecoveryData = userRecoveryDataStore.loadByUserUniqueId("user3");
-        Assert.assertNotNull(userRecoveryData, "Failed to persist OTP");
-    }
-
-    @Test(groups = "invalidateOldpasscode")
-    public void testInvalidateOldOTP() throws IdentityRecoveryException {
-        UserRecoveryData userRecoveryData = null;
-        try {
-            AdminForcePasswordResetManager.getInstance().persistPasscode("user2", "otp2");
-            AdminForcePasswordResetManager.getInstance().persistPasscode("user2", "otp3");
-            UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
-            userRecoveryData = userRecoveryDataStore.loadByUserUniqueId("user2");
-        } catch (Exception e) {
-            Assert.assertNull(userRecoveryData, "Failed to overwirte the existing OTP");
-        }
-    }*/
-
 }
