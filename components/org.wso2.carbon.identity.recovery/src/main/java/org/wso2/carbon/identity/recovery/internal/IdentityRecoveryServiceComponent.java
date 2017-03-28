@@ -33,6 +33,7 @@ import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.mapping.RecoveryLinkConfig;
+import org.wso2.carbon.identity.recovery.password.AdminForcePasswordResetManager;
 import org.wso2.carbon.identity.recovery.password.NotificationPasswordRecoveryManager;
 import org.wso2.carbon.identity.recovery.password.SecurityQuestionPasswordRecoveryManager;
 import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
@@ -76,6 +77,8 @@ public class IdentityRecoveryServiceComponent {
                     NotificationPasswordRecoveryManager.getInstance(), null);
             bundleContext.registerService(NotificationUsernameRecoveryManager.class.getName(),
                     NotificationUsernameRecoveryManager.getInstance(), null);
+            bundleContext.registerService(AdminForcePasswordResetManager.class.getName(),
+                    AdminForcePasswordResetManager.getInstance(), null);
             bundleContext.registerService(SecurityQuestionPasswordRecoveryManager.class.getName(),
                     new SecurityQuestionPasswordRecoveryManager(JDBCRecoveryDataStore.getInstance(),
                             ChallengeQuestionManager.getInstance()), null);

@@ -16,13 +16,17 @@
 
 package org.wso2.carbon.identity.recovery.password;
 
+import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.common.util.IdentityUtils;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryConstants;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.RecoveryScenarios;
 import org.wso2.carbon.identity.recovery.RecoverySteps;
 import org.wso2.carbon.identity.recovery.model.UserRecoveryData;
 import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
 import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
+import org.wso2.carbon.identity.recovery.util.NotificationUtil;
+import org.wso2.carbon.identity.recovery.util.Utils;
 
 /**
  * Manager class which can be used to reset passwords forcefully
@@ -56,5 +60,25 @@ public class AdminForcePasswordResetManager {
                 RecoveryScenarios.ADMIN_FORCED_PASSWORD_RESET_VIA_OTP, RecoverySteps.UPDATE_PASSWORD);
         userRecoveryDataStore.invalidateUserScenario(userUniqueId, "ADMIN_FORCED_PASSWORD_RESET_VIA_OTP");
         userRecoveryDataStore.store(recoveryDataDO);
+    }
+
+
+    /**
+     * @param userUniqueId selected user id
+     * @throws IdentityRecoveryException
+     */
+    public void triggerEmailNotification(String userUniqueId) throws IdentityRecoveryException {
+        try {
+            String code = IdentityUtils.generateUUID();
+            NotificationUtil.persistPasscode(userUniqueId, code,
+                    RecoveryScenarios.ADMIN_FORCED_PASSWORD_RESET_VIA_EMAIL_LINK);
+            NotificationUtil.triggerNotification(userUniqueId,
+                    IdentityRecoveryConstants.NOTIFICATION_TYPE_ADMIN_FORCED_PASSWORD_RESET, code);
+        } catch (IdentityException e) {
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.
+                            ERROR_CODE_TRIGGER_NOTIFICATION,
+                    userUniqueId, e);
+
+        }
     }
 }
