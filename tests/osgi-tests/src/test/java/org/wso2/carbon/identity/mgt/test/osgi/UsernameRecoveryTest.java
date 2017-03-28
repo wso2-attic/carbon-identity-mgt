@@ -19,6 +19,7 @@
 
 package org.wso2.carbon.identity.mgt.test.osgi;
 
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.ops4j.pax.exam.testng.listener.PaxExam;
@@ -26,6 +27,7 @@ import org.osgi.framework.BundleContext;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.wso2.carbon.container.CarbonContainerFactory;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.bean.UserBean;
@@ -34,6 +36,7 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.username.NotificationUsernameRecoveryManager;
+//import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +49,7 @@ import javax.inject.Inject;
  */
 @Listeners(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
+@ExamFactory(CarbonContainerFactory.class)
 public class UsernameRecoveryTest {
     private static List<User> users = new ArrayList<>();
     private static List<Claim> claims = new ArrayList<>();
@@ -53,6 +57,9 @@ public class UsernameRecoveryTest {
 
     @Inject
     private BundleContext bundleContext;
+
+//    @Inject
+//    private CarbonServerInfo carbonServerInfo;
 
     @Test(groups = "usernameRecovery")
     public void verifyUsernameWithZeroClaims() throws IdentityStoreException, IdentityRecoveryException {

@@ -111,7 +111,7 @@ domains:
   credentialStoreConnectors:
   -
    connectorId: "INMEM_CSC"
-   connectorType: "InMemoryCredentialStore"
+   connectorType: "JDBCCredentialStore"
    properties:
     dataSource: "WSO2_CARBON_DB"
     databaseType: "MySQL"

@@ -84,7 +84,7 @@
             org.wso2.carbon.lcm.*;version="${org.wso2.carbon.lcm.version.range}",
             org.wso2.carbon.identity.event.*;version="${org.wso2.carbon.identity.common.import.version.range}",
             org.wso2.carbon.identity.mgt.*;version="${org.wso2.carbon.identity.mgt.import.version.range}",
-            org.wso2.carbon.kernel.*,
+            org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version}",
             org.wso2.carbon.identity.handler.event.account.lock.bean.*,
         </import.package>
 
@@ -105,6 +105,6 @@
 
         <!--Logging API version range-->
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
-        <commons.lang3.import.version.range>[3.4.0,4.0.0)</commons.lang3.import.version.range>
+        <commons.lang3.import.version.range>(3.3.0, 3.5.0]</commons.lang3.import.version.range>
     </properties>
 </project>

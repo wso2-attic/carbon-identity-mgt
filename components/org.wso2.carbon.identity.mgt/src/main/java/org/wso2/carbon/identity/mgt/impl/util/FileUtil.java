@@ -20,6 +20,7 @@ package org.wso2.carbon.identity.mgt.impl.util;
 
 import org.wso2.carbon.identity.mgt.exception.CarbonIdentityMgtConfigException;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
 import java.io.IOException;
@@ -75,7 +76,9 @@ public class FileUtil {
         if (Files.exists(file)) {
             try {
                 Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8);
-                Yaml yaml = new Yaml();
+                CustomClassLoaderConstructor constructor =
+                        new CustomClassLoaderConstructor(FileUtil.class.getClassLoader());
+                Yaml yaml = new Yaml(constructor);
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 return yaml.loadAs(in, classType);
             } catch (IOException e) {
@@ -106,7 +109,9 @@ public class FileUtil {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, fileNameRegex)) {
                 for (Path file : stream) {
                     Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8);
-                    Yaml yaml = new Yaml();
+                    CustomClassLoaderConstructor constructor =
+                            new CustomClassLoaderConstructor(FileUtil.class.getClassLoader());
+                    Yaml yaml = new Yaml(constructor);
                     yaml.setBeanAccess(BeanAccess.FIELD);
                     configEntries.add(yaml.loadAs(in, classType));
                 }

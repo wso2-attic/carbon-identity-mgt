@@ -16,8 +16,9 @@
 
 package org.wso2.carbon.identity.mgt.test.osgi;
 
-import org.ops4j.pax.exam.Configuration;
-import org.ops4j.pax.exam.Option;
+//import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.ExamFactory;
+//import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.ops4j.pax.exam.testng.listener.PaxExam;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.wso2.carbon.container.CarbonContainerFactory;
 import org.wso2.carbon.identity.mgt.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.Group;
 import org.wso2.carbon.identity.mgt.RealmService;
@@ -39,10 +41,10 @@ import org.wso2.carbon.identity.mgt.exception.CredentialStoreConnectorException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants;
-import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
+//import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
-import java.nio.file.Paths;
+//import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,13 +52,14 @@ import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.PasswordCallback;
 
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+//import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 /**
  * Test class for handling Account Disabled
  */
 @Listeners(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
+@ExamFactory(CarbonContainerFactory.class)
 public class AccountDisabledHandlerTest {
 
     private static List<User> users = new ArrayList<>();
@@ -69,19 +72,19 @@ public class AccountDisabledHandlerTest {
     @Inject
     private CarbonServerInfo carbonServerInfo;
 
-    @Configuration
-    public Option[] createConfiguration() {
-
-        List<Option> optionList = IdentityMgtOSGiTestUtils.getDefaultSecurityPAXOptions();
-
-        optionList.add(systemProperty(IdentityMgtOSGITestConstants.JAVA_SEC_SYSTEM_PROPERTY)
-                .value(Paths.get(IdentityMgtOSGiTestUtils.getCarbonHome(),
-                        IdentityMgtOSGITestConstants.CARBON_DIRECTORY_CONF,
-                        IdentityMgtOSGITestConstants.CARBON_DIRECTORY_SECURITY,
-                        IdentityMgtOSGITestConstants.JAAS_CONFIG_FILE).toString()));
-
-        return optionList.toArray(new Option[optionList.size()]);
-    }
+//    @Configuration
+//    public Option[] createConfiguration() {
+//
+//        List<Option> optionList = new ArrayList<>();
+//
+//        optionList.add(systemProperty(IdentityMgtOSGITestConstants.JAVA_SEC_SYSTEM_PROPERTY)
+//                .value(Paths.get(IdentityMgtOSGiTestUtils.getCarbonHome(),
+//                        IdentityMgtOSGITestConstants.CARBON_DIRECTORY_CONF,
+//                        IdentityMgtOSGITestConstants.CARBON_DIRECTORY_SECURITY,
+//                        IdentityMgtOSGITestConstants.JAAS_CONFIG_FILE).toString()));
+//
+//        return optionList.toArray(new Option[optionList.size()]);
+//    }
 
     @Test(groups = "adminDisabledUserAccount")
     public void testDisableUserByAdmin() throws IdentityStoreException, UserNotFoundException,
