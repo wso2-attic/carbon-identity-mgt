@@ -15,11 +15,9 @@
  */
 package org.wso2.carbon.identity.policy.password.history.util;
 
-
-import org.apache.commons.lang3.StringUtils;
 import org.wso2.carbon.identity.policy.password.history.bean.PasswordPolicyBean;
 
-import java.util.Locale;
+import java.nio.CharBuffer;
 import java.util.regex.Pattern;
 
 /**
@@ -30,107 +28,65 @@ public class PasswordValidation {
     /**
      * Method to validate the password.
      * If a regex is defined in the policy bean, regex will be given priority.
-     * If regex field is empty validate the password against other specified properties in the mean (
+     * If regex field is empty validate the password against other specified properties in the bean (
      * ex:uppercase,lowercase)
      *
      * @param password to be validated
      * @return a boolean indication the password is valid or not
      */
-    public static boolean validatePassword(String password) {
-        boolean isValid = true;
+    public static boolean validatePassword(char[] password) {
+        boolean isValid = false;
         PasswordPolicyBean passwordPolicyBean = new PasswordPolicyBean();
         Pattern pattern;
         if (password != null) {
             if (!passwordPolicyBean.getRegex().isEmpty()) {
-                pattern = Pattern.compile(passwordPolicyBean.getRegex());
-                if (pattern.matcher(password).matches()) {
-                    return isValid;
+                if (isRegexMatch(passwordPolicyBean.getRegex(), password)) {
+                    isValid = true;
                 } else {
                     isValid = false;
-                    return isValid;
                 }
+                return isValid;
             } else {
-                if (password.length() > passwordPolicyBean.getMaxLength() ||
-                        password.length() <= passwordPolicyBean.getMinLength()) {
+                if (password.length <= passwordPolicyBean.getMaxLength() &&
+                        password.length >= passwordPolicyBean.getMinLength()) {
+                    isValid = true;
+                } else {
                     isValid = false;
+                    return isValid;
                 }
-                if (passwordPolicyBean.isIncludeUpperCase()) {
-                    if (!hasUpperCase(password)) {
-                        isValid = false;
-                    }
-                } else {
-                    if (hasUpperCase(password)) {
-                        isValid = false;
-                    }
+                String startOfRegex = "^";
+                String endOfRegex = "$";
+                String regexContent = startOfRegex;
+                boolean upper = passwordPolicyBean.isIncludeUpperCase();
+                boolean lower = passwordPolicyBean.isIncludeLowerCase();
+                boolean digit = passwordPolicyBean.isIncludeNumbers();
+                boolean symbol = passwordPolicyBean.isIncludeSymbols();
+                if (digit) {
+                    regexContent = regexContent + "(?=.*[0-9])";
                 }
-                if (passwordPolicyBean.isIncludeLowerCase()) {
-                    if (!hasLowerCase(password)) {
-                        isValid = false;
-                    }
-                } else {
-                    if (hasLowerCase(password)) {
-                        isValid = false;
-                    }
+                if (lower) {
+                    regexContent = regexContent + "(?=.*[a-z])";
                 }
-                String numbers = "(.*[0-9].*)";
-                if (passwordPolicyBean.isIncludeNumbers()) {
-                    if (!password.matches(numbers)) {
-                        isValid = false;
-                    }
-                } else {
-                    if (password.matches(numbers)) {
-                        isValid = false;
-                    }
+                if (upper) {
+                    regexContent = regexContent + "(?=.*[A-Z])";
                 }
-                if (passwordPolicyBean.isIncludeSymbols() && !passwordPolicyBean.getSymbols().isEmpty()) {
-                    if (!hasSymbol(password)) {
-                        isValid = false;
-                    }
+                if (symbol && !passwordPolicyBean.getSymbols().isEmpty()) {
+                    regexContent = regexContent + "(?=.*[" + passwordPolicyBean.getSymbols() + "])";
+                }
+                regexContent = regexContent + ".*" + endOfRegex;
+                if (isRegexMatch(regexContent, password)) {
+                    isValid = true;
                 } else {
-                    if (hasSymbol(password)) {
-                        isValid = false;
-                    }
+                    isValid = false;
                 }
             }
         }
         return isValid;
     }
 
-    /**
-     * Method to check wether the password contains the specified special characters.
-     *
-     * @param password password to be validated
-     * @return boolean
-     */
-    private static boolean hasSymbol(String password) {
-        boolean isAlphaNumeric = StringUtils.isAlphanumeric(password);
-        if (!isAlphaNumeric) {
-            return true;
-        } else {
-            return false;
-        }
+    private static boolean isRegexMatch(String regex, char[] inputArray) {
+        Pattern pattern;
+        pattern = Pattern.compile(regex);
+        return pattern.matcher(CharBuffer.wrap(inputArray)).matches();
     }
-
-    /**
-     * Method to check wether the password contains any uppercase characters
-     *
-     * @param password password to be validated
-     * @return boolean
-     */
-    private static boolean hasUpperCase(String password) {
-        boolean hasUppercase = !password.equals(password.toLowerCase(Locale.getDefault()));
-        return hasUppercase;
-    }
-
-    /**
-     * Method to check wether the password contains any lowercase characters
-     *
-     * @param password password to be validated
-     * @return boolean
-     */
-    private static boolean hasLowerCase(String password) {
-        boolean hasLowercase = !password.equals(password.toUpperCase(Locale.getDefault()));
-        return hasLowercase;
-    }
-
 }
