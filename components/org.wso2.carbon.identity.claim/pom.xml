@@ -90,8 +90,12 @@
             <groupId>org.wso2.carbon.caching</groupId>
             <artifactId>org.wso2.carbon.caching</artifactId>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.wso2.orbit.org.yaml</groupId>-->
+            <!--<artifactId>snakeyaml</artifactId>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>org.wso2.orbit.org.yaml</groupId>
+            <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
         <dependency>
@@ -175,7 +179,7 @@
             javax.xml.*,
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
             net.minidev.asm.*;version="${asm.package.version.range}",
-            org.wso2.carbon.kernel.*;version="${carbon.kernel.version}",
+            org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version}",
             org.wso2.carbon.identity.mgt.exception.*;version="${carbon.identity.mgt.version}",
             org.wso2.carbon.identity.mgt.impl.util.*;version="${carbon.identity.mgt.version}",
             org.wso2.carbon.identity.mgt.resolver.user.*;version="${carbon.identity.mgt.version}",

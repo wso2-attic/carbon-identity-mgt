@@ -91,7 +91,7 @@
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",
             org.slf4j.*;version="${slf4j.logging.package.import.version.range}",
-            <!--org.wso2.msf4j.*;version="${org.wso2.msf4j.version.range}",-->
+            org.wso2.msf4j.*;version="${org.wso2.msf4j.version.range}",
             org.osgi.service.component.annotations.*;version="${org.osgi.service.component.annotations.version.range}",
             org.wso2.carbon.messaging.*;version="${org.wso2.carbon.messaging.version.range}",
             javax.security.auth.*
@@ -123,8 +123,8 @@
         <org.snakeyaml.package.import.version.range>[1.16.0, 2.0.0)</org.snakeyaml.package.import.version.range>
 
         <msf4j-core.version>2.1.0</msf4j-core.version>
-        <org.wso2.msf4j.version.range>[2.0.0, 3.0.0)</org.wso2.msf4j.version.range>
-        <org.wso2.carbon.messaging.version.range>[1.0.0, 2.0.0)</org.wso2.carbon.messaging.version.range>
+        <org.wso2.msf4j.version.range>[1.0.0, 3.0.0)</org.wso2.msf4j.version.range>
+        <org.wso2.carbon.messaging.version.range>[1.0.0, 3.0.0)</org.wso2.carbon.messaging.version.range>
 
     </properties>
 

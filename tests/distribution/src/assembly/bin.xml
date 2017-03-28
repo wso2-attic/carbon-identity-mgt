@@ -15,7 +15,7 @@
   -->
 <assembly>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>wso2carbon-kernel-${pom.version}</baseDirectory>
+    <baseDirectory>wso2carbon-identity-mgt-test-${carbon.identity.mgt.version}</baseDirectory>
     <id>carbon-identity-mgt</id>
     <formats>
         <format>zip</format>
@@ -23,10 +23,11 @@
 
     <fileSets>
         <fileSet>
-            <directory>target/carbon-identity-mgt</directory>
+            <directory>target/wso2carbon-identity-mgt-${carbon.identity.mgt.version}</directory>
             <outputDirectory></outputDirectory>
             <fileMode>644</fileMode>
             <excludes>
+                <exclude>conf/identity/*.yaml</exclude>
                 <exclude>**/eclipse.ini</exclude>
                 <exclude>**/*.lock</exclude>
                 <exclude>**/.data</exclude>
@@ -39,13 +40,24 @@
         </fileSet>
 
         <fileSet>
-            <directory>target/carbon-identity-mgt</directory>
+            <directory>target/wso2carbon-identity-mgt-${carbon.identity.mgt.version}</directory>
             <outputDirectory></outputDirectory>
             <includes>
                 <include>**/*.sh</include>
                 <include>**/native/*</include>
             </includes>
             <fileMode>755</fileMode>
+        </fileSet>
+
+        <fileSet>
+            <directory>carbon-home/conf/datasources</directory>
+            <outputDirectory>conf/datasources</outputDirectory>
+            <fileMode>644</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>carbon-home/conf/identity</directory>
+            <outputDirectory>conf/identity</outputDirectory>
+            <fileMode>644</fileMode>
         </fileSet>
 
     </fileSets>

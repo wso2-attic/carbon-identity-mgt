@@ -112,16 +112,18 @@
             org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",
             org.osgi.service.component; version="${osgi.service.component.imp.pkg.version.range}",
 
-            org.yaml.snakeyaml; version="1.16.0.wso2v1",
-            org.yaml.snakeyaml.introspector; version="1.16.0.wso2v1",
+            org.yaml.snakeyaml.*; version="${org.snakeyaml.package.import.version.range}",
             org.wso2.carbon.kernel.*;version="${carbon.kernel.package.import.version}",
             org.wso2.carbon.identity.common.*;version="${carbon.identity.commons.version}",
             org.wso2.carbon.identity.event.*;version="${carbon.identity.commons.version}",
             org.wso2.carbon.identity.mgt.*; version="${carbon.identity.mgt.version}",
-            org.osgi.service.jndi.*; version="${carbon.jndi.version}",
+            org.osgi.service.jndi; version="${org.osgi.service.jndi.import.version.range}",
             javax.naming.*,
             javax.sql.*,
             javax.security.auth.*,
         </import.package>
+
+        <org.snakeyaml.package.import.version.range>[1.16.0, 2.0.0)</org.snakeyaml.package.import.version.range>
+        <org.osgi.service.jndi.import.version.range>[1.0.0,2.0.0)</org.osgi.service.jndi.import.version.range>
     </properties>
 </project>

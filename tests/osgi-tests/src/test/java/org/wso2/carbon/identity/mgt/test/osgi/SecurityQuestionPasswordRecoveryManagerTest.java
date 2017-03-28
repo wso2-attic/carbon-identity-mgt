@@ -1,6 +1,7 @@
 package org.wso2.carbon.identity.mgt.test.osgi;
 
 import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.wso2.carbon.container.CarbonContainerFactory;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
 import org.wso2.carbon.identity.mgt.UserState;
@@ -26,7 +28,7 @@ import org.wso2.carbon.identity.recovery.bean.ChallengeQuestionsResponse;
 import org.wso2.carbon.identity.recovery.model.ChallengeQuestion;
 import org.wso2.carbon.identity.recovery.model.UserChallengeAnswer;
 import org.wso2.carbon.identity.recovery.password.SecurityQuestionPasswordRecoveryManager;
-import org.wso2.carbon.kernel.utils.CarbonServerInfo;
+//import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
  */
 @Listeners(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
+@ExamFactory(CarbonContainerFactory.class)
 public class SecurityQuestionPasswordRecoveryManagerTest {
 
     private static List<User> users = new ArrayList<>();
@@ -55,8 +58,8 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
     @Inject
     private BundleContext bundleContext;
 
-    @Inject
-    private CarbonServerInfo carbonServerInfo;
+//    @Inject
+//    private CarbonServerInfo carbonServerInfo;
 
     @Inject
     private SecurityQuestionPasswordRecoveryManager securityQuestionPasswordRecoveryManager;
@@ -67,7 +70,7 @@ public class SecurityQuestionPasswordRecoveryManagerTest {
     @Configuration
     public Option[] createConfiguration() {
 
-        List<Option> optionList = IdentityMgtOSGiTestUtils.getDefaultSecurityPAXOptions();
+        List<Option> optionList = new ArrayList<>();
 
         optionList.add(systemProperty("java.security.auth.login.config")
                 .value(Paths.get(IdentityMgtOSGiTestUtils.getCarbonHome(), "conf", "security", "carbon-jaas.config")
