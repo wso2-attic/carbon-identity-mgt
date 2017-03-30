@@ -16,6 +16,8 @@
 
 package org.wso2.carbon.identity.recovery.password;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.util.IdentityUtils;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.RecoveryScenarios;
@@ -29,6 +31,7 @@ import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
  */
 public class AdminForcePasswordResetManager {
     private static AdminForcePasswordResetManager instance = new AdminForcePasswordResetManager();
+    private static final Logger log = LoggerFactory.getLogger(AdminForcePasswordResetManager.class);
 
     public static AdminForcePasswordResetManager getInstance() {
         return instance;
@@ -49,13 +52,21 @@ public class AdminForcePasswordResetManager {
      * @param userUniqueId selected user id
      * @throws IdentityRecoveryException
      */
-    public void persistPasscode(String userUniqueId) throws IdentityRecoveryException {
+    public String persistPasscode(String userUniqueId) throws IdentityRecoveryException {
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         String passcode = generatePasscode();
+        if (log.isDebugEnabled()) {
+            log.debug("The passcode is generated.");
+        }
         UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, passcode,
                 RecoveryScenarios.ADMIN_FORCED_PASSWORD_RESET_VIA_OTP, RecoverySteps.UPDATE_PASSWORD);
         userRecoveryDataStore.invalidateUserScenario(userUniqueId,
                 String.valueOf(RecoveryScenarios.ADMIN_FORCED_PASSWORD_RESET_VIA_OTP));
         userRecoveryDataStore.store(recoveryDataDO);
+
+        if (log.isDebugEnabled()) {
+            log.debug("The passcode is persisted.");
+        }
+        return passcode;
     }
 }
