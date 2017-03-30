@@ -83,6 +83,6 @@ public class AdminForcedPasswordResetTest {
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         UserRecoveryData userRecoveryData = userRecoveryDataStore.loadByUserUniqueId("user3");
         Assert.assertNotNull(userRecoveryData, "Failed to persist OTP");
-    }
 
+    }
 }
