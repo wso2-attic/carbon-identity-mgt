@@ -32,6 +32,7 @@ import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.RecoveryScenarios;
 import org.wso2.carbon.identity.recovery.RecoverySteps;
 import org.wso2.carbon.identity.recovery.internal.IdentityRecoveryServiceDataHolder;
+import org.wso2.carbon.identity.recovery.mapping.AskPasswordConfig;
 import org.wso2.carbon.identity.recovery.model.UserRecoveryData;
 import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
 import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
@@ -47,6 +48,12 @@ import java.util.UUID;
 public class AskPasswordEmailHandler extends AbstractEventHandler {
 
     private static final Logger log = LoggerFactory.getLogger(AskPasswordEmailHandler.class);
+    private static AskPasswordEmailHandler instance = new AskPasswordEmailHandler();
+    private static AskPasswordConfig askPasswordConfig;
+    public static AskPasswordEmailHandler getInstance() {
+        askPasswordConfig = new AskPasswordConfig();
+        return instance;
+    }
 
     @Override
     public void configure(InitConfig initConfig) throws IdentityException {
@@ -74,14 +81,18 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
 
         if (IdentityStoreInterceptorConstants.POST_ADD_USER.equals(event.getEventName())) {
             //TODO: Use the ask password template
-            //triggerNotification(userUniqueId,IdentityRecoveryConstants.NOTIFICATION_TYPE_ASK_PASSWORD,user);
-            triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET,
-                    user, secretKey);
+            if (askPasswordConfig.isEnableAskPasswordEmailInternallyManaged()) {
+                //triggerNotification(userUniqueId,IdentityRecoveryConstants.NOTIFICATION_TYPE_ASK_PASSWORD,user);
+                triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET,
+                        user, secretKey);
+            }
         }
 
         if (IdentityStoreInterceptorConstants.POST_ADD_USER_BY_DOMAIN.equals(event.getEventName())) {
-            triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET,
-                    user, secretKey);
+            if (askPasswordConfig.isEnableAskPasswordEmailInternallyManaged()) {
+                triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET,
+                        user, secretKey);
+            }
         }
     }
 

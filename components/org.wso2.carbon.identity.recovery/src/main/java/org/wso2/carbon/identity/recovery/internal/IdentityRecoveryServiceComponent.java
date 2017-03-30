@@ -32,6 +32,7 @@ import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
+import org.wso2.carbon.identity.recovery.handler.AskPasswordEmailHandler;
 import org.wso2.carbon.identity.recovery.mapping.RecoveryLinkConfig;
 import org.wso2.carbon.identity.recovery.password.NotificationPasswordRecoveryManager;
 import org.wso2.carbon.identity.recovery.password.SecurityQuestionPasswordRecoveryManager;
@@ -81,6 +82,8 @@ public class IdentityRecoveryServiceComponent {
                             ChallengeQuestionManager.getInstance()), null);
             bundleContext.registerService(ChallengeQuestionManager.class.getName(),
                     ChallengeQuestionManager.getInstance(), null);
+            bundleContext.registerService(AskPasswordEmailHandler.class.getName(),
+                    AskPasswordEmailHandler.getInstance(), null);
             IdentityRecoveryServiceDataHolder.getInstance().setRecoveryLinkConfig(new RecoveryLinkConfig());
 
         } catch (Exception e) {
