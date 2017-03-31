@@ -25,7 +25,6 @@ import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.mgt.constant.StoreConstants;
-import org.wso2.carbon.identity.policy.password.history.bean.PasswordHistoryBean;
 import org.wso2.carbon.identity.policy.password.pattern.bean.ValidationResult;
 import org.wso2.carbon.identity.policy.password.pattern.registry.PolicyRegistry;
 import java.util.List;
@@ -38,9 +37,7 @@ import javax.security.auth.callback.PasswordCallback;
  */
 public class PasswordPolicyPatternHandler extends AbstractEventHandler {
 
-    private PasswordHistoryBean passwordHistoryBean = new PasswordHistoryBean();
-    private static Logger log = LoggerFactory.getLogger(org.wso2.carbon.identity.policy.password.history.
-            PasswordHistoryHandler.class);
+    private static Logger log = LoggerFactory.getLogger(PasswordPolicyPatternHandler.class);
     private PolicyRegistry policyRegistry = null;
     private static final int ERROR_CODE = 2000;
 
@@ -53,7 +50,7 @@ public class PasswordPolicyPatternHandler extends AbstractEventHandler {
     public void handle(EventContext eventContext, Event event) throws IdentityException {
 
         if (!passwordHistoryBean.isEnabled()) {
-            log.debug("Password History Validation is Disabled");
+            log.debug("Password policy validation is disabled");
             return;
         }
 
@@ -62,7 +59,7 @@ public class PasswordPolicyPatternHandler extends AbstractEventHandler {
                 equals(event.getEventName()) || StoreConstants.IdentityStoreInterceptorConstants.PRE_ADD_USER.
                 equals(event.getEventName())) {
 
-            log.debug("Validating given Password against History in pre Update");
+            log.debug("Validating given password against policy in pre update");
             handlePreUpdateCredentials(event);
 
         }

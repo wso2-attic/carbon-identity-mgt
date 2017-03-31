@@ -24,28 +24,23 @@ public class ValidationResult {
     private String message = null;
 
     public boolean isSuccess() {
-
         return isSuccess;
     }
 
     public void setSuccess(boolean success) {
-
         isSuccess = success;
     }
 
     public String getMessage() {
-
         return message;
     }
 
     public void setMessage(String message) {
-
         this.message = message;
     }
 
     @Override
     public String toString() {
-
         return "ValidationResult{" +
                 "isSuccess=" + isSuccess +
                 ", message='" + message + '\'' +

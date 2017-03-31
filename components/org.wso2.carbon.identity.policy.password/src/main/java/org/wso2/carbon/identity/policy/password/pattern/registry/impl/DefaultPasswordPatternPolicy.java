@@ -46,7 +46,8 @@ public class DefaultPasswordPatternPolicy implements PolicyEnforcer {
 
     private final PasswordRule[] availableRules = {
 
-            new BaseRule("Password is too short. Needs to have At Least 11 Characters") {
+            new BaseRule("Password is too short. Needs to have at least: " + new PasswordPolicyBean().getMinLength() +
+                    " characters") {
 
                 @Override
                 public boolean passRule(char[] password) {
@@ -55,7 +56,8 @@ public class DefaultPasswordPatternPolicy implements PolicyEnforcer {
 
             },
 
-            new BaseRule("Password is too Long. Needs to have less than 20 Characters") {
+            new BaseRule("Password is too long. Needs to have less than " + new PasswordPolicyBean().getMaxLength() +
+                    " characters") {
 
                 @Override
                 public boolean passRule(char[] password) {
@@ -64,7 +66,7 @@ public class DefaultPasswordPatternPolicy implements PolicyEnforcer {
 
             },
 
-            new BaseRule("Password Needs At Least an Upper Case Character") {
+            new BaseRule("Password needs at least an upper case character") {
 
                 private final Pattern pattern = Pattern.compile(".*[A-Z].*");
 
@@ -74,7 +76,7 @@ public class DefaultPasswordPatternPolicy implements PolicyEnforcer {
                 }
             },
 
-            new BaseRule("Password Needs At Least a Lower Case Character") {
+            new BaseRule("Password needs at least a lower case character") {
 
                 private final Pattern pattern = Pattern.compile(".*[a-z].*");
 
@@ -85,7 +87,7 @@ public class DefaultPasswordPatternPolicy implements PolicyEnforcer {
                 }
             },
 
-            new BaseRule("Password Needs At Least a Number") {
+            new BaseRule("Password needs at least a number") {
 
                 private final Pattern pattern = Pattern.compile(".*[0-9].*");
 
@@ -95,7 +97,7 @@ public class DefaultPasswordPatternPolicy implements PolicyEnforcer {
                 }
             },
 
-            new BaseRule("Password Needs At Least a Special Character") {
+            new BaseRule("Password needs at least a special character") {
 
                 private final Pattern pattern = Pattern.compile(".*[-+_!@#$%^&*.,?=].*");
 

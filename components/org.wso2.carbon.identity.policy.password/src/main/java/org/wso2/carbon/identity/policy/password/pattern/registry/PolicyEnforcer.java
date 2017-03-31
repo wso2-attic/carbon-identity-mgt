@@ -37,5 +37,4 @@ public interface PolicyEnforcer {
      */
     ValidationResult enforce(Object... args);
 
-
 }

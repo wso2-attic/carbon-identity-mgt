@@ -58,7 +58,6 @@ PasswordHistoryServiceComponent {
     private JdbcTemplate jdbcTemplate;
     private DataSourceService dataSourceService;
     private PasswordHistoryDataStore passwordHistoryDataStore = null;
-    private PolicyRegistry policyRegistry = new PolicyRegistry();
 
     @Activate
     protected void activate(ComponentContext context) {
