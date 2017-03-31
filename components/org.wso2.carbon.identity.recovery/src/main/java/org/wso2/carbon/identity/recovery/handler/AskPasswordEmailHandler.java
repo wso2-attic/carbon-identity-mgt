@@ -32,7 +32,6 @@ import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.RecoveryScenarios;
 import org.wso2.carbon.identity.recovery.RecoverySteps;
 import org.wso2.carbon.identity.recovery.internal.IdentityRecoveryServiceDataHolder;
-import org.wso2.carbon.identity.recovery.mapping.AskPasswordConfig;
 import org.wso2.carbon.identity.recovery.model.UserRecoveryData;
 import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
 import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
@@ -49,9 +48,7 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
 
     private static final Logger log = LoggerFactory.getLogger(AskPasswordEmailHandler.class);
     private static AskPasswordEmailHandler instance = new AskPasswordEmailHandler();
-    private static AskPasswordConfig askPasswordConfig;
     public static AskPasswordEmailHandler getInstance() {
-        askPasswordConfig = new AskPasswordConfig();
         return instance;
     }
 
@@ -71,28 +68,22 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
         User user = (User) eventProperties.get(IdentityStoreConstants.USER);
         String userUniqueId = user.getUniqueUserId();
 
-        //TODO: Replace this with Hasanthi's UUID generation and store method
+        //TODO: Replace this with UUID generation and store method
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         userRecoveryDataStore.invalidateByUserUniqueId(userUniqueId);
         String secretKey = UUID.randomUUID().toString();
         UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, secretKey,
                 RecoveryScenarios.ASK_PASSWORD, RecoverySteps.UPDATE_PASSWORD);
         userRecoveryDataStore.store(recoveryDataDO);
-
+        //TODO trigger this even only if userbean.containProperty(askPasswordEnable)
         if (IdentityStoreInterceptorConstants.POST_ADD_USER.equals(event.getEventName())) {
-            //TODO: Use the ask password template
-            if (askPasswordConfig.isEnableAskPasswordEmailInternallyManaged()) {
-                //triggerNotification(userUniqueId,IdentityRecoveryConstants.NOTIFICATION_TYPE_ASK_PASSWORD,user);
-                triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET,
-                        user, secretKey);
-            }
+            triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_ASK_PASSWORD, user,
+                    secretKey);
         }
 
         if (IdentityStoreInterceptorConstants.POST_ADD_USER_BY_DOMAIN.equals(event.getEventName())) {
-            if (askPasswordConfig.isEnableAskPasswordEmailInternallyManaged()) {
-                triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_PASSWORD_RESET,
-                        user, secretKey);
-            }
+            triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_ASK_PASSWORD, user,
+                    secretKey);
         }
     }
 
@@ -105,7 +96,6 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
             properties.put(IdentityRecoveryConstants.CONFIRMATION_CODE, code);
         }
         //TODO add domain if needed
-        //properties.put(EventConstants.EventProperty.USER_STORE_DOMAIN, user.getDomainName());
         properties.put(IdentityRecoveryConstants.TEMPLATE_TYPE, type);
         Event identityMgtEvent = new Event(eventName, properties);
         EventContext eventContext = new EventContext();

@@ -28,6 +28,7 @@ import org.osgi.service.jndi.JNDIContextManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.jdbc.JdbcTemplate;
+import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
@@ -82,8 +83,8 @@ public class IdentityRecoveryServiceComponent {
                             ChallengeQuestionManager.getInstance()), null);
             bundleContext.registerService(ChallengeQuestionManager.class.getName(),
                     ChallengeQuestionManager.getInstance(), null);
-            bundleContext.registerService(AskPasswordEmailHandler.class.getName(),
-                    AskPasswordEmailHandler.getInstance(), null);
+            bundleContext.registerService(AbstractEventHandler.class.getName(),
+                 new AskPasswordEmailHandler(), null);
             IdentityRecoveryServiceDataHolder.getInstance().setRecoveryLinkConfig(new RecoveryLinkConfig());
 
         } catch (Exception e) {
