@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.wso2.carbon.identity.policy.password.history.bean;
+package org.wso2.carbon.identity.policy.password.pattern.bean;
 
 import java.io.Serializable;
 
@@ -22,6 +22,7 @@ import java.io.Serializable;
  * TODO:This should be used as a bean w.r.t C5 cinfiguration bean model
  */
 public class PasswordPolicyBean implements Serializable {
+
     private static final long serialVersionUID = -2913500114444797062L;
     private boolean includeUpperCase = true;
     private boolean includeLowerCase = true;
@@ -29,8 +30,32 @@ public class PasswordPolicyBean implements Serializable {
     private boolean includeSymbols = true;
     private int minLength = 6;
     private int maxLength = 12;
-    private String symbols = "!@#$%&*()_+-=[]|,./?><";
+    //Special characters need to be included in password
+    private String symbols = "-+_!@#$%^&*.,?=";
     private String regex = "";
+    private boolean isEnabled = true;
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
+    @Override
+    public String toString() {
+        return "PasswordPolicyBean{" +
+                "includeUpperCase=" + includeUpperCase +
+                ", includeLowerCase=" + includeLowerCase +
+                ", includeNumbers=" + includeNumbers +
+                ", includeSymbols=" + includeSymbols +
+                ", minLength=" + minLength +
+                ", maxLength=" + maxLength +
+                ", symbols='" + symbols + '\'' +
+                ", regex='" + regex + '\'' +
+                '}';
+    }
 
     public int getMaxLength() {
         return maxLength;
