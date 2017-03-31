@@ -16,6 +16,7 @@
 
 package org.wso2.carbon.identity.mgt.impl;
 
+import com.sun.xml.internal.ws.handler.HandlerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.mgt.AuthenticationContext;
