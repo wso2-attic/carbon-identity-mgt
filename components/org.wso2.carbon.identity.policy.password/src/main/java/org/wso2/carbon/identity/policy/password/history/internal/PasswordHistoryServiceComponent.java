@@ -33,7 +33,6 @@ import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.policy.password.history.PasswordHistoryHandler;
 import org.wso2.carbon.identity.policy.password.history.store.PasswordHistoryDataStore;
 import org.wso2.carbon.identity.policy.password.history.store.impl.DefaultPasswordHistoryDataStore;
-import org.wso2.carbon.identity.policy.password.pattern.registry.PolicyRegistry;
 
 import java.util.Map;
 import javax.naming.Context;
