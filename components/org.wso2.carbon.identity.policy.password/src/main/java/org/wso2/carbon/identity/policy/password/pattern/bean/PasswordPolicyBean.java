@@ -32,6 +32,15 @@ public class PasswordPolicyBean implements Serializable {
     private int maxLength = 12;
     private String symbols = "-+_!@#$%^&*.,?=";
     private String regex = "";
+    private boolean isEnabled = true;
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
 
     @Override
     public String toString() {

@@ -25,6 +25,7 @@ import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.mgt.constant.StoreConstants;
+import org.wso2.carbon.identity.policy.password.pattern.bean.PasswordPolicyBean;
 import org.wso2.carbon.identity.policy.password.pattern.bean.ValidationResult;
 import org.wso2.carbon.identity.policy.password.pattern.registry.PolicyRegistry;
 import java.util.List;
@@ -40,6 +41,7 @@ public class PasswordPolicyPatternHandler extends AbstractEventHandler {
     private static Logger log = LoggerFactory.getLogger(PasswordPolicyPatternHandler.class);
     private PolicyRegistry policyRegistry = null;
     private static final int ERROR_CODE = 2000;
+    private PasswordPolicyBean passwordPolicyBean = new PasswordPolicyBean();
 
     public PasswordPolicyPatternHandler(PolicyRegistry policyRegistry) {
         this.policyRegistry = policyRegistry;
@@ -49,7 +51,7 @@ public class PasswordPolicyPatternHandler extends AbstractEventHandler {
     @Override
     public void handle(EventContext eventContext, Event event) throws IdentityException {
 
-        if (!passwordHistoryBean.isEnabled()) {
+        if (!passwordPolicyBean.isEnabled()) {
             log.debug("Password policy validation is disabled");
             return;
         }
