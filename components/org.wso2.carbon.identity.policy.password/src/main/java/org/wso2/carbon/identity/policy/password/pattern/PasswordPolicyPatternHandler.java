@@ -34,7 +34,8 @@ import javax.security.auth.callback.PasswordCallback;
 
 
 /**
- * PasswordPatternHandler class.
+ * Intercept update password and add user operations to check user entered password strength according to predefine
+ * policies.
  */
 public class PasswordPolicyPatternHandler extends AbstractEventHandler {
 

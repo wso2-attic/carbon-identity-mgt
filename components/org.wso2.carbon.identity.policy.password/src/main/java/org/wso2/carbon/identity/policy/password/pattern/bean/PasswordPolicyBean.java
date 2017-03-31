@@ -30,6 +30,7 @@ public class PasswordPolicyBean implements Serializable {
     private boolean includeSymbols = true;
     private int minLength = 6;
     private int maxLength = 12;
+    //Special characters need to be included in password
     private String symbols = "-+_!@#$%^&*.,?=";
     private String regex = "";
     private boolean isEnabled = true;

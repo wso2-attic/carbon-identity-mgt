@@ -66,7 +66,7 @@ public class DefaultPasswordPatternPolicy implements PolicyEnforcer {
 
             },
 
-            new BaseRule("Password needs at least an upper case character") {
+            new BaseRule("Password needs at least one upper case character") {
 
                 private final Pattern pattern = Pattern.compile(".*[A-Z].*");
 
@@ -76,7 +76,7 @@ public class DefaultPasswordPatternPolicy implements PolicyEnforcer {
                 }
             },
 
-            new BaseRule("Password needs at least a lower case character") {
+            new BaseRule("Password needs at least one lower case character") {
 
                 private final Pattern pattern = Pattern.compile(".*[a-z].*");
 
@@ -87,7 +87,7 @@ public class DefaultPasswordPatternPolicy implements PolicyEnforcer {
                 }
             },
 
-            new BaseRule("Password needs at least a number") {
+            new BaseRule("Password needs at least one number") {
 
                 private final Pattern pattern = Pattern.compile(".*[0-9].*");
 
@@ -97,7 +97,7 @@ public class DefaultPasswordPatternPolicy implements PolicyEnforcer {
                 }
             },
 
-            new BaseRule("Password needs at least a special character") {
+            new BaseRule("Password needs at least one special character") {
 
                 private final Pattern pattern = Pattern.compile(".*[-+_!@#$%^&*.,?=].*");
 
@@ -155,7 +155,7 @@ public class DefaultPasswordPatternPolicy implements PolicyEnforcer {
                 return validationResult;
             }
             validationResult.setSuccess(false);
-            validationResult.setMessage("Password your entered does not adhere to password policy");
+            validationResult.setMessage("Entered password does not adhere to password policy");
             return validationResult;
         }
 

@@ -107,7 +107,7 @@ public class PasswordPolicyPatternServiceComponent {
     protected void unregisterPolicyEnforcer(PolicyEnforcer service) {
 
         if (log.isDebugEnabled()) {
-            log.debug("Data source service unregistered.");
+            log.debug("Unregister policy enforcer service.");
         }
 
         policyRegistry.removePolicy(service);
