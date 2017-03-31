@@ -33,13 +33,13 @@ import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.policy.password.history.PasswordHistoryHandler;
 import org.wso2.carbon.identity.policy.password.history.store.PasswordHistoryDataStore;
 import org.wso2.carbon.identity.policy.password.history.store.impl.DefaultPasswordHistoryDataStore;
-import org.wso2.carbon.identity.policy.password.validation.PasswordValidationService;
-import org.wso2.carbon.identity.policy.password.validation.impl.PasswordValidationServiceImpl;
+import org.wso2.carbon.identity.policy.password.pattern.registry.PolicyRegistry;
 
 import java.util.Map;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+
 
 /**
  * PasswordHistoryServiceComponent class.
@@ -48,7 +48,7 @@ import javax.sql.DataSource;
         name = "PasswordHistoryServiceComponent",
         immediate = true,
         property = {
-                "componentName=handler.password.history"
+                "componentName=handler.policy.password.history"
         }
 )
 public class
@@ -58,6 +58,7 @@ PasswordHistoryServiceComponent {
     private JdbcTemplate jdbcTemplate;
     private DataSourceService dataSourceService;
     private PasswordHistoryDataStore passwordHistoryDataStore = null;
+    private PolicyRegistry policyRegistry = new PolicyRegistry();
 
     @Activate
     protected void activate(ComponentContext context) {
@@ -65,14 +66,11 @@ PasswordHistoryServiceComponent {
         if (passwordHistoryDataStore == null) {
             passwordHistoryDataStore = new DefaultPasswordHistoryDataStore(jdbcTemplate, dataSourceService);
         }
-        PasswordValidationService passwordValidationService = new PasswordValidationServiceImpl();
         context.getBundleContext().registerService(AbstractEventHandler.class.getName(),
                 new PasswordHistoryHandler(passwordHistoryDataStore), null);
-        context.getBundleContext().registerService(PasswordValidationService.class, passwordValidationService, null);
         if (log.isDebugEnabled()) {
             log.debug("PasswordHistoryHandler is registered");
         }
-
     }
 
     @Deactivate

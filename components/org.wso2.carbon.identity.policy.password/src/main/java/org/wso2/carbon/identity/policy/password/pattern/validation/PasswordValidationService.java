@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.wso2.carbon.identity.policy.password.validation;
+package org.wso2.carbon.identity.policy.password.pattern.validation;
 
 /**
  * This is the api for password validation against the password policy oset by the Identity Server/System admin.
  */
 public interface PasswordValidationService {
+
     /**
      * Validate the password against password policy
      * @param password
      * @return boolean value
      */
-    boolean validatePassword(String password);
+    boolean validatePassword(char[] password);
 }
