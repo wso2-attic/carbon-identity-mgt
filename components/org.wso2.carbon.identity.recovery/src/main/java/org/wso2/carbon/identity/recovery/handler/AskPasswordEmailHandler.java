@@ -42,28 +42,24 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Ask password when add user using a mail.
+ * Handler for User On boarding - Email Verification and Ask Password.
  */
 public class AskPasswordEmailHandler extends AbstractEventHandler {
 
     private static final Logger log = LoggerFactory.getLogger(AskPasswordEmailHandler.class);
-    private static AskPasswordEmailHandler instance = new AskPasswordEmailHandler();
-    public static AskPasswordEmailHandler getInstance() {
-        return instance;
-    }
 
     @Override
     public void configure(InitConfig initConfig) throws IdentityException {
-
     }
 
+    @Override
     public String getName() {
         return "ask.password.using.email";
     }
 
-
     @Override
     public void handle(EventContext eventContext, Event event) throws IdentityException {
+
         Map<String, Object> eventProperties = event.getEventProperties();
         User user = (User) eventProperties.get(IdentityStoreConstants.USER);
         String userUniqueId = user.getUniqueUserId();
@@ -76,12 +72,8 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
                 RecoveryScenarios.ASK_PASSWORD, RecoverySteps.UPDATE_PASSWORD);
         userRecoveryDataStore.store(recoveryDataDO);
         //TODO trigger this even only if userbean.containProperty(askPasswordEnable)
-        if (IdentityStoreInterceptorConstants.POST_ADD_USER.equals(event.getEventName())) {
-            triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_ASK_PASSWORD, user,
-                    secretKey);
-        }
-
-        if (IdentityStoreInterceptorConstants.POST_ADD_USER_BY_DOMAIN.equals(event.getEventName())) {
+        if (IdentityStoreInterceptorConstants.POST_ADD_USER.equals(event.getEventName()) ||
+                IdentityStoreInterceptorConstants.POST_ADD_USER_BY_DOMAIN.equals(event.getEventName())) {
             triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_ASK_PASSWORD, user,
                     secretKey);
         }
@@ -89,7 +81,7 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
 
     private void triggerNotification(String userUniqueId, String type, User user, String code)
             throws IdentityRecoveryException {
-        String eventName = EventConstants.Event.TRIGGER_NOTIFICATION;
+
         HashMap<String, Object> properties = new HashMap<>();
         properties.put(EventConstants.EventProperty.USER_UNIQUE_ID, userUniqueId);
         if (StringUtils.isNotBlank(code)) {
@@ -97,7 +89,7 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
         }
         //TODO add domain if needed
         properties.put(IdentityRecoveryConstants.TEMPLATE_TYPE, type);
-        Event identityMgtEvent = new Event(eventName, properties);
+        Event identityMgtEvent = new Event(EventConstants.Event.TRIGGER_NOTIFICATION, properties);
         EventContext eventContext = new EventContext();
         try {
             IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().pushEvent(identityMgtEvent,

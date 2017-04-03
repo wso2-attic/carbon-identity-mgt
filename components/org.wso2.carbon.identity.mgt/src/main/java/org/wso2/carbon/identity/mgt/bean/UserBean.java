@@ -38,7 +38,6 @@ public class UserBean {
 
     public List<Claim> getClaims() {
 
-
         if (claims == null) {
             return Collections.emptyList();
         }

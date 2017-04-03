@@ -20,13 +20,13 @@ package org.wso2.carbon.identity.recovery.mapping;
  * Ask password config class.
  */
 public class AskPasswordConfig {
-    public boolean isEnableAskPasswordEmailInternallyManaged() {
-        return enableAskPasswordEmailInternallyManaged;
+    public boolean isInternallyManagedEnable() {
+        return emailInternallyManaged;
     }
 
-    public void setEnableAskPasswordEmailInternallyManaged(boolean enableAskPasswordEmailInternallyManaged) {
-        this.enableAskPasswordEmailInternallyManaged = enableAskPasswordEmailInternallyManaged;
+    public void setInternallyManagedEnable(boolean emailInternallyManaged) {
+        this.emailInternallyManaged = emailInternallyManaged;
     }
 
-    private  boolean enableAskPasswordEmailInternallyManaged = true;
+    private  boolean emailInternallyManaged = true;
 }
