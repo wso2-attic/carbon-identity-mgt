@@ -20,6 +20,8 @@ package org.wso2.carbon.identity.recovery.mapping;
  * Ask password config class.
  */
 public class AskPasswordConfig {
+    private  boolean notificationInternallyManaged = true;
+
     public boolean isNotificationInternallyManagedEnable() {
         return notificationInternallyManaged;
     }
@@ -28,5 +30,4 @@ public class AskPasswordConfig {
         this.notificationInternallyManaged = notificationInternallyManaged;
     }
 
-    private  boolean notificationInternallyManaged = true;
 }

@@ -54,14 +54,16 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
 
     @Override
     public String getName() {
-        return "ask.password.using.email";
+        return "identity.event.handler.ask.password.using.email";
     }
 
     @Override
     public void handle(EventContext eventContext, Event event) throws IdentityException {
-
+        User user = null;
         Map<String, Object> eventProperties = event.getEventProperties();
-        User user = (User) eventProperties.get(IdentityStoreConstants.USER);
+        if (eventProperties != null) {
+            user = (User) eventProperties.get(IdentityStoreConstants.USER);
+        }
         String userUniqueId = user.getUniqueUserId();
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         userRecoveryDataStore.invalidateByUserUniqueId(userUniqueId);
@@ -69,7 +71,7 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
         UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, secretKey,
                 RecoveryScenarios.ASK_PASSWORD, RecoverySteps.UPDATE_PASSWORD);
         userRecoveryDataStore.store(recoveryDataDO);
-        //TODO trigger this, if (userbean.containProperty(askPasswordEnable)) after the C5 kernel release.
+
         if (IdentityStoreInterceptorConstants.POST_ADD_USER.equals(event.getEventName()) ||
                 IdentityStoreInterceptorConstants.POST_ADD_USER_BY_DOMAIN.equals(event.getEventName())) {
             triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_ASK_PASSWORD, user,
@@ -80,12 +82,12 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
     private void triggerNotification(String userUniqueId, String type, User user, String code)
             throws IdentityRecoveryException {
 
-        HashMap<String, Object> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(EventConstants.EventProperty.USER_UNIQUE_ID, userUniqueId);
         if (StringUtils.isNotBlank(code)) {
             properties.put(IdentityRecoveryConstants.CONFIRMATION_CODE, code);
         }
-        //TODO add domain if needed
+        //TODO use domain if needed, change the email template according to that.
         properties.put(IdentityRecoveryConstants.TEMPLATE_TYPE, type);
         Event identityMgtEvent = new Event(EventConstants.Event.TRIGGER_NOTIFICATION, properties);
         EventContext eventContext = new EventContext();
