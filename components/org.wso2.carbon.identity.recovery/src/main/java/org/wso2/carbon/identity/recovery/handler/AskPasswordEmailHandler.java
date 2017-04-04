@@ -63,15 +63,13 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
         Map<String, Object> eventProperties = event.getEventProperties();
         User user = (User) eventProperties.get(IdentityStoreConstants.USER);
         String userUniqueId = user.getUniqueUserId();
-
-        //TODO: Replace this with UUID generation and store method
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
         userRecoveryDataStore.invalidateByUserUniqueId(userUniqueId);
         String secretKey = UUID.randomUUID().toString();
         UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, secretKey,
                 RecoveryScenarios.ASK_PASSWORD, RecoverySteps.UPDATE_PASSWORD);
         userRecoveryDataStore.store(recoveryDataDO);
-        //TODO trigger this even only if userbean.containProperty(askPasswordEnable)
+        //TODO trigger this, if (userbean.containProperty(askPasswordEnable)) after the C5 kernel release.
         if (IdentityStoreInterceptorConstants.POST_ADD_USER.equals(event.getEventName()) ||
                 IdentityStoreInterceptorConstants.POST_ADD_USER_BY_DOMAIN.equals(event.getEventName())) {
             triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_ASK_PASSWORD, user,
