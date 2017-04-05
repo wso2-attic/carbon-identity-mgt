@@ -41,8 +41,7 @@ public class MeApiServiceImplTest {
     public void testMePost() throws Exception {
 
         UserSelfSignUpManager selfSignUpManager = mock(UserSelfSignUpManager.class);
-        doThrow(new RuntimeException("Test RuntimeException."))
-                .doThrow(new IdentityRecoveryException("0001", "Test IdentityRecoveryException."))
+        doThrow(new IdentityRecoveryException("0001", "Test IdentityRecoveryException."))
                 .doThrow(new IdentityRecoveryClientException("0002", "Test IdentityRecoveryClientException"))
                 .when(selfSignUpManager).registerUser(any(), anyString(), any());
 
@@ -63,10 +62,21 @@ public class MeApiServiceImplTest {
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
         response = new MeApiServiceImpl().mePost(dto);
-        Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-
-        response = new MeApiServiceImpl().mePost(dto);
         Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
 
+    }
+
+    @Test
+    public void testEmptyUser() throws Exception {
+
+        UserSelfSignUpManager selfSignUpManager = mock(UserSelfSignUpManager.class);
+        doThrow(new IdentityRecoveryException("0001", "Test IdentityRecoveryException."))
+                .doThrow(new IdentityRecoveryClientException("0002", "Test IdentityRecoveryClientException"))
+                .when(selfSignUpManager).registerUser(any(), anyString(), any());
+
+        UserEndpointServiceDataHolder.getInstance().setUserSelfSignUpManager(selfSignUpManager);
+
+        Response response = new MeApiServiceImpl().mePost(null);
+        Assert.assertEquals(response.getStatus(), Response.Status.BAD_REQUEST.getStatusCode());
     }
 }

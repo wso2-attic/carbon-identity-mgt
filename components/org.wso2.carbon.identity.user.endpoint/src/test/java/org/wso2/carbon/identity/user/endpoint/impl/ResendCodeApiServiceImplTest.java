@@ -19,8 +19,8 @@ package org.wso2.carbon.identity.user.endpoint.impl;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryClientException;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryRuntimeException;
-import org.wso2.carbon.identity.recovery.IdentityRecoveryServerException;
 import org.wso2.carbon.identity.recovery.signup.UserSelfSignUpManager;
 import org.wso2.carbon.identity.user.endpoint.dto.ResendCodeRequestDTO;
 import org.wso2.carbon.identity.user.endpoint.dto.UserDTO;
@@ -41,9 +41,8 @@ public class ResendCodeApiServiceImplTest {
     @Test
     public void testResendCodePost() throws Exception {
         UserSelfSignUpManager selfSignUpManager = mock(UserSelfSignUpManager.class);
-        doThrow(new RuntimeException())
-                .doThrow(new IdentityRecoveryRuntimeException("0001", "Test IdentityRecoveryRuntimeException."))
-                .doThrow(new IdentityRecoveryServerException("0002", "Test IdentityRecoveryServerException."))
+        doThrow(new IdentityRecoveryRuntimeException("0001", "Test IdentityRecoveryRuntimeException."))
+                .doThrow(new IdentityRecoveryException("0002", "Test IdentityRecoveryServerException."))
                 .doThrow(new IdentityRecoveryClientException("0003", "Test IdentityRecoveryClientException"))
                 .when(selfSignUpManager).resendConfirmationCode(any(), anyString(), any());
 
@@ -59,9 +58,6 @@ public class ResendCodeApiServiceImplTest {
         dto.setProperties(null);
 
         Response response = new ResendCodeApiServiceImpl().resendCodePost(dto);
-        Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-
-        response = new ResendCodeApiServiceImpl().resendCodePost(dto);
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
         response = new ResendCodeApiServiceImpl().resendCodePost(dto);

@@ -111,7 +111,7 @@ public class IdentityRecoveryConstants {
         DISABLE_SELF_SIGN_UP("20021", "Self sign up feature is disabled."),
         LOCK_USER_ACCOUNT("20022", "Error while lock user account"),
         UNLOCK_USER("20023", "Error while unlock user account."),
-        OLD_CODE_NOT_FOUND("20024", "Old confirmation code not found"),
+        OLD_CODE_NOT_FOUND("20024", "Given confirmation code cannot be not found."),
         FAILED_TO_LOAD_REALM_SERVICE("20025", "Failed to retrieve user realm from tenant id : %s"),
         FAILED_TO_LOAD_USER_STORE_MANAGER("20026", "Failed to retrieve user store manager."),
         FAILED_TO_LOAD_USER_CLAIMS("20027", "Error occurred while retrieving user claims."),
@@ -122,7 +122,7 @@ public class IdentityRecoveryConstants {
         USERNAME_RECOVERY_NOT_ENABLE("20031", "Username recovery is not enabled"),
         MULTIPLE_USERS_MATCHING("20032", "Multiple users found"),
         ISSUE_IN_LOADING_SIGNUP_CONFIGS("20033", "Error loading sign-up configs."),
-        FAILED_TO_UPDATE_USER_CLAIMS("20034", "Error occurred while updating user claims"),
+        FAILED_TO_UPDATE_USER_CLAIMS("20034", "Error occurred while updating user claims for user ID: %s."),
         POLICY_VIOLATION("20035", "Password Policy Violate"),
         NEED_TO_ANSWER_TO_ASKED_SECURITY_QUESTION("20036", "Need to answer to asked security question"),
         SELF_SIGN_UP_STORE_ERROR("20037", "Identity store error occurred while user sign-up."),
@@ -130,14 +130,18 @@ public class IdentityRecoveryConstants {
         NON_UNIQUE_USER("20039", "Multiple users exist with the given user name: %s."),
         IDENTITY_STORE_ERROR("20040", "Error while obtaining the identity store."),
         MISSING_EVENT_PROPERTY("20041", "The event property %s is not available in the event properties."),
-        FAILED_LIFECYCLE_EVENT("20042", "Error occurred while executing lifecycle event."),
-        USER_NOT_FOUND("20043", "A user cannot be found for the given ID."),
+        FAILED_LIFECYCLE_EVENT("20042", "Error occurred while executing lifecycle event for user ID: %s."),
+        USER_NOT_FOUND("20043", "A user cannot be found for the given ID: %s"),
         FAILED_USER_STATE_UPDATE("20045", "Error occurred while updating user life cycle state."),
         FAILED_ACCOUNT_LOCK("20046", "Error occurred during account lock for user: %s"),
         FAILED_SSU_GROUP_SEARCH("20047", "Error occurred while searching for self sig-up role: %s."),
         FAILED_SSU_GROUP_ADD("20048", "Error occurred while creating self sign-up group %s."),
-        ACCOUNT_UNVERIFIED("20049", "User account is unverified."),
-        INVALID_USER_ID("20050", "Invalid unique user id: %s.");
+        ACCOUNT_UNVERIFIED("20049", "User account is unverified for user ID: %s."),
+        INVALID_USER_ID("20050", "Invalid unique user id: %s."),
+        INVALID_USER_ID_FORMAT("20051", "Invalid user ID for mat for ID : %s. User ID should be in the form of " +
+                                        "<domain ID>.<UUID>."),
+        USER_REGISTRATION_INFORMATION_NOT_FOUND("20052", "Cannot find user registration information in the request.");
+
 
         private final String code;
         private final String message;

@@ -135,8 +135,7 @@ public class UserSelfSignUpTest {
         // Confirm user.
         try {
             selfSignUpManager.confirmUserSelfSignUp(response.getCode());
-            Assert.assertTrue(selfSignUpManager.isUserConfirmed(responseBean.getUserUniqueId()), "User is not " +
-                                                                                                 "confirmed.");
+
             Assert.assertTrue(true);
         } catch (IdentityRecoveryException e) {
             Assert.fail("Error occurred while self sign-up confirmation.");
@@ -183,20 +182,6 @@ public class UserSelfSignUpTest {
         try {
             selfSignUpManager.confirmUserSelfSignUp("invalid");
             Assert.assertTrue(false, "Invalid code code confirmed.");
-        } catch (IdentityRecoveryException e) {
-            Assert.assertTrue(true);
-        }
-    }
-
-    @Test
-    public void testIsUserConfirmedForInvalidUser() {
-        UserSelfSignUpManager selfSignUpManager = bundleContext.getService(bundleContext.getServiceReference
-                (UserSelfSignUpManager.class));
-        Assert.assertNotNull(selfSignUpManager, "Failed to get user self sign-up service instance.");
-
-        try {
-            selfSignUpManager.isUserConfirmed(null);
-            Assert.fail("User confirmed for null user ID.");
         } catch (IdentityRecoveryException e) {
             Assert.assertTrue(true);
         }

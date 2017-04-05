@@ -25,7 +25,6 @@ import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.common.base.message.MessageContext;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
-import org.wso2.carbon.identity.event.EventException;
 import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.IdentityStore;
@@ -36,6 +35,9 @@ import org.wso2.carbon.identity.mgt.claim.Claim;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryClientException;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryServerException;
 import org.wso2.carbon.identity.recovery.RecoveryScenarios;
 import org.wso2.carbon.identity.recovery.RecoverySteps;
 import org.wso2.carbon.identity.recovery.mapping.SelfSignUpConfig;
@@ -47,7 +49,7 @@ import org.wso2.carbon.identity.recovery.util.Utils;
 import org.wso2.carbon.lcm.core.LifecycleOperationManager;
 import org.wso2.carbon.lcm.core.exception.LifecycleException;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +58,7 @@ import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStore
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.CONFIRMATION_CODE;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorCodes;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorCodes.ACCOUNT_UNVERIFIED;
+import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorCodes.INVALID_USER_ID_FORMAT;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.NOTIFICATION_TYPE_ACCOUNT_CONFIRM;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.SELF_SIGN_UP_EVENT;
 import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.SELF_SIGN_UP_PROPERTIES;
@@ -82,119 +85,126 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
     @Override
     public void handle(EventContext eventContext, Event event) throws IdentityException {
 
-        // TODO: Use the new config model.
-        config = new SelfSignUpConfig();
-        config.setNotificationInternallyManaged(false);
-        config.setSelfSignUpEnabled(true);
-        config.setAccountLockOnCreation(true);
-
         if (SELF_SIGN_UP_EVENT.equals(event.getEventName())) {
 
-            if (!config.isSelfSignUpEnabled()) {
+            // TODO: Use the new config model.
+            config = new SelfSignUpConfig();
+            config.setNotificationInternallyManaged(false);
+            config.setSelfSignUpEnabled(true);
+            config.setAccountLockOnCreation(true);
 
-                if (log.isDebugEnabled()) {
-                    log.debug("Self sign-up is disabled in the configuration.");
-                }
-                return;
+            handleSelfSignUpEvent(event, eventContext);
+
+        } else if (IdentityStoreInterceptorConstants.POST_AUTHENTICATE.equals(event.getEventName())) {
+            handlePostAuthenticateEvent(event);
+        }
+    }
+
+    private void handleSelfSignUpEvent(Event event, EventContext eventContext) throws IdentityRecoveryException {
+
+        if (!config.isSelfSignUpEnabled()) {
+
+            if (log.isDebugEnabled()) {
+                log.debug("Self sign-up is disabled in the configuration.");
             }
-
-            Map<String, Object> eventProperties = event.getEventProperties();
-            User user = (User) eventProperties.get(IdentityStoreConstants.USER);
-
-            if (user == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Event property: {} cannot be found in event: {}.", IdentityStoreConstants.USER,
-                              ErrorCodes.MISSING_EVENT_PROPERTY);
-                }
-                throw Utils.handleServerException(ErrorCodes.MISSING_EVENT_PROPERTY,
-                                                  IdentityStoreConstants.USER);
-            }
-
-            IdentityStore identityStore = realmService.getIdentityStore();
-
-            try {
-
-                String domainUID = getDecodedUserEntityId(user.getUniqueUserId());
-
-                if (config.isAccountLockOnCreation()) {
-
-                    if (log.isDebugEnabled()) {
-                        log.debug("Changing user lifecycle state to {} for user: {}", UserState
-                                .LOCKED_SELF_SIGN_UP.toString(), user.getUniqueUserId());
-                    }
-                    // Change lifecycle state.
-                    LifecycleOperationManager.executeLifecycleEvent(UserState.LOCKED_SELF_SIGN_UP.toString(),
-                                                                    domainUID, domainUID, null);
-                    identityStore.setUserState(user.getUniqueUserId(), UserState.LOCKED_SELF_SIGN_UP.toString());
-
-                    // Lock user account.
-                    try {
-
-                        Claim claim = new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, IdentityMgtConstants
-                                .ACCOUNT_LOCKED_CLAIM_URI, Boolean.toString(true));
-
-                        List<Claim> claims = new ArrayList<>(1);
-                        claims.add(claim);
-
-                        identityStore.updateUserClaims(user.getUniqueUserId(), claims, null);
-                    } catch (IdentityStoreException e) {
-                        throw Utils.handleServerException(ErrorCodes.FAILED_ACCOUNT_LOCK, user
-                                .getUniqueUserId(), e);
-                    }
-
-                    UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
-                    userRecoveryDataStore.invalidateByUserUniqueId(user.getUniqueUserId());
-
-                    String secretKey = Utils.generateUUID();
-                    UserRecoveryData recoveryDataDO = new UserRecoveryData(user.getUniqueUserId(), secretKey,
-                                                                           RecoveryScenarios.SELF_SIGN_UP,
-                                                                           RecoverySteps.CONFIRM_SIGN_UP);
-                    userRecoveryDataStore.store(recoveryDataDO);
-
-                    if (config.isNotificationInternallyManaged()) {
-
-                        Property[] arbitraryProperties = (Property[]) eventProperties.get(SELF_SIGN_UP_PROPERTIES);
-                        Utils.triggerNotification(eventService, user.getUniqueUserId(),
-                                                  NOTIFICATION_TYPE_ACCOUNT_CONFIRM,
-                                                  secretKey,
-                                                arbitraryProperties);
-                    } else {
-                        eventContext.addParameter(IdentityStoreConstants.UNIQUE_USED_ID, user.getUniqueUserId());
-                        eventContext.addParameter(CONFIRMATION_CODE, secretKey);
-                    }
-                } else {
-
-                    if (log.isDebugEnabled()) {
-                        log.debug("Changing user lifecycle state to {} for user: {}", UserState
-                                .UNLOCKED__UNVERIFIED.toString(), user.getUniqueUserId());
-                    }
-                    LifecycleOperationManager.executeLifecycleEvent(UserState.UNLOCKED__UNVERIFIED.toString(),
-                                                                    domainUID, domainUID, null);
-                    identityStore.setUserState(user.getUniqueUserId(), UserState.UNLOCKED__UNVERIFIED.toString());
-                }
-            } catch (LifecycleException e) {
-                throw Utils.handleServerException(ErrorCodes.FAILED_LIFECYCLE_EVENT, null, e);
-            } catch (UserNotFoundException e) {
-                throw Utils.handleServerException(ErrorCodes.USER_NOT_FOUND, null, e);
-            } catch (IdentityStoreException e) {
-                throw Utils.handleServerException(ErrorCodes.FAILED_USER_STATE_UPDATE, null, e);
-            }
+            return;
         }
 
-        if (IdentityStoreInterceptorConstants.POST_AUTHENTICATE.equals(event.getEventName())) {
+        Map<String, Object> eventProperties = event.getEventProperties();
+        User user = (User) eventProperties.get(IdentityStoreConstants.USER);
 
-            Map<String, Object> eventProperties = event.getEventProperties();
-
-            AuthenticationContext authenticationContext = (AuthenticationContext) eventProperties.get
-                    (IdentityStoreConstants.AUTHENTICATION_CONTEXT);
-
-            if (authenticationContext.isAuthenticated()) {
-
-                User user = authenticationContext.getUser();
-                if (UserState.LOCKED_SELF_SIGN_UP.toString().equals(user.getState())) {
-                    throw Utils.handleClientException(ACCOUNT_UNVERIFIED, null);
-                }
+        if (user == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Event property: {} cannot be found in event: {}.", IdentityStoreConstants.USER,
+                          SELF_SIGN_UP_EVENT);
             }
+            throw Utils.handleServerException(ErrorCodes.MISSING_EVENT_PROPERTY, IdentityStoreConstants.USER);
+        }
+
+        IdentityStore identityStore = realmService.getIdentityStore();
+
+        try {
+
+            String domainUID = getDecodedUserEntityId(user.getUniqueUserId());
+
+            if (config.isAccountLockOnCreation()) {
+
+                if (log.isDebugEnabled()) {
+                    log.debug("Changing user lifecycle state to {} for user: {}", UserState
+                            .LOCKED_SELF_SIGN_UP.toString(), user.getUniqueUserId());
+                }
+                // Change lifecycle state.
+                try {
+                    LifecycleOperationManager.executeLifecycleEvent(UserState.LOCKED_SELF_SIGN_UP.toString(),
+                                                                    domainUID, domainUID, null);
+                } catch (LifecycleException e) {
+                    throw Utils.handleServerException(ErrorCodes.FAILED_LIFECYCLE_EVENT, user.getUniqueUserId(), e);
+                }
+
+                identityStore.setUserState(user.getUniqueUserId(), UserState.LOCKED_SELF_SIGN_UP.toString());
+
+                // Lock user account.
+                try {
+
+                    Claim claim = new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, IdentityMgtConstants
+                            .ACCOUNT_LOCKED_CLAIM_URI, Boolean.TRUE.toString());
+
+                    List<Claim> claims = Arrays.asList(claim);
+
+                    identityStore.updateUserClaims(user.getUniqueUserId(), claims, null);
+                } catch (IdentityStoreException e) {
+                    throw Utils.handleServerException(ErrorCodes.FAILED_ACCOUNT_LOCK, user
+                            .getUniqueUserId(), e);
+                }
+
+                UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
+                userRecoveryDataStore.invalidateByUserUniqueId(user.getUniqueUserId());
+
+                String confirmationCode = Utils.generateUUID();
+                UserRecoveryData recoveryDataDO = new UserRecoveryData(user.getUniqueUserId(), confirmationCode,
+                                                                       RecoveryScenarios.SELF_SIGN_UP,
+                                                                       RecoverySteps.CONFIRM_SIGN_UP);
+                userRecoveryDataStore.store(recoveryDataDO);
+
+                if (config.isNotificationInternallyManaged()) {
+
+                    Property[] notificationProperties = (Property[]) eventProperties.get(SELF_SIGN_UP_PROPERTIES);
+                    Utils.triggerNotification(eventService, user.getUniqueUserId(),
+                                              NOTIFICATION_TYPE_ACCOUNT_CONFIRM, confirmationCode,
+                                              notificationProperties);
+                } else {
+                    eventContext.addParameter(IdentityStoreConstants.UNIQUE_USED_ID, user.getUniqueUserId());
+                    eventContext.addParameter(CONFIRMATION_CODE, confirmationCode);
+                }
+            } else {
+
+                if (log.isDebugEnabled()) {
+                    log.debug("Changing user lifecycle state to {} for user: {}", UserState
+                            .UNLOCKED__UNVERIFIED.toString(), user.getUniqueUserId());
+                }
+                LifecycleOperationManager.executeLifecycleEvent(UserState.UNLOCKED__UNVERIFIED.toString(),
+                                                                domainUID, domainUID, null);
+                identityStore.setUserState(user.getUniqueUserId(), UserState.UNLOCKED__UNVERIFIED.toString());
+            }
+        } catch (LifecycleException e) {
+            throw Utils.handleServerException(ErrorCodes.FAILED_LIFECYCLE_EVENT, user.getUniqueUserId(), e);
+        } catch (UserNotFoundException e) {
+            throw Utils.handleServerException(ErrorCodes.USER_NOT_FOUND, user.getUniqueUserId(), e);
+        } catch (IdentityStoreException e) {
+            throw Utils.handleServerException(ErrorCodes.FAILED_USER_STATE_UPDATE, null, e);
+        }
+    }
+
+    private void handlePostAuthenticateEvent(Event event) throws IdentityRecoveryClientException {
+
+        Map<String, Object> eventProperties = event.getEventProperties();
+
+        AuthenticationContext authenticationContext = (AuthenticationContext) eventProperties.get
+                (IdentityStoreConstants.AUTHENTICATION_CONTEXT);
+
+        User user = authenticationContext.getUser();
+        if (user != null && UserState.LOCKED_SELF_SIGN_UP.toString().equals(user.getState())) {
+            throw Utils.handleClientException(ACCOUNT_UNVERIFIED, user.getUniqueUserId());
         }
     }
 
@@ -209,15 +219,15 @@ public class UserSelfSignUpHandler extends AbstractEventHandler {
      *
      * @param uniqueEntityId Unique user id.
      * @return Domain Id.
-     * @throws EventException If the Unique ID is invalid.
+     * @throws IdentityRecoveryServerException If the Unique ID is invalid.
      */
-    private String getDecodedUserEntityId(String uniqueEntityId) throws EventException {
+    private String getDecodedUserEntityId(String uniqueEntityId) throws IdentityRecoveryServerException {
 
         String[] decodedUniqueEntityIdParts = uniqueEntityId.split("\\.", 2);
         if (decodedUniqueEntityIdParts.length != 2 || StringUtils.isEmpty(decodedUniqueEntityIdParts[0]) ||
             StringUtils.isEmpty(decodedUniqueEntityIdParts[1])) {
 
-            throw new EventException("Invalid unique user id.");
+            throw Utils.handleServerException(INVALID_USER_ID_FORMAT, uniqueEntityId);
         }
         return decodedUniqueEntityIdParts[1];
     }

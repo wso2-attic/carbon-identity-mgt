@@ -39,8 +39,7 @@ public class ValidateCodeApiServiceImplTest {
     public void testValidateCodePost() throws Exception {
 
         UserSelfSignUpManager selfSignUpManager = mock(UserSelfSignUpManager.class);
-        doThrow(new RuntimeException())
-                .doThrow(new IdentityRecoveryException("0001", "Test IdentityRecoveryException."))
+        doThrow(new IdentityRecoveryException("0001", "Test IdentityRecoveryException."))
                 .doThrow(new IdentityRecoveryClientException("0002", "Test IdentityRecoveryClientException"))
                 .when(selfSignUpManager).confirmUserSelfSignUp(any());
 
@@ -50,9 +49,6 @@ public class ValidateCodeApiServiceImplTest {
         dto.setCode("testCode");
 
         Response response = new ValidateCodeApiServiceImpl().validateCodePost(dto);
-        Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-
-        response = new ValidateCodeApiServiceImpl().validateCodePost(dto);
         Assert.assertEquals(response.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
         response = new ValidateCodeApiServiceImpl().validateCodePost(dto);

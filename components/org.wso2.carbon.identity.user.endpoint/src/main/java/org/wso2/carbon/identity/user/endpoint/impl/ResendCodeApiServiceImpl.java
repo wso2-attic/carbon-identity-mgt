@@ -19,9 +19,8 @@ package org.wso2.carbon.identity.user.endpoint.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryClientException;
-import org.wso2.carbon.identity.recovery.IdentityRecoveryConstants;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryRuntimeException;
-import org.wso2.carbon.identity.recovery.IdentityRecoveryServerException;
 import org.wso2.carbon.identity.recovery.bean.NotificationResponseBean;
 import org.wso2.carbon.identity.recovery.signup.UserSelfSignUpManager;
 import org.wso2.carbon.identity.user.endpoint.NotFoundException;
@@ -59,7 +58,7 @@ public class ResendCodeApiServiceImpl extends ResendCodeApiService {
             }
             ErrorDTO errorDTO = Utils.buildBadRequestErrorDTO(e.getErrorCode(), e.getErrorDescription());
             return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
-        } catch (IdentityRecoveryServerException e) {
+        } catch (IdentityRecoveryException e) {
 
             log.error("Server error while user confirmation.", e);
             ErrorDTO errorDTO = Utils.buildInternalServerErrorDTO(e.getErrorCode(), e.getErrorDescription());
@@ -68,12 +67,6 @@ public class ResendCodeApiServiceImpl extends ResendCodeApiService {
 
             log.error("Server error while user confirmation.", e);
             ErrorDTO errorDTO = Utils.buildInternalServerErrorDTO(e.getErrorCode(), e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
-        } catch (Throwable e) {
-
-            log.error("Server error while user confirmation.", e);
-            ErrorDTO errorDTO = Utils.buildInternalServerErrorDTO(IdentityRecoveryConstants.ErrorCodes
-                                                                      .UNEXPECTED.getCode(), e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
         }
 

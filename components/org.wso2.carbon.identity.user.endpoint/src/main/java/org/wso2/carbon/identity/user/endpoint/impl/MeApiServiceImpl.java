@@ -32,7 +32,8 @@ import org.wso2.carbon.identity.user.endpoint.util.Utils;
 
 import javax.ws.rs.core.Response;
 
-import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorCodes;
+import static org.wso2.carbon.identity.recovery.IdentityRecoveryConstants.ErrorCodes
+        .USER_REGISTRATION_INFORMATION_NOT_FOUND;
 
 /**
  * Micro service implementation of /me endpoint.
@@ -49,6 +50,15 @@ public class MeApiServiceImpl extends MeApiService {
         NotificationResponseBean notificationResponseBean;
         try {
 
+            if (user == null || user.getUser() == null) {
+                ErrorDTO errorDTO = Utils.buildBadRequestErrorDTO(USER_REGISTRATION_INFORMATION_NOT_FOUND.getCode(),
+                                                                  USER_REGISTRATION_INFORMATION_NOT_FOUND.getMessage());
+                if (log.isDebugEnabled()) {
+                    log.debug("User information is unavailable in the request.");
+                }
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
+            }
+
             notificationResponseBean = userSelfSignUpManager.registerUser(Utils.getUserBean
                     (user.getUser()), user.getUser().getDomain(), Utils.getProperties(user.getProperties()));
         } catch (IdentityRecoveryClientException e) {
@@ -57,16 +67,13 @@ public class MeApiServiceImpl extends MeApiService {
                 log.debug("Client error while registering self sign-up user: " + user.getUser().getUsername(), e);
             }
             ErrorDTO errorDTO = Utils.buildBadRequestErrorDTO(e.getErrorCode(), e.getErrorDescription());
+            // TODO: All client exceptions cannot be put under BAD REQUEST. Better to introduce a different error
+            // response and change the swagger definition accordingly.
             return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
         } catch (IdentityRecoveryException e) {
 
             log.error("Server error while registering self sign-up user: " + user.getUser().getUsername(), e);
             ErrorDTO errorDTO = Utils.buildInternalServerErrorDTO(e.getErrorCode(), e.getErrorDescription());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
-        } catch (Throwable e) {
-
-            log.error("Server error while registering self sign-up user: " + user.getUser().getUsername(), e);
-            ErrorDTO errorDTO = Utils.buildInternalServerErrorDTO(ErrorCodes.UNEXPECTED.getCode(), e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
         }
 

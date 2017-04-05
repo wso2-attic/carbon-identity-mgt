@@ -20,7 +20,6 @@ import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.common.base.event.model.Event;
-import org.wso2.carbon.identity.event.EventException;
 import org.wso2.carbon.identity.mgt.IdentityStore;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
@@ -60,7 +59,7 @@ public class UserSelfSignUpHandlerTest {
     }
 
 
-    @Test(expectedExceptions = EventException.class)
+    @Test(expectedExceptions = IdentityRecoveryServerException.class)
     public void testHandleInvalidUser() throws Exception {
 
         IdentityMgtMessageContext context = new IdentityMgtMessageContext();
@@ -81,6 +80,6 @@ public class UserSelfSignUpHandlerTest {
         handler.setRealmService(realmService);
 
         handler.handle(context, event);
-        Assert.fail("Expected EventException.");
+        Assert.fail("Expected IdentityRecoveryServerException.");
     }
 }

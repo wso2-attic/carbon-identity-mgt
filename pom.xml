@@ -479,6 +479,7 @@
 
         <org.wso2.carbon.identity.mgt.range>[0.1.0, 1.0.0)</org.wso2.carbon.identity.mgt.range>
         <org.wso2.carbon.identity.commons.range>[0.1.0, 1.0.0)</org.wso2.carbon.identity.commons.range>
+        <commons.lang.version.range>[3.4.0, 4.0.0)</commons.lang.version.range>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>

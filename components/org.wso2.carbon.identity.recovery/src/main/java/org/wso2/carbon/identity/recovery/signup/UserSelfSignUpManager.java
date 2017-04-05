@@ -33,7 +33,6 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants;
-import org.wso2.carbon.identity.recovery.IdentityRecoveryClientException;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.RecoveryScenarios;
 import org.wso2.carbon.identity.recovery.RecoverySteps;
@@ -46,6 +45,7 @@ import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
 import org.wso2.carbon.identity.recovery.util.Utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,16 +151,15 @@ public class UserSelfSignUpManager {
 
         if (StringUtils.isBlank(uniqueUserId)) {
 
-            throw new IdentityRecoveryClientException(ErrorCodes.INVALID_USER_ID.getCode(),
-                                                      ErrorCodes.INVALID_USER_ID.getMessage());
+            Utils.handleClientException(ErrorCodes.INVALID_USER_ID, "empty userID");
         }
 
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
-        UserRecoveryData load = userRecoveryDataStore.loadByUserUniqueId(uniqueUserId);
+        UserRecoveryData recoveryUser = userRecoveryDataStore.loadByUserUniqueId(uniqueUserId);
 
         boolean isUserConfirmed = false;
 
-        if (load == null || !RecoveryScenarios.SELF_SIGN_UP.equals(load.getRecoveryScenario())) {
+        if (recoveryUser == null || !RecoveryScenarios.SELF_SIGN_UP.equals(recoveryUser.getRecoveryScenario())) {
             isUserConfirmed = true;
         }
         return isUserConfirmed;
@@ -185,7 +184,7 @@ public class UserSelfSignUpManager {
         String uniqueId = recoveryData.getUserUniqueId();
 
         if (!RecoverySteps.CONFIRM_SIGN_UP.equals(recoveryData.getRecoveryStep())) {
-            throw Utils.handleClientException(ErrorCodes.INVALID_CODE);
+            throw Utils.handleClientException(ErrorCodes.INVALID_CODE, code);
         }
 
         try {
@@ -199,8 +198,10 @@ public class UserSelfSignUpManager {
             Utils.setClaimsInIdentityStore(realmService.getIdentityStore(), uniqueId, claims, null);
             // Invalidate code
             userRecoveryDataStore.invalidateByCode(code);
-        } catch (UserNotFoundException | IdentityStoreException e) {
-            throw Utils.handleServerException(ErrorCodes.UNLOCK_USER, uniqueId, e);
+        } catch (UserNotFoundException e) {
+            throw Utils.handleServerException(ErrorCodes.USER_NOT_FOUND, uniqueId, e);
+        } catch (IdentityStoreException e) {
+            throw Utils.handleServerException(ErrorCodes.FAILED_TO_UPDATE_USER_CLAIMS, uniqueId, e);
         }
     }
 
@@ -218,7 +219,7 @@ public class UserSelfSignUpManager {
             IdentityRecoveryException {
 
         if (!config.isSelfSignUpEnabled()) {
-            throw Utils.handleClientException(ErrorCodes.DISABLE_SELF_SIGN_UP, claim.getValue());
+            throw Utils.handleClientException(ErrorCodes.DISABLE_SELF_SIGN_UP);
         }
 
         String uniqueUserId = Utils.getUniqueUserId(claim, domainName);
@@ -235,10 +236,10 @@ public class UserSelfSignUpManager {
         userRecoveryDataStore.invalidateByCode(userRecoveryData.getCode());
 
         String code = Utils.generateUUID();
-        UserRecoveryData recoveryDataDO = new UserRecoveryData(uniqueUserId, code, RecoveryScenarios
+        UserRecoveryData updatedRecoveryData = new UserRecoveryData(uniqueUserId, code, RecoveryScenarios
                 .SELF_SIGN_UP, RecoverySteps.CONFIRM_SIGN_UP);
 
-        userRecoveryDataStore.store(recoveryDataDO);
+        userRecoveryDataStore.store(updatedRecoveryData);
 
         if (config.isNotificationInternallyManaged()) {
             Utils.triggerNotification(eventService, uniqueUserId, NOTIFICATION_TYPE_ACCOUNT_CONFIRM, code,
@@ -276,8 +277,7 @@ public class UserSelfSignUpManager {
             }
 
             GroupBean groupBean = new GroupBean();
-            List<Claim> claims = new ArrayList<>();
-            claims.add(claim);
+            List<Claim> claims = Arrays.asList(claim);
             groupBean.setClaims(claims);
 
             try {
@@ -285,7 +285,7 @@ public class UserSelfSignUpManager {
                 ssuGroup = realmService.getIdentityStore().addGroup(groupBean);
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Self sign-up group: " + config.getSelfSignUpGroupName() + " created in domain: " +
+                    log.debug("Self sign-up group: {} created in domain: {}", config.getSelfSignUpGroupName(),
                               domainName);
                 }
             } catch (IdentityStoreException e) {
