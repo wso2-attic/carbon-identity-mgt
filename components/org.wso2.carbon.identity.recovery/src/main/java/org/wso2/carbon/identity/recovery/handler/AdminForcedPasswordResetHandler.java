@@ -173,7 +173,7 @@
 //                String credential = (String) eventProperties.get(EventConstants.EventProperty.CREDENTIAL);
 //                isForcedPasswordReset = true;
 //
-//                if (userRecoveryData.getSecret().equals(credential)) {
+//                if (userRecoveryData.getCode().equals(credential)) {
 ////                    errorCode = IdentityCoreConstants.ADMIN_FORCED_USER_PASSWORD_RESET_VIA_OTP_ERROR_CODE;
 //                    errorMsg = errorMsg + " has given correct OTP";
 //                } else {

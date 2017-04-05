@@ -36,8 +36,8 @@ import org.wso2.carbon.identity.mgt.claim.MetaClaim;
 import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+import org.wso2.carbon.identity.mgt.impl.util.IdentityMgtConstants;
 import org.wso2.carbon.identity.mgt.test.identity.store.handler.TestIdentityStoreHandler;
-import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
@@ -51,9 +51,10 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants.ClaimURIs;
 
 /**
- * Identity store and identity store related OSGI tests.
+ * Identity store and identity store handlers related OSGi tests.
  */
 
 @Listeners(PaxExam.class)
@@ -404,11 +405,11 @@ public class IdentityStoreTest {
         Assert.assertNotNull(realmService, "Failed to get realm service instance.");
 
         List<Claim> claims = new ArrayList<>();
-        Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
-                IdentityMgtOSGITestConstants.ClaimURIs.LAST_NAME_CLAIM_URI, "Lopez");
+        Claim claim1 = new Claim(ClaimURIs.WSO2_DIALECT_URI,
+                                 ClaimURIs.LAST_NAME_CLAIM_URI, "Lopez");
         claims.add(claim1);
-        Claim claim2 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
-                IdentityMgtOSGITestConstants.ClaimURIs.EMAIL_CLAIM_URI, "ella@wso2.com");
+        Claim claim2 = new Claim(ClaimURIs.WSO2_DIALECT_URI,
+                                 ClaimURIs.EMAIL_CLAIM_URI, "ella@wso2.com");
         claims.add(claim2);
 
         List<User> users = realmService.getIdentityStore().listUsers(claims, 1, 1);
@@ -980,6 +981,62 @@ public class IdentityStoreTest {
         } catch (IdentityStoreException e) {
             Assert.fail("Failed to update group claims.");
         }
+
+        Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
+        Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");
+        TestIdentityStoreHandler.PRE.set(false);
+        TestIdentityStoreHandler.POST.set(false);
+    }
+
+    @Test(dependsOnGroups = {"addGroups"})
+    public void testAddUserWithGroup() throws IdentityStoreException, UserNotFoundException, GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        UserBean userBean = new UserBean();
+        List<Claim> claims = Arrays.asList(
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.USERNAME_CLAIM_URI, "minato"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.FIRST_NAME_CLAIM_URI, "Minato"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.LAST_NAME_CLAIM_URI, "Namikaze"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.EMAIL_CLAIM_URI, "minatoe@wso2.com"));
+        userBean.setClaims(claims);
+
+        List<String> groupIds = new ArrayList<>(1);
+        String uniqueGroupId = groups.get(0).getUniqueGroupId();
+        groupIds.add(uniqueGroupId);
+
+        User user = realmService.getIdentityStore().addUser(userBean, groupIds);
+        Assert.assertNotNull(user, "Failed to receive the user.");
+        Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
+
+        Assert.assertTrue(user.isInGroup(uniqueGroupId), "User is not it group.");
+    }
+
+    @Test(dependsOnGroups = {"addGroups"})
+    public void testAddUserWithDomainGroup() throws IdentityStoreException, UserNotFoundException,
+            GroupNotFoundException {
+
+        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
+        Assert.assertNotNull(realmService, "Failed to get realm service instance");
+
+        UserBean userBean = new UserBean();
+        List<Claim> claims = Arrays.asList(
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.USERNAME_CLAIM_URI, "kakashi"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.FIRST_NAME_CLAIM_URI, "Kakashi"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.LAST_NAME_CLAIM_URI, "Hatake"),
+                new Claim(IdentityMgtConstants.CLAIM_ROOT_DIALECT, ClaimURIs.LAST_NAME_CLAIM_URI, "kakashi@wso2.com"));
+        userBean.setClaims(claims);
+
+        List<String> groupIds = new ArrayList<>(1);
+        String uniqueGroupId = groups.get(0).getUniqueGroupId();
+        groupIds.add(uniqueGroupId);
+
+        User user = realmService.getIdentityStore().addUser(userBean, groupIds, "PRIMARY");
+        Assert.assertNotNull(user, "Failed to receive the user.");
+        Assert.assertNotNull(user.getUniqueUserId(), "Invalid user unique id.");
+
+        Assert.assertTrue(user.isInGroup(uniqueGroupId), "User is not it group.");
 
         Assert.assertTrue(TestIdentityStoreHandler.PRE.get(), "Interceptor pre method did not execute");
         Assert.assertTrue(TestIdentityStoreHandler.POST.get(), "Interceptor post method did not execute");

@@ -1083,6 +1083,36 @@ public class IdentityStoreImpl implements IdentityStore {
     }
 
     @Override
+    public User addUser(UserBean userBean, List<String> uniqueGroupIds) throws IdentityStoreException {
+
+        //TODO: Improve provide connector level support for this operation.
+        User user = this.addUser(userBean);
+        this.updateGroupsOfUser(user.getUniqueUserId(), uniqueGroupIds);
+
+        return user;
+    }
+
+    @Override
+    public User addUser(UserBean userBean, List<String> uniqueGroupIds, String domainName)
+            throws IdentityStoreException {
+
+        //TODO: Provide connector level support for this operation.
+        User user = this.addUser(userBean, domainName);
+        try {
+            this.updateGroupsOfUser(user.getUniqueUserId(), uniqueGroupIds);
+        } catch (IdentityStoreException e) {
+            // Rollback user add operation.
+            try {
+                this.deleteUser(user.getUniqueUserId());
+            } catch (UserNotFoundException e1) {
+                e.addSuppressed(e1);
+            }
+            throw e;
+        }
+        return user;
+    }
+
+    @Override
     public List<User> addUsers(List<UserBean> userBeans) throws IdentityStoreException {
 
         if (userBeans == null || userBeans.isEmpty()) {

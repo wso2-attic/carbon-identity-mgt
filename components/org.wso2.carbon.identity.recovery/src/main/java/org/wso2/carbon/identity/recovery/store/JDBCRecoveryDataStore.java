@@ -68,15 +68,15 @@ public class JDBCRecoveryDataStore implements UserRecoveryDataStore {
         try {
             jdbcTemplate.executeInsert(storeRecoveryData, (namedPreparedStatement) -> {
                 namedPreparedStatement.setString(USER_UNIQUE_ID, recoveryDataDO.getUserUniqueId());
-                namedPreparedStatement.setString(CODE, recoveryDataDO.getSecret());
+                namedPreparedStatement.setString(CODE, recoveryDataDO.getCode());
                 namedPreparedStatement.setString(SCENARIO, String.valueOf(recoveryDataDO.getRecoveryScenario()));
                 namedPreparedStatement.setString(STEP, String.valueOf(recoveryDataDO.getRecoveryStep()));
                 namedPreparedStatement.setTimeStamp(TIME_CREATED, new Timestamp(new Date().getTime()));
                 namedPreparedStatement.setString(REMAINING_SETS, recoveryDataDO.getRemainingSetIds());
             }, recoveryDataDO, false);
         } catch (DataAccessException e) {
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_STORING_RECOVERY_DATA,
-                    null, e);
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes.STORING_RECOVERY_DATA,
+                                              null, e);
         }
     }
 
@@ -105,15 +105,15 @@ public class JDBCRecoveryDataStore implements UserRecoveryDataStore {
                         namedPreparedStatement.setString(CODE, code);
                     });
         } catch (DataAccessException e) {
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED, null, e);
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes.UNEXPECTED, null, e);
         }
 
         if (userRecoveryDataObject == null) {
-            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_INVALID_CODE, code);
+            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorCodes.INVALID_CODE, code);
         }
 
         if (isCodeExpired(userRecoveryDataObject)) {
-            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_EXPIRED_CODE, code);
+            throw Utils.handleClientException(IdentityRecoveryConstants.ErrorCodes.EXPIRED_CODE, code);
         }
 
 
@@ -128,7 +128,7 @@ public class JDBCRecoveryDataStore implements UserRecoveryDataStore {
                 namedPreparedStatement.setString(CODE, code);
             });
         } catch (DataAccessException e) {
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED, null, e);
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes.UNEXPECTED, null, e);
         }
     }
 
@@ -154,7 +154,7 @@ public class JDBCRecoveryDataStore implements UserRecoveryDataStore {
                         namedPreparedStatement.setString(USER_UNIQUE_ID, userUniqueId);
                     });
         } catch (DataAccessException e) {
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED, null, e);
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes.UNEXPECTED, null, e);
         }
 
         return userRecoveryDataObject;
@@ -169,7 +169,7 @@ public class JDBCRecoveryDataStore implements UserRecoveryDataStore {
                 namedPreparedStatement.setString(USER_UNIQUE_ID, userUniqueId);
             });
         } catch (DataAccessException e) {
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED, null, e);
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes.UNEXPECTED, null, e);
         }
     }
 

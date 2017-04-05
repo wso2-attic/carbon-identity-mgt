@@ -80,8 +80,8 @@ public class NotificationUsernameRecoveryManager {
             IdentityRecoveryServiceDataHolder.getInstance().getIdentityEventService().pushEvent(identityMgtEvent,
                     eventContext);
         } catch (IdentityException e) {
-            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_TRIGGER_NOTIFICATION,
-                    userUniqueId, e);
+            throw Utils.handleServerException(IdentityRecoveryConstants.ErrorCodes.TRIGGER_NOTIFICATION,
+                                              userUniqueId, e);
         }
     }
 

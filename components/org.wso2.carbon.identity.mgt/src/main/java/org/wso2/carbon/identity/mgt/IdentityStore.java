@@ -390,6 +390,28 @@ public interface IdentityStore {
     User addUser(UserBean user, String domainName) throws IdentityStoreException;
 
     /**
+     * Add new user and assign a list of groups.
+     *
+     * @param userBean User bean.
+     * @param uniqueGroupIds List of unique group IDs to assign the user.
+     * @return Created User.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    User addUser(UserBean userBean, List<String> uniqueGroupIds) throws IdentityStoreException;
+
+    /**
+     * Add new user to a specific domain and assign a list of groups.
+     *
+     * @param userBean User bean.
+     * @param uniqueGroupIds List of unique group IDs to assign the user.
+     * @param domainName Created User.
+     * @return Created User.
+     * @throws IdentityStoreException Identity store exception.
+     */
+    User addUser(UserBean userBean, List<String> uniqueGroupIds, String domainName) throws IdentityStoreException;
+
+
+    /**
      * Add new users to the default domain.
      *
      * @param users User models.

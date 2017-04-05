@@ -141,6 +141,14 @@ public class TestIdentityStoreHandler extends AbstractEventHandler {
             PRE.set(true);
         } else if ("POST_ADD_USER_BY_DOMAIN".equals(event.getEventName())) {
             POST.set(true);
+        } else if ("PRE_ADD_USER_TO_GROUPS".equals(event.getEventName())) {
+            PRE.set(true);
+        } else if ("POST_ADD_USER_TO_GROUPS".equals(event.getEventName())) {
+            POST.set(true);
+        } else if ("PRE_ADD_USER_TO_GROUPS_BY_DOMAIN".equals(event.getEventName())) {
+            PRE.set(true);
+        } else if ("POST_ADD_USER_TO_GROUPS_BY_DOMAIN".equals(event.getEventName())) {
+            POST.set(true);
         } else if ("PRE_ADD_USERS".equals(event.getEventName())) {
             PRE.set(true);
         } else if ("POST_ADD_USERS".equals(event.getEventName())) {

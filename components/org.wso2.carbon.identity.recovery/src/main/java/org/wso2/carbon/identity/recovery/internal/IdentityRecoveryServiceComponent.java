@@ -28,13 +28,16 @@ import org.osgi.service.jndi.JNDIContextManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.common.jdbc.JdbcTemplate;
+import org.wso2.carbon.identity.event.AbstractEventHandler;
 import org.wso2.carbon.identity.event.EventService;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.recovery.ChallengeQuestionManager;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
+import org.wso2.carbon.identity.recovery.handler.UserSelfSignUpHandler;
 import org.wso2.carbon.identity.recovery.mapping.RecoveryLinkConfig;
 import org.wso2.carbon.identity.recovery.password.NotificationPasswordRecoveryManager;
 import org.wso2.carbon.identity.recovery.password.SecurityQuestionPasswordRecoveryManager;
+import org.wso2.carbon.identity.recovery.signup.UserSelfSignUpManager;
 import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
 import org.wso2.carbon.identity.recovery.username.NotificationUsernameRecoveryManager;
 
@@ -79,11 +82,20 @@ public class IdentityRecoveryServiceComponent {
             bundleContext.registerService(SecurityQuestionPasswordRecoveryManager.class.getName(),
                     new SecurityQuestionPasswordRecoveryManager(JDBCRecoveryDataStore.getInstance(),
                             ChallengeQuestionManager.getInstance()), null);
+            bundleContext.registerService(UserSelfSignUpManager.class.getName(),
+                                          new UserSelfSignUpManager(dataHolder.getRealmService(),
+                                                                    dataHolder.getIdentityEventService()), null);
             bundleContext.registerService(ChallengeQuestionManager.class.getName(),
                     ChallengeQuestionManager.getInstance(), null);
+
+            UserSelfSignUpHandler selfSignUpHandler = new UserSelfSignUpHandler();
+            selfSignUpHandler.setRealmService(dataHolder.getRealmService());
+            selfSignUpHandler.setEventService(dataHolder.getIdentityEventService());
+
+            bundleContext.registerService(AbstractEventHandler.class.getName(), selfSignUpHandler, null);
             IdentityRecoveryServiceDataHolder.getInstance().setRecoveryLinkConfig(new RecoveryLinkConfig());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Error while activating identity governance component.", e);
         }
 

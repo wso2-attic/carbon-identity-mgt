@@ -52,24 +52,12 @@ public class MetaClaimMapping {
         return metaClaim;
     }
 
-    public void setMetaClaim(MetaClaim claim) {
-        this.metaClaim = claim;
-    }
-
     public String getIdentityStoreConnectorId() {
         return identityStoreConnectorId;
     }
 
-    public void setIdentityStoreConnectorId(String identityStoreConnectorId) {
-        this.identityStoreConnectorId = identityStoreConnectorId;
-    }
-
     public String getAttributeName() {
         return attributeName;
-    }
-
-    public void setAttributeName(String attributeName) {
-        this.attributeName = attributeName;
     }
 
     public boolean isUnique() {

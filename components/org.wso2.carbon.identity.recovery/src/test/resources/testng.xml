@@ -21,6 +21,7 @@
         <classes>
             <class name="org.wso2.carbon.identity.recovery.test.unit.UsernameRecoveryTests"/>
             <class name="org.wso2.carbon.identity.recovery.test.unit.UtilsTests"/>
+            <class name="org.wso2.carbon.identity.recovery.handler.UserSelfSignUpHandlerTest"/>
         </classes>
     </test>
 </suite>

@@ -48,7 +48,7 @@ public class IdentityRecoveryException extends IdentityException {
 
         String errorDescription = this.getMessage();
         if (StringUtils.isEmpty(errorDescription)) {
-            errorDescription = IdentityRecoveryConstants.ErrorMessages.ERROR_CODE_UNEXPECTED.getMessage();
+            errorDescription = IdentityRecoveryConstants.ErrorCodes.UNEXPECTED.getMessage();
         }
         return errorDescription;
     }

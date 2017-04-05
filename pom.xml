@@ -218,7 +218,11 @@
                 <artifactId>org.wso2.carbon.identity.handler.event.account.lock</artifactId>
                 <version>${carbon.identity.mgt.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.wso2.carbon.identity.mgt</groupId>
+                <artifactId>org.wso2.carbon.identity.user.endpoint</artifactId>
+                <version>${carbon.identity.mgt.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.identity.commons</groupId>
                 <artifactId>org.wso2.carbon.identity.commons</artifactId>
@@ -439,11 +443,13 @@
         <module>components/org.wso2.carbon.identity.claim</module>
         <module>components/org.wso2.carbon.identity.mgt.login.interceptor</module>
         <module>components/org.wso2.carbon.identity.recovery</module>
+        <module>components/org.wso2.carbon.identity.user.endpoint</module>
         <module>components/org.wso2.carbon.identity.handler.event.account.lock</module>
         <module>features/org.wso2.carbon.identity.mgt.feature</module>
         <module>features/org.wso2.carbon.identity.claim.feature</module>
         <module>features/org.wso2.carbon.identity.mgt.login.feature</module>
         <module>features/org.wso2.carbon.identity.recovery.feature</module>
+        <module>features/org.wso2.carbon.identity.user.endpoint.feature</module>
         <module>tests</module>
     </modules>
 
@@ -463,13 +469,17 @@
         <carbon.osgi.test.util.version>5.1.0</carbon.osgi.test.util.version>
         <msf4j.version>2.1.0</msf4j.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
-        <org.wso2.carbon.messaging.version>1.0.3</org.wso2.carbon.messaging.version>
+        <org.wso2.carbon.messaging.version>1.0.6</org.wso2.carbon.messaging.version>
         <org.wso2.carbon.caching.version>1.0.0</org.wso2.carbon.caching.version>
         <carbon.datasources.version>1.0.0</carbon.datasources.version>
         <carbon.jndi.version>1.0.0</carbon.jndi.version>
-        <carbon.identity.commons.version>0.1.23</carbon.identity.commons.version>
+        <carbon.identity.commons.version>0.1.26</carbon.identity.commons.version>
         <commons.lang.version>3.4</commons.lang.version>
         <jackson.version>1.8.6</jackson.version>
+
+        <org.wso2.carbon.identity.mgt.range>[0.1.0, 1.0.0)</org.wso2.carbon.identity.mgt.range>
+        <org.wso2.carbon.identity.commons.range>[0.1.0, 1.0.0)</org.wso2.carbon.identity.commons.range>
+        <commons.lang.version.range>[3.4.0, 4.0.0)</commons.lang.version.range>
 
         <!-- Equinox dependency versions -->
         <osgi.core.api.version>6.0.0</osgi.core.api.version>

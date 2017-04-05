@@ -412,7 +412,7 @@ public class InterceptingIdentityStore implements IdentityStore {
                 }).executeWith(new EventHandlerDelegate<List<User>>() {
             @Override
             public List<User> execute() throws IdentityStoreException {
-                return identityStore.listUsers(claims, offset, length);
+                return identityStore.listUsers(claims, offset, length, domainName);
             }
         }).pushEvent(IdentityStoreInterceptorConstants.POST_LIST_USERS_BY_CLAIMS_DOMAIN, (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.CLAIM_LIST, claims);
@@ -921,6 +921,60 @@ public class InterceptingIdentityStore implements IdentityStore {
     }
 
     @Override
+    public User addUser(UserBean userBean, List<String> uniqueGroupIds) throws IdentityStoreException {
+
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
+
+        EventInterceptorTemplate<User, IdentityStoreException> template = new EventInterceptorTemplate<>
+                (eventService, messageContext);
+
+        User user = template.pushEvent(IdentityStoreInterceptorConstants.PRE_ADD_USER_TO_GROUPS, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.USER_BEAN, userBean);
+            eventProperties.put(IdentityStoreConstants.UNIQUE_GROUP_ID_LIST, uniqueGroupIds);
+        }).executeWith(new EventHandlerDelegate<User>() {
+            @Override
+            public User execute() throws IdentityStoreException {
+                return identityStore.addUser(userBean, uniqueGroupIds);
+            }
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_ADD_USER_TO_GROUPS, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.USER_BEAN, userBean);
+            eventProperties.put(IdentityStoreConstants.UNIQUE_GROUP_ID_LIST, uniqueGroupIds);
+            eventProperties.put(IdentityStoreConstants.USER, template.getResult());
+        }).getResult();
+
+        return user;
+    }
+
+    @Override
+    public User addUser(UserBean userBean, List<String> uniqueGroupIds, String domainName)
+            throws IdentityStoreException {
+
+        IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
+
+        EventInterceptorTemplate<User, IdentityStoreException> template = new EventInterceptorTemplate<>
+                (eventService, messageContext);
+
+        User user = template.pushEvent(IdentityStoreInterceptorConstants.PRE_ADD_USER_TO_GROUPS_BY_DOMAIN,
+                                       (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.USER_BEAN, userBean);
+            eventProperties.put(IdentityStoreConstants.UNIQUE_GROUP_ID_LIST, uniqueGroupIds);
+            eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
+                                       }).executeWith(new EventHandlerDelegate<User>() {
+            @Override
+            public User execute() throws IdentityStoreException {
+                return identityStore.addUser(userBean, uniqueGroupIds, domainName);
+            }
+        }).pushEvent(IdentityStoreInterceptorConstants.POST_ADD_USER_TO_GROUPS_BY_DOMAIN, (eventProperties) -> {
+            eventProperties.put(IdentityStoreConstants.USER_BEAN, userBean);
+            eventProperties.put(IdentityStoreConstants.UNIQUE_GROUP_ID_LIST, uniqueGroupIds);
+            eventProperties.put(IdentityStoreConstants.DOMAIN_NAME, domainName);
+            eventProperties.put(IdentityStoreConstants.USER, template.getResult());
+        }).getResult();
+
+        return user;
+    }
+
+    @Override
     public List<User> addUsers(List<UserBean> userBeans) throws IdentityStoreException {
 
         IdentityMgtMessageContext messageContext = new IdentityMgtMessageContext();
@@ -1184,7 +1238,7 @@ public class InterceptingIdentityStore implements IdentityStore {
         }).executeWith(new EventHandlerDelegate<Group>() {
             @Override
             public Group execute() throws IdentityStoreException {
-                return identityStore.addGroup(groupBean);
+                return identityStore.addGroup(groupBean, domainName);
             }
         }).pushEvent(IdentityStoreInterceptorConstants.POST_ADD_GROUP_BY_DOMAIN, (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.GROUP_BEAN, groupBean);
@@ -1233,7 +1287,7 @@ public class InterceptingIdentityStore implements IdentityStore {
                                                 }).executeWith(new EventHandlerDelegate<List<Group>>() {
             @Override
             public List<Group> execute() throws IdentityStoreException {
-                return identityStore.addGroups(groupBeans);
+                return identityStore.addGroups(groupBeans, domainName);
             }
         }).pushEvent(IdentityStoreInterceptorConstants.POST_ADD_GROUPS_BY_DOMAIN, (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.GROUP_BEAN_LIST, groupBeans);
@@ -1451,9 +1505,7 @@ public class InterceptingIdentityStore implements IdentityStore {
         EventInterceptorTemplate<Void, IdentityStoreException> template = new EventInterceptorTemplate<>
                 (eventService, messageContext);
 
-        template.pushEvent(IdentityStoreInterceptorConstants
-                .PRE_SET_USER_STATE, (eventProperties)
-                -> {
+        template.pushEvent(IdentityStoreInterceptorConstants.PRE_SET_USER_STATE, (eventProperties) -> {
             eventProperties.put(IdentityStoreConstants.UNIQUE_USED_ID, uniqueUserId);
             eventProperties.put(IdentityStoreConstants.TARGET_STATE, targetState);
         }).executeWith(new EventHandlerDelegate<Void>() {

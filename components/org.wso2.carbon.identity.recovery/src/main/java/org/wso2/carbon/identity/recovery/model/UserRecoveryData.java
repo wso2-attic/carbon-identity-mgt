@@ -25,23 +25,23 @@ import java.sql.Timestamp;
  */
 public class UserRecoveryData {
     private String userUniqueId;
-    private String secret;
+    private String code;
     private String remainingSetIds;
     private Timestamp timeCreated = null;
 
     private Enum recoveryScenario;
     private Enum recoveryStep;
 
-    public UserRecoveryData(String userUniqueId, String secret, Enum recoveryScenario, Enum recoveryStep) {
+    public UserRecoveryData(String userUniqueId, String code, Enum recoveryScenario, Enum recoveryStep) {
         this.userUniqueId = userUniqueId;
-        this.secret = secret;
+        this.code = code;
         this.recoveryScenario = recoveryScenario;
         this.recoveryStep = recoveryStep;
     }
 
-    public UserRecoveryData(String userUniqueId, String secret, Enum recoveryScenario) {
+    public UserRecoveryData(String userUniqueId, String code, Enum recoveryScenario) {
         this.userUniqueId = userUniqueId;
-        this.secret = secret;
+        this.code = code;
         this.recoveryScenario = recoveryScenario;
     }
 
@@ -53,8 +53,8 @@ public class UserRecoveryData {
         this.remainingSetIds = remainingSetIds;
     }
 
-    public String getSecret() {
-        return secret;
+    public String getCode() {
+        return code;
     }
 
     public String getUserUniqueId() {
