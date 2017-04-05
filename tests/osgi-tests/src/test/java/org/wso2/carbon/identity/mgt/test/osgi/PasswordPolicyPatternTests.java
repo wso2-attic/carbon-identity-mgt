@@ -95,7 +95,8 @@ public class PasswordPolicyPatternTests {
                 realmService.getIdentityStore().
                         updateUserCredentials(uniqueUserId, generateCredentials(PASSWORD_PREFIX + "A1"));
             } catch (Exception e) {
-                Assert.assertTrue((e instanceof IdentityStoreException));
+                Assert.assertTrue((e instanceof IdentityStoreException), "Password should have at least one " +
+                        "special character");
             }
         } finally {
             realmService.getIdentityStore().deleteUser(uniqueUserId);
@@ -117,7 +118,8 @@ public class PasswordPolicyPatternTests {
                 realmService.getIdentityStore().
                         updateUserCredentials(uniqueUserId, generateCredentials(PASSWORD_PREFIX + "A@"));
             } catch (Exception e) {
-                Assert.assertTrue((e instanceof IdentityStoreException));
+                Assert.assertTrue((e instanceof IdentityStoreException), "Password should have at least one " +
+                        "number");
             }
         } finally {
             realmService.getIdentityStore().deleteUser(uniqueUserId);
@@ -139,7 +141,8 @@ public class PasswordPolicyPatternTests {
                 realmService.getIdentityStore().updateUserCredentials(uniqueUserId,
                         generateCredentials("ABCDEF@1"));
             } catch (Exception e) {
-                Assert.assertTrue((e instanceof IdentityStoreException));
+                Assert.assertTrue((e instanceof IdentityStoreException), "Password should have at least one " +
+                        "lowercase letter");
             }
         } finally {
             realmService.getIdentityStore().deleteUser(uniqueUserId);
@@ -160,7 +163,8 @@ public class PasswordPolicyPatternTests {
                 realmService.getIdentityStore().
                         updateUserCredentials(uniqueUserId, generateCredentials(PASSWORD_PREFIX + "123@"));
             } catch (Exception e) {
-                Assert.assertTrue((e instanceof IdentityStoreException));
+                Assert.assertTrue((e instanceof IdentityStoreException), "Password should have at least one " +
+                        "uppercase letter");
             }
         } finally {
             realmService.getIdentityStore().deleteUser(uniqueUserId);
@@ -181,7 +185,7 @@ public class PasswordPolicyPatternTests {
                 realmService.getIdentityStore().
                         updateUserCredentials(uniqueUserId, generateCredentials("aA1@"));
             } catch (Exception e) {
-                Assert.assertTrue((e instanceof IdentityStoreException));
+                Assert.assertTrue((e instanceof IdentityStoreException), "Password should have at least 6 characters");
             }
         } finally {
             realmService.getIdentityStore().deleteUser(uniqueUserId);
@@ -203,7 +207,8 @@ public class PasswordPolicyPatternTests {
                         updateUserCredentials(uniqueUserId, generateCredentials
                                 (PASSWORD_PREFIX + "ABCDEF123@@"));
             } catch (Exception e) {
-                Assert.assertTrue((e instanceof IdentityStoreException));
+                Assert.assertTrue((e instanceof IdentityStoreException), "You should not use password that has " +
+                        "more than 11 characters");
             }
         } finally {
             realmService.getIdentityStore().deleteUser(uniqueUserId);
