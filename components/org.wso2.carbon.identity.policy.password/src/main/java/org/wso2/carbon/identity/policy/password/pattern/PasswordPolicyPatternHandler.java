@@ -24,6 +24,7 @@ import org.wso2.carbon.identity.common.base.event.model.Event;
 import org.wso2.carbon.identity.common.base.exception.IdentityException;
 import org.wso2.carbon.identity.common.base.handler.InitConfig;
 import org.wso2.carbon.identity.event.AbstractEventHandler;
+import org.wso2.carbon.identity.mgt.bean.UserBean;
 import org.wso2.carbon.identity.mgt.constant.StoreConstants;
 import org.wso2.carbon.identity.policy.password.pattern.bean.PasswordPolicyBean;
 import org.wso2.carbon.identity.policy.password.pattern.bean.ValidationResult;
@@ -36,6 +37,13 @@ import javax.security.auth.callback.PasswordCallback;
 /**
  * Intercept update password and add user operations to check user entered password strength according to predefine
  * policies.
+ * todo: add below properties to identity-event.properties
+ * module.name.5=password.pattern.handler
+ * password.pattern.handler.subscription.1=PRE_UPDATE_USER_CREDENTIALS_PATCH
+ * password.pattern.handler.subscription.2=PRE_UPDATE_USER_CREDENTIALS_PUT
+ * password.pattern.handler.subscription.3=POST_UPDATE_USER_CREDENTIALS_PATCH
+ * password.pattern.handler.subscription.4=POST_UPDATE_USER_CREDENTIALS_PUT
+ * password.pattern.handler.subscription.5=PRE_ADD_USER
  */
 public class PasswordPolicyPatternHandler extends AbstractEventHandler {
 
@@ -101,8 +109,16 @@ public class PasswordPolicyPatternHandler extends AbstractEventHandler {
      */
     private char[] getPassword (Event event) {
 
-        List<Callback> credentials = (List<Callback>) event.getEventProperties()
+        List<Callback> credentials = null;
+
+        credentials = (List<Callback>) event.getEventProperties()
                 .get(StoreConstants.IdentityStoreConstants.CREDENTIAL_LIST);
+
+        if (StoreConstants.IdentityStoreInterceptorConstants.PRE_ADD_USER.equals(event.getEventName())) {
+
+            credentials = ((UserBean) (event.getEventProperties().
+                    get(StoreConstants.IdentityStoreConstants.USER_BEAN))).getCredentials();
+        }
 
         if (credentials == null || credentials.isEmpty()) {
             return new char[0];
