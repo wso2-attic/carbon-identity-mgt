@@ -17,6 +17,7 @@ package org.wso2.carbon.identity.recovery.util;
 
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
 import java.io.FileOutputStream;
@@ -40,7 +41,9 @@ public class FileUtil {
 
         try (InputStreamReader inputStreamReader =
                      new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
-            Yaml yaml = new Yaml();
+            CustomClassLoaderConstructor constructor =
+                    new CustomClassLoaderConstructor(FileUtil.class.getClassLoader());
+            Yaml yaml = new Yaml(constructor);
             yaml.setBeanAccess(BeanAccess.FIELD);
             return yaml.loadAs(inputStreamReader, classType);
         } catch (IOException e) {
@@ -54,7 +57,9 @@ public class FileUtil {
 
         if (Files.exists(file, new LinkOption[0])) {
             try {
-                Yaml yaml = new Yaml();
+                CustomClassLoaderConstructor constructor =
+                        new CustomClassLoaderConstructor(FileUtil.class.getClassLoader());
+                Yaml yaml = new Yaml(constructor);
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 try (Writer writer = new OutputStreamWriter(new FileOutputStream(file.toFile()),
                                                             StandardCharsets.UTF_8)) {

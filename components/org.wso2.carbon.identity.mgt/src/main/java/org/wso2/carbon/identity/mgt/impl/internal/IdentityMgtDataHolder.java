@@ -16,7 +16,6 @@
 
 package org.wso2.carbon.identity.mgt.impl.internal;
 
-import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.datasource.core.api.DataSourceService;
 import org.wso2.carbon.datasource.core.exception.DataSourceException;
 import org.wso2.carbon.identity.common.util.IdentityUtilService;
@@ -46,8 +45,6 @@ public class IdentityMgtDataHolder {
     private RealmService realmService;
 
 //    private AuthorizationStore authorizationStore;
-
-    private CarbonCachingService carbonCachingService;
 
     private DataSourceService dataSourceService;
 
@@ -109,14 +106,6 @@ public class IdentityMgtDataHolder {
 //        return authorizationStore;
 //    }
 
-    public CarbonCachingService getCarbonCachingService() {
-
-        if (carbonCachingService == null) {
-            throw new IllegalStateException("Carbon caching service is null");
-        }
-
-        return carbonCachingService;
-    }
 
     public DataSource getDataSource(String dataSourceName) throws DataSourceException {
 
@@ -201,9 +190,6 @@ public class IdentityMgtDataHolder {
         }
     }
 
-    void registerCacheService(CarbonCachingService carbonCachingService) {
-        this.carbonCachingService = carbonCachingService;
-    }
 
     /**
      * Register an instance of IdentityUtilService.

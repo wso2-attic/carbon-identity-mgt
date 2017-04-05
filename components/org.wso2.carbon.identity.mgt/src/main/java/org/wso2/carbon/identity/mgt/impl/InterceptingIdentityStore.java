@@ -39,6 +39,7 @@ import org.wso2.carbon.identity.mgt.impl.util.builder.event.EventInterceptorTemp
 
 import java.util.List;
 import java.util.Set;
+import javax.cache.CacheManager;
 import javax.security.auth.callback.Callback;
 
 import static org.wso2.carbon.identity.mgt.constant.StoreConstants.IdentityStoreConstants;
@@ -58,12 +59,15 @@ public class InterceptingIdentityStore implements IdentityStore {
     private static final Logger log = LoggerFactory.getLogger(InterceptingIdentityStore.class);
 
 
-    public InterceptingIdentityStore(StoreConfig storeConfig, List<Domain> domains) throws IdentityStoreException {
+    public InterceptingIdentityStore(StoreConfig storeConfig, List<Domain> domains, CacheManager cacheManager
+            ) throws IdentityStoreException {
 
+        IdentityStore baseIdentityStore = new IdentityStoreImpl(domains);
         if (storeConfig.isEnableCache() && storeConfig.isEnableIdentityStoreCache()) {
-            identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap(), domains);
+            identityStore = new CacheBackedIdentityStore(storeConfig.getIdentityStoreCacheConfigMap(),
+                    baseIdentityStore, cacheManager);
         } else {
-            identityStore = new IdentityStoreImpl(domains);
+            identityStore = baseIdentityStore;
         }
     }
 

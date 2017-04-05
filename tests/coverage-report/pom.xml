@@ -131,10 +131,10 @@
                                                     </fileset>
                                                 </classfiles>
                                                 <sourcefiles encoding="UTF-8">
-                                                    <fileset dir="../../components/org.wso2.carbon.identity.mgt/src" />
-                                                    <fileset dir="../../components/org.wso2.carbon.identity.claim/src" />
-                                                    <fileset dir="../../components/org.wso2.carbon.identity.mgt.login.interceptor/src" />
-                                                    <fileset dir="../../components/org.wso2.carbon.identity.recovery/src" />
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.mgt/src/main/java" />
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.claim/src/main/java" />
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.mgt.login.interceptor/src/main/java" />
+                                                    <fileset dir="../../components/org.wso2.carbon.identity.recovery/src/main/java" />
                                                 </sourcefiles>
                                             </structure>
                                             <html destdir="${project.build.directory}/site/jacoco" />

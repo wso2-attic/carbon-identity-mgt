@@ -18,7 +18,6 @@ package org.wso2.carbon.identity.mgt.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.caching.CarbonCachingService;
 import org.wso2.carbon.identity.mgt.AuthenticationContext;
 import org.wso2.carbon.identity.mgt.Group;
 import org.wso2.carbon.identity.mgt.IdentityStore;
@@ -32,7 +31,6 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.impl.config.CacheConfig;
-import org.wso2.carbon.identity.mgt.impl.internal.IdentityMgtDataHolder;
 import org.wso2.carbon.identity.mgt.impl.util.CacheHelper;
 
 import java.util.HashMap;
@@ -65,26 +63,29 @@ public class CacheBackedIdentityStore implements IdentityStore {
     private CacheManager cacheManager;
 
 
-    public CacheBackedIdentityStore(Map<String, CacheConfig> cacheConfigs, List<Domain> domains)
+    public CacheBackedIdentityStore(Map<String, CacheConfig> cacheConfigs, IdentityStore identityStore,
+            CacheManager cacheManager)
             throws IdentityStoreException {
 
-        CarbonCachingService carbonCachingService = IdentityMgtDataHolder.getInstance().getCarbonCachingService();
-
-        identityStore = new IdentityStoreImpl(domains);
-
-        cacheManager = carbonCachingService.getCachingProvider().getCacheManager();
+        this.identityStore = identityStore;
+        this.cacheManager = cacheManager;
 
         // Initialize all caches.
-        if (CacheHelper.isCacheEnabled(cacheConfigs, UNIQUE_USER_CACHE)) {
-            CacheHelper.createCache(UNIQUE_USER_CACHE, String.class, User.class, CacheHelper.MEDIUM_EXPIRE_TIME,
-                    cacheConfigs, cacheManager);
-            cacheStatus.put(UNIQUE_USER_CACHE, true);
-        } else {
-            cacheStatus.put(UNIQUE_USER_CACHE, false);
-        }
+        initCacheIfRequired(UNIQUE_USER_CACHE, cacheConfigs);
+        initCacheIfRequired(UNIQUE_GROUP_CACHE, cacheConfigs);
 
         if (log.isDebugEnabled()) {
             log.debug("Cache backed identity store successfully initialized.");
+        }
+    }
+
+    private void initCacheIfRequired(String cacheName, Map<String, CacheConfig> cacheConfigs) {
+        if (CacheHelper.isCacheEnabled(cacheConfigs, cacheName)) {
+            CacheHelper.createCache(cacheName, String.class, User.class, CacheHelper.MEDIUM_EXPIRE_TIME,
+                    cacheConfigs, cacheManager);
+            cacheStatus.put(cacheName, true);
+        } else {
+            cacheStatus.put(cacheName, false);
         }
     }
 
@@ -179,7 +180,7 @@ public class CacheBackedIdentityStore implements IdentityStore {
     @Override
     public Group getGroup(String uniqueGroupId) throws IdentityStoreException, GroupNotFoundException {
 
-        if (cacheStatus.get(UNIQUE_GROUP_CACHE) && isNullOrEmpty(uniqueGroupId)) {
+        if (cacheStatus.get(UNIQUE_GROUP_CACHE) && !isNullOrEmpty(uniqueGroupId)) {
             return doGetGroup(uniqueGroupId, identityStore.getPrimaryDomainName());
         }
 

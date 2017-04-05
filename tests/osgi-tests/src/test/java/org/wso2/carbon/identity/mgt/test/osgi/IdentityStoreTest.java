@@ -17,6 +17,7 @@
 package org.wso2.carbon.identity.mgt.test.osgi;
 
 import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.ExamFactory;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
@@ -25,6 +26,7 @@ import org.osgi.framework.BundleContext;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.wso2.carbon.container.CarbonContainerFactory;
 import org.wso2.carbon.identity.mgt.Group;
 import org.wso2.carbon.identity.mgt.RealmService;
 import org.wso2.carbon.identity.mgt.User;
@@ -39,7 +41,7 @@ import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
 import org.wso2.carbon.identity.mgt.test.identity.store.handler.TestIdentityStoreHandler;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
-import org.wso2.carbon.kernel.utils.CarbonServerInfo;
+//import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -58,6 +60,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 @Listeners(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
+@ExamFactory(CarbonContainerFactory.class)
 public class IdentityStoreTest {
 
     private static List<User> users = new ArrayList<>();
@@ -67,12 +70,15 @@ public class IdentityStoreTest {
     private BundleContext bundleContext;
 
     @Inject
-    private CarbonServerInfo carbonServerInfo;
+    private RealmService realmService;
+
+//    @Inject
+//    private CarbonServerInfo carbonServerInfo;
 
     @Configuration
     public Option[] createConfiguration() {
 
-        List<Option> optionList = IdentityMgtOSGiTestUtils.getDefaultSecurityPAXOptions();
+        List<Option> optionList = new ArrayList<>();
 
         optionList.add(systemProperty("java.security.auth.login.config")
                                .value(Paths.get(IdentityMgtOSGiTestUtils.getCarbonHome(), "conf", "security",
@@ -83,8 +89,6 @@ public class IdentityStoreTest {
 
     @Test(groups = "addUsers")
     public void testAddUser() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         UserBean userBean = new UserBean();
@@ -109,8 +113,6 @@ public class IdentityStoreTest {
 
     @Test(groups = "addUsers")
     public void testAddUserByDomain() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         UserBean userBean = new UserBean();
@@ -135,8 +137,6 @@ public class IdentityStoreTest {
 
     @Test(groups = "addUsers")
     public void testAddUsers() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         UserBean userBean1 = new UserBean();
@@ -171,8 +171,6 @@ public class IdentityStoreTest {
 
     @Test(groups = "addUsers")
     public void testAddUsersByDomain() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         UserBean userBean1 = new UserBean();
@@ -208,8 +206,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testUserExistenceSpecificDomain() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         boolean isUserExist = realmService.getIdentityStore().isUserExist(users.get(0).getClaims(), users.get(0)
@@ -220,8 +216,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testUserExistenceAcrossDomains() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<String> userExistMap = realmService.getIdentityStore().isUserExist(users.get(0).getClaims());
@@ -233,8 +227,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testGetUserByUniqueUserId() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         User user = realmService.getIdentityStore().getUser(users.get(0).getUniqueUserId());
@@ -249,8 +241,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testGetUserByClaim() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         User user = realmService.getIdentityStore()
@@ -269,8 +259,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testGetUserByClaimAndDomain() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         User user = realmService.getIdentityStore().getUser(new Claim("http://wso2.org/claims", "http://wso2" +
@@ -288,8 +276,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByOffsetAndLength() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<User> users = realmService.getIdentityStore().listUsers(2, 3);
@@ -306,8 +292,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByOffsetAndLengthInADomain() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<User> users = realmService.getIdentityStore().listUsers(2, 3, "PRIMARY");
@@ -324,8 +308,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByClaimOffsetAndLength() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Decker");
@@ -343,8 +325,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByClaimOffsetAndLengthInADomain() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/lastName", "Decker");
@@ -362,8 +342,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByMetaClaimFilterPatternOffsetAndLength() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         MetaClaim metaClaim = new MetaClaim("http://wso2.org/claims", "http://wso2.org/claims/lastName");
@@ -381,8 +359,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByMetaClaimFilterPatternOffsetAndLengthInDomain() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         MetaClaim metaClaim = new MetaClaim("http://wso2.org/claims", "http://wso2.org/claims/lastName");
@@ -399,8 +375,6 @@ public class IdentityStoreTest {
     }
     @Test(dependsOnGroups = {"addUsers"})
     public void testListUsersByClaimsOffsetAndLength() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance.");
 
         List<Claim> claims = new ArrayList<>();
@@ -420,8 +394,6 @@ public class IdentityStoreTest {
 
     @Test(groups = "addGroups")
     public void testAddGroup() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         GroupBean groupBean = new GroupBean();
@@ -444,8 +416,6 @@ public class IdentityStoreTest {
 
     @Test(groups = "addGroups")
     public void testAddGroupByDomain() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         GroupBean groupBean = new GroupBean();
@@ -468,8 +438,6 @@ public class IdentityStoreTest {
 
     @Test(groups = "addGroups")
     public void testAddGroups() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         GroupBean groupBean1 = new GroupBean();
@@ -500,8 +468,6 @@ public class IdentityStoreTest {
 
     @Test(groups = "addGroups")
     public void testAddGroupsByDomain() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         GroupBean groupBean1 = new GroupBean();
@@ -533,8 +499,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testGroupExistence() throws IdentityStoreException, GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         boolean isGroupExist = realmService.getIdentityStore().isGroupExist(groups.get(0).getClaims(), groups.get(0)
@@ -545,8 +509,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testGetGroupByUniqueGroupId() throws IdentityStoreException, GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         Group group = realmService.getIdentityStore().getGroup(groups.get(0).getUniqueGroupId());
@@ -561,8 +523,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testGetGroupByClaim() throws IdentityStoreException, GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         Group group = realmService.getIdentityStore().getGroup(new Claim("http://wso2.org/claims", "http://wso2" +
@@ -580,8 +540,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testGetGroupByClaimAndDomain() throws IdentityStoreException, GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         Group group = realmService.getIdentityStore().getGroup(new Claim("http://wso2.org/claims", "http://wso2" +
@@ -599,8 +557,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByOffsetAndLength() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<Group> groups = realmService.getIdentityStore().listGroups(2, 3);
@@ -617,8 +573,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByOffsetAndLengthInADomain() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<Group> groups = realmService.getIdentityStore().listGroups(2, 3, "PRIMARY");
@@ -635,8 +589,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByClaimOffsetAndLength() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Society");
@@ -654,8 +606,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByClaimOffsetAndLengthInADomain() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         Claim claim = new Claim("http://wso2.org/claims", "http://wso2.org/claims/organization", "Society");
@@ -673,8 +623,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByMetaClaimFilterPatternOffsetAndLength() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         MetaClaim metaClaim = new MetaClaim("http://wso2.org/claims", "http://wso2.org/claims/organization");
@@ -692,8 +640,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testListGroupsByMetaClaimFilterPatternOffsetAndLengthInDomain() throws IdentityStoreException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         MetaClaim metaClaim = new MetaClaim("http://wso2.org/claims", "http://wso2.org/claims/organization");
@@ -706,8 +652,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers", "addGroups"}, groups = "addGroupsToUser")
     public void testUpdateGroupsOfUser() {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         try {
@@ -726,8 +670,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers", "addGroups"}, groups = "addUsersToGroup")
     public void testUpdateUsersOfGroup() {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         try {
@@ -745,8 +687,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
     public void testGetGroupsOfUser() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<Group> groupsOfUser = realmService.getIdentityStore().getGroupsOfUser(users.get(0).getUniqueUserId());
@@ -757,8 +697,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
     public void testGetUsersOfGroup() throws IdentityStoreException, GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<User> usersOfGroup = realmService.getIdentityStore().getUsersOfGroup(groups.get(3).getUniqueGroupId());
@@ -774,8 +712,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroupsToUser", "addUsersToGroup"})
     public void testIsUserInGroup() throws IdentityStoreException, UserNotFoundException, GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         boolean isUserInGroup = realmService.getIdentityStore().isUserInGroup(users.get(0).getUniqueUserId(), groups
@@ -791,8 +727,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testGetClaimsOfUser() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<Claim> claims = realmService.getIdentityStore().getClaimsOfUser(users.get(0).getUniqueUserId());
@@ -808,8 +742,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testGetClaimOfUserFromMetaClaims() throws IdentityStoreException, UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<MetaClaim> metaClaims = Arrays.asList(
@@ -830,8 +762,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testGetClaimsOfGroup() throws IdentityStoreException, GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<Claim> claims = realmService.getIdentityStore().getClaimsOfGroup(groups.get(0).getUniqueGroupId());
@@ -847,8 +777,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testGetClaimOfGroupFromMetaClaims() throws IdentityStoreException, GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<MetaClaim> metaClaims = Arrays.asList(
@@ -869,8 +797,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testUpdateUserClaimsPUT() throws UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<Claim> claims = Arrays
@@ -892,8 +818,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testSetUserState() throws UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         ;
@@ -916,8 +840,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addUsers"})
     public void testUpdateUserClaimsPATCH() throws UserNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<Claim> claimsToAdd = Arrays
@@ -942,8 +864,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testUpdateGroupClaimsPUT() throws GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<Claim> claims = Arrays.asList(
@@ -964,8 +884,6 @@ public class IdentityStoreTest {
 
     @Test(dependsOnGroups = {"addGroups"})
     public void testUpdateGroupClaimsPATCH() throws GroupNotFoundException {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         List<Claim> claimsToAdd = Collections.singletonList(new Claim("http://wso2.org/claims",
@@ -989,8 +907,6 @@ public class IdentityStoreTest {
 
     @Test
     public void testGetPrimaryDomainName() {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         String primaryDomainName = null;
@@ -1010,8 +926,6 @@ public class IdentityStoreTest {
 
     @Test
     public void testGetDomainNames() {
-
-        RealmService realmService = bundleContext.getService(bundleContext.getServiceReference(RealmService.class));
         Assert.assertNotNull(realmService, "Failed to get realm service instance");
 
         Set<String> domainNames = new HashSet<>();

@@ -18,14 +18,14 @@
 
 package org.wso2.carbon.identity.mgt.test.osgi.util;
 
-import org.ops4j.pax.exam.Option;
-import org.wso2.carbon.osgi.test.util.CarbonSysPropConfiguration;
-import org.wso2.carbon.osgi.test.util.OSGiTestConfigurationUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+//import org.ops4j.pax.exam.Option;
+//import org.wso2.carbon.osgi.test.util.CarbonSysPropConfiguration;
+//import org.wso2.carbon.osgi.test.util.OSGiTestConfigurationUtils;
+//
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 /**
  * This class contains the utility methods for identity management OSGI tests.
@@ -37,113 +37,113 @@ public class IdentityMgtOSGiTestUtils {
      *
      * @return list of Options
      */
-    public static List<Option> getDefaultSecurityPAXOptions() {
-
-        List<Option> defaultOptionList = new ArrayList<>();
-
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.slf4j")
-                .artifactId("slf4j-api")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("net.minidev.wso2")
-                .artifactId("json-smart")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("commons-io.wso2")
-                .artifactId("commons-io")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("net.minidev.wso2")
-                .artifactId("json-smart")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("net.minidev")
-                .artifactId("asm")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon")
-                .artifactId("org.wso2.carbon.core")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.messaging")
-                .artifactId("org.wso2.carbon.messaging")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.caching")
-                .artifactId("org.wso2.carbon.caching")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.identity.mgt")
-                .artifactId("org.wso2.carbon.identity.mgt")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.identity.mgt")
-                .artifactId("org.wso2.carbon.identity.claim")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.identity.mgt")
-                .artifactId("org.wso2.carbon.identity.recovery")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.identity.mgt")
-                .artifactId("org.wso2.carbon.identity.handler.event.account.lock")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.identity.mgt")
-                .artifactId("in-memory-connectors-test-artifact")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                  .groupId("org.wso2.carbon.identity.commons")
-                  .artifactId("org.wso2.carbon.identity.event")
-                  .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                  .groupId("org.wso2.carbon.identity.mgt")
-                  .artifactId("identity-store-handler-test-artifact")
-                  .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.datasources")
-                .artifactId("org.wso2.carbon.datasource.core")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.jndi")
-                .artifactId("org.wso2.carbon.jndi")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("com.zaxxer")
-                .artifactId("HikariCP")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("com.h2database")
-                .artifactId("h2")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.identity.commons")
-                .artifactId("org.wso2.carbon.identity.commons")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.apache.commons")
-                .artifactId("commons-lang3")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.lcm")
-                .artifactId("org.wso2.carbon.lcm.core")
-                .versionAsInProject());
-        defaultOptionList.add(mavenBundle()
-                .groupId("org.wso2.carbon.lcm")
-                .artifactId("org.wso2.carbon.lcm.sql")
-                .versionAsInProject());
-
-        CarbonSysPropConfiguration sysPropConfiguration = new CarbonSysPropConfiguration();
-        sysPropConfiguration.setCarbonHome(getCarbonHome());
-        sysPropConfiguration.setServerKey("carbon-security");
-        sysPropConfiguration.setServerName("WSO2 Carbon Security Server");
-        sysPropConfiguration.setServerVersion("1.0.0");
-
-        defaultOptionList = OSGiTestConfigurationUtils.getConfiguration(defaultOptionList, sysPropConfiguration);
-
-        return defaultOptionList;
-    }
+//    public static List<Option> getDefaultSecurityPAXOptions() {
+//
+//        List<Option> defaultOptionList = new ArrayList<>();
+//
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.slf4j")
+//                .artifactId("slf4j-api")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("net.minidev.wso2")
+//                .artifactId("json-smart")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("commons-io.wso2")
+//                .artifactId("commons-io")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("net.minidev.wso2")
+//                .artifactId("json-smart")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("net.minidev")
+//                .artifactId("asm")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon")
+//                .artifactId("org.wso2.carbon.core")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.messaging")
+//                .artifactId("org.wso2.carbon.messaging")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.caching")
+//                .artifactId("org.wso2.carbon.caching")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.identity.mgt")
+//                .artifactId("org.wso2.carbon.identity.mgt")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.identity.mgt")
+//                .artifactId("org.wso2.carbon.identity.claim")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.identity.mgt")
+//                .artifactId("org.wso2.carbon.identity.recovery")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.identity.mgt")
+//                .artifactId("org.wso2.carbon.identity.handler.event.account.lock")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.identity.mgt")
+//                .artifactId("in-memory-connectors-test-artifact")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                  .groupId("org.wso2.carbon.identity.commons")
+//                  .artifactId("org.wso2.carbon.identity.event")
+//                  .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                  .groupId("org.wso2.carbon.identity.mgt")
+//                  .artifactId("identity-store-handler-test-artifact")
+//                  .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.datasources")
+//                .artifactId("org.wso2.carbon.datasource.core")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.jndi")
+//                .artifactId("org.wso2.carbon.jndi")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("com.zaxxer")
+//                .artifactId("HikariCP")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("com.h2database")
+//                .artifactId("h2")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.identity.commons")
+//                .artifactId("org.wso2.carbon.identity.commons")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.apache.commons")
+//                .artifactId("commons-lang3")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.lcm")
+//                .artifactId("org.wso2.carbon.lcm.core")
+//                .versionAsInProject());
+//        defaultOptionList.add(mavenBundle()
+//                .groupId("org.wso2.carbon.lcm")
+//                .artifactId("org.wso2.carbon.lcm.sql")
+//                .versionAsInProject());
+//
+//        CarbonSysPropConfiguration sysPropConfiguration = new CarbonSysPropConfiguration();
+//        sysPropConfiguration.setCarbonHome(getCarbonHome());
+//        sysPropConfiguration.setServerKey("carbon-security");
+//        sysPropConfiguration.setServerName("WSO2 Carbon Security Server");
+//        sysPropConfiguration.setServerVersion("1.0.0");
+//
+//        defaultOptionList = OSGiTestConfigurationUtils.getConfiguration(defaultOptionList, sysPropConfiguration);
+//
+//        return defaultOptionList;
+//    }
 
     public static String getCarbonHome() {
         return System.getProperty("carbon.home");
