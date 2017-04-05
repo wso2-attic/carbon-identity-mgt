@@ -527,9 +527,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.wso2.carbon.security.userstore</groupId>
-                <artifactId>org.wso2.carbon.identity.mgt.store.connector.jdbc.feature</artifactId>
-                <version>${carbon.identity.mgt.store.connector.jdbc.version}</version>
+                <groupId>org.wso2.carbon.identity.mgt</groupId>
+                <artifactId>identity.mgt-test-artifacts.feature</artifactId>
+                <version>${carbon.identity.mgt.version}</version>
                 <type>zip</type>
             </dependency>
 
@@ -584,7 +584,8 @@
 
     <properties>
         <carbon.identity.mgt.version>0.1.39-SNAPSHOT</carbon.identity.mgt.version>
-        <org.wso2.carbon.lcm.version>1.0.1-SNAPSHOT</org.wso2.carbon.lcm.version>
+        <org.wso2.carbon.lcm.version>1.1.0</org.wso2.carbon.lcm.version>
+        <org.wso2.carbon.lcm.version.range>[1.0.0, 2.0.0)</org.wso2.carbon.lcm.version.range>
 
         <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
         <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
@@ -601,9 +602,10 @@
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <org.wso2.carbon.messaging.version>2.3.2</org.wso2.carbon.messaging.version>
         <org.wso2.carbon.caching.version>1.1.3</org.wso2.carbon.caching.version>
-        <carbon.datasources.version>1.0.0</carbon.datasources.version>
-        <carbon.jndi.version>1.0.2-SNAPSHOT</carbon.jndi.version>
-        <carbon.identity.commons.version>0.1.24-SNAPSHOT</carbon.identity.commons.version>
+        <carbon.datasources.version>1.1.0</carbon.datasources.version>
+        <org.wso2.carbon.datasource.version.range>[1.0.0, 1.2.0)</org.wso2.carbon.datasource.version.range>
+        <carbon.jndi.version>1.0.1</carbon.jndi.version>
+        <carbon.identity.commons.version>0.1.27</carbon.identity.commons.version>
         <commons-lang.version>2.6</commons-lang.version>
         <commons-lang3.version>3.4</commons-lang3.version>
         <jackson.version>1.8.6</jackson.version>
@@ -675,8 +677,6 @@
         <!--Logging API version range-->
         <slf4j.logging.package.import.version.range>[1.7.1, 2.0.0)</slf4j.logging.package.import.version.range>
 
-
-        <carbon.identity.mgt.store.connector.jdbc.version>0.1.4-SNAPSHOT</carbon.identity.mgt.store.connector.jdbc.version>
         <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
 
         <carbon.deployment.version>5.1.0</carbon.deployment.version>

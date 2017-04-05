@@ -16,7 +16,6 @@ import org.wso2.carbon.identity.claim.exception.ProfileMgtServiceException;
 import org.wso2.carbon.identity.claim.mapping.profile.ClaimConfigEntry;
 import org.wso2.carbon.identity.claim.service.ProfileMgtService;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
-//import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -27,13 +26,15 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 
+//import org.wso2.carbon.kernel.utils.CarbonServerInfo;
+
 /**
  * Tests the ClaimResolvingService.
  */
 @Listeners(PaxExam.class)
 @ExamReactorStrategy(PerSuite.class)
 @ExamFactory(CarbonContainerFactory.class)
-    public class ProfileMgtServiceTest {
+public class ProfileMgtServiceTest {
 
     private List<ClaimConfigEntry> claimConfigEntriesRegistration = new ArrayList<>();
     private ClaimConfigEntry claimConfigEntryUserName = new ClaimConfigEntry();
@@ -79,8 +80,8 @@ import javax.inject.Inject;
     @Inject
     private BundleContext bundleContext;
 
-//    @Inject
-//    private CarbonServerInfo carbonServerInfo;
+    @Inject
+    private ProfileMgtService profileMgtService;
 
     @Configuration
     public Option[] createConfiguration() {
@@ -97,8 +98,6 @@ import javax.inject.Inject;
     @Test
     public void testGetProfileMappings() throws ProfileMgtServiceException {
 
-        ProfileMgtService profileMgtService = bundleContext
-                .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertNotNull(profileMgtService.getProfiles().get(DEFAULT),
@@ -108,7 +107,7 @@ import javax.inject.Inject;
         Assert.assertEquals(DEFAULT, profileMgtService.getProfile(DEFAULT).getProfileName(),
                 "Registration profile mappings not read correctly.");
         Assert.assertEquals(false, profileMgtService.getProfile(DEFAULT).isAdminProfile(),
-                            "Default profile is not an admin profile");
+                "Default profile is not an admin profile");
         Assert.assertNotNull(profileMgtService.getProfiles().get(EMPLOYEE).getClaims(),
                 "Claims are not read correctly from profile");
 
@@ -116,8 +115,6 @@ import javax.inject.Inject;
 
     @Test
     public void testGetProfile() throws ProfileMgtServiceException {
-        ProfileMgtService profileMgtService = bundleContext
-                .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertNotNull(profileMgtService.getProfile(DEFAULT),
@@ -132,8 +129,6 @@ import javax.inject.Inject;
 
     @Test
     public void testGetRequiredClaims() throws ProfileMgtServiceException {
-        ProfileMgtService profileMgtService = bundleContext
-                .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertTrue(profileMgtService.getRequiredClaims(DEFAULT).contains("http://wso2.org/claims/username"),
@@ -142,8 +137,6 @@ import javax.inject.Inject;
 
     @Test
     public void testGetReadOnlyClaims() throws ProfileMgtServiceException {
-        ProfileMgtService profileMgtService = bundleContext
-                .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertTrue(profileMgtService.getReadOnlyClaims(DEFAULT).contains("http://wso2.org/claims/email"),
@@ -152,8 +145,6 @@ import javax.inject.Inject;
 
     @Test
     public void testGetTransformingClaims() throws ProfileMgtServiceException {
-        ProfileMgtService profileMgtService = bundleContext
-                .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertTrue(profileMgtService.getTransformingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
@@ -165,8 +156,6 @@ import javax.inject.Inject;
 
     @Test
     public void testGetValidatingClaims() throws ProfileMgtServiceException {
-        ProfileMgtService profileMgtService = bundleContext
-                .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertTrue(profileMgtService.getValidatingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
@@ -177,8 +166,6 @@ import javax.inject.Inject;
 
     @Test
     public void testGetVerifyingClaims() throws ProfileMgtServiceException {
-        ProfileMgtService profileMgtService = bundleContext
-                .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertTrue(profileMgtService.getVerifyingClaims(DEFAULT).contains("http://wso2.org/claims/username"),
@@ -213,8 +200,6 @@ import javax.inject.Inject;
         claimConfigEntriesRegistration.add(claimConfigEntryUserName);
         claimConfigEntriesRegistration.add(claimConfigEntryEmployeeNumber);
 
-        ProfileMgtService profileMgtService = bundleContext
-                .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertNotNull(profileMgtService, "Failed to get profile mgt service instance");
 
         Assert.assertEquals(claimConfigEntryUserName.getTransformer(),
@@ -231,8 +216,6 @@ import javax.inject.Inject;
         profileNames.add(DEFAULT);
         profileNames.add(EMPLOYEE);
 
-        ProfileMgtService profileMgtService = bundleContext
-                .getService(bundleContext.getServiceReference(ProfileMgtService.class));
         Assert.assertEquals(profileNames, profileMgtService.getProfileNames(),
                 "Error reading the available profile names");
 

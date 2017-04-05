@@ -187,8 +187,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.wso2.carbon.security.userstore</groupId>
-            <artifactId>org.wso2.carbon.identity.mgt.store.connector.jdbc.feature</artifactId>
+            <groupId>org.wso2.carbon.identity.mgt</groupId>
+            <artifactId>identity.mgt-test-artifacts.feature</artifactId>
             <type>zip</type>
         </dependency>
 
@@ -376,8 +376,8 @@
                                     <version>${carbon.transport.http.netty.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.identity.mgt.store.connector.jdbc.feature</id>
-                                    <version>${carbon.identity.mgt.store.connector.jdbc.version}</version>
+                                    <id>identity.mgt-test-artifacts.feature</id>
+                                    <version>${carbon.identity.mgt.version}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -513,8 +513,8 @@
                                     <version>${carbon.transport.http.netty.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.identity.mgt.store.connector.jdbc.feature</id>
-                                    <version>${carbon.identity.mgt.store.connector.jdbc.version}</version>
+                                    <id>identity.mgt-test-artifacts.feature</id>
+                                    <version>${carbon.identity.mgt.version}</version>
                                 </feature>
                             </features>
                         </configuration>

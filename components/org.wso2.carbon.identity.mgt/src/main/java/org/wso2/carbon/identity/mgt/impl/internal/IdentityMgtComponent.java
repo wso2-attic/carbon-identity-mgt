@@ -86,6 +86,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
     private ServiceRegistration<RealmService> realmServiceRegistration;
 
     private BundleContext bundleContext;
+    private CarbonCachingService carbonCachingService;
 
     @Activate
     public void registerCarbonIdentityMgtProvider(BundleContext bundleContext) {
@@ -95,8 +96,9 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 
     @Deactivate
     public void unregisterCarbonIdentityMgtProvider(BundleContext bundleContext) {
-
-        bundleContext.ungetService(realmServiceRegistration.getReference());
+        if (bundleContext != null && realmServiceRegistration != null) {
+            bundleContext.ungetService(realmServiceRegistration.getReference());
+        }
     }
 
     @Reference(
@@ -216,8 +218,7 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             unbind = "unregisterCachingService"
     )
     protected void registerCachingService(CarbonCachingService cachingService, Map<String, ?> properties) {
-
-        IdentityMgtDataHolder.getInstance().registerCacheService(cachingService);
+        this.carbonCachingService = cachingService;
     }
 
 //    @Reference(
@@ -241,8 +242,9 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
 //    }
 
     protected void unregisterCachingService(CarbonCachingService carbonCachingService) {
-
-        IdentityMgtDataHolder.getInstance().registerCacheService(null);
+        if (this.carbonCachingService == carbonCachingService) {
+            this.carbonCachingService = null;
+        }
     }
 
     @Reference(
@@ -301,7 +303,8 @@ public class IdentityMgtComponent implements RequiredCapabilityListener {
             // Get the store configurations
             StoreConfig storeConfig = IdentityStoreConfigReader.getStoreConfig();
 
-            IdentityStore identityStore = new InterceptingIdentityStore(storeConfig, domains);
+            IdentityStore identityStore = new InterceptingIdentityStore(storeConfig, domains,
+                    carbonCachingService.getCachingProvider().getCacheManager());
 
             // Register the realm service.
             RealmService realmService = new RealmServiceImpl(identityStore);

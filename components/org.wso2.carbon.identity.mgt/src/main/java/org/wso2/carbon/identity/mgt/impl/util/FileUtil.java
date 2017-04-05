@@ -77,7 +77,7 @@ public class FileUtil {
             try {
                 Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8);
                 CustomClassLoaderConstructor constructor =
-                        new CustomClassLoaderConstructor(FileUtil.class.getClassLoader());
+                        new CustomClassLoaderConstructor(classType.getClassLoader());
                 Yaml yaml = new Yaml(constructor);
                 yaml.setBeanAccess(BeanAccess.FIELD);
                 return yaml.loadAs(in, classType);
@@ -110,7 +110,7 @@ public class FileUtil {
                 for (Path file : stream) {
                     Reader in = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8);
                     CustomClassLoaderConstructor constructor =
-                            new CustomClassLoaderConstructor(FileUtil.class.getClassLoader());
+                            new CustomClassLoaderConstructor(classType.getClassLoader());
                     Yaml yaml = new Yaml(constructor);
                     yaml.setBeanAccess(BeanAccess.FIELD);
                     configEntries.add(yaml.loadAs(in, classType));

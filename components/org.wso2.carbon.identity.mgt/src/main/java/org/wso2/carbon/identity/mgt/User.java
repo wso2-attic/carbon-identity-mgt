@@ -278,7 +278,8 @@ public class User implements Serializable {
 
             //TODO Add authorizationStore with M3
             if (userId == null || identityStore == null || domainName == null) {
-                throw new StoreException("Required data missing for building user.");
+                throw new StoreException(String.format("Required data missing for building user."
+                        + " userId: %s, identityStore: %s, domainName: %s", userId, identityStore, domainName));
             }
 
             User user = new User(userId, domainName, state);

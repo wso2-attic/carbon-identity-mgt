@@ -28,6 +28,7 @@
             <fileMode>644</fileMode>
             <excludes>
                 <exclude>conf/identity/*.yaml</exclude>
+                <exclude>conf/identity/identity-event.properties</exclude>
                 <exclude>**/eclipse.ini</exclude>
                 <exclude>**/*.lock</exclude>
                 <exclude>**/.data</exclude>
@@ -57,6 +58,11 @@
         <fileSet>
             <directory>carbon-home/conf/identity</directory>
             <outputDirectory>conf/identity</outputDirectory>
+            <fileMode>644</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>carbon-home/deployment</directory>
+            <outputDirectory>deployment</outputDirectory>
             <fileMode>644</fileMode>
         </fileSet>
 

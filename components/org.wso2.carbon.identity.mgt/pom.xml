@@ -180,8 +180,6 @@
         <!-- Dependency package version ranges -->
         <com.nimbusds.package.import.version.range>[2.26.1, 2.27)</com.nimbusds.package.import.version.range>
         <asm.package.version.range>[1.0.2, 2.0.0)</asm.package.version.range>
-        <org.wso2.carbon.datasource.version.range>[1.0.0, 1.1.0)</org.wso2.carbon.datasource.version.range>
-        <org.wso2.carbon.lcm.version.range>[1.0.0, 2.0.0)</org.wso2.carbon.lcm.version.range>
 
         <org.wso2.carbon.context.import.version.range>[5.0.0, 5.1.0)</org.wso2.carbon.context.import.version.range>
         <org.snakeyaml.package.import.version.range>[1.16.0, 2.0.0)</org.snakeyaml.package.import.version.range>

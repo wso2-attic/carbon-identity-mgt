@@ -26,7 +26,7 @@ domains:
   identityStoreConnectors:
   -
    connectorId: "INMEM_ISC"
-   connectorType: "JDBCIdentityStore"
+   connectorType: "InMemoryIdentityStore"
    readOnly: false
    properties:
     dataSource: "WSO2_CARBON_DB"
@@ -111,7 +111,7 @@ domains:
   credentialStoreConnectors:
   -
    connectorId: "INMEM_CSC"
-   connectorType: "JDBCCredentialStore"
+   connectorType: "InMemoryCredentialStore"
    properties:
     dataSource: "WSO2_CARBON_DB"
     databaseType: "MySQL"
