@@ -16,7 +16,8 @@
 
 package org.wso2.carbon.identity.recovery.password;
 
-import org.wso2.carbon.identity.common.util.IdentityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.RecoveryScenarios;
 import org.wso2.carbon.identity.recovery.RecoverySteps;
@@ -29,32 +30,30 @@ import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
  */
 public class AdminForcePasswordResetManager {
     private static AdminForcePasswordResetManager instance = new AdminForcePasswordResetManager();
+    private static final Logger log = LoggerFactory.getLogger(AdminForcePasswordResetManager.class);
 
     public static AdminForcePasswordResetManager getInstance() {
         return instance;
     }
 
     /**
-     * get the generated one time password
-     *
-     * @return auto-generated one time password
-     */
-    public String generatePassode() {
-        return IdentityUtils.generatePasscode(6);
-    }
-
-    /**
      * pass the otp to the store to persist it in the database
      *
      * @param userUniqueId selected user id
-     * @param passCode     generated code
      * @throws IdentityRecoveryException
      */
-    public void persistPasscode(String userUniqueId, String passCode) throws IdentityRecoveryException {
+    public void persistPasscode(String userUniqueId, String passcode) throws IdentityRecoveryException {
         UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
-        UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, passCode,
+        if (log.isDebugEnabled()) {
+            log.debug("The passcode is generated for the user :" + userUniqueId);
+        }
+        UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, passcode,
                 RecoveryScenarios.ADMIN_FORCED_PASSWORD_RESET_VIA_OTP, RecoverySteps.UPDATE_PASSWORD);
-        userRecoveryDataStore.invalidateUserScenario(userUniqueId, "ADMIN_FORCED_PASSWORD_RESET_VIA_OTP");
+        userRecoveryDataStore.invalidateUserScenario(userUniqueId,
+                String.valueOf(RecoveryScenarios.ADMIN_FORCED_PASSWORD_RESET_VIA_OTP));
         userRecoveryDataStore.store(recoveryDataDO);
+        if (log.isDebugEnabled()) {
+            log.debug("The passcode is persisted for user :" + userUniqueId);
+        }
     }
 }
