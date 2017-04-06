@@ -74,11 +74,14 @@
     </build>
 
     <properties>
-        <private.package>org.wso2.carbon.identity.policy.password.history.internal</private.package>
+        <private.package>org.wso2.carbon.identity.policy.password.history.internal,
+            org.wso2.carbon.identity.policy.password.pattern.internal,
+        </private.package>
         <export.package>
-            !org.wso2.carbon.identity.policy.password.history.internal,
-            org.wso2.carbon.identity.policy.password.history.*;version="${project.version}",
-            org.wso2.carbon.identity.policy.password.validation.*;version="${project.version}"
+            !org.wso2.carbon.identity.policy.password.history.internal*,
+            !org.wso2.carbon.identity.policy.password.pattern.internal*,
+            org.wso2.carbon.identity.policy.password.history*;version="${project.version}",
+            org.wso2.carbon.identity.policy.password.pattern*;version="${project.version}",
         </export.package>
         <import.package>
             org.osgi.framework.*;version="${osgi.framework.package.import.version.range}",

@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-import org.wso2.carbon.identity.common.util.UtilServiceImpl;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.model.UserRecoveryData;
@@ -69,13 +68,6 @@ public class AdminForcedPasswordResetTest {
                         "carbon-jaas.config").toString()));
 
         return optionList.toArray(new Option[optionList.size()]);
-    }
-
-    @Test(groups = {"getGeneratedpassCode"})
-    public void testGetGeneratedpassCode() {
-        String otp = UtilServiceImpl.getInstance().generatePasscode(6);
-        Assert.assertNotNull(otp, "Failed to Generate the passcode");
-
     }
 
     @Test(groups = {"persistpasscode"})
