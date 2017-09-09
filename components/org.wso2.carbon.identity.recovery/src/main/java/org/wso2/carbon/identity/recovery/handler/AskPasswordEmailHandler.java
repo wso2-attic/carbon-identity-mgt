@@ -46,6 +46,8 @@ import java.util.UUID;
  */
 public class AskPasswordEmailHandler extends AbstractEventHandler {
 
+    private static final String ASK_PASSWORD_USING_EMAIL =
+            "identity.event.handler.ask.password.using.email";
     private static final Logger log = LoggerFactory.getLogger(AskPasswordEmailHandler.class);
 
     @Override
@@ -54,28 +56,31 @@ public class AskPasswordEmailHandler extends AbstractEventHandler {
 
     @Override
     public String getName() {
-        return "identity.event.handler.ask.password.using.email";
+        return ASK_PASSWORD_USING_EMAIL;
     }
 
     @Override
-    public void handle(EventContext eventContext, Event event) throws IdentityException {
+    public void handle(EventContext eventContext, Event event) throws IdentityException, IdentityRecoveryException {
         User user = null;
+        String userUniqueId;
         Map<String, Object> eventProperties = event.getEventProperties();
         if (eventProperties != null) {
             user = (User) eventProperties.get(IdentityStoreConstants.USER);
         }
-        String userUniqueId = user.getUniqueUserId();
-        UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
-        userRecoveryDataStore.invalidateByUserUniqueId(userUniqueId);
-        String secretKey = UUID.randomUUID().toString();
-        UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, secretKey,
-                RecoveryScenarios.ASK_PASSWORD, RecoverySteps.UPDATE_PASSWORD);
-        userRecoveryDataStore.store(recoveryDataDO);
+        if (user != null) {
+            userUniqueId = user.getUniqueUserId();
+            UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
+            userRecoveryDataStore.invalidateByUserUniqueId(userUniqueId);
+            String secretKey = UUID.randomUUID().toString();
+            UserRecoveryData recoveryDataDO = new UserRecoveryData(userUniqueId, secretKey,
+                    RecoveryScenarios.ASK_PASSWORD, RecoverySteps.UPDATE_PASSWORD);
+            userRecoveryDataStore.store(recoveryDataDO);
 
-        if (IdentityStoreInterceptorConstants.POST_ADD_USER.equals(event.getEventName()) ||
-                IdentityStoreInterceptorConstants.POST_ADD_USER_BY_DOMAIN.equals(event.getEventName())) {
-            triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_ASK_PASSWORD, user,
-                    secretKey);
+            if (IdentityStoreInterceptorConstants.POST_ADD_USER.equals(event.getEventName()) ||
+                    IdentityStoreInterceptorConstants.POST_ADD_USER_BY_DOMAIN.equals(event.getEventName())) {
+                triggerNotification(userUniqueId, IdentityRecoveryConstants.NOTIFICATION_TYPE_ASK_PASSWORD, user,
+                        secretKey);
+            }
         }
     }
 
