@@ -29,7 +29,11 @@ import org.testng.Assert;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGiTestUtils;
+import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
+import org.wso2.carbon.identity.recovery.model.UserRecoveryData;
 import org.wso2.carbon.identity.recovery.password.AdminForcePasswordResetManager;
+import org.wso2.carbon.identity.recovery.store.JDBCRecoveryDataStore;
+import org.wso2.carbon.identity.recovery.store.UserRecoveryDataStore;
 import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
 
@@ -66,10 +70,12 @@ public class AdminForcedPasswordResetTest {
         return optionList.toArray(new Option[optionList.size()]);
     }
 
-    @Test(groups = {"getGeneratedpassCode"})
-    public void testGetGeneratedpassCode() {
-        String otp = AdminForcePasswordResetManager.getInstance().generatePassode();
-        Assert.assertNotNull(otp, "Failed to Generate the passcode");
+    @Test(groups = {"persistpasscode"})
+    public void testPersistOTP() throws IdentityRecoveryException {
+        AdminForcePasswordResetManager.getInstance().persistPasscode("user3", "code1");
+        UserRecoveryDataStore userRecoveryDataStore = JDBCRecoveryDataStore.getInstance();
+        UserRecoveryData userRecoveryData = userRecoveryDataStore.loadByUserUniqueId("user3");
+        Assert.assertNotNull(userRecoveryData, "Failed to persist OTP");
 
     }
 }
