@@ -36,7 +36,6 @@ import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.test.osgi.util.IdentityMgtOSGITestConstants;
 import org.wso2.carbon.identity.recovery.IdentityRecoveryException;
 import org.wso2.carbon.identity.recovery.username.NotificationUsernameRecoveryManager;
-//import org.wso2.carbon.kernel.utils.CarbonServerInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,11 +72,11 @@ public class UsernameRecoveryTest {
     @Test(groups = "usernameRecovery")
     public void verifyUsernameWithOneClaims() throws IdentityStoreException, IdentityRecoveryException {
         addUser("dinali123", "dinali", "dabarera", "dinali@wso2.com");
-        Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+        Claim sampleClaim = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
                 IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI, "dinali");
-        List<Claim> claims1 = new ArrayList<>();
-        claims1.add(claim1);
-        boolean result = instance.verifyUsername(claims1);
+        List<Claim> claimList = new ArrayList<>();
+        claimList.add(sampleClaim);
+        boolean result = instance.verifyUsername(claimList);
         Assert.assertEquals(result, true, "There should be one user with given claim.");
 
     }
@@ -85,9 +84,10 @@ public class UsernameRecoveryTest {
     @Test(groups = "usernameRecovery")
     public void verifyUsernameWithWrongClaims() throws IdentityStoreException, IdentityRecoveryException {
         addUser("dinali123", "dinali", "dabarera", "dinali@wso2.com");
-        Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+        Claim sampleClaim = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
                 IdentityMgtOSGITestConstants.ClaimURIs.FIRST_NAME_CLAIM_URI, "mala");
-        claims.clear();  claims.add(claim1);
+        claims.clear();
+        claims.add(sampleClaim);
         boolean result = instance.verifyUsername(claims);
         Assert.assertEquals(result, false, "There should be no user with given claim.");
 
@@ -97,10 +97,10 @@ public class UsernameRecoveryTest {
     public void verifyUsernameWithmultipleUsers() throws IdentityStoreException, IdentityRecoveryException {
         addUser("dinali123", "dinali", "dabarera", "dinali@wso2.com");
         addUser("dinaliDuplicate", "dinali", "silva", "dinali@wso2.com");
-        Claim claim1 = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
+        Claim sampleClaim = new Claim(IdentityMgtOSGITestConstants.ClaimURIs.WSO2_DIALECT_URI,
                 IdentityMgtOSGITestConstants.ClaimURIs.EMAIL_CLAIM_URI, "dinali@wso2.com");
         List<Claim> claimList = new ArrayList<>();
-        claimList.add(claim1);
+        claimList.add(sampleClaim);
         boolean result = instance.verifyUsername(claimList);
         Assert.assertEquals(result, false, "There should be multiple users with given claim.");
 
