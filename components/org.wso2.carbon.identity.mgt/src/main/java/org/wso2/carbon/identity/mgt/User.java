@@ -22,7 +22,10 @@ import org.wso2.carbon.identity.mgt.exception.GroupNotFoundException;
 import org.wso2.carbon.identity.mgt.exception.IdentityStoreException;
 import org.wso2.carbon.identity.mgt.exception.StoreException;
 import org.wso2.carbon.identity.mgt.exception.UserNotFoundException;
+import org.wso2.carbon.identity.mgt.impl.internal.IdentityMgtDataHolder;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -132,6 +135,26 @@ public class User implements Serializable {
 
     public void setIdentityStore(IdentityStore identityStore) {
         this.identityStore = identityStore;
+    }
+
+    /**
+     * Since, IdentityStore is transient, If some one serialize this User object, we have to restore the IdentityStore
+     * when the User object get deserialize.
+     *
+     * @param ois ObjectInputStream
+     * @throws ClassNotFoundException
+     * @throws java.io.IOException
+     */
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+
+        //Restoring the values in default order.
+        domainName = (String) ois.readObject();
+        state = (String) ois.readObject();
+        uniqueUserId = (String) ois.readObject();
+
+        //Restore the IdentityStore
+        RealmService realmService = IdentityMgtDataHolder.getInstance().getRealmService();
+        identityStore = realmService.getIdentityStore();
     }
 
     @Override
