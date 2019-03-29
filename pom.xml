@@ -680,7 +680,7 @@
         <orbit.version.h2.engine>1.2.140.wso2v3</orbit.version.h2.engine>
 
         <carbon.deployment.version>5.1.0</carbon.deployment.version>
-        <carbon.transport.http.netty.version>4.3.0-m2</carbon.transport.http.netty.version>
+        <carbon.transport.http.netty.version>6.0.49</carbon.transport.http.netty.version>
     </properties>
 
 
