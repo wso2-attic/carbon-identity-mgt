@@ -607,7 +607,7 @@
         <carbon.jndi.version>1.0.1</carbon.jndi.version>
         <carbon.identity.commons.version>0.1.27</carbon.identity.commons.version>
         <commons-lang.version>2.6</commons-lang.version>
-        <commons-lang3.version>3.4</commons-lang3.version>
+        <commons-lang3.version>3.8.1</commons-lang3.version>
         <jackson.version>1.8.6</jackson.version>
 
         <!-- Equinox dependency versions -->
