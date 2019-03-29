@@ -664,7 +664,7 @@
         <javax.inject.version>1</javax.inject.version>
         <jacoco.version>0.7.5.201505241946</jacoco.version>
         <commons-io.version>2.4.0.wso2v1</commons-io.version>
-        <HikariCP.version>2.4.1</HikariCP.version>
+        <HikariCP.version>3.3.1</HikariCP.version>
         <h2.version>1.4.191</h2.version>
         <xerces.version>2.11.0</xerces.version>
         <xalan.version>2.7.1.wso2v1</xalan.version>
