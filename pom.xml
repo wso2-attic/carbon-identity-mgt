@@ -597,7 +597,7 @@
         <carbon.launcher.version>5.2.0-m3</carbon.launcher.version>
         <carbon.core.version>5.2.0-m3</carbon.core.version>
         <carbon.osgi.test.util.version>5.1.0</carbon.osgi.test.util.version>
-        <carbon.metrics.version>2.0.1</carbon.metrics.version>
+        <carbon.metrics.version>2.3.9</carbon.metrics.version>
         <msf4j.version>2.3.0-m1</msf4j.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <org.wso2.carbon.messaging.version>2.3.2</org.wso2.carbon.messaging.version>
