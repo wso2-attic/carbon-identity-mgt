@@ -88,6 +88,17 @@ public class UnitOfWork implements AutoCloseable {
     }
 
     /**
+     * Revoke the transaction when catch then sql transaction errors.
+     *
+     * @param connection Database connection.
+     * @throws SQLException SQL Exception.
+     */
+    public static void rollBackTransaction(Connection connection) throws SQLException {
+
+        connection.rollback();
+    }
+
+    /**
      * Get the underlying connection object.
      *
      * @return instance of Connection.
