@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
 
 /**
  * Support class to implement Unit of work patter.
@@ -90,12 +91,17 @@ public class UnitOfWork implements AutoCloseable {
     /**
      * Revoke the transaction when catch then sql transaction errors.
      *
-     * @param connection Database connection.
-     * @throws SQLException SQL Exception.
+     * @param dataSource DataSource of the connection.
      */
-    public static void rollBackTransaction(Connection connection) throws SQLException {
+    public static void rollbackTransaction(DataSource dataSource) {
 
-        connection.rollback();
+        try (Connection connection = dataSource.getConnection()) {
+            if (connection != null) {
+                connection.rollback();
+            }
+        } catch (SQLException e1) {
+            log.error("An error occurred while rolling back transactions. ", e1);
+        }
     }
 
     /**

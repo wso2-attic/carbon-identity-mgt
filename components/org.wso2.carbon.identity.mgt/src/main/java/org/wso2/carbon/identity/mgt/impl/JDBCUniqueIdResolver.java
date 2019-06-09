@@ -363,11 +363,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             namedPreparedStatement.getPreparedStatement().executeBatch();
             unitOfWork.endTransaction();
         } catch (SQLException e) {
-            try {
-                UnitOfWork.rollBackTransaction(dataSource.getConnection());
-            } catch (SQLException e1) {
-                throw new UniqueIdResolverException("Error occurred while adding user.", e1);
-            }
+            UnitOfWork.rollbackTransaction(dataSource);
             throw new UniqueIdResolverException("Error while adding user.", e);
         }
 
@@ -420,11 +416,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             namedPreparedStatement.getPreparedStatement().executeBatch();
             unitOfWork.endTransaction();
         } catch (SQLException e) {
-            try {
-                UnitOfWork.rollBackTransaction(dataSource.getConnection());
-            } catch (SQLException e1) {
-                throw new UniqueIdResolverException("Error occurred while update user.", e1);
-            }
+            UnitOfWork.rollbackTransaction(dataSource);
             throw new UniqueIdResolverException("Error while adding user.", e);
         }
     }
@@ -464,11 +456,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             namedPreparedStatement.getPreparedStatement().executeBatch();
             unitOfWork.endTransaction();
         } catch (SQLException e) {
-            try {
-                UnitOfWork.rollBackTransaction(dataSource.getConnection());
-            } catch (SQLException e1) {
-                throw new UniqueIdResolverException("Error occurred while adding group.", e1);
-            }
+            UnitOfWork.rollbackTransaction(dataSource);
             throw new UniqueIdResolverException("Error while adding group.", e);
         }
 
@@ -521,11 +509,7 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
             namedPreparedStatement.getPreparedStatement().executeBatch();
             unitOfWork.endTransaction();
         } catch (SQLException e) {
-            try {
-                UnitOfWork.rollBackTransaction(dataSource.getConnection());
-            } catch (SQLException e1) {
-                throw new UniqueIdResolverException("Error occurred while update group.", e1);
-            }
+            UnitOfWork.rollbackTransaction(dataSource);
             throw new UniqueIdResolverException("Error while adding user.", e);
         }
     }
