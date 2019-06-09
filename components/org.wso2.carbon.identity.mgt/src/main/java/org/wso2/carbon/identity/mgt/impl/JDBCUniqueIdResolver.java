@@ -340,30 +340,35 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     @Override
     public String addUser(DomainUser domainUser, int domainId) throws UniqueIdResolverException {
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
-            final String addUser = "INSERT INTO IDM_USER " +
-                    "(USER_ID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN_ID, CONNECTOR_TYPE, STATE) " +
-                    "VALUES (:" + SQLPlaceholders.USER_ID + ";, :" + SQLPlaceholders.CONNECTOR_USER_ID + ";, " +
-                    ":" + SQLPlaceholders.CONNECTOR_ID + ";, :" + SQLPlaceholders.DOMAIN_ID + ";, " +
-                    ":" + SQLPlaceholders.CONNECTOR_TYPE + ";, :" + SQLPlaceholders.STATE + ";)";
+            try {
+                final String addUser = "INSERT INTO IDM_USER "
+                        + "(USER_ID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN_ID, CONNECTOR_TYPE, STATE) " + "VALUES (:"
+                        + SQLPlaceholders.USER_ID + ";, :" + SQLPlaceholders.CONNECTOR_USER_ID + ";, " + ":"
+                        + SQLPlaceholders.CONNECTOR_ID + ";, :" + SQLPlaceholders.DOMAIN_ID + ";, " + ":"
+                        + SQLPlaceholders.CONNECTOR_TYPE + ";, :" + SQLPlaceholders.STATE + ";)";
 
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
-                    unitOfWork.getConnection(), addUser);
-            for (UserPartition userPartition : domainUser.getUserPartitions()) {
-                namedPreparedStatement.setString(SQLPlaceholders.USER_ID, domainUser.getDomainUserId());
-                namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_USER_ID, userPartition.getConnectorUserId());
-                namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_ID, userPartition.getConnectorId());
-                namedPreparedStatement.setInt(SQLPlaceholders.DOMAIN_ID, domainId);
-                namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_TYPE,
-                        userPartition.isIdentityStore() ? UniqueIdResolverConstants.IDENTITY_STORE_CONNECTOR :
-                                UniqueIdResolverConstants.CREDENTIAL_STORE_CONNECTOR);
-                namedPreparedStatement.setString(SQLPlaceholders.STATE, domainUser.getState());
-                namedPreparedStatement.getPreparedStatement().addBatch();
+                NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
+                        addUser);
+                for (UserPartition userPartition : domainUser.getUserPartitions()) {
+                    namedPreparedStatement.setString(SQLPlaceholders.USER_ID, domainUser.getDomainUserId());
+                    namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_USER_ID,
+                            userPartition.getConnectorUserId());
+                    namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_ID, userPartition.getConnectorId());
+                    namedPreparedStatement.setInt(SQLPlaceholders.DOMAIN_ID, domainId);
+                    namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_TYPE, userPartition.isIdentityStore() ?
+                            UniqueIdResolverConstants.IDENTITY_STORE_CONNECTOR :
+                            UniqueIdResolverConstants.CREDENTIAL_STORE_CONNECTOR);
+                    namedPreparedStatement.setString(SQLPlaceholders.STATE, domainUser.getState());
+                    namedPreparedStatement.getPreparedStatement().addBatch();
+                }
+
+                namedPreparedStatement.getPreparedStatement().executeBatch();
+                unitOfWork.endTransaction();
+            } catch (SQLException e) {
+                unitOfWork.rollbackTransaction(unitOfWork.getConnection());
+                throw new UniqueIdResolverException("Error while adding user.", e);
             }
-
-            namedPreparedStatement.getPreparedStatement().executeBatch();
-            unitOfWork.endTransaction();
         } catch (SQLException e) {
-            UnitOfWork.rollbackTransaction(dataSource);
             throw new UniqueIdResolverException("Error while adding user.", e);
         }
 
@@ -398,25 +403,29 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
         // Put operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
-            deleteUser(domainUserId, unitOfWork, domainId);
-            final String addUser = "INSERT INTO IDM_USER " +
-                    "(USER_ID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN_ID, CONNECTOR_TYPE, STATE) " +
-                    "VALUES (:" + SQLPlaceholders.USER_ID + ";, :" + SQLPlaceholders.CONNECTOR_USER_ID + ";, " +
-                    ":" + SQLPlaceholders.CONNECTOR_ID + ";, :" + SQLPlaceholders.DOMAIN_ID + ";, " +
-                    ":" + SQLPlaceholders.CONNECTOR_TYPE + ";,:" + SQLPlaceholders.STATE + ";)";
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
-                    unitOfWork.getConnection(), addUser);
-            for (Map.Entry<String, String> entry : connectorUserIdMap.entrySet()) {
-                namedPreparedStatement.setString(SQLPlaceholders.USER_ID, domainUserId);
-                namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_USER_ID, entry.getValue());
-                namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_ID, entry.getKey());
-                namedPreparedStatement.setInt(SQLPlaceholders.DOMAIN_ID, domainId);
-                namedPreparedStatement.getPreparedStatement().addBatch();
+            try {
+                deleteUser(domainUserId, unitOfWork, domainId);
+                final String addUser = "INSERT INTO IDM_USER "
+                        + "(USER_ID, CONNECTOR_USER_ID, CONNECTOR_ID, DOMAIN_ID, CONNECTOR_TYPE, STATE) " + "VALUES (:"
+                        + SQLPlaceholders.USER_ID + ";, :" + SQLPlaceholders.CONNECTOR_USER_ID + ";, " + ":"
+                        + SQLPlaceholders.CONNECTOR_ID + ";, :" + SQLPlaceholders.DOMAIN_ID + ";, " + ":"
+                        + SQLPlaceholders.CONNECTOR_TYPE + ";,:" + SQLPlaceholders.STATE + ";)";
+                NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
+                        addUser);
+                for (Map.Entry<String, String> entry : connectorUserIdMap.entrySet()) {
+                    namedPreparedStatement.setString(SQLPlaceholders.USER_ID, domainUserId);
+                    namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_USER_ID, entry.getValue());
+                    namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_ID, entry.getKey());
+                    namedPreparedStatement.setInt(SQLPlaceholders.DOMAIN_ID, domainId);
+                    namedPreparedStatement.getPreparedStatement().addBatch();
+                }
+                namedPreparedStatement.getPreparedStatement().executeBatch();
+                unitOfWork.endTransaction();
+            } catch (SQLException e) {
+                unitOfWork.rollbackTransaction(unitOfWork.getConnection());
+                throw new UniqueIdResolverException("Error while adding user.", e);
             }
-            namedPreparedStatement.getPreparedStatement().executeBatch();
-            unitOfWork.endTransaction();
         } catch (SQLException e) {
-            UnitOfWork.rollbackTransaction(dataSource);
             throw new UniqueIdResolverException("Error while adding user.", e);
         }
     }
@@ -437,26 +446,31 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
     public String addGroup(DomainGroup domainGroup, int domainId) throws UniqueIdResolverException {
 
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
-            final String addGroup = "INSERT INTO IDM_GROUP " +
-                    "(GROUP_ID, CONNECTOR_GROUP_ID, CONNECTOR_ID, DOMAIN_ID) " +
-                    "VALUES (:" + SQLPlaceholders.GROUP_ID + ";, :" + SQLPlaceholders.CONNECTOR_GROUP_ID + ";, " +
-                    ":" + SQLPlaceholders.CONNECTOR_ID + ";, :" + SQLPlaceholders.DOMAIN_ID + ";)";
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
-                    unitOfWork.getConnection(), addGroup);
-            for (GroupPartition groupPartition : domainGroup.getGroupPartitions()) {
-                namedPreparedStatement.setString(SQLPlaceholders.GROUP_ID, domainGroup.getDomainGroupId());
-                namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_GROUP_ID,
-                        groupPartition.getConnectorGroupId());
-                namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_ID, groupPartition.getConnectorId());
-                namedPreparedStatement.setInt(SQLPlaceholders.DOMAIN_ID, domainId);
+            try {
+                final String addGroup =
+                        "INSERT INTO IDM_GROUP " + "(GROUP_ID, CONNECTOR_GROUP_ID, CONNECTOR_ID, DOMAIN_ID) "
+                                + "VALUES (:" + SQLPlaceholders.GROUP_ID + ";, :" + SQLPlaceholders.CONNECTOR_GROUP_ID
+                                + ";, " + ":" + SQLPlaceholders.CONNECTOR_ID + ";, :" + SQLPlaceholders.DOMAIN_ID
+                                + ";)";
+                NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
+                        addGroup);
+                for (GroupPartition groupPartition : domainGroup.getGroupPartitions()) {
+                    namedPreparedStatement.setString(SQLPlaceholders.GROUP_ID, domainGroup.getDomainGroupId());
+                    namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_GROUP_ID,
+                            groupPartition.getConnectorGroupId());
+                    namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_ID, groupPartition.getConnectorId());
+                    namedPreparedStatement.setInt(SQLPlaceholders.DOMAIN_ID, domainId);
 
-                namedPreparedStatement.getPreparedStatement().addBatch();
+                    namedPreparedStatement.getPreparedStatement().addBatch();
+                }
+
+                namedPreparedStatement.getPreparedStatement().executeBatch();
+                unitOfWork.endTransaction();
+            } catch (SQLException e) {
+                unitOfWork.rollbackTransaction(unitOfWork.getConnection());
+                throw new UniqueIdResolverException("Error while adding group.", e);
             }
-
-            namedPreparedStatement.getPreparedStatement().executeBatch();
-            unitOfWork.endTransaction();
         } catch (SQLException e) {
-            UnitOfWork.rollbackTransaction(dataSource);
             throw new UniqueIdResolverException("Error while adding group.", e);
         }
 
@@ -491,25 +505,28 @@ public class JDBCUniqueIdResolver implements UniqueIdResolver {
 
         // Put operation
         try (UnitOfWork unitOfWork = UnitOfWork.beginTransaction(dataSource.getConnection(), false)) {
-            deleteGroup(domainGroupId, unitOfWork, domainId);
-            final String addGroup = "INSERT INTO IDM_GROUP " +
-                    "(GROUP_ID, CONNECTOR_GROUP_ID, CONNECTOR_ID, DOMAIN_ID) " +
-                    "VALUES (:" + SQLPlaceholders.GROUP_ID + ";, :" + SQLPlaceholders.CONNECTOR_GROUP_ID + ";, " +
-                    ":" + SQLPlaceholders.CONNECTOR_ID + ";, :" + SQLPlaceholders.DOMAIN_ID + ";)";
-            NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(
-                    unitOfWork.getConnection(), addGroup);
-            for (Map.Entry<String, String> entry : connectorGroupIdMap.entrySet()) {
-                namedPreparedStatement.setString(SQLPlaceholders.GROUP_ID, domainGroupId);
-                namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_GROUP_ID,
-                        entry.getValue());
-                namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_ID,
-                        entry.getKey());
-                namedPreparedStatement.getPreparedStatement().addBatch();
+            try {
+                deleteGroup(domainGroupId, unitOfWork, domainId);
+                final String addGroup =
+                        "INSERT INTO IDM_GROUP " + "(GROUP_ID, CONNECTOR_GROUP_ID, CONNECTOR_ID, DOMAIN_ID) "
+                                + "VALUES (:" + SQLPlaceholders.GROUP_ID + ";, :" + SQLPlaceholders.CONNECTOR_GROUP_ID
+                                + ";, " + ":" + SQLPlaceholders.CONNECTOR_ID + ";, :" + SQLPlaceholders.DOMAIN_ID
+                                + ";)";
+                NamedPreparedStatement namedPreparedStatement = new NamedPreparedStatement(unitOfWork.getConnection(),
+                        addGroup);
+                for (Map.Entry<String, String> entry : connectorGroupIdMap.entrySet()) {
+                    namedPreparedStatement.setString(SQLPlaceholders.GROUP_ID, domainGroupId);
+                    namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_GROUP_ID, entry.getValue());
+                    namedPreparedStatement.setString(SQLPlaceholders.CONNECTOR_ID, entry.getKey());
+                    namedPreparedStatement.getPreparedStatement().addBatch();
+                }
+                namedPreparedStatement.getPreparedStatement().executeBatch();
+                unitOfWork.endTransaction();
+            } catch (SQLException e) {
+                unitOfWork.rollbackTransaction(unitOfWork.getConnection());
+                throw new UniqueIdResolverException("Error while adding user.", e);
             }
-            namedPreparedStatement.getPreparedStatement().executeBatch();
-            unitOfWork.endTransaction();
         } catch (SQLException e) {
-            UnitOfWork.rollbackTransaction(dataSource);
             throw new UniqueIdResolverException("Error while adding user.", e);
         }
     }
