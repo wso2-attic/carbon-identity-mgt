@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Support class to implement Unit of work patter.
@@ -35,6 +36,7 @@ public class UnitOfWork implements AutoCloseable {
 
     private Connection connection = null;
     private List<AutoCloseable> listToClose = new ArrayList<>();
+    private AtomicInteger transactionLevel = new AtomicInteger(0);
 
     private UnitOfWork() throws SQLException {
         super();
@@ -65,6 +67,7 @@ public class UnitOfWork implements AutoCloseable {
 
         UnitOfWork unitOfWork = new UnitOfWork();
         unitOfWork.connection = connection;
+        unitOfWork.transactionLevel.incrementAndGet();
 
         return unitOfWork;
     }
@@ -84,7 +87,26 @@ public class UnitOfWork implements AutoCloseable {
      * @throws SQLException SQL Exception.
      */
     public void endTransaction() throws SQLException {
-        connection.commit();
+        transactionLevel.decrementAndGet();
+        if (transactionLevel.get() <= 0) {
+            connection.commit();
+        }
+    }
+
+    /**
+     * Revoke the transaction when catch then sql transaction errors.
+     *
+     * @param connection Database connection.
+     */
+    private void rollbackTransaction(Connection connection) {
+
+        try {
+            if (connection != null) {
+                connection.rollback();
+            }
+        } catch (SQLException e1) {
+            log.error("An error occurred while rolling back transactions. ", e1);
+        }
     }
 
     /**
@@ -106,6 +128,12 @@ public class UnitOfWork implements AutoCloseable {
 
         SQLException exception = null;
 
+        if (transactionLevel.get() > 0) {
+            rollbackTransaction(connection);
+            log.warn("The database connection is being closed without properly committing. Hence rollback any "
+                    + "transaction. Connection Information  " + connection.getMetaData().getURL());
+            transactionLevel.set(0);
+        }
         for (AutoCloseable closeable : listToClose) {
             try {
                 closeable.close();
