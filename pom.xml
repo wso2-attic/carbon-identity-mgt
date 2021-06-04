@@ -621,7 +621,7 @@
         <json.smart.version>2.1.0.wso2v1</json.smart.version>
         <slf4j.api.version>1.7.12</slf4j.api.version>
         <!--<org.snakeyaml.version>1.16.0.wso2v1</org.snakeyaml.version>-->
-        <org.snakeyaml.version>1.17</org.snakeyaml.version>
+        <org.snakeyaml.version>1.26</org.snakeyaml.version>
         <rs-api.version>2.0</rs-api.version>
         <gson.version>2.2.4</gson.version>
         <net.minidev.asm.version>1.0.2</net.minidev.asm.version>
